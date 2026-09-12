@@ -2,596 +2,1617 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>R Cloud </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>سوق البصيرة - أونلاين</title>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background: #f8fafc; color: #0f172a; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
-        .app-container { width: 100%; max-width: 480px; padding: 20px; }
+        :root {
+            --bg-top: #FFF5F7;
+            --bg-bottom: #F3E8EE;
+            --card-glass: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(255, 255, 255, 0.9);
+            --accent-pink: #E86A92;
+            --accent-gold: #D4AF37;
+            --danger-red: #E74C3C;
+            --text-main: #33272A;
+            --text-sub: #7C6C72;
+            --radius-main: 24px;
+            --shadow-soft: 0 12px 32px 0 rgba(199, 155, 172, 0.18);
+        }
 
-        /* تحسين الانتقالات بين الشاشات */
-        .screen { display: none; opacity: 0; transition: opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); transform: translateY(15px); }
-        .screen.active { display: block; opacity: 1; transform: translateY(0); }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
 
-        h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
-        .subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 20px; }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: linear-gradient(165deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+            color: var(--text-main);
+        }
 
-        /* شعار R Cloud */
-        .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-        .logo-icon { background: linear-gradient(135deg, #0f172a, #334155); border-radius: 16px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .logo-icon svg { width: 28px; height: 28px; fill: white; }
-        .logo-text { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; color: #0f172a; }
-        .logo-text span { color: #2563eb; }
+        #app-wrapper {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
 
-        /* Inputs */
-        .input-group { position: relative; margin-bottom: 12px; }
-        .input-group svg { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; fill: #94a3b8; }
-        .input-group input { width: 100%; padding: 14px 45px 14px 14px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; font-size: 15px; outline: none; transition: 0.2s; }
-        .input-group input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-        .input-group .toggle-password { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; fill: #94a3b8; width: 20px; height: 20px; }
+        /* iOS Header */
+        .ios-header {
+            padding: 44px 20px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-        /* Password Strength */
-        .strength-bar { height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 6px; overflow: hidden; }
-        .strength-fill { height: 100%; width: 0%; transition: width 0.3s, background 0.3s; }
-        .strength-text { font-size: 0.75rem; margin-top: 2px; }
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 18px;
+            color: var(--text-main);
+        }
 
-        /* Buttons */
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease; }
-        .btn-primary { background: #0f172a; color: #fff; }
-        .btn-primary:hover { background: #1e293b; }
-        .btn-primary:active { transform: scale(0.97); }
-        .btn-outline { background: transparent; border: 1px solid #e2e8f0; color: #334155; margin-top: 8px; }
-        .btn-danger { background: #ef4444; color: white; }
-        .btn-danger:hover { background: #dc2626; }
+        .header-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-pink);
+            box-shadow: 0 2px 8px rgba(232, 106, 146, 0.3);
+        }
 
-        /* Captcha */
-        .captcha-box { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 12px; border-radius: 12px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        .captcha-math { font-weight: 700; font-size: 1.2rem; }
-        .captcha-input { width: 70px; text-align: center; padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; }
+        .user-balance-pill {
+            background: var(--card-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            padding: 8px 16px;
+            border-radius: 30px;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
 
-        /* Header */
-        .app-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; margin-bottom: 16px; }
-        .icon-btn { background: #f1f5f9; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
-        .icon-btn:hover { background: #e2e8f0; }
-        .icon-btn svg { width: 20px; height: 20px; fill: #334155; }
+        .balance-label {
+            font-size: 10px;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
 
-        /* Upload */
-        .upload-zone { border: 2px dashed #cbd5e1; background: #f8fafc; border-radius: 16px; padding: 32px; text-align: center; cursor: pointer; margin-bottom: 16px; transition: all 0.2s; }
-        .upload-zone:hover { border-color: #94a3b8; background: #f1f5f9; }
-        .upload-zone:active { transform: scale(0.98); }
-        .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-        .img-card { border-radius: 12px; overflow: hidden; background: #f1f5f9; aspect-ratio: 1; position: relative; transition: transform 0.2s; }
-        .img-card:hover { transform: scale(1.02); }
-        .img-card img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer; }
-        .img-actions { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.5); display: flex; justify-content: space-around; padding: 6px; opacity: 0; transition: opacity 0.2s; }
-        .img-card:hover .img-actions, .img-card:active .img-actions { opacity: 1; }
-        .img-actions button { background: none; border: none; color: white; font-size: 18px; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
-        .img-actions button:hover { background: rgba(255,255,255,0.2); }
+        .balance-amount {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--accent-pink);
+        }
 
-        /* Loader */
-        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 999; display: none; justify-content: center; align-items: center; flex-direction: column; gap: 10px; backdrop-filter: blur(4px); }
-        .spinner { width: 32px; height: 32px; border: 3px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s infinite linear; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 20px 100px;
+            -webkit-overflow-scrolling: touch;
+            display: flex;
+            flex-direction: column;
+        }
 
-        /* Toast */
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 10px 20px; border-radius: 20px; font-size: 14px; z-index: 1000; display: none; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        .glass-card {
+            background: var(--card-glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-main);
+            padding: 20px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 20px;
+        }
 
-        /* Settings specific */
-        .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #e2e8f0; }
-        .settings-label { color: #475569; font-weight: 500; }
-        .settings-value { font-weight: 600; color: #0f172a; }
-        .phrase-input { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 8px; }
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .market-item {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 18px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .item-img-container {
+            width: 100%;
+            height: 110px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #F8F0F3;
+            margin-bottom: 8px;
+        }
+
+        .item-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-seller {
+            font-size: 10px;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+        }
+
+        .item-price-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .item-price {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--accent-pink);
+        }
+
+        .btn-buy {
+            background: linear-gradient(135deg, var(--accent-pink), #D8557D);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(232, 106, 146, 0.3);
+            cursor: pointer;
+        }
+
+        .btn-resell {
+            background: linear-gradient(135deg, var(--accent-gold), #b89528);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
+            cursor: pointer;
+            width: 100%;
+            margin-top: 6px;
+        }
+
+        /* Money / Cash Grid for Profile & Payment Modal */
+        .cash-wallet-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .cash-card-item {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 14px;
+            padding: 10px;
+            border: 1px solid rgba(220, 200, 210, 0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .cash-card-item img {
+            width: 100%;
+            height: 48px;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
+        .cash-info-line {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* Stepper Controls for Payment Modal */
+        .stepper-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            background: #F5EBF0;
+            border-radius: 8px;
+            padding: 3px;
+            margin-top: 4px;
+        }
+
+        .btn-step {
+            width: 26px;
+            height: 26px;
+            background: var(--accent-pink);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step-val {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        /* Fixed Chat Layout */
+        #tab-chat {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 450px;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 380px;
+        }
+
+        .chat-bubble-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            max-width: 85%;
+        }
+
+        .chat-bubble-wrapper.mine {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .chat-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-gold));
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        .chat-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #fff;
+        }
+
+        .chat-bubble {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 10px 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .chat-bubble-wrapper.mine .chat-bubble {
+            background: linear-gradient(135deg, var(--accent-pink), #D8557D);
+            color: white;
+        }
+
+        .chat-sender-name {
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--accent-gold);
+        }
+
+        .chat-bubble-wrapper.mine .chat-sender-name {
+            color: #FFE5EC;
+            text-align: left;
+        }
+
+        .chat-text {
+            font-size: 13px;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .chat-input-bar {
+            display: flex;
+            gap: 8px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.5);
+            margin-top: auto;
+            position: relative;
+            z-index: 20;
+        }
+
+        /* Debt Box Styles */
+        .debt-box {
+            background: rgba(255, 243, 243, 0.9);
+            border: 1.5px solid var(--danger-red);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 15px;
+        }
+
+        .debt-info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .debt-timer {
+            color: var(--danger-red);
+            font-size: 12px;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+
+        .profile-header-card {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .profile-avatar-lg {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-gold));
+            box-shadow: 0 8px 20px rgba(232, 106, 146, 0.3);
+            margin-bottom: 12px;
+        }
+
+        .profile-avatar-lg img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #fff;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 92%;
+            max-width: 420px;
+            height: 65px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--card-border);
+            border-radius: 35px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(180, 140, 155, 0.25);
+            z-index: 100;
+        }
+
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            font-size: 9px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .nav-btn.active {
+            color: var(--accent-pink);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .input-group {
+            margin-bottom: 14px;
+        }
+
+        .input-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .ios-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(220, 200, 210, 0.6);
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            outline: none;
+            color: var(--text-main);
+            -webkit-user-select: text !important;
+            user-select: text !important;
+        }
+
+        .ios-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 16px;
+            border: none;
+            background: linear-gradient(135deg, var(--accent-pink), #D8557D);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(232, 106, 146, 0.3);
+            cursor: pointer;
+        }
+
+        .btn-debt {
+            background: linear-gradient(135deg, #E74C3C, #C0392B);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-repay {
+            background: linear-gradient(135deg, #2ECC71, #27AE60);
+            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
+        }
+
+        .hidden { display: none !important; }
+
+        .notification-toast {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 12px 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 200;
+            animation: slideDown 0.4s ease;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(51, 39, 42, 0.45);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            padding: 20px;
+        }
+
+        @keyframes slideDown {
+            from { transform: translate(-50%, -40px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-<div id="loader"><div class="spinner"></div><span>جاري المعالجة...</span></div>
-<div class="toast" id="toast"></div>
+    <div id="app-wrapper">
+        <!-- Welcome Setup Modal -->
+        <div id="name-modal" class="modal-overlay hidden">
+            <div class="glass-card" style="width: 100%; max-width: 330px; text-align: center;">
+                <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 8px;">أهلاً بك في سوق البصيرة</h3>
+                <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 16px;">يرجى إضافة اسمك وصورتك الشخصية للبدء</p>
 
-<div class="app-container">
-    <!-- شاشة الدخول -->
-    <div id="screen-auth" class="screen active">
-        <!-- شعار R Cloud -->
-        <div class="logo">
-            <div class="logo-icon">
-                <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
-            </div>
-            <div class="logo-text">R <span>Cloud</span></div>
-        </div>
-        <h2>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          تسجيل الدخول 
-        </h2>
-        <p class="subtitle">تخزين سحابي صور فقط</p>
-        
-        <div class="captcha-box">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/></svg>
-            <span>ما ناتج؟: </span><span id="captcha-question" class="captcha-math"></span>
-            <input type="number" id="captcha-answer" class="captcha-input" placeholder="?">
-        </div>
-        <div class="input-group">
-            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-            <input type="text" id="username" placeholder="اسم المستخدم">
-        </div>
-        <div class="input-group">
-            <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>
-            <input type="password" id="password" placeholder="كلمة المرور">
-            <svg class="toggle-password" id="toggle-pwd" viewBox="0 0 24 24" onclick="togglePassword()"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-        </div>
-        <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
-        <div class="strength-text" id="strength-text"></div>
-        <button class="btn btn-primary" onclick="Core.processLogin()" style="margin-top: 16px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-            تسجيل/انشاء حساب
-        </button>
-    </div>
-
-    <!-- شاشة التحقق الثانوي -->
-    <div id="screen-2fa" class="screen">
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
-            <h2>التحقق الثانوي</h2>
-        </div>
-        <p class="subtitle" id="2fa-msg"></p>
-        <div class="input-group">
-            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
-            <input type="text" id="secret-phrase" placeholder="الجملة السرية العربية مطلوبة للحماية اكثر للخصوصيه">
-        </div>
-        <button class="btn btn-primary" onclick="Core.verifyPhrase()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            تحقق وافتح الستوديو الخاص
-        </button>
-    </div>
-
-    <!-- شاشة الاستوديو -->
-    <div id="screen-studio" class="screen">
-        <div class="app-header">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div class="logo-icon" style="width: 36px; height: 36px; border-radius: 12px;">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+                <div class="profile-avatar-lg" style="margin: 0 auto 14px; cursor: pointer;" onclick="document.getElementById('welcome-avatar-file').click()">
+                    <img id="welcome-avatar-preview" src="https://api.dicebear.com/7.x/bottts/svg?seed=user" alt="Avatar">
                 </div>
-                <div>
-                    <h2 style="font-size:1.2rem;">ستوديو الصور</h2>
-                    <p style="font-size:11px;color:#16a34a; display: flex; align-items: center; gap: 4px;">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
-                        ستوديو سحابي
-                    </p>
+
+                <div class="input-group">
+                    <label class="input-label">اختر صورة من الاستوديو</label>
+                    <input type="file" id="welcome-avatar-file" class="ios-input" accept="image/*" onchange="previewSetupAvatar(event)">
+                </div>
+                
+                <div class="input-group">
+                    <input type="text" id="welcome-username" class="ios-input" placeholder="اكتب اسمك هنا..." style="text-align: center;">
+                </div>
+                
+                <button class="ios-btn" onclick="saveInitialProfile()">دخول اللعبة</button>
+            </div>
+        </div>
+
+        <!-- Payment Modal with Currency Selectors -->
+        <div id="payment-modal" class="modal-overlay hidden">
+            <div class="glass-card" style="width: 100%; max-width: 350px; max-height: 85vh; overflow-y: auto;">
+                <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 4px; text-align: center;">دفع ثمن السلعة</h3>
+                <p id="pay-item-title" style="font-size: 12px; color: var(--accent-pink); text-align: center; font-weight:700; margin-bottom: 4px;"></p>
+                <p id="pay-item-price-needed" style="font-size: 13px; color: var(--text-main); text-align: center; font-weight:800; margin-bottom: 12px;"></p>
+
+                <div class="cash-wallet-grid" id="payment-currencies-grid"></div>
+
+                <div style="margin-top: 14px; padding: 10px; background: rgba(232, 106, 146, 0.1); border-radius: 12px; text-align: center;">
+                    <span style="font-size: 11px; color: var(--text-sub); font-weight:700;">المبلغ المحدد للدفع:</span>
+                    <div id="selected-pay-total" style="font-size: 16px; font-weight: 800; color: var(--accent-pink);">0 د.ع</div>
+                </div>
+
+                <button class="ios-btn" style="margin-top: 12px;" onclick="confirmCashPurchase()">تأكيد الشراء والنقد</button>
+                <button class="ios-btn" style="background: transparent; color: var(--text-sub); box-shadow: none; margin-top: 4px;" onclick="closePaymentModal()">إلغاء</button>
+            </div>
+        </div>
+
+        <!-- Resell Modal -->
+        <div id="resell-modal" class="modal-overlay hidden">
+            <div class="glass-card" style="width: 100%; max-width: 320px; text-align: center;">
+                <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 6px;">إعادة بيع السلعة</h3>
+                <p id="resell-item-name" style="font-size: 12px; color: var(--accent-pink); margin-bottom: 14px; font-weight:700;"></p>
+                
+                <div class="input-group">
+                    <label class="input-label">أدخل السعر الجديد (د.ع)</label>
+                    <input type="number" id="resell-price-input" class="ios-input" placeholder="مثال: 20000" style="text-align: center;">
+                </div>
+                
+                <button class="ios-btn" onclick="confirmResell()">تأكيد الطرح بالسوق</button>
+                <button class="ios-btn" style="background: transparent; color: var(--text-sub); box-shadow: none; margin-top: 5px;" onclick="closeResellModal()">إلغاء</button>
+            </div>
+        </div>
+
+        <!-- iOS Header -->
+        <div class="ios-header">
+            <div class="brand-logo">
+                <img id="header-user-avatar" class="header-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=user" alt="User">
+                <span id="app-user-name">سوق البصيرة</span>
+            </div>
+            <div class="user-balance-pill">
+                <span class="balance-label">محفظتك المالية</span>
+                <span class="balance-amount" id="user-balance">0 د.ع</span>
+            </div>
+        </div>
+
+        <!-- Notification Toast -->
+        <div id="toast" class="notification-toast hidden">
+            <div class="brand-icon" style="width: 24px; height: 24px; background: var(--accent-pink); border-radius: 8px; display:flex; align-items:center; justify-content:center;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                </svg>
+            </div>
+            <div>
+                <div id="toast-title" style="font-size: 12px; font-weight:700;">إشعار جديد</div>
+                <div id="toast-desc" style="font-size: 11px; color: var(--text-sub);">تمت العملية بنجاح</div>
+            </div>
+        </div>
+
+        <!-- Screens -->
+        <div class="main-content">
+            
+            <!-- Tab Market -->
+            <div id="tab-market">
+                <div class="section-title">
+                    <span>السوق العام (أونلاين)</span>
+                </div>
+                <div class="market-grid" id="market-items-container"></div>
+            </div>
+
+            <!-- Tab Chat -->
+            <div id="tab-chat" class="hidden">
+                <div class="glass-card chat-container">
+                    <div class="section-title">الدردشة العامة أونلاين</div>
+                    <div class="chat-messages" id="chat-messages-container"></div>
+                    <div class="chat-input-bar">
+                        <input type="text" id="chat-msg-input" class="ios-input" placeholder="اكتب رسالتك هنا..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+                        <button class="btn-buy" style="padding: 0 16px; border-radius: 14px; min-width: 65px;" onclick="sendChatMessage()">إرسال</button>
+                    </div>
                 </div>
             </div>
-            <div class="icon-btn" onclick="Core.openSettings()" title="الإعدادات">
-                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81a.48.48 0 0 0-.48-.41h-3.84a.48.48 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87a.48.48 0 0 0 .12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.26.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-            </div>
-        </div>
-        <div class="upload-zone" onclick="document.getElementById('secureInput').click()">
-            <svg viewBox="0 0 24 24" width="36" height="36" fill="#475569"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
-            <h3 style="margin:8px 0 4px;">رفع صور</h3>
-            <p style="color:#64748b;font-size:13px;">اضغط لاختيار صور</p>
-            <input type="file" id="secureInput" multiple accept="image/*" style="display:none" onchange="Core.processUpload()">
-        </div>
-        <h3 style="margin:16px 0 10px; display: flex; align-items: center; gap: 6px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            الصور اللتي تم رفعها
-        </h3>
-        <div id="gallery" class="gallery"></div>
-    </div>
 
-    <!-- شاشة الإعدادات -->
-    <div id="screen-settings" class="screen">
-        <div class="app-header">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                <h2 style="font-size:1.3rem;">الإعدادات</h2>
+            <!-- Tab Sell -->
+            <div id="tab-sell" class="hidden">
+                <div class="glass-card">
+                    <div class="section-title">بيع بضاعة جديدة</div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">اسم السلعة / البضاعة</label>
+                        <input type="text" id="sell-name" class="ios-input" placeholder="مثال: ساعة يد أنيقة">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">السعر (بالدينار العراقي)</label>
+                        <input type="number" id="sell-price" class="ios-input" placeholder="15000">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">اختر صورة من الاستوديو</label>
+                        <input type="file" id="sell-file" class="ios-input" accept="image/*">
+                    </div>
+
+                    <button class="ios-btn" id="btn-publish" onclick="publishItem()">عرض البضاعة للبيع</button>
+                </div>
             </div>
-            <div class="icon-btn" onclick="Core.closeSettings()">
-                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+
+            <!-- Tab Transfer & Debt -->
+            <div id="tab-transfer" class="hidden">
+                <div class="glass-card">
+                    <div class="section-title">تحويل أموال أونلاين</div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">اسم المستقبل</label>
+                        <input type="text" id="transfer-target" class="ios-input" placeholder="اسم صديقك في اللعبة">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">المبلغ (د.ع)</label>
+                        <input type="number" id="transfer-amount" class="ios-input" placeholder="10000">
+                    </div>
+
+                    <button class="ios-btn" onclick="transferMoney()">إرسال الأموال</button>
+                </div>
+
+                <!-- Debt Section -->
+                <div class="glass-card">
+                    <div class="section-title" style="color: var(--danger-red);">نظام الدين والقروض</div>
+                    
+                    <div class="debt-box">
+                        <div class="debt-info-row">
+                            <span>إجمالي المديونية:</span>
+                            <span id="debt-amount-text" style="color: var(--danger-red);">0 د.ع</span>
+                        </div>
+                        <div class="debt-info-row">
+                            <span>مضاعف الدين:</span>
+                            <span id="debt-multiplier-text">x1</span>
+                        </div>
+                        <div class="debt-timer" id="debt-timer-display">لا يوجد دَين حالي</div>
+                        <div class="debt-timer" id="debt-ban-display" style="color: #8E44AD; display:none;"></div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">طلب دَين من اللعبة (أقصى حد 90,000 د.ع كُل ساعة)</label>
+                        <input type="number" id="borrow-amount-input" class="ios-input" placeholder="المبلغ المطلوبة (حتى 90,000)">
+                    </div>
+                    <button class="ios-btn btn-debt" onclick="borrowMoney()" style="margin-bottom: 14px;">اقتراض المبلغ</button>
+
+                    <div class="input-group">
+                        <label class="input-label">إرجاع / تسديد الدين للعبة</label>
+                        <input type="number" id="repay-amount-input" class="ios-input" placeholder="المبلغ المراد سداده">
+                    </div>
+                    <button class="ios-btn btn-repay" onclick="repayMoney()">تسديد الدين</button>
+                </div>
             </div>
+
+            <!-- Tab Vault -->
+            <div id="tab-vault" class="hidden">
+                <div class="section-title">خزينتي الخاصّة</div>
+                <div class="market-grid" id="vault-items-container"></div>
+            </div>
+
+            <!-- Tab Profile (Contains Cash Drawer & Profile Settings) -->
+            <div id="tab-profile" class="hidden">
+                <div class="glass-card profile-header-card">
+                    <div class="profile-avatar-lg">
+                        <img id="profile-page-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=user" alt="Profile Avatar">
+                    </div>
+                    <h2 id="profile-page-name" style="font-size: 18px; font-weight: 800;">اسم اللاعب</h2>
+                    <p style="font-size: 12px; color: var(--accent-pink); font-weight: 700; margin-top: 4px;" id="profile-page-balance">0 د.ع</p>
+                </div>
+
+                <!-- Cash Wallet Section inside Profile -->
+                <div class="glass-card">
+                    <div class="section-title" style="color: var(--accent-gold);">
+                        <span>💵 خزينة الفئات النقدية بالحساب</span>
+                    </div>
+                    <div class="cash-wallet-grid" id="profile-cash-wallet-grid"></div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="section-title">تعديل ملف الحساب</div>
+                    <div class="input-group">
+                        <label class="input-label">تغيير الصورة الشخصية</label>
+                        <input type="file" id="update-avatar-file" class="ios-input" accept="image/*" onchange="updateProfileAvatar(event)">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">تغيير الاسم</label>
+                        <input type="text" id="update-username-input" class="ios-input" placeholder="الاسم الجديد">
+                    </div>
+                    <button class="ios-btn" onclick="updateProfileName()">حفظ التعديلات</button>
+                </div>
+            </div>
+
         </div>
 
-        <div class="settings-row">
-            <span class="settings-label">اسم المستخدم</span>
-            <span class="settings-value" id="settings-username">-</span>
-        </div>
-        <div class="settings-row">
-            <span class="settings-label">عدد الصور</span>
-            <span class="settings-value" id="settings-count">0</span>
-        </div>
-        <div class="settings-row" style="flex-direction: column; align-items: flex-start;">
-            <span class="settings-label">تغيير الجملة السرية</span>
-            <input type="text" id="new-secret-phrase" class="phrase-input" placeholder="الجملة السرية الجديدة">
-            <button class="btn btn-primary" onclick="Core.changePhrase()" style="margin-top: 10px; padding: 10px;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                تحديث الجملة
+        <!-- Navigation Bar -->
+        <div class="bottom-nav">
+            <button class="nav-btn active" onclick="switchTab('market', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span>السوق</span>
+            </button>
+
+            <button class="nav-btn" onclick="switchTab('chat', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+                <span>الدردشة</span>
+            </button>
+
+            <button class="nav-btn" onclick="switchTab('sell', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                <span>بيع</span>
+            </button>
+
+            <button class="nav-btn" onclick="switchTab('transfer', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                <span>تحويل</span>
+            </button>
+
+            <button class="nav-btn" onclick="switchTab('vault', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+                <span>خزينتي</span>
+            </button>
+
+            <button class="nav-btn" onclick="switchTab('profile', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span>الحساب</span>
             </button>
         </div>
-
-        <button class="btn btn-danger" onclick="Core.logout()" style="margin-top: 30px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            تسجيل خروج
-        </button>
     </div>
-</div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        // --- 8 فئات نقدية مع الصور المباشرة والتسميات ---
+        const CURRENCY_SPECS = [
+            { val: 250, name: "ربع دينار", img: "https://i.postimg.cc/RCQt8hkc/IMG-2378.jpg" },
+            { val: 500, name: "خمسمية", img: "https://i.postimg.cc/HnZkgq4H/IMG-2380.jpg" },
+            { val: 1000, name: "ألف دينار", img: "https://i.postimg.cc/bJ6hDQGx/IMG-2382.jpg" },
+            { val: 5000, name: "خمسة آلاف", img: "https://i.postimg.cc/j2GBPvRc/IMG-2385.jpg" },
+            { val: 10000, name: "عشرة آلاف", img: "https://i.postimg.cc/90qnmTyV/IMG-2387.jpg" },
+            { val: 25000, name: "٢٥ ألف", img: "https://i.postimg.cc/mgbWwXQS/IMG-2389.jpg" },
+            { val: 50000, name: "٥٠ ألف", img: "https://i.postimg.cc/529DvHVD/IMG-2391.jpg" },
+            { val: 100000, name: "مية دولار", img: "https://i.postimg.cc/529DvHVD/IMG-2391.jpg" }
+        ];
 
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyAXzP-Q79mnv8FlpESCWksjZ0KgZ_xtQZE",
-        authDomain: "spychat-4f8d5.firebaseapp.com",
-        projectId: "spychat-4f8d5",
-        databaseURL: "https://spychat-4f8d5-default-rtdb.firebaseio.com",
-        storageBucket: "spychat-4f8d5.firebasestorage.app",
-        appId: "1:48903709991:web:ee4bff72488d8cf11f7502"
-    };
+        // Firebase Initialization
+        const firebaseConfig = {
+            databaseURL: "https://spychat-4f8d5-default-rtdb.firebaseio.com"
+        };
+        try {
+            firebase.initializeApp(firebaseConfig);
+        } catch(e){}
+        const db = firebase.database();
 
-    document.onkeydown = function(e) {
-        if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74))) return false;
-    };
+        // Local User Data Structure with Cash Wallet Quantities
+        let userData = JSON.parse(localStorage.getItem('user_app_data')) || {
+            name: "",
+            avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=user",
+            wallet: {
+                250: 0,
+                500: 0,
+                1000: 0,
+                5000: 2,   // Initial 50,000 IQD split
+                10000: 2,
+                25000: 0,
+                50000: 0,
+                100000: 0
+            },
+            vault: [],
+            lastClaimDate: null,
+            debt: {
+                baseAmount: 0,
+                totalDebt: 0,
+                multiplier: 1,
+                borrowTimestamp: null,
+                dueTimestamp: null,
+                lastBorrowTime: null,
+                bannedUntil: null
+            }
+        };
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-
-    function sanitize(str) {
-        const temp = document.createElement('div');
-        temp.textContent = str;
-        return temp.innerHTML;
-    }
-
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg; t.style.display = 'block';
-        setTimeout(() => t.style.display = 'none', 2500);
-    }
-
-    function showLoader(show) {
-        document.getElementById('loader').style.display = show ? 'flex' : 'none';
-    }
-
-    function switchScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
-
-    async function checkRateLimit(fingerprint, action, maxAttempts = 5, blockMinutes = 15) {
-        const ref = db.ref(`rate_limits/${fingerprint}/${action}`);
-        const snap = await ref.once('value');
-        const now = Date.now();
-        let attempts = snap.val() || { count: 0, timestamp: now };
-
-        if (now - attempts.timestamp > blockMinutes * 60 * 1000) {
-            attempts = { count: 1, timestamp: now };
-            await ref.set(attempts);
-            return true;
+        if(!userData.wallet) {
+            userData.wallet = { 250:0, 500:0, 1000:0, 5000:2, 10000:2, 25000:0, 50000:0, 100000:0 };
+        }
+        if(!userData.debt) {
+            userData.debt = { baseAmount: 0, totalDebt: 0, multiplier: 1, borrowTimestamp: null, dueTimestamp: null, lastBorrowTime: null, bannedUntil: null };
         }
 
-        if (attempts.count >= maxAttempts) {
-            return false;
-        }
+        let tempAvatarBase64 = "";
+        let onlineMarketItems = [];
+        let currentResellIndex = null;
+        let selectedPayItemIndex = null;
+        let selectedPayQuantities = {};
 
-        attempts.count++;
-        attempts.timestamp = now;
-        await ref.set(attempts);
-        return true;
-    }
-
-    function getFingerprint() {
-        let fp = localStorage.getItem('device_fp');
-        if (!fp) {
-            fp = 'fp_' + Date.now() + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('device_fp', fp);
-        }
-        return fp;
-    }
-
-    function updatePasswordStrength(password) {
-        let score = 0;
-        if (password.length >= 8) score++;
-        if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
-        if (/\d/.test(password)) score++;
-        if (/[^A-Za-z0-9]/.test(password)) score++;
-        
-        const fill = document.getElementById('strength-fill');
-        const text = document.getElementById('strength-text');
-        const colors = ['#ef4444', '#f59e0b', '#eab308', '#22c55e'];
-        const labels = ['ضعيفة', 'متوسطة', 'قوية', 'قوية جداً'];
-        const widths = [25, 50, 75, 100];
-        
-        fill.style.width = widths[Math.min(score, 3)] + '%';
-        fill.style.background = colors[Math.min(score, 3)];
-        text.textContent = score > 0 ? labels[Math.min(score, 3)] : '';
-    }
-
-    window.togglePassword = function() {
-        const pwd = document.getElementById('password');
-        pwd.type = pwd.type === 'password' ? 'text' : 'password';
-    };
-
-    const Core = (function() {
-        let activeUser = null;
-        let isNewPhrase = false;
-        let num1 = 0, num2 = 0;
-        let statsRef = null;
-
-        function initCaptcha() {
-            num1 = Math.floor(Math.random() * 10) + 1;
-            num2 = Math.floor(Math.random() * 10) + 1;
-            document.getElementById('captcha-question').textContent = `${num1} + ${num2} = ?`;
-            document.getElementById('captcha-answer').value = '';
-        }
-
-        document.getElementById('password').addEventListener('input', function() {
-            updatePasswordStrength(this.value);
+        window.addEventListener('load', () => {
+            if (!userData.name || userData.name.trim() === "") {
+                document.getElementById('name-modal').classList.remove('hidden');
+            } else {
+                setupUserSession();
+            }
+            checkDailyBonus();
+            listenToOnlineMarket();
+            listenToGlobalChat();
+            startDebtLoop();
         });
 
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                activeUser = user;
-                statsRef = db.ref('vault_stats/' + user.uid);
-                checkSecondaryAuth(user.uid);
-            } else {
-                activeUser = null;
-                statsRef = null;
-                switchScreen('screen-auth');
-                initCaptcha();
-            }
-            showLoader(false);
-        });
+        // Compute Total IQD from Cash Wallet Notes
+        function calculateTotalBalance() {
+            let total = 0;
+            CURRENCY_SPECS.forEach(c => {
+                const count = userData.wallet[c.val] || 0;
+                total += (c.val * count);
+            });
+            return total;
+        }
 
-        async function checkSecondaryAuth(uid) {
-            try {
-                const snap = await db.ref('vault_keys/' + uid).once('value');
-                const data = snap.val();
-                if (data && data.secret) {
-                    isNewPhrase = false;
-                    document.getElementById('2fa-msg').textContent = 'أدخل الجملة السرية العربية للدخول.';
-                } else {
-                    isNewPhrase = true;
-                    document.getElementById('2fa-msg').textContent = 'أنشئ جملة سرية عربية لحماية ملفاتك.';
-                }
-                switchScreen('screen-2fa');
-                showLoader(false);
-            } catch(e) {
-                showLoader(false);
-                showToast('خطأ في الاتصال');
+        function setupUserSession() {
+            document.getElementById('app-user-name').textContent = userData.name;
+            document.getElementById('header-user-avatar').src = userData.avatar;
+            document.getElementById('profile-page-avatar').src = userData.avatar;
+            document.getElementById('profile-page-name').textContent = userData.name;
+            listenToUserWallet();
+            updateUI();
+        }
+
+        function previewSetupAvatar(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    tempAvatarBase64 = evt.target.result;
+                    document.getElementById('welcome-avatar-preview').src = tempAvatarBase64;
+                };
+                reader.readAsDataURL(file);
             }
         }
 
-        async function processLogin() {
-            const ans = parseInt(document.getElementById('captcha-answer').value);
-            if (ans !== (num1 + num2)) {
-                showToast('إجابة خاطئة للتحقق');
-                initCaptcha();
+        function saveInitialProfile() {
+            const nameInput = document.getElementById('welcome-username').value.trim();
+            if (!nameInput) {
+                alert("يرجى كتابة اسمك أولاً.");
                 return;
             }
-
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            if (username.length < 3 || password.length < 6) {
-                showToast('اسم المستخدم أو كلمة المرور غير مكتملة');
-                return;
+            userData.name = nameInput;
+            if (tempAvatarBase64) {
+                userData.avatar = tempAvatarBase64;
             }
-
-            const fingerprint = getFingerprint();
-            const allowed = await checkRateLimit(fingerprint, 'login');
-            if (!allowed) {
-                showToast('محظور مؤقتاً - حاول لاحقاً');
-                return;
-            }
-
-            showLoader(true);
-            // استخدام اسم المستخدم بدلاً من رقم الهاتف
-            const email = sanitize(username.toLowerCase().replace(/\s+/g, '_')) + "@rcloud.local";
-            try {
-                await auth.signInWithEmailAndPassword(email, password);
-            } catch (e) {
-                try {
-                    await auth.createUserWithEmailAndPassword(email, password);
-                } catch (err) {
-                    showLoader(false);
-                    showToast('فشل تسجيل الدخول');
-                    initCaptcha();
-                }
-            }
+            document.getElementById('name-modal').classList.add('hidden');
+            saveLocalData();
+            setupUserSession();
+            showToast("أهلاً وسهلاً!", `مرحباً بك يا ${userData.name} في سوق البصيرة أونلاين.`);
         }
 
-        async function verifyPhrase() {
-            const phrase = document.getElementById('secret-phrase').value.trim();
-            if (!phrase) {
-                showToast('يجب كتابة الجملة السرية');
-                return;
-            }
-
-            const fingerprint = getFingerprint();
-            const allowed = await checkRateLimit(fingerprint, '2fa');
-            if (!allowed) {
-                showToast('محظور مؤقتاً - حاول لاحقاً');
-                return;
-            }
-
-            showLoader(true);
-            const uid = activeUser.uid;
-            const hashedPhrase = btoa(encodeURIComponent(sanitize(phrase))).split('').reverse().join('');
-
-            if (isNewPhrase) {
-                await db.ref('vault_keys/' + uid).set({ secret: hashedPhrase });
-                openStudio();
-            } else {
-                const snap = await db.ref('vault_keys/' + uid).once('value');
-                const realHash = snap.val().secret;
-                if (hashedPhrase === realHash) {
-                    openStudio();
-                } else {
-                    showLoader(false);
-                    showToast('الجملة السرية غير صحيحة');
-                    document.getElementById('secret-phrase').value = '';
-                }
-            }
+        function saveLocalData() {
+            localStorage.setItem('user_app_data', JSON.stringify(userData));
+            updateUI();
         }
 
-        function openStudio() {
-            document.getElementById('secret-phrase').value = '';
-            showLoader(false);
-            switchScreen('screen-studio');
-            fetchGallery();
+        function updateUI() {
+            const total = calculateTotalBalance();
+            document.getElementById('user-balance').textContent = total.toLocaleString('ar-IQ') + ' د.ع';
+            document.getElementById('profile-page-balance').textContent = total.toLocaleString('ar-IQ') + ' د.ع';
+            
+            // Debt UI Updates
+            document.getElementById('debt-amount-text').textContent = (userData.debt.totalDebt || 0).toLocaleString('ar-IQ') + ' د.ع';
+            document.getElementById('debt-multiplier-text').textContent = `x${userData.debt.multiplier || 1}`;
+            
+            renderProfileCashWallet();
+            renderVault();
+            checkBanStatus();
         }
 
-        async function processUpload() {
-            const files = document.getElementById('secureInput').files;
-            if (!files.length) return;
-
-            const fingerprint = getFingerprint();
-            const allowed = await checkRateLimit(fingerprint, 'upload', 10, 10);
-            if (!allowed) {
-                showToast('حد التحميل تجاوز - حاول لاحقاً');
-                return;
-            }
-
-            showLoader(true);
-            for (let file of files) {
-                await new Promise(resolve => {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                        const encrypted = btoa(encodeURIComponent(reader.result)).split('').reverse().join('');
-                        db.ref('secure_vault/' + activeUser.uid).push({
-                            data: encrypted,
-                            timestamp: Date.now()
-                        }).then(async () => {
-                            // تحديث عداد الصور
-                            if (statsRef) {
-                                await statsRef.transaction(stat => {
-                                    if (!stat) stat = { count: 0 };
-                                    stat.count = (stat.count || 0) + 1;
-                                    return stat;
-                                });
-                            }
-                            resolve();
-                        });
-                    };
-                    reader.readAsDataURL(file);
-                });
-            }
-            showLoader(false);
-            document.getElementById('secureInput').value = '';
-            showToast('تم رفع الصور بنجاح');
-        }
-
-        async function deleteImage(key) {
-            if (!confirm('حذف هذه الصورة نهائياً؟')) return;
-            showLoader(true);
-            await db.ref(`secure_vault/${activeUser.uid}/${key}`).remove();
-            // تحديث عداد الصور
-            if (statsRef) {
-                await statsRef.transaction(stat => {
-                    if (stat && stat.count > 0) stat.count--;
-                    return stat;
-                });
-            }
-            showLoader(false);
-            showToast('تم الحذف');
-        }
-
-        function downloadImage(encryptedData) {
-            try {
-                const decrypted = decodeURIComponent(atob(encryptedData.split('').reverse().join('')));
-                const byteString = atob(decrypted.split(',')[1]);
-                const mimeMatch = decrypted.match(/data:([^;]+)/);
-                const mimeType = mimeMatch ? mimeMatch[1] : 'image/png';
-                const buffer = new Uint8Array(byteString.length);
-                for (let i = 0; i < byteString.length; i++) buffer[i] = byteString.charCodeAt(i);
-                const blob = new Blob([buffer], { type: mimeType });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `secure_image_${Date.now()}.${mimeType.split('/')[1] || 'png'}`;
-                a.click();
-                URL.revokeObjectURL(url);
-            } catch(e) {
-                showToast('فشل تحميل الصورة');
-            }
-        }
-
-        function fetchGallery() {
-            db.ref('secure_vault/' + activeUser.uid).on('value', snapshot => {
-                const gallery = document.getElementById('gallery');
-                gallery.innerHTML = '';
-                snapshot.forEach(child => {
-                    const encrypted = child.val().data;
-                    try {
-                        const decrypted = decodeURIComponent(atob(encrypted.split('').reverse().join('')));
-                        const card = document.createElement('div');
-                        card.className = 'img-card';
-                        card.innerHTML = `
-                            <img src="${sanitize(decrypted)}" alt="صورة مشفرة">
-                            <div class="img-actions">
-                                <button onclick="Core.downloadImage('${encrypted.replace(/'/g, "\\'")}')" title="تحميل">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                                </button>
-                                <button onclick="Core.deleteImage('${child.key}')" title="حذف">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                                </button>
-                            </div>
-                        `;
-                        gallery.appendChild(card);
-                    } catch(e) {}
-                });
+        // --- Render Cash Wallet inside Profile Section ---
+        function renderProfileCashWallet() {
+            const grid = document.getElementById('profile-cash-wallet-grid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            CURRENCY_SPECS.forEach(c => {
+                const count = userData.wallet[c.val] || 0;
+                grid.innerHTML += `
+                    <div class="cash-card-item">
+                        <img src="${c.img}" alt="${c.name}">
+                        <div class="cash-info-line">
+                            <span style="color:var(--text-sub);">${c.name}</span>
+                            <span style="color:var(--accent-pink); font-size:12px;">x${count}</span>
+                        </div>
+                    </div>
+                `;
             });
         }
 
-        // ============ SETTINGS ============
-        async function openSettings() {
-            if (!activeUser) return;
-            // استخراج اسم المستخدم من البريد الإلكتروني
-            const email = activeUser.email || '';
-            const username = email.split('@')[0] || 'غير معروف';
-            const snap = await (statsRef ? statsRef.once('value') : Promise.resolve({ val: () => ({ count: 0 }) }));
-            const stats = snap.val() || { count: 0 };
-
-            document.getElementById('settings-username').textContent = username;
-            document.getElementById('settings-count').textContent = stats.count || 0;
-            switchScreen('screen-settings');
+        // Add Amount in Best Cash Notes Breakdown
+        function addBalanceInCash(amount) {
+            let rem = amount;
+            const sorted = [...CURRENCY_SPECS].sort((a,b) => b.val - a.val);
+            sorted.forEach(c => {
+                if (rem >= c.val) {
+                    const count = Math.floor(rem / c.val);
+                    userData.wallet[c.val] = (userData.wallet[c.val] || 0) + count;
+                    rem %= c.val;
+                }
+            });
+            if (rem > 0) {
+                userData.wallet[250] = (userData.wallet[250] || 0) + Math.ceil(rem / 250);
+            }
         }
 
-        function closeSettings() {
-            switchScreen('screen-studio');
+        function isBanned() {
+            return (userData.debt.bannedUntil && Date.now() < userData.debt.bannedUntil);
         }
 
-        async function changePhrase() {
-            const newPhrase = document.getElementById('new-secret-phrase').value.trim();
-            if (!newPhrase) {
-                showToast('أدخل جملة سرية جديدة');
+        function checkBanStatus() {
+            const banned = isBanned();
+            const btnPublish = document.getElementById('btn-publish');
+            if (btnPublish) {
+                btnPublish.disabled = banned;
+                btnPublish.style.opacity = banned ? '0.5' : '1';
+            }
+        }
+
+        // --- Debt Management System Logic ---
+        function borrowMoney() {
+            if (isBanned()) {
+                showToast("حسابك مقيد!", "حسابك مقيد حالياً من الخدمات المالية بسبب تضاعف الدين إلى 10x.");
                 return;
             }
-            showLoader(true);
-            const newHash = btoa(encodeURIComponent(sanitize(newPhrase))).split('').reverse().join('');
-            await db.ref('vault_keys/' + activeUser.uid).set({ secret: newHash });
-            document.getElementById('new-secret-phrase').value = '';
-            showLoader(false);
-            showToast('تم تحديث الجملة السرية');
+
+            const now = Date.now();
+            if (userData.debt.lastBorrowTime && (now - userData.debt.lastBorrowTime < 3600000)) {
+                const minsLeft = Math.ceil((3600000 - (now - userData.debt.lastBorrowTime)) / 60000);
+                showToast("تنبيه", `يمكنك الاقتراض مرة واحدة كل ساعة. متبقي: ${minsLeft} دقيقة.`);
+                return;
+            }
+
+            const amountInput = parseInt(document.getElementById('borrow-amount-input').value);
+            if (isNaN(amountInput) || amountInput <= 0) {
+                showToast("خطأ", "يرجى كتابة مبلغ اقتراض صحيح.");
+                return;
+            }
+
+            if (amountInput > 90000) {
+                showToast("تنبيه", "الحد الأقصى للاقتراض هو 90,000 د.ع كل ساعة.");
+                return;
+            }
+
+            addBalanceInCash(amountInput);
+            userData.debt.baseAmount = (userData.debt.baseAmount || 0) + amountInput;
+            userData.debt.multiplier = userData.debt.multiplier || 1;
+            userData.debt.totalDebt = userData.debt.baseAmount * userData.debt.multiplier;
+            
+            if (!userData.debt.dueTimestamp) {
+                userData.debt.borrowTimestamp = now;
+                userData.debt.dueTimestamp = now + 3600000;
+            }
+
+            userData.debt.lastBorrowTime = now;
+
+            saveLocalData();
+            syncWalletToFirebase();
+            showToast("تم الاقتراض", `تمت إضافة ${amountInput.toLocaleString('ar-IQ')} د.ع بالنقد إلى حسابك.`);
+            document.getElementById('borrow-amount-input').value = '';
         }
 
-        async function logout() {
-            showLoader(true);
-            await auth.signOut();
-            showLoader(false);
+        function repayMoney() {
+            const amountInput = parseInt(document.getElementById('repay-amount-input').value);
+            if (isNaN(amountInput) || amountInput <= 0) {
+                showToast("خطأ", "يرجى كتابة مبلغ سداد صحيح.");
+                return;
+            }
+
+            if (userData.debt.totalDebt <= 0) {
+                showToast("تنبيه", "لا توجد عليك أي ديون حالياً.");
+                return;
+            }
+
+            const currentTotal = calculateTotalBalance();
+            if (currentTotal < amountInput) {
+                showToast("عفواً", "رصيدك غير كافي لسداد هذا المبلغ.");
+                return;
+            }
+
+            if (amountInput > userData.debt.totalDebt) {
+                showToast("تنبيه", "المبلغ المدخل أكبر من إجمالي الدين المطلوب.");
+                return;
+            }
+
+            // Deduct from Cash Wallet
+            deductAmountFromCash(amountInput);
+            userData.debt.totalDebt -= amountInput;
+            userData.debt.baseAmount = Math.ceil(userData.debt.totalDebt / userData.debt.multiplier);
+
+            if (userData.debt.totalDebt <= 0) {
+                userData.debt.totalDebt = 0;
+                userData.debt.baseAmount = 0;
+                userData.debt.multiplier = 1;
+                userData.debt.dueTimestamp = null;
+                userData.debt.borrowTimestamp = null;
+            }
+
+            saveLocalData();
+            syncWalletToFirebase();
+            showToast("تم السداد", `تم سداد ${amountInput.toLocaleString('ar-IQ')} د.ع من ديونك.`);
+            document.getElementById('repay-amount-input').value = '';
         }
 
-        initCaptcha();
+        function deductAmountFromCash(amount) {
+            let rem = amount;
+            const sorted = [...CURRENCY_SPECS].sort((a,b) => b.val - a.val);
+            sorted.forEach(c => {
+                while (rem >= c.val && (userData.wallet[c.val] || 0) > 0) {
+                    userData.wallet[c.val]--;
+                    rem -= c.val;
+                }
+            });
+            if (rem > 0) {
+                // Deduct small values if needed
+                CURRENCY_SPECS.forEach(c => {
+                    while (rem > 0 && (userData.wallet[c.val] || 0) > 0) {
+                        userData.wallet[c.val]--;
+                        rem -= c.val;
+                    }
+                });
+            }
+        }
 
-        return {
-            processLogin,
-            verifyPhrase,
-            processUpload,
-            deleteImage,
-            downloadImage,
-            openSettings,
-            closeSettings,
-            changePhrase,
-            logout
-        };
-    })();
-</script>
+        function startDebtLoop() {
+            setInterval(() => {
+                const now = Date.now();
+                const timerDisplay = document.getElementById('debt-timer-display');
+                const banDisplay = document.getElementById('debt-ban-display');
+
+                if (userData.debt.bannedUntil) {
+                    if (now >= userData.debt.bannedUntil) {
+                        userData.debt.bannedUntil = null;
+                        userData.debt.totalDebt = 0;
+                        userData.debt.baseAmount = 0;
+                        userData.debt.multiplier = 1;
+                        userData.debt.dueTimestamp = null;
+                        saveLocalData();
+                        showToast("تم فك التقييد", "انتهت فترة التقييد 6 ساعات وتصفرت ديونك كلياً!");
+                    } else {
+                        const remainingBan = userData.debt.bannedUntil - now;
+                        const bHours = Math.floor(remainingBan / 3600000);
+                        const bMins = Math.floor((remainingBan % 3600000) / 60000);
+                        banDisplay.style.display = 'block';
+                        banDisplay.textContent = `حسابك مقيد من البيع والشراء! متبقي: ${bHours} ساعة و ${bMins} دقيقة لتصفير المديونية.`;
+                    }
+                } else {
+                    banDisplay.style.display = 'none';
+                }
+
+                if (userData.debt.totalDebt > 0 && userData.debt.dueTimestamp) {
+                    if (now >= userData.debt.dueTimestamp) {
+                        if (userData.debt.multiplier < 10) {
+                            userData.debt.multiplier += 1;
+                            userData.debt.totalDebt = userData.debt.baseAmount * userData.debt.multiplier;
+                            userData.debt.dueTimestamp = now + 3600000;
+                            saveLocalData();
+                            showToast("تحذير مضاعفة الدين!", `انتهت المهلة وتضاعف دينك إلى x${userData.debt.multiplier}!`);
+                        } else if (userData.debt.multiplier >= 10 && !userData.debt.bannedUntil) {
+                            userData.debt.bannedUntil = now + (6 * 3600000);
+                            saveLocalData();
+                            showToast("تقييد الحساب!", "وصل دينك إلى x10! تم تقييد حسابك من البيع والشراء لمدة 6 ساعات.");
+                        }
+                    }
+
+                    const diff = userData.debt.dueTimestamp - now;
+                    if (diff > 0) {
+                        const mins = Math.floor(diff / 60000);
+                        const secs = Math.floor((diff % 60000) / 1000);
+                        timerDisplay.textContent = `متبقي على مضاعفة الدين (x${userData.debt.multiplier + 1}): ${mins} دقيقة و ${secs} ثانية`;
+                    }
+                } else {
+                    timerDisplay.textContent = 'لا يوجد دَين حالي عليك';
+                }
+            }, 1000);
+        }
+
+        function updateProfileAvatar(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    userData.avatar = evt.target.result;
+                    document.getElementById('header-user-avatar').src = userData.avatar;
+                    document.getElementById('profile-page-avatar').src = userData.avatar;
+                    saveLocalData();
+                    showToast("تم التحديث", "تم تغيير صورتك الشخصية بنجاح.");
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateProfileName() {
+            const newName = document.getElementById('update-username-input').value.trim();
+            if (newName) {
+                userData.name = newName;
+                document.getElementById('app-user-name').textContent = newName;
+                document.getElementById('profile-page-name').textContent = newName;
+                saveLocalData();
+                listenToUserWallet();
+                document.getElementById('update-username-input').value = '';
+                showToast("تم التحديث", "تم تعديل اسمك بنجاح.");
+            }
+        }
+
+        function syncWalletToFirebase() {
+            if(userData.name) {
+                db.ref('users/' + userData.name + '/wallet').set(userData.wallet);
+            }
+        }
+
+        function listenToUserWallet() {
+            if (!userData.name) return;
+            db.ref('users/' + userData.name + '/wallet').on('value', (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    userData.wallet = val;
+                    localStorage.setItem('user_app_data', JSON.stringify(userData));
+                    updateUI();
+                } else {
+                    syncWalletToFirebase();
+                }
+            });
+        }
+
+        function listenToOnlineMarket() {
+            db.ref('market_items').on('value', (snapshot) => {
+                const data = snapshot.val();
+                onlineMarketItems = [];
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        onlineMarketItems.push({ firebaseKey: key, ...data[key] });
+                    });
+                }
+                renderMarket();
+            });
+        }
+
+        function listenToGlobalChat() {
+            db.ref('global_chat').limitToLast(40).on('value', (snapshot) => {
+                const container = document.getElementById('chat-messages-container');
+                container.innerHTML = '';
+                const data = snapshot.val();
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const msg = data[key];
+                        const isMine = msg.sender === userData.name;
+                        container.innerHTML += `
+                            <div class="chat-bubble-wrapper ${isMine ? 'mine' : ''}">
+                                <div class="chat-avatar">
+                                    <img src="${msg.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=user'}" alt="Avatar">
+                                </div>
+                                <div class="chat-bubble">
+                                    <div class="chat-sender-name">${msg.sender}</div>
+                                    <div class="chat-text">${msg.text}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    container.scrollTop = container.scrollHeight;
+                }
+            });
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-msg-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const senderName = userData.name || "مستخدم";
+            const senderAvatar = userData.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=user';
+
+            db.ref('global_chat').push({
+                sender: senderName,
+                avatar: senderAvatar,
+                text: text,
+                timestamp: Date.now()
+            });
+
+            input.value = '';
+        }
+
+        function showToast(title, desc) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-desc').textContent = desc;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3500);
+        }
+
+        function checkDailyBonus() {
+            const today = new Date().toDateString();
+            if (userData.lastClaimDate !== today) {
+                addBalanceInCash(25000);
+                userData.lastClaimDate = today;
+                saveLocalData();
+                syncWalletToFirebase();
+                showToast("هدية يومية!", "حصلت على 25,000 د.ع نقدية بمناسبة تسجيل الدخول اليومي.");
+            }
+        }
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.bottom-nav .nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            ['market', 'chat', 'sell', 'transfer', 'vault', 'profile'].forEach(t => {
+                document.getElementById('tab-' + t).classList.add('hidden');
+            });
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            if(tabId === 'chat') {
+                setTimeout(() => {
+                    const container = document.getElementById('chat-messages-container');
+                    container.scrollTop = container.scrollHeight;
+                }, 100);
+            }
+        }
+
+        function renderMarket() {
+            const container = document.getElementById('market-items-container');
+            container.innerHTML = '';
+            if (onlineMarketItems.length === 0) {
+                container.innerHTML = '<div style="grid-column: span 2; text-align: center; color: var(--text-sub); padding: 20px;">لا توجد بضائع في السوق حالياً</div>';
+                return;
+            }
+            onlineMarketItems.forEach((item, index) => {
+                container.innerHTML += `
+                    <div class="market-item">
+                        <div class="item-img-container">
+                            <img src="${item.image}" alt="${item.title}">
+                        </div>
+                        <div class="item-title">${item.title}</div>
+                        <div class="item-seller">البائع: ${item.seller}</div>
+                        <div class="item-price-bar">
+                            <div class="item-price">${item.price.toLocaleString('ar-IQ')} د.ع</div>
+                            <button class="btn-buy" onclick="openPaymentModal(${index})">شراء</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- Payment Modal & Cash Selection Stepper System ---
+        function openPaymentModal(index) {
+            if (isBanned()) {
+                showToast("حسابك مقيد!", "لا يمكنك شراء السلع أثناء فترة تقييد الحساب.");
+                return;
+            }
+
+            selectedPayItemIndex = index;
+            selectedPayQuantities = {};
+            CURRENCY_SPECS.forEach(c => selectedPayQuantities[c.val] = 0);
+
+            const item = onlineMarketItems[index];
+            document.getElementById('pay-item-title').textContent = item.title;
+            document.getElementById('pay-item-price-needed').textContent = `السعر المطلوب: ${item.price.toLocaleString('ar-IQ')} د.ع`;
+
+            renderPaymentCurrenciesGrid();
+            updateSelectedPayTotal();
+            document.getElementById('payment-modal').classList.remove('hidden');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-modal').classList.add('hidden');
+            selectedPayItemIndex = null;
+        }
+
+        function renderPaymentCurrenciesGrid() {
+            const grid = document.getElementById('payment-currencies-grid');
+            grid.innerHTML = '';
+            CURRENCY_SPECS.forEach(c => {
+                const maxAvailable = userData.wallet[c.val] || 0;
+                const selectedCount = selectedPayQuantities[c.val] || 0;
+                grid.innerHTML += `
+                    <div class="cash-card-item">
+                        <img src="${c.img}" alt="${c.name}">
+                        <div class="cash-info-line">
+                            <span style="color:var(--text-sub);">${c.name}</span>
+                            <span style="color:var(--accent-pink);">متوفر: ${maxAvailable}</span>
+                        </div>
+                        <div class="stepper-control">
+                            <button class="btn-step" onclick="adjustPayQuantity(${c.val}, -1)">-</button>
+                            <span class="step-val" id="pay-qty-${c.val}">${selectedCount}</span>
+                            <button class="btn-step" onclick="adjustPayQuantity(${c.val}, 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function adjustPayQuantity(val, delta) {
+            const maxAvailable = userData.wallet[val] || 0;
+            let current = selectedPayQuantities[val] || 0;
+            current += delta;
+            if (current < 0) current = 0;
+            if (current > maxAvailable) {
+                showToast("تنبيه", `لا تملك أكثر من ${maxAvailable} قطعة من فئة ${val} د.ع.`);
+                current = maxAvailable;
+            }
+            selectedPayQuantities[val] = current;
+            document.getElementById(`pay-qty-${val}`).textContent = current;
+            updateSelectedPayTotal();
+        }
+
+        function updateSelectedPayTotal() {
+            let total = 0;
+            CURRENCY_SPECS.forEach(c => {
+                total += (c.val * (selectedPayQuantities[c.val] || 0));
+            });
+            document.getElementById('selected-pay-total').textContent = total.toLocaleString('ar-IQ') + ' د.ع';
+        }
+
+        function confirmCashPurchase() {
+            if (selectedPayItemIndex === null) return;
+            const item = onlineMarketItems[selectedPayItemIndex];
+            
+            let payTotal = 0;
+            CURRENCY_SPECS.forEach(c => {
+                payTotal += (c.val * (selectedPayQuantities[c.val] || 0));
+            });
+
+            if (payTotal < item.price) {
+                showToast("المبلغ غير كافي!", `المبلغ المحدد (${payTotal.toLocaleString('ar-IQ')}) أقل من سعر السلعة (${item.price.toLocaleString('ar-IQ')}).`);
+                return;
+            }
+
+            // Deduct selected cash notes
+            CURRENCY_SPECS.forEach(c => {
+                const count = selectedPayQuantities[c.val] || 0;
+                userData.wallet[c.val] = (userData.wallet[c.val] || 0) - count;
+            });
+
+            // Calculate change if overpaid
+            const change = payTotal - item.price;
+            if (change > 0) {
+                addBalanceInCash(change);
+                showToast("باقي الفلوس", `تم إرجاع الباقي قدره ${change.toLocaleString('ar-IQ')} د.ع إلى خزينتك.`);
+            }
+
+            // Add item to vault
+            userData.vault.push({ title: item.title, price: item.price, image: item.image });
+
+            // Pay Seller in Cash
+            if (item.seller) {
+                db.ref('users/' + item.seller + '/wallet').transaction((currentWallet) => {
+                    let w = currentWallet || { 250:0, 500:0, 1000:0, 5000:0, 10000:0, 25000:0, 50000:0, 100000:0 };
+                    let rem = item.price;
+                    const sorted = [...CURRENCY_SPECS].sort((a,b) => b.val - a.val);
+                    sorted.forEach(c => {
+                        if (rem >= c.val) {
+                            const cnt = Math.floor(rem / c.val);
+                            w[c.val] = (w[c.val] || 0) + cnt;
+                            rem %= c.val;
+                        }
+                    });
+                    return w;
+                });
+            }
+
+            // Remove from Market
+            if (item.firebaseKey) {
+                db.ref('market_items/' + item.firebaseKey).remove();
+            }
+
+            closePaymentModal();
+            saveLocalData();
+            syncWalletToFirebase();
+            showToast("مبارك!", `اشتريت (${item.title}) وانتقلت إلى خزينتك الخاصّة.`);
+        }
+
+        function renderVault() {
+            const container = document.getElementById('vault-items-container');
+            container.innerHTML = '';
+            if(userData.vault.length === 0) {
+                container.innerHTML = '<div style="grid-column: span 2; text-align: center; color: var(--text-sub); padding: 20px;">خزينتك فارغة حالياً</div>';
+                return;
+            }
+            userData.vault.forEach((item, index) => {
+                container.innerHTML += `
+                    <div class="market-item">
+                        <div class="item-img-container">
+                            <img src="${item.image}" alt="${item.title}">
+                        </div>
+                        <div class="item-title">${item.title}</div>
+                        <div class="item-seller" style="color: var(--accent-pink);">في ملكيتك</div>
+                        <button class="btn-resell" onclick="openResellModal(${index})">إعادة بيع بالسوق</button>
+                    </div>
+                `;
+            });
+        }
+
+        function openResellModal(index) {
+            if (isBanned()) {
+                showToast("حسابك مقيد!", "لا يمكنك إعادة البيع أثناء فترة التقييد.");
+                return;
+            }
+            currentResellIndex = index;
+            const item = userData.vault[index];
+            document.getElementById('resell-item-name').textContent = item.title;
+            document.getElementById('resell-price-input').value = item.price;
+            document.getElementById('resell-modal').classList.remove('hidden');
+        }
+
+        function closeResellModal() {
+            document.getElementById('resell-modal').classList.add('hidden');
+            currentResellIndex = null;
+        }
+
+        function confirmResell() {
+            if (isBanned()) {
+                showToast("حسابك مقيد!", "لا يمكنك العرض بالسوق أثناء تقييد الحساب.");
+                return;
+            }
+            if (currentResellIndex === null) return;
+            const newPrice = parseInt(document.getElementById('resell-price-input').value);
+            if (isNaN(newPrice) || newPrice <= 0) {
+                showToast("خطأ", "يرجى كتابة سعر صحيح.");
+                return;
+            }
+
+            const item = userData.vault[currentResellIndex];
+            
+            db.ref('market_items').push({
+                title: item.title,
+                price: newPrice,
+                seller: userData.name,
+                image: item.image,
+                timestamp: Date.now()
+            });
+
+            userData.vault.splice(currentResellIndex, 1);
+            closeResellModal();
+            saveLocalData();
+            showToast("تم العرض", `تم عرض (${item.title}) أونلاين بسعر ${newPrice.toLocaleString('ar-IQ')} د.ع`);
+        }
+
+        function publishItem() {
+            if (isBanned()) {
+                showToast("حسابك مقيد!", "لا يمكنك نشر سلع للبيع أثناء فترة التقييد (6 ساعات).");
+                return;
+            }
+
+            const name = document.getElementById('sell-name').value.trim();
+            const price = parseInt(document.getElementById('sell-price').value);
+            const fileInput = document.getElementById('sell-file');
+
+            if (!name || isNaN(price) || price <= 0) {
+                showToast("خطأ", "يرجى كتابة اسم واسعار السلعة بشكل صحيح.");
+                return;
+            }
+
+            const processPublish = (imgSrc) => {
+                db.ref('market_items').push({
+                    title: name,
+                    price: price,
+                    seller: userData.name,
+                    image: imgSrc || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300',
+                    timestamp: Date.now()
+                });
+
+                showToast("عاشت إيدك!", "تم نشر بضاعتك في السوق أونلاين.");
+                document.getElementById('sell-name').value = '';
+                document.getElementById('sell-price').value = '';
+                document.getElementById('sell-file').value = '';
+                switchTab('market', document.querySelectorAll('.bottom-nav .nav-btn')[0]);
+            };
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    processPublish(e.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                processPublish();
+            }
+        }
+
+        function transferMoney() {
+            if (isBanned()) {
+                showToast("حسابك مقيد!", "لا يمكنك تحويل الأموال أثناء فترة التقييد.");
+                return;
+            }
+
+            const target = document.getElementById('transfer-target').value.trim();
+            const amount = parseInt(document.getElementById('transfer-amount').value);
+
+            if (!target || isNaN(amount) || amount <= 0) {
+                showToast("تنبيه", "يرجى إدخال اسم المستلم والمبلغ بشكل صحيح.");
+                return;
+            }
+
+            const currentTotal = calculateTotalBalance();
+            if (currentTotal < amount) {
+                showToast("عفواً", "رصيدك المالي لا يكفي لإجراء التحويل.");
+                return;
+            }
+
+            deductAmountFromCash(amount);
+            saveLocalData();
+            syncWalletToFirebase();
+
+            // Transfer cash to target user
+            db.ref('users/' + target + '/wallet').transaction((currentWallet) => {
+                let w = currentWallet || { 250:0, 500:0, 1000:0, 5000:0, 10000:0, 25000:0, 50000:0, 100000:0 };
+                let rem = amount;
+                const sorted = [...CURRENCY_SPECS].sort((a,b) => b.val - a.val);
+                sorted.forEach(c => {
+                    if (rem >= c.val) {
+                        const cnt = Math.floor(rem / c.val);
+                        w[c.val] = (w[c.val] || 0) + cnt;
+                        rem %= c.val;
+                    }
+                });
+                return w;
+            });
+
+            showToast("تم التحويل", `تم تحويل ${amount.toLocaleString('ar-IQ')} د.ع إلى (${target}) أونلاين`);
+            document.getElementById('transfer-target').value = '';
+            document.getElementById('transfer-amount').value = '';
+        }
+    </script>
 </body>
 </html>
