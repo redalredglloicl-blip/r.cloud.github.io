@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>سينما العراق 3D</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>if(typeof THREE==='undefined')document.write('<script src="https://unpkg.com/three@0.128.0/build/three.min.js"><\/script>');</script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<link rel="stylesheet" href="style.css">
+/* ═══════ 🎨 اللوبي الجديد — ثابت وفخم ═══════ */
+
+/* 1. نوقف كل الأنيميشن في اللوبي */
+.screen *{
+  animation: none !important;
+  transition: none !important;
+}
+
+/* 2. خلفية فخمة ثابتة */
+.screen{
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,200,87,.12), transparent 50%),
+    radial-gradient(circle at 0% 100%, rgba(192,132,252,.15), transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(255,141,199,.12), transparent 50%),
+    linear-gradient(180deg, #1a0820 0%, #2d0d3d 50%, #0a0215 100%) !important;
+  overflow: hidden !important;
+}
+
+/* 3. نخفي النجوم المتلألئة والكشافات المتحركة */
+.screen::before{
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background:
+    radial-gradient(2px 2px at 10% 15%, #fff, transparent),
+    radial-gradient(2px 2px at 30% 30%, #ffd6eb, transparent),
+    radial-gradient(2px 2px at 50% 10%, #fff, transparent),
+    radial-gradient(2px 2px at 70% 40%, #ffc857, transparent),
+    radial-gradient(2px 2px at 90% 20%, #ff8dc7, transparent),
+    radial-gradient(2px 2px at 20% 80%, #fff, transparent),
+    radial-gradient(2px 2px at 60% 90%, #ffd6eb, transparent),
+    radial-gradient(2px 2px at 85% 70%, #c084fc, transparent);
+  opacity: .7 !important;
+  z-index: 0 !important;
+  animation: none !important;
+}
+
+.screen::after{
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(255,141,199,.15), transparent 60%),
+    radial-gradient(ellipse at 50% 0%, rgba(255,200,87,.1), transparent 60%) !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+  animation: none !important;
+  height: 100% !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 4. نخفي الولد والبنت (إذا لسا موجودين) */
+.screen .girls{
+  display: none !important;
+}
+
+/* 5. نخفي شرائط الفيلم */
+.film-strip-top,
+.film-strip-bottom{
+  display: none !important;
+}
+
+/* 6. العنوان — ثابت بلمعان ذهبي */
+.screen h1{
+  font-size: clamp(1.8rem, 7vw, 2.6rem) !important;
+  background: linear-gradient(135deg, #ffc857 0%, #ff8dc7 50%, #c084fc 100%) !important;
+  background-size: 100% 100% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 0 30px rgba(255,200,87,.6)) !important;
+  font-weight: 900 !important;
+  letter-spacing: 3px !important;
+  animation: none !important;
+  text-shadow: none !important;
+}
+
+/* 7. السطر تحت العنوان */
+.screen .tg{
+  color: #ffc857 !important;
+  text-shadow: 0 0 20px rgba(255,200,87,.6) !important;
+  font-weight: bold !important;
+  letter-spacing: 2px !important;
+  animation: none !important;
+}
+
+/* 8. البطاقة (الكارد) — حدود ذهبية ثابتة */
+.fc{
+  background: linear-gradient(160deg, rgba(30,10,40,.98), rgba(15,5,25,.98)) !important;
+  border: 2px solid rgba(255,200,87,.6) !important;
+  box-shadow:
+    0 0 30px rgba(255,200,87,.3),
+    0 0 60px rgba(255,141,199,.15),
+    inset 0 1px 0 rgba(255,255,255,.1) !important;
+  animation: none !important;
+  backdrop-filter: none !important;
+  border-radius: 20px !important;
+}
+
+.fc::before{
+  display: none !important;
+  animation: none !important;
+}
+
+/* 9. الأزرار — ثابتة بدون لمعان */
+.bm{
+  background: linear-gradient(135deg, #ffc857, #ff8dc7 60%, #c2185b) !important;
+  background-size: 100% 100% !important;
+  box-shadow:
+    0 4px 0 #6a0a30,
+    0 0 20px rgba(255,200,87,.4),
+    inset 0 1px 0 rgba(255,255,255,.3) !important;
+  animation: none !important;
+  border-radius: 14px !important;
+  color: #1a0820 !important;
+  font-weight: 900 !important;
+  letter-spacing: 2px !important;
+}
+
+.bm::after{
+  display: none !important;
+  animation: none !important;
+}
+
+.bm:active{
+  transform: translateY(2px) !important;
+  box-shadow:
+    0 2px 0 #6a0a30,
+    0 0 15px rgba(255,200,87,.3) !important;
+}
+
+/* 10. لودنغ — ثابت بدون دوران */
+.lsp{
+  animation: none !important;
+  border-color: rgba(255,200,87,.4) !important;
+  border-top-color: #ffc857 !important;
+}
+
+#l1 .lf::before,
+#l1 .lf::after,
+#l2 .lf::before,
+#l2 .lf::after{
+  animation: none !important;
+}
+
+#l1 .lf,
+#l2 .lf{
+  animation: none !important;
+}
+
+.lbf{
+  animation: none !important;
+  background: linear-gradient(90deg, #ffc857, #ff8dc7, #c084fc) !important;
+  background-size: 100% 100% !important;
+}
+
+/* 11. لودنغ — خلفية فخمة ثابتة */
+#l1, #l2{
+  background:
+    radial-gradient(circle at 50% 50%, rgba(45,15,60,.95), #000 80%) !important;
+}
+
+#l1::before,
+#l1::after,
+#l2::before,
+#l2::after{
+  display: none !important;
+}
+
+#l1 .lt,
+#l2 .lt{
+  animation: none !important;
+  background: linear-gradient(135deg, #ffc857, #ff8dc7, #c084fc) !important;
+  background-size: 100% 100% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 0 20px rgba(255,200,87,.8)) !important;
+}
+</head>
+<body>
+
+<div id="offline-screen">
+  <div class="oi svg-ico"></div>
+  <h1>لا يوجد اتصال بالإنترنت</h1>
+  <p>اللعبة تحتاج اتصال بالإنترنت<br>تأكد من اتصالك ثم حاول مرة ثانية</p>
+  <button onclick="location.reload()">حاول مرة ثانية</button>
+</div>
+
+<div id="net-indicator">
+  <div class="svg-ico"></div>
+  <span>انقطع الاتصال</span>
+</div>
+
+<div id="l1"><div class="lf svg-ico"></div><div class="lt">سينما العراق 3D</div><div class="ls">جاري تحميل اللعبة...</div><div class="lsp"></div><div class="lb"><div class="lbf" id="lb1"></div></div></div>
+<div id="l2" class="h" style="display:none"><div class="lf svg-ico"></div><div class="lt" id="lt2">جاري الدخول...</div><div class="ls" id="ls2">يرجى الانتظار</div><div class="lsp"></div><div class="lb"><div class="lbf" id="lb2"></div></div></div>
+
+<div id="yh">اضغط للتشغيل</div>
+<div id="td"><span class="svg-ico" style="width:18px;height:18px"></span><span id="td-txt">10:00</span></div>
+
+<div id="login-screen" class="screen">
+
+  <h1><span class="svg-ico" data-svg="cinema"></span>سينما العراق 3D</h1>
+  <div class="tg">ادخل باسم حسابك • او انشئ حساب جديد</div>
+  <div class="fc">
+    <label>اسم الحساب</label>
+    <input id="login-name" type="text" maxlength="14" placeholder="مثال: أبو علي">
+    <label>كلمة المرور</label>
+    <input id="login-pwd" type="password" maxlength="20" placeholder="••••••">
+    <button class="bm" id="btn-login">تسجيل الدخول / انشاء</button>
+    <div id="login-status" style="font-size:.7rem;text-align:center;color:#ffd6eb;min-height:16px"></div>
+  </div>
+</div>
+
+<div id="create-screen" class="screen" style="display:none">
+  <h1>شخصيتك الجديدة</h1>
+  <div class="fc">
+    <label>جنس الشخصية</label>
+    <div class="gp">
+      <div class="go a" data-gender="boy"><span class="svg-ico" data-svg="boy"></span>ولد</div>
+      <div class="go" data-gender="girl"><span class="svg-ico" data-svg="girl"></span>بنت</div>
+    </div>
+    <label>جودة الجرافيكس</label>
+    <div class="pr p3">
+      <div class="po" data-quality="low"><span class="svg-ico" data-svg="bolt"></span>منخفضة</div>
+      <div class="po a" data-quality="medium"><span class="svg-ico" data-svg="scale"></span>متوسطة</div>
+      <div class="po" data-quality="high"><span class="svg-ico" data-svg="spark"></span>عالية</div>
+    </div>
+    <label>عدد الإطارات (FPS)</label>
+    <div class="pr p3">
+      <div class="po" data-fps="30"><span class="svg-ico" data-svg="turtle"></span>30</div>
+      <div class="po a" data-fps="60"><span class="svg-ico" data-svg="walk"></span>60</div>
+      <div class="po" data-fps="0"><span class="svg-ico" data-svg="rocket"></span>بلا حدود</div>
+    </div>
+    <button class="bm" id="btn-start">ابدأ اللعب</button>
+    <button class="ba" id="btn-back">رجوع</button>
+  </div>
+</div>
+
+<canvas id="game-canvas"></canvas>
+
+<div id="hud" style="display:none">
+  <div class="hl">
+    <button class="hb" id="menu-btn"><span class="svg-ico" data-svg="menu"></span></button>
+    <button class="hb ad" id="admin-btn" style="display:none"><span class="svg-ico" data-svg="shield"></span></button>
+    <div class="hl-info">
+      <div class="nc" id="name-chip">لاعب</div>
+      <div class="xp-wrap">
+        <span class="xp-lvl" id="xp-lvl">1</span>
+        <div class="xp-track"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="hr">
+    <div class="cur-row">
+      <div class="gpp"><span class="svg-ico" data-svg="gold"></span><span class="v" id="gold-display">0</span></div>
+      <div class="tp"><span class="svg-ico" data-svg="ticket"></span><span class="v" id="ticket-display">0</span></div>
+      <div class="mp"><span class="svg-ico" data-svg="money"></span><span class="v" id="money-display">100,000</span></div>
+    </div>
+    <div class="btn-grid">
+      <button class="hb bh" id="box-btn"><span class="svg-ico" data-svg="gift"></span></button>
+      <button class="hb" id="shop-btn"><span class="svg-ico" data-svg="ticket"></span></button>
+      <button class="hb" id="chat-btn"><span class="svg-ico" data-svg="chat"></span></button>
+      <button class="hb" id="leaderboard-btn"><span class="svg-ico" data-svg="trophy"></span></button>
+      <button class="hb" id="profile-btn"><span class="svg-ico" data-svg="user"></span></button>
+      <button class="hb" id="youtube-btn"><span class="svg-ico" data-svg="video"></span></button>
+      <button class="hb" id="music-btn"><span class="svg-ico" data-svg="music"></span></button>
+      <button class="hb" id="emote-btn"><span class="svg-ico" data-svg="dance"></span></button>
+      <button class="hb" id="friends-btn" style="position:relative"><span class="svg-ico" data-svg="friends"></span><span id="freq-badge" style="display:none;position:absolute;top:1px;left:1px;background:#ff4757;color:#fff;border-radius:10px;min-width:18px;height:18px;font-size:11px;align-items:center;justify-content:center;padding:0 4px">0</span></button>
+      <button class="hb" id="settings-btn"><span class="svg-ico" data-svg="settings"></span></button>
+    </div>
+  </div>
+</div>
+
+<div id="jz" style="display:none"><div id="jst"></div></div>
+<div id="emote-panel" style="display:none;position:fixed;bottom:170px;right:12px;z-index:60;background:rgba(20,8,28,.95);border:2px solid #c084fc;border-radius:14px;padding:10px;flex-direction:column;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,.5)">
+  <button class="cb" data-emote="dance" style="font-size:15px">💃 رقص</button>
+  <button class="cb" data-emote="wave" style="font-size:15px">👋 تلويح</button>
+  <button class="cb" data-emote="jump" style="font-size:15px">⤴️ قفز</button>
+  <button class="cb" data-emote="spin" style="font-size:15px">🌀 دوران</button>
+</div>
+<button id="ab" style="display:none"><span class="svg-ico" data-svg="ticket"></span><span class="lbl" id="action-label">اشتر</span></button>
+<button id="sb2"><span class="svg-ico" data-svg="chair"></span>اجلس</button>
+<button id="stb"><span class="svg-ico" data-svg="up"></span>قف</button>
+
+<div id="cp"><div id="cm"></div>
+<div id="cir"><input id="ci" type="text" maxlength="80" placeholder="اكتب..."><button id="cs">إرسال</button></div></div>
+
+<div id="op"></div>
+
+<div class="modal" id="shop-modal">
+  <div class="mh"><h3><span class="svg-ico" data-svg="cinema"></span>لوحة السينما</h3><button class="cb" id="close-shop-btn"><span class="svg-ico" data-svg="close"></span>إغلاق</button></div>
+  <div class="mb">
+    <div id="tab-boxes" class="tc a"><div class="st">بكجات الحظ</div><div id="boxes-content"></div></div>
+    <div id="tab-chars" class="tc"><div class="st">شخصياتك</div><div id="chars-content"></div></div>
+  </div>
+  <div class="bn">
+    <button class="nb a" data-tab="boxes"><span class="svg-ico" data-svg="gift"></span>بكجات</button>
+    <button class="nb" data-tab="chars"><span class="svg-ico" data-svg="user"></span>شخصياتي</button>
+  </div>
+</div>
+
+<div class="modal" id="settings-modal">
+  <div class="mh"><h3><span class="svg-ico" data-svg="settings"></span>الإعدادات</h3><button class="cb" id="close-settings-btn"><span class="svg-ico" data-svg="close"></span>إغلاق</button></div>
+  <div class="mb" style="overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px">
+    <div class="ac"><h4><span class="svg-ico" data-svg="cinema"></span>جودة</h4>
+      <div class="pr p3" id="set-quality">
+        <div class="po" data-q="low"><span class="svg-ico" data-svg="bolt"></span>منخفضة</div>
+        <div class="po a" data-q="medium"><span class="svg-ico" data-svg="scale"></span>متوسطة</div>
+        <div class="po" data-q="high"><span class="svg-ico" data-svg="spark"></span>عالية</div>
+      </div>
+    </div>
+    <div class="ac"><h4><span class="svg-ico" data-svg="bolt"></span>الإطارات</h4>
+      <div class="pr p3" id="set-fps">
+        <div class="po" data-f="30"><span class="svg-ico" data-svg="turtle"></span>30</div>
+        <div class="po a" data-f="60"><span class="svg-ico" data-svg="walk"></span>60</div>
+        <div class="po" data-f="0"><span class="svg-ico" data-svg="rocket"></span>بلا حدود</div>
+      </div>
+    </div>
+    <div class="ac"><h4><span class="svg-ico" data-svg="user"></span>الشخصية</h4>
+      <div class="ar">
+        <button class="adt" id="btn-boy"><span class="svg-ico" data-svg="boy"></span>ولد</button>
+        <button class="adt" id="btn-girl"><span class="svg-ico" data-svg="girl"></span>بنت</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="youtube-modal">
+  <div class="mh"><h3><span class="svg-ico" data-svg="video"></span>فيديو اليوتيوب</h3><button class="cb" id="close-yt-btn"><span class="svg-ico" data-svg="close"></span>إغلاق</button></div>
+  <div class="mb" style="overflow-y:auto;padding:12px">
+    <div class="ac">
+      <input id="yt-url-input" class="ai" type="text" placeholder="youtube.com/watch?v=...">
+      <button class="adt" id="btn-yt-play"><span class="svg-ico" data-svg="play"></span>تشغيل للجميع</button>
+      <button class="adt d" id="btn-yt-stop"><span class="svg-ico" data-svg="stop"></span>إيقاف للجميع</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="admin-modal">
+  <div class="mh"><h3><span class="svg-ico" data-svg="shield"></span>لوحة الأدمن</h3><button class="cb" id="close-admin-btn"><span class="svg-ico" data-svg="close"></span>إغلاق</button></div>
+  <div class="mb" style="overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px">
+    <div class="ac"><h4><span class="svg-ico" data-svg="money"></span>الرصيد</h4>
+      <input id="admin-money-input" class="ai" type="number" value="1000000">
+      <div class="ar" style="margin-top:6px">
+        <button class="adt g" id="admin-add-money"><span class="svg-ico" data-svg="plus"></span>إضافة</button>
+        <button class="adt d" id="admin-rem-money"><span class="svg-ico" data-svg="minus"></span>قنص</button>
+      </div>
+    </div>
+    <div class="ac"><h4><span class="svg-ico" data-svg="gold"></span>الذهب</h4>
+      <input id="admin-gold-input" class="ai" type="number" value="100">
+      <button class="adt go" id="admin-give-gold-me"><span class="svg-ico" data-svg="plus"></span>أعطني</button>
+    </div>
+    <div class="ac"><h4><span class="svg-ico" data-svg="ticket"></span>التذاكر</h4>
+      <input id="admin-ticket-input" class="ai" type="number" value="5">
+      <button class="adt g" id="admin-give-tickets"><span class="svg-ico" data-svg="plus"></span>أعطني</button>
+    </div>
+    <div class="ac"><h4><span class="svg-ico" data-svg="star"></span>XP</h4>
+      <input id="admin-xp-input" class="ai" type="number" value="1000">
+      <button class="adt" id="admin-add-xp"><span class="svg-ico" data-svg="plus"></span>أضف XP</button>
+    </div>
+    <div class="ac"><h4><span class="svg-ico" data-svg="gift"></span>إيديتور البكجات</h4>
+      <button class="adt go" id="admin-open-box-editor"><span class="svg-ico" data-svg="edit"></span>افتح الإيديتور</button>
+    </div>
+    <div class="ac"><h4><span class="svg-ico" data-svg="user"></span>إعطاء لاعب أوفلاين</h4>
+      <input id="admin-offline-name" class="ai" type="text" placeholder="اسم اللاعب">
+      <input id="admin-offline-gold" class="ai" type="number" placeholder="ذهب" value="100">
+      <input id="admin-offline-money" class="ai" type="number" placeholder="فلوس" value="0">
+      <input id="admin-offline-tickets" class="ai" type="number" placeholder="تذاكر" value="0">
+      <button class="adt g" id="admin-give-offline"><span class="svg-ico" data-svg="send"></span>أرسل الهدية</button>
+    </div>
+    <div class="ac"><h4><span class="svg-ico" data-svg="rocket"></span>النقل</h4>
+      <div class="ar">
+        <button class="adt tp2" data-tx="0" data-tz="14"><span class="svg-ico" data-svg="cinema"></span>السينما</button>
+        <button class="adt tp2" data-tx="0" data-tz="22"><span class="svg-ico" data-svg="road"></span>الشارع</button>
+      </div>
+    </div>
+    <div class="ac"><h4><span class="svg-ico" data-svg="bolt"></span>السرعة</h4>
+      <div class="ar3">
+        <button class="adt sp2" data-sp="1"><span class="svg-ico" data-svg="walk"></span></button>
+        <button class="adt sp2" data-sp="2"><span class="svg-ico" data-svg="run"></span></button>
+        <button class="adt sp2" data-sp="3.5"><span class="svg-ico" data-svg="rocket"></span></button>
+      </div>
+      <button class="adt p" id="admin-freeze-player"><span class="svg-ico" data-svg="freeze"></span>جمد</button>
+    </div>
+    <div class="ac"><h4><span class="svg-ico" data-svg="cloud"></span>الطقس</h4>
+      <div class="ar3">
+        <button class="adt w2" data-w="none"><span class="svg-ico" data-svg="sun"></span></button>
+        <button class="adt b w2" data-w="rain"><span class="svg-ico" data-svg="rain"></span></button>
+        <button class="adt w2" data-w="snow"><span class="svg-ico" data-svg="snow"></span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="box-editor-modal">
+  <div class="mh"><h3><span class="svg-ico" data-svg="edit"></span>إيديتور البكجات</h3><button class="cb" id="close-box-editor"><span class="svg-ico" data-svg="close"></span>إغلاق</button></div>
+  <div class="mb" style="overflow-y:auto;padding:12px">
+    <div class="ac" style="margin-bottom:10px"><h4>اختر البكج</h4>
+      <select id="be-box-select" style="width:100%;padding:10px;background:rgba(0,0,0,.5);color:#fff;border:2px solid var(--cy);border-radius:10px;font-weight:bold;font-size:.9rem;text-align:center;outline:none">
+        <option value="classic">البكج الأساسي</option>
+        <option value="royal">البكج الملكي</option>
+      </select>
+    </div>
+    <div class="ac"><h4>سعر الفتح</h4><input id="be-price" class="ai" type="number" value="50"></div>
+    <div class="ac"><h4>عدد الجوائز</h4><input id="be-rolls" class="ai" type="number" value="2"></div>
+    <div class="ac"><h4>قائمة الجوائز</h4>
+      <div id="be-rewards-list"></div>
+      <button class="be-add" id="be-add-reward"><span class="svg-ico" data-svg="plus"></span>أضف جائزة</button>
+    </div>
+    <button class="adt g" id="be-save" style="padding:14px;font-size:1rem;margin-top:10px"><span class="svg-ico" data-svg="save"></span>حفظ للجميع</button>
+    <button class="adt d" id="be-reset"><span class="svg-ico" data-svg="reset"></span>رجع الافتراضي</button>
+  </div>
+</div>
+
+<div class="modal" id="leaderboard-modal">
+  <div class="mh"><h3><span class="svg-ico" data-svg="trophy"></span>لوحة الشرف</h3><button class="cb" id="close-lb-btn"><span class="svg-ico" data-svg="close"></span>إغلاق</button></div>
+  <div class="mb" style="overflow-y:auto;padding:12px"><div id="lb-content"></div></div>
+</div>
+
+<div class="modal" id="friends-modal">
+  <div class="mh"><h3><span class="svg-ico" data-svg="friends"></span>الأصدقاء</h3><button class="cb" id="close-friends-btn"><span class="svg-ico" data-svg="close"></span>إغلاق</button></div>
+  <div class="mb" style="overflow-y:auto;padding:12px">
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button class="cb" id="ftab-list">👥 أصدقائي</button>
+      <button class="cb" id="ftab-req">📩 الطلبات <span id="freq-count"></span></button>
+      <button class="cb" id="ftab-add">➕ إضافة</button>
+    </div>
+    <div id="friends-content"></div>
+  </div>
+</div>
+
+<div class="modal" id="profile-modal">
+  <div class="mh"><h3><span class="svg-ico" data-svg="user"></span>معلوماتي</h3><button class="cb" id="close-profile-btn"><span class="svg-ico" data-svg="close"></span>إغلاق</button></div>
+  <div class="mb" style="overflow-y:auto;padding:12px"><div id="profile-content"></div></div>
+</div>
+
+<div id="lo"><div id="ltit">جاري فتح البكج...</div><div id="lbox"></div><div id="lrs"><div id="lg"></div><button id="lc">استلم</button></div></div>
+<div id="tt"></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="game1.js"></script>
+<script src="game2.js"></script>
+<script src="game3.js"></script>
+</body>
+
+
+
+<!-- ═══════ 🔇 فلتر الكونسول النهائي ═══════ -->
+
+<!-- ═══════ 🚗 سيارات GLB الحقيقية ═══════ -->
+<!-- ═══════ 🚗 سيارات GLB - نسخة كاملة ═══════ -->
+
+<!-- ═══════ 🚗 تحسين سلوك السيارات ═══════ -->
+ 
+<!-- ═══════ 🎭 شخصيات GLB — النسخة الصحيحة ═══════ -->
+
+<!-- ═══════ 🎬 ترقية السينما v2 (بدون فلاش) ═══════ -->
+
+<!-- ═══════ 💺 ترقية المقاعد والأرضية ═══════ -->
+
+</body>
+</html>
