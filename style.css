@@ -586,3 +586,188 @@ iframe{transition:none!important;backface-visibility:hidden}
   0%{background-position:0% 50%}
   100%{background-position:200% 50%}
 }
+
+/* اللوبي الجديد — كانت كتلة يتيمة، تم دمجها */
+/* ═══════ 🎨 اللوبي الجديد — ثابت وفخم ═══════ */
+
+/* 1. نوقف كل الأنيميشن في اللوبي */
+.screen *{
+  animation: none !important;
+  transition: none !important;
+}
+
+/* 2. خلفية فخمة ثابتة */
+.screen{
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,200,87,.12), transparent 50%),
+    radial-gradient(circle at 0% 100%, rgba(192,132,252,.15), transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(255,141,199,.12), transparent 50%),
+    linear-gradient(180deg, #1a0820 0%, #2d0d3d 50%, #0a0215 100%) !important;
+  overflow: hidden !important;
+}
+
+/* 3. نخفي النجوم المتلألئة والكشافات المتحركة */
+.screen::before{
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background:
+    radial-gradient(2px 2px at 10% 15%, #fff, transparent),
+    radial-gradient(2px 2px at 30% 30%, #ffd6eb, transparent),
+    radial-gradient(2px 2px at 50% 10%, #fff, transparent),
+    radial-gradient(2px 2px at 70% 40%, #ffc857, transparent),
+    radial-gradient(2px 2px at 90% 20%, #ff8dc7, transparent),
+    radial-gradient(2px 2px at 20% 80%, #fff, transparent),
+    radial-gradient(2px 2px at 60% 90%, #ffd6eb, transparent),
+    radial-gradient(2px 2px at 85% 70%, #c084fc, transparent);
+  opacity: .7 !important;
+  z-index: 0 !important;
+  animation: none !important;
+}
+
+.screen::after{
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(255,141,199,.15), transparent 60%),
+    radial-gradient(ellipse at 50% 0%, rgba(255,200,87,.1), transparent 60%) !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+  animation: none !important;
+  height: 100% !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 4. نخفي الولد والبنت (إذا لسا موجودين) */
+.screen .girls{
+  display: none !important;
+}
+
+/* 5. نخفي شرائط الفيلم */
+.film-strip-top,
+.film-strip-bottom{
+  display: none !important;
+}
+
+/* 6. العنوان — ثابت بلمعان ذهبي */
+.screen h1{
+  font-size: clamp(1.8rem, 7vw, 2.6rem) !important;
+  background: linear-gradient(135deg, #ffc857 0%, #ff8dc7 50%, #c084fc 100%) !important;
+  background-size: 100% 100% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 0 30px rgba(255,200,87,.6)) !important;
+  font-weight: 900 !important;
+  letter-spacing: 3px !important;
+  animation: none !important;
+  text-shadow: none !important;
+}
+
+/* 7. السطر تحت العنوان */
+.screen .tg{
+  color: #ffc857 !important;
+  text-shadow: 0 0 20px rgba(255,200,87,.6) !important;
+  font-weight: bold !important;
+  letter-spacing: 2px !important;
+  animation: none !important;
+}
+
+/* 8. البطاقة (الكارد) — حدود ذهبية ثابتة */
+.fc{
+  background: linear-gradient(160deg, rgba(30,10,40,.98), rgba(15,5,25,.98)) !important;
+  border: 2px solid rgba(255,200,87,.6) !important;
+  box-shadow:
+    0 0 30px rgba(255,200,87,.3),
+    0 0 60px rgba(255,141,199,.15),
+    inset 0 1px 0 rgba(255,255,255,.1) !important;
+  animation: none !important;
+  backdrop-filter: none !important;
+  border-radius: 20px !important;
+}
+
+.fc::before{
+  display: none !important;
+  animation: none !important;
+}
+
+/* 9. الأزرار — ثابتة بدون لمعان */
+.bm{
+  background: linear-gradient(135deg, #ffc857, #ff8dc7 60%, #c2185b) !important;
+  background-size: 100% 100% !important;
+  box-shadow:
+    0 4px 0 #6a0a30,
+    0 0 20px rgba(255,200,87,.4),
+    inset 0 1px 0 rgba(255,255,255,.3) !important;
+  animation: none !important;
+  border-radius: 14px !important;
+  color: #1a0820 !important;
+  font-weight: 900 !important;
+  letter-spacing: 2px !important;
+}
+
+.bm::after{
+  display: none !important;
+  animation: none !important;
+}
+
+.bm:active{
+  transform: translateY(2px) !important;
+  box-shadow:
+    0 2px 0 #6a0a30,
+    0 0 15px rgba(255,200,87,.3) !important;
+}
+
+/* 10. لودنغ — ثابت بدون دوران */
+.lsp{
+  animation: none !important;
+  border-color: rgba(255,200,87,.4) !important;
+  border-top-color: #ffc857 !important;
+}
+
+#l1 .lf::before,
+#l1 .lf::after,
+#l2 .lf::before,
+#l2 .lf::after{
+  animation: none !important;
+}
+
+#l1 .lf,
+#l2 .lf{
+  animation: none !important;
+}
+
+.lbf{
+  animation: none !important;
+  background: linear-gradient(90deg, #ffc857, #ff8dc7, #c084fc) !important;
+  background-size: 100% 100% !important;
+}
+
+/* 11. لودنغ — خلفية فخمة ثابتة */
+#l1, #l2{
+  background:
+    radial-gradient(circle at 50% 50%, rgba(45,15,60,.95), #000 80%) !important;
+}
+
+#l1::before,
+#l1::after,
+#l2::before,
+#l2::after{
+  display: none !important;
+}
+
+#l1 .lt,
+#l2 .lt{
+  animation: none !important;
+  background: linear-gradient(135deg, #ffc857, #ff8dc7, #c084fc) !important;
+  background-size: 100% 100% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 0 20px rgba(255,200,87,.8)) !important;
+}
