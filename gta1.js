@@ -39,7 +39,7 @@ function loadGLB(url,ok,fail){
 }
 
 // ---------- المدينة ----------
-var CITY={blocks:4,block:44,road:14}; // 4x4 مربعات
+var CITY={blocks:6,block:44,road:14}; // لوس سانتوس: 6x6 مربعات
 CITY.step=CITY.block+CITY.road;
 CITY.size=CITY.blocks*CITY.step+CITY.road;
 CITY.half=CITY.size/2;
@@ -66,21 +66,27 @@ var winTex=mkCanvasTex(64,96,function(x,w,h){
 });
 function buildCity(){
   var g=new THREE.Group();
-  // أرضية
-  var ground=new THREE.Mesh(new THREE.PlaneGeometry(CITY.size+200,CITY.size+200),
+  // ---- المحيط (غرب) ----
+  var ocean=new THREE.Mesh(new THREE.PlaneGeometry(500,1100),
+    new THREE.MeshLambertMaterial({color:0x1b6f9e}));
+  ocean.rotation.x=-Math.PI/2;ocean.position.set(-CITY.half-250,-0.6,0);g.add(ocean);
+  // ---- الشاطئ الرملي ----
+  var sand=new THREE.Mesh(new THREE.PlaneGeometry(36,1100),
+    new THREE.MeshLambertMaterial({color:0xe3d09b}));
+  sand.rotation.x=-Math.PI/2;sand.position.set(-CITY.half-18,0.015,0);g.add(sand);
+  // ---- الأرضية ----
+  var ground=new THREE.Mesh(new THREE.PlaneGeometry(CITY.size+260,CITY.size+260),
     new THREE.MeshLambertMaterial({color:0x4d7a43}));
   ground.rotation.x=-Math.PI/2;g.add(ground);
   var roadM=new THREE.MeshLambertMaterial({color:0x2e2e34});
-  var sideM=new THREE.MeshLambertMaterial({color:0x9aa0a8});
   var dashM=new THREE.MeshBasicMaterial({color:0xf5d742});
-  // الطرق (شبكة)
+  // ---- شبكة الطرق ----
   for(var i=0;i<=CITY.blocks;i++){
     var p=-CITY.half+i*CITY.step+CITY.road/2;
     var r1=new THREE.Mesh(new THREE.PlaneGeometry(CITY.road,CITY.size),roadM);
     r1.rotation.x=-Math.PI/2;r1.position.set(p,0.02,0);g.add(r1);
     var r2=new THREE.Mesh(new THREE.PlaneGeometry(CITY.size,CITY.road),roadM);
     r2.rotation.x=-Math.PI/2;r2.position.set(0,0.02,p);g.add(r2);
-    // خطوط متقطعة
     for(var d=-CITY.half+6;d<CITY.half-6;d+=8){
       var s1=new THREE.Mesh(new THREE.PlaneGeometry(0.5,3),dashM);
       s1.rotation.x=-Math.PI/2;s1.position.set(p,0.04,d);g.add(s1);
@@ -88,25 +94,61 @@ function buildCity(){
       s2.rotation.x=-Math.PI/2;s2.position.set(d,0.04,p);g.add(s2);
     }
   }
-  // المباني داخل المربعات
+  // ---- المباني: داون تاون (وسط) ناطحات، والباقي أحياء ----
   var bcols=[0x8a7f70,0x707a8a,0x9a8a7a,0x7a8a7a,0xa08080];
+  var dcols=[0x3a4a5a,0x5a6a7a,0x6a7a8a,0x4a5a6a];
   for(var bx=0;bx<CITY.blocks;bx++)for(var bz=0;bz<CITY.blocks;bz++){
     var cx=-CITY.half+CITY.road+bx*CITY.step+CITY.block/2;
     var cz=-CITY.half+CITY.road+bz*CITY.step+CITY.block/2;
-    var n=1+Math.floor(Math.random()*2);
+    var downtown=(bx>=2&&bx<=3&&bz>=2&&bz<=3);
+    var n=downtown?2:1+Math.floor(Math.random()*2);
     for(var k=0;k<n;k++){
-      var w=rnd(10,18),dep=rnd(10,18),hh=rnd(12,42);
+      var w,dep,hh,cols;
+      if(downtown){w=rnd(14,20);dep=rnd(14,20);hh=rnd(55,110);cols=dcols;}
+      else{w=rnd(10,18);dep=rnd(10,18);hh=rnd(10,32);cols=bcols;}
       var ox=rnd(-1,1)*(CITY.block/2-w/2-2),oz=rnd(-1,1)*(CITY.block/2-dep/2-2);
       var bm=new THREE.Mesh(new THREE.BoxGeometry(w,hh,dep),
-        new THREE.MeshLambertMaterial({color:bcols[Math.floor(Math.random()*bcols.length)],map:winTex}));
+        new THREE.MeshLambertMaterial({color:cols[Math.floor(Math.random()*cols.length)],map:winTex}));
       bm.position.set(cx+ox,hh/2,cz+oz);g.add(bm);
       addCollider(cx+ox-w/2,cx+ox+w/2,cz+oz-dep/2,cz+oz+dep/2);
     }
   }
-  // أعمدة إنارة على الطرق
+  // ---- جبل VINEWOOD (شمال) ----
+  var hill=new THREE.Mesh(new THREE.SphereGeometry(110,20,14),
+    new THREE.MeshLambertMaterial({color:0x3d6b35}));
+  hill.scale.set(1.4,0.42,1);hill.position.set(30,0,-CITY.half-95);g.add(hill);
+  var signTex=mkCanvasTex(1024,160,function(x,w,h2){
+    x.clearRect(0,0,w,h2);
+    x.fillStyle='#f7f2e8';x.font='bold 110px Arial';x.textAlign='center';x.textBaseline='middle';
+    x.fillText('VINEWOOD',w/2,h2/2);
+  });
+  var sign=new THREE.Mesh(new THREE.PlaneGeometry(95,15),
+    new THREE.MeshBasicMaterial({map:signTex,transparent:true}));
+  sign.position.set(30,52,-CITY.half-78);sign.rotation.y=0.15;g.add(sign);
+  // ---- المطار (جنوب): مدرج ----
+  var rw=new THREE.Mesh(new THREE.PlaneGeometry(240,26),
+    new THREE.MeshLambertMaterial({color:0x3a3a40}));
+  rw.rotation.x=-Math.PI/2;rw.position.set(40,0.03,CITY.half+55);g.add(rw);
+  for(var m=-110;m<=110;m+=14){
+    var mk=new THREE.Mesh(new THREE.PlaneGeometry(6,1),dashM);
+    mk.rotation.x=-Math.PI/2;mk.position.set(40+m,0.05,CITY.half+55);g.add(mk);
+  }
+  var hangar=new THREE.Mesh(new THREE.BoxGeometry(40,14,30),
+    new THREE.MeshLambertMaterial({color:0x8a94a0}));
+  hangar.position.set(40,7,CITY.half+95);g.add(hangar);
+  addCollider(20,60,CITY.half+80,CITY.half+110);
+  // ---- الميناء (جنوب شرق): حاويات ----
+  var ccols=[0xc0392b,0x2980b9,0x27ae60,0xf39c12,0x8e44ad];
+  for(var ci=0;ci<14;ci++){
+    var cont=new THREE.Mesh(new THREE.BoxGeometry(8,3,3),
+      new THREE.MeshLambertMaterial({color:ccols[ci%ccols.length]}));
+    var px2=CITY.half-60+(ci%4)*10,pz2=CITY.half+35+Math.floor(ci/4)*5;
+    cont.position.set(px2,1.5+(ci%2)*3.1,pz2);g.add(cont);
+  }
+  // ---- أعمدة إنارة ----
   var poleM=new THREE.MeshLambertMaterial({color:0x333338});
   var lampM=new THREE.MeshBasicMaterial({color:0xfff2b0});
-  for(var lx=0;lx<=CITY.blocks;lx++)for(var lz=0;lz<=CITY.blocks;lz+=2){
+  for(var lx=0;lx<=CITY.blocks;lx+=2)for(var lz=0;lz<=CITY.blocks;lz+=2){
     var px=-CITY.half+lx*CITY.step+CITY.road+1;
     var pz=-CITY.half+lz*CITY.step+CITY.road/2;
     if(Math.abs(px)>CITY.half||Math.abs(pz)>CITY.half)continue;
@@ -115,9 +157,12 @@ function buildCity(){
     var lamp=new THREE.Mesh(new THREE.SphereGeometry(0.4,8,6),lampM);
     lamp.position.set(px,7.1,pz);g.add(lamp);
   }
+  // ---- رصيف خشبي على الشاطئ ----
+  var pier=new THREE.Mesh(new THREE.BoxGeometry(60,1,8),
+    new THREE.MeshLambertMaterial({color:0x8a6a45}));
+  pier.position.set(-CITY.half-45,0.5,40);g.add(pier);
   scene.add(g);
 }
-
 // ---------- اللاعب ----------
 var player={
   pos:new THREE.Vector3(0,0,30),vel:new THREE.Vector3(),
