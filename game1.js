@@ -576,6 +576,125 @@ screenMesh.position.set(0,8,-19.35);cg.add(screenMesh);
 var screenLight=new THREE.PointLight(0x8888ff,1.2,35,2);screenLight.position.set(0,8,-16);cg.add(screenLight);
 
 var CASHIER_POS={x:6,z:10};
+/* ===== Avatar system (moved before first use) ===== */
+var AVATAR_URLS={
+  boy:'https://static.poly.pizza/3746be88-6799-4817-929b-6bc067c47caa.glb',
+  girl:'https://static.poly.pizza/cf08b740-dd48-443e-9fde-6d3d54abf119.glb'
+};
+var avatarCacheAB={};
+var avatarMixers=[];
+function avatarSwitch(g,name){
+  if(!g||!g.userData)return;
+  var a=g.userData.acts;if(!a||!a[name])return;
+  if(g.userData.currentAction===a[name])return;
+  try{
+    if(g.userData.currentAction)g.userData.currentAction.fadeOut(.2);
+    a[name].reset().fadeIn(.2).play();
+    g.userData.currentAction=a[name];
+  }catch(e){}
+}
+function avatarActs(anims){
+  var acts={};
+  for(var i=0;i<anims.length;i++){
+    var n=anims[i].name.toLowerCase(),key=null;
+    if(n.indexOf('idle')>=0)key='idle';
+    else if(n.indexOf('sitting')>=0)key='sitting';
+    else if(n.indexOf('walking')>=0)key='walk';
+    else if(n.indexOf('walk')>=0)key='walk';
+    else if(n.indexOf('running')>=0)key='run';
+    else if(n.indexOf('run')>=0)key='run';
+    else if(n.indexOf('jump')>=0&&n.indexOf('running')<0)key='jump';
+    else if(n.indexOf('clap')>=0)key='dance';
+    if(key&&!acts[key])acts[key]=anims[i];
+  }
+  return acts;
+}
+function loadAvatarGLB(url,cb){
+  function parseAB(ab,cb2){
+    try{new THREE.GLTFLoader().parse(ab.slice(0),'',function(gltf){cb2({scene:gltf.scene,anims:gltf.animations||[]});},function(e){cb2(null);});}
+    catch(e){cb2(null);}
+  }
+  if(avatarCacheAB[url]){parseAB(avatarCacheAB[url],cb);return;}
+  var xhr=new XMLHttpRequest();
+  xhr.open('GET',url,true);xhr.responseType='arraybuffer';
+  xhr.onload=function(){
+    if(xhr.status!==200&&xhr.status!==0){cb(null);return;}
+    avatarCacheAB[url]=xhr.response;
+    parseAB(xhr.response,cb);
+  };
+  xhr.onerror=function(){cb(null);};
+  xhr.send();
+}
+function upgradeCharToAvatar(g,cfg){
+  if(typeof AVATAR_URLS==='undefined'||!AVATAR_URLS)return;
+  if(!g||!cfg||cfg.keepProcedural)return;
+  if(g.userData.isGLB||g.userData.avatarLoading)return;
+  var gender=cfg.gender==='girl'?'girl':'boy';
+  g.userData.avatarLoading=true;
+  loadAvatarGLB(AVATAR_URLS[gender],function(data){
+    g.userData.avatarLoading=false;
+    if(!data||!g.parent)return;
+    try{
+      var model=data.scene;
+      while(g.children.length)g.remove(g.children[0]);
+      if(gender==='boy'){
+        model.traverse(function(o){
+          if(o.isMesh&&o.material&&o.material.name){
+            var mn=o.material.name.toLowerCase(),col=null;
+            if(mn.indexOf('shirt')>=0)col=cfg.shirt;
+            else if(mn.indexOf('pants')>=0||mn.indexOf('socks')>=0)col=cfg.pants;
+            else if(mn.indexOf('skin')>=0)col=(cfg.skin==null?0xffdbac:cfg.skin);
+            else if(mn.indexOf('hair')>=0)col=cfg.hair;
+            if(col!=null){o.material=o.material.clone();o.material.color.setHex(col);}
+          }
+        });
+      }
+      var box=new THREE.Box3().setFromObject(model);
+      var size=box.getSize(new THREE.Vector3());
+      var sc=1.8/Math.max(size.y,.001);
+      model.scale.set(sc,sc,sc);
+      model.rotation.y=Math.PI;
+      model.updateMatrixWorld(true);
+      box=new THREE.Box3().setFromObject(model);
+      model.position.y-=box.min.y;
+      model.updateMatrixWorld(true);
+      g.add(model);
+      g.traverse(function(o){if(o.isMesh)o.castShadow=true;});
+      g.userData.isGLB=true;g.userData.avatarV2=true;
+      g.userData.__model=model;
+      g.userData.legs={left:{rotation:{x:0,y:0,z:0}},right:{rotation:{x:0,y:0,z:0}}};
+      g.userData.arms={left:{rotation:{x:0,y:0,z:0}},right:{rotation:{x:0,y:0,z:0}}};
+      var mixer=new THREE.AnimationMixer(model);
+      var clips=avatarActs(data.anims),acts={};
+      for(var k in clips)acts[k]=mixer.clipAction(clips[k]);
+      g.userData.mixer=mixer;g.userData.acts=acts;
+      avatarMixers.push(g);
+      if(acts.idle){acts.idle.play();g.userData.currentAction=acts.idle;}
+    }catch(e){console.warn('avatar',e);}
+  });
+}
+function avatarSetMoving(g,moving,run){
+  var ud=g.userData;if(!ud||!ud.avatarV2||!ud.acts||ud.emote)return;
+  if(moving)avatarSwitch(g,(run&&ud.acts.run)?'run':'walk');
+  else avatarSwitch(g,'idle');
+}
+function updateAvatars(dt){
+  for(var i=avatarMixers.length-1;i>=0;i--){
+    var g=avatarMixers[i];
+    if(!g||!g.parent){avatarMixers.splice(i,1);continue;}
+    try{if(g.userData.mixer)g.userData.mixer.update(dt);}catch(e){}
+  }
+  if(typeof characterGroup!=='undefined'&&characterGroup&&characterGroup.userData.avatarV2&&characterGroup.userData.acts&&!playerSitting){
+    var cg=characterGroup,ud=cg.userData;
+    if(!ud.emote){
+      var dx=cg.position.x-(ud.__lx==null?cg.position.x:ud.__lx),dz=cg.position.z-(ud.__lz==null?cg.position.z:ud.__lz);
+      var d=Math.sqrt(dx*dx+dz*dz);
+      if(d>0.02)avatarSwitch(cg,(ud.acts.run&&d>0.08)?'run':'walk');
+      else avatarSwitch(cg,'idle');
+    }
+    ud.__lx=cg.position.x;ud.__lz=cg.position.z;
+  }
+
 function buildCounter(){
   var g=new THREE.Group(),W=3.5,D=1.4,H=1.2;
   var b=new THREE.Mesh(new THREE.BoxGeometry(W,H,D),cwm);b.position.y=H/2;b.castShadow=true;g.add(b);
@@ -783,122 +902,6 @@ function buildChar(cfg){
   return g;
 }
 /* ═══════ أفاتار GLB الجديد (Quaternius — CC0) ═══════ */
-var AVATAR_URLS={
-  boy:'https://static.poly.pizza/3746be88-6799-4817-929b-6bc067c47caa.glb',
-  girl:'https://static.poly.pizza/cf08b740-dd48-443e-9fde-6d3d54abf119.glb'
-};
-var avatarCacheAB={};
-var avatarMixers=[];
-function avatarSwitch(g,name){
-  if(!g||!g.userData)return;
-  var a=g.userData.acts;if(!a||!a[name])return;
-  if(g.userData.currentAction===a[name])return;
-  try{
-    if(g.userData.currentAction)g.userData.currentAction.fadeOut(.2);
-    a[name].reset().fadeIn(.2).play();
-    g.userData.currentAction=a[name];
-  }catch(e){}
-}
-function avatarActs(anims){
-  var acts={};
-  for(var i=0;i<anims.length;i++){
-    var n=anims[i].name.toLowerCase(),key=null;
-    if(n.indexOf('idle')>=0)key='idle';
-    else if(n.indexOf('sitting')>=0)key='sitting';
-    else if(n.indexOf('walking')>=0)key='walk';
-    else if(n.indexOf('walk')>=0)key='walk';
-    else if(n.indexOf('running')>=0)key='run';
-    else if(n.indexOf('run')>=0)key='run';
-    else if(n.indexOf('jump')>=0&&n.indexOf('running')<0)key='jump';
-    else if(n.indexOf('clap')>=0)key='dance';
-    if(key&&!acts[key])acts[key]=anims[i];
-  }
-  return acts;
-}
-function loadAvatarGLB(url,cb){
-  function parseAB(ab,cb2){
-    try{new THREE.GLTFLoader().parse(ab.slice(0),'',function(gltf){cb2({scene:gltf.scene,anims:gltf.animations||[]});},function(e){cb2(null);});}
-    catch(e){cb2(null);}
-  }
-  if(avatarCacheAB[url]){parseAB(avatarCacheAB[url],cb);return;}
-  var xhr=new XMLHttpRequest();
-  xhr.open('GET',url,true);xhr.responseType='arraybuffer';
-  xhr.onload=function(){
-    if(xhr.status!==200&&xhr.status!==0){cb(null);return;}
-    avatarCacheAB[url]=xhr.response;
-    parseAB(xhr.response,cb);
-  };
-  xhr.onerror=function(){cb(null);};
-  xhr.send();
-}
-function upgradeCharToAvatar(g,cfg){
-  if(!g||!cfg||cfg.keepProcedural)return;
-  if(g.userData.isGLB||g.userData.avatarLoading)return;
-  var gender=cfg.gender==='girl'?'girl':'boy';
-  g.userData.avatarLoading=true;
-  loadAvatarGLB(AVATAR_URLS[gender],function(data){
-    g.userData.avatarLoading=false;
-    if(!data||!g.parent)return;
-    try{
-      var model=data.scene;
-      while(g.children.length)g.remove(g.children[0]);
-      if(gender==='boy'){
-        model.traverse(function(o){
-          if(o.isMesh&&o.material&&o.material.name){
-            var mn=o.material.name.toLowerCase(),col=null;
-            if(mn.indexOf('shirt')>=0)col=cfg.shirt;
-            else if(mn.indexOf('pants')>=0||mn.indexOf('socks')>=0)col=cfg.pants;
-            else if(mn.indexOf('skin')>=0)col=(cfg.skin==null?0xffdbac:cfg.skin);
-            else if(mn.indexOf('hair')>=0)col=cfg.hair;
-            if(col!=null){o.material=o.material.clone();o.material.color.setHex(col);}
-          }
-        });
-      }
-      var box=new THREE.Box3().setFromObject(model);
-      var size=box.getSize(new THREE.Vector3());
-      var sc=1.8/Math.max(size.y,.001);
-      model.scale.set(sc,sc,sc);
-      model.rotation.y=Math.PI;
-      model.updateMatrixWorld(true);
-      box=new THREE.Box3().setFromObject(model);
-      model.position.y-=box.min.y;
-      model.updateMatrixWorld(true);
-      g.add(model);
-      g.traverse(function(o){if(o.isMesh)o.castShadow=true;});
-      g.userData.isGLB=true;g.userData.avatarV2=true;
-      g.userData.__model=model;
-      g.userData.legs={left:{rotation:{x:0,y:0,z:0}},right:{rotation:{x:0,y:0,z:0}}};
-      g.userData.arms={left:{rotation:{x:0,y:0,z:0}},right:{rotation:{x:0,y:0,z:0}}};
-      var mixer=new THREE.AnimationMixer(model);
-      var clips=avatarActs(data.anims),acts={};
-      for(var k in clips)acts[k]=mixer.clipAction(clips[k]);
-      g.userData.mixer=mixer;g.userData.acts=acts;
-      avatarMixers.push(g);
-      if(acts.idle){acts.idle.play();g.userData.currentAction=acts.idle;}
-    }catch(e){console.warn('avatar',e);}
-  });
-}
-function avatarSetMoving(g,moving,run){
-  var ud=g.userData;if(!ud||!ud.avatarV2||!ud.acts||ud.emote)return;
-  if(moving)avatarSwitch(g,(run&&ud.acts.run)?'run':'walk');
-  else avatarSwitch(g,'idle');
-}
-function updateAvatars(dt){
-  for(var i=avatarMixers.length-1;i>=0;i--){
-    var g=avatarMixers[i];
-    if(!g||!g.parent){avatarMixers.splice(i,1);continue;}
-    try{if(g.userData.mixer)g.userData.mixer.update(dt);}catch(e){}
-  }
-  if(typeof characterGroup!=='undefined'&&characterGroup&&characterGroup.userData.avatarV2&&characterGroup.userData.acts&&!playerSitting){
-    var cg=characterGroup,ud=cg.userData;
-    if(!ud.emote){
-      var dx=cg.position.x-(ud.__lx==null?cg.position.x:ud.__lx),dz=cg.position.z-(ud.__lz==null?cg.position.z:ud.__lz);
-      var d=Math.sqrt(dx*dx+dz*dz);
-      if(d>0.02)avatarSwitch(cg,(ud.acts.run&&d>0.08)?'run':'walk');
-      else avatarSwitch(cg,'idle');
-    }
-    ud.__lx=cg.position.x;ud.__lz=cg.position.z;
-  }
 }
 var characterGroup=buildChar({shirt:0x00a8ff,pants:0x192a56,hair:0x1e272e,skin:0xffdbac,gender:'boy',hairStyle:'short',hat:'none'});
 scene.add(characterGroup);characterGroup.position.set(0,0,14);characterGroup.rotation.y=Math.PI;
