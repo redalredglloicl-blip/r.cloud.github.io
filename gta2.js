@@ -310,5 +310,5 @@ updateWanted();
 document.getElementById('cash').textContent=cash+' $';
 document.getElementById('loadmsg').style.display='none';
 document.getElementById('hud').style.display='block';
-showMsg('أهلاً بك في GTA العراق! امشِ بالعصا واقترب من سيارة 🚗');
+showMsg('أهلاً بك في لوس سانتوس! 🌴 اذهب للشاطئ أو المطار ✈️');
 loop();
