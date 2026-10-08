@@ -1,0 +1,1481 @@
+urn this._shared?.macro??null}bakeMasks(t,e){return LM(t,e)}setMask(t,e){return IM(t,e)}debugBoard(t={}){return OM(this,t)}dispose(){for(const t of this._materials.values())t.dispose();this._materials.clear(),this._sets.clear(),this._forge?.dispose(),this._forge=null,this._shared=null,this._built=!1}}function UM(o,t){for(const e in t){const s=o[e],i=t[e];s&&s.isColor&&!(i&&i.isColor)?s.set(i):s&&s.isVector2&&Array.isArray(i)?s.fromArray(i):o[e]=i}return o}function NM(o){const t=Object.keys(o).sort();return t.length?t.map(e=>`${e}=${JSON.stringify(o[e])}`).join(","):""}function OM(o,{columns:t=6,spacing:e=1.25,radius:s=.42}={}){const i=new In,n=o.names(),a=new co(s,64,48),r=new Sn(.92,.92,.14,8,8,2);return o.bakeMasks(r,{wear:1,grime:.9}),n.forEach((c,h)=>{const l=h%t*e,u=-Math.floor(h/t)*e,d=o.get(c,{vertexMasks:!1}),f=new re(a,d);f.position.set(l,u,0),f.castShadow=f.receiveShadow=!0,i.add(f);const p=o.get(c,{vertexMasks:!0,localSpace:!0}),m=new re(r,p);m.position.set(l,u,-.9),m.castShadow=m.receiveShadow=!0,i.add(m)}),i.userData.names=n,i}const Ul=new Ue;Ul.setAttribute("position",new pe(new Float32Array([-1,-1,0,3,-1,0,-1,3,0]),3));Ul.boundingSphere=new Ds(new A,1e8);const nf=new Nn;nf.matrixAutoUpdate=!1;const BM=new _r,Nl=new re(Ul,null);Nl.frustumCulled=!1;Nl.matrixAutoUpdate=!1;nf.add(Nl);function HM(){return Ul}const qg=`
+out vec2 vUv;
+void main() {
+  vUv = position.xy * 0.5 + 0.5;
+  gl_Position = vec4( position.xy, 0.0, 1.0 );
+}
+`;function Xg(o,t,e){Nl.material=t,o.setRenderTarget(e),o.render(nf,BM)}class ia{constructor(t,e,s,i={}){this.uniforms=s,this.material=new Ls({name:t,uniforms:s,defines:i,vertexShader:qg,fragmentShader:e,glslVersion:ro,depthTest:!1,depthWrite:!1,blending:zi})}render(t,e){Xg(t,this.material,e)}dispose(){this.material.dispose()}}function ko(o,t,e={}){const s=new Ws(Math.max(1,o|0),Math.max(1,t|0),{type:di,format:ns,minFilter:Fe,magFilter:Fe,wrapS:Ps,wrapT:Ps,depthBuffer:!1,stencilBuffer:!1,generateMipmaps:!1,...e});return s.texture.name=e.name??"sky-hdr",s.texture.colorSpace=Mi,s}function VM(o,t,e={}){return ko(o,t,{type:ri,...e})}const jg=25e3,Nr=128e3/jg,tm=.3,Ie={groundRadiusMM:6.36,atmosphereRadiusMM:6.46,viewAltitudeMM:2e-4,rayleigh:[5.802,13.558,33.1],rayleighScaleHeightKM:8,mieScattering:3.996,mieAbsorption:4.4,mieScaleHeightKM:1.2,ozone:[.65,1.881,.085],ozoneCentreKM:25,ozoneWidthKM:15,groundAlbedo:.24},gi=o=>Number.isInteger(o)?Number(o).toFixed(1):String(Number(o)),Tr=`
+#ifndef SKY_ATMOSPHERE
+#define SKY_ATMOSPHERE
+
+const float SK_PI = 3.141592653589793;
+const float SK_GROUND_R = ${gi(Ie.groundRadiusMM)};
+const float SK_TOP_R = ${gi(Ie.atmosphereRadiusMM)};
+const vec3  SK_RAYLEIGH = vec3( ${gi(Ie.rayleigh[0])}, ${gi(Ie.rayleigh[1])}, ${gi(Ie.rayleigh[2])} );
+const float SK_MIE_S = ${gi(Ie.mieScattering)};
+const float SK_MIE_A = ${gi(Ie.mieAbsorption)};
+const vec3  SK_OZONE = vec3( ${gi(Ie.ozone[0])}, ${gi(Ie.ozone[1])}, ${gi(Ie.ozone[2])} );
+const float SK_GROUND_ALBEDO = ${gi(Ie.groundAlbedo)};
+const float SK_ISO_PHASE = 0.07957747154594767; // 1/(4pi)
+
+/** Aerosol multiplier — clear day 1.0, hazy 3+. Baked into every LUT. */
+uniform float uMieScale;
+/** vec3( 0, groundRadius + viewAltitude, 0 ) */
+uniform vec3 uViewPos;
+
+float skSafeAcos( float x ) { return acos( clamp( x, -1.0, 1.0 ) ); }
+
+/** Nearest positive hit of a ray against a sphere centred on the origin. */
+float skRaySphere( vec3 ro, vec3 rd, float rad ) {
+  float b = dot( ro, rd );
+  float c = dot( ro, ro ) - rad * rad;
+  if ( c > 0.0 && b > 0.0 ) return -1.0;
+  float d = b * b - c;
+  if ( d < 0.0 ) return -1.0;
+  if ( d > b * b ) return ( -b + sqrt( d ) );
+  return -b - sqrt( d );
+}
+
+void skMedium( vec3 pos, out vec3 rayleighS, out float mieS, out vec3 extinction ) {
+  float altKM = ( length( pos ) - SK_GROUND_R ) * 1000.0;
+  float rDen = exp( -altKM / ${gi(Ie.rayleighScaleHeightKM)} );
+  float mDen = exp( -altKM / ${gi(Ie.mieScaleHeightKM)} );
+  rayleighS = SK_RAYLEIGH * rDen;
+  mieS = SK_MIE_S * uMieScale * mDen;
+  float mieA = SK_MIE_A * uMieScale * mDen;
+  vec3 ozone = SK_OZONE * max( 0.0,
+    1.0 - abs( altKM - ${gi(Ie.ozoneCentreKM)} ) / ${gi(Ie.ozoneWidthKM)} );
+  extinction = rayleighS + vec3( mieS + mieA ) + ozone;
+}
+
+/** Cornette-Shanks, the well-behaved cousin of Henyey-Greenstein. */
+float skMiePhase( float cosTheta ) {
+  const float g = 0.8;
+  const float k = 3.0 / ( 8.0 * SK_PI ) * ( 1.0 - g * g ) / ( 2.0 + g * g );
+  return k * ( 1.0 + cosTheta * cosTheta ) / pow( 1.0 + g * g - 2.0 * g * cosTheta, 1.5 );
+}
+
+float skRayleighPhase( float cosTheta ) {
+  return 3.0 / ( 16.0 * SK_PI ) * ( 1.0 + cosTheta * cosTheta );
+}
+
+/** Henyey-Greenstein — used by the ground fog, exposed here so both agree. */
+float skHG( float cosTheta, float g ) {
+  float g2 = g * g;
+  float d = max( 1e-4, 1.0 + g2 - 2.0 * g * cosTheta );
+  return ( 1.0 - g2 ) / ( 4.0 * SK_PI * d * sqrt( d ) );
+}
+
+#endif
+`,of=`
+#ifndef SKY_TLUT
+#define SKY_TLUT
+uniform sampler2D uTransmittanceLut;
+
+vec2 skLutUv( vec3 pos, vec3 dir ) {
+  float h = length( pos );
+  float mu = dot( dir, pos / h );
+  return vec2(
+    clamp( 0.5 + 0.5 * mu, 0.0, 1.0 ),
+    clamp( ( h - SK_GROUND_R ) / ( SK_TOP_R - SK_GROUND_R ), 0.0, 1.0 ) );
+}
+
+/** Transmittance from pos along dir out to the top of the atmosphere. */
+vec3 skTransmittance( vec3 pos, vec3 dir ) {
+  return texture( uTransmittanceLut, skLutUv( pos, dir ) ).rgb;
+}
+#endif
+`,GM=`
+#ifndef SKY_MSLUT
+#define SKY_MSLUT
+uniform sampler2D uMultiScatterLut;
+vec3 skMultiScatter( vec3 pos, vec3 lightDir ) {
+  return texture( uMultiScatterLut, skLutUv( pos, lightDir ) ).rgb;
+}
+#endif
+`,WM=`
+#ifndef SKY_SCATTER
+#define SKY_SCATTER
+vec3 skRaymarchSky(
+    vec3 pos, vec3 rayDir,
+    vec3 sunDir, vec3 sunIrr,
+    vec3 moonDir, vec3 moonIrr,
+    float steps ) {
+
+  float topT = skRaySphere( pos, rayDir, SK_TOP_R );
+  float groundT = skRaySphere( pos, rayDir, SK_GROUND_R );
+  float tMax = groundT < 0.0 ? topT : groundT;
+  if ( tMax <= 0.0 ) return vec3( 0.0 );
+
+  float cS = dot( rayDir, sunDir );
+  float cM = dot( rayDir, moonDir );
+  float mieS = skMiePhase( cS ), rayS = skRayleighPhase( cS );
+  float mieM = skMiePhase( cM ), rayM = skRayleighPhase( cM );
+
+  vec3 lum = vec3( 0.0 );
+  vec3 trans = vec3( 1.0 );
+  float t = 0.0;
+
+  for ( float i = 0.0; i < steps; i += 1.0 ) {
+    // 0.3 rather than 0.5 biases samples toward the dense lower atmosphere,
+    // which is where all the interesting colour is.
+    float nt = ( ( i + 0.3 ) / steps ) * tMax;
+    float dt = nt - t;
+    t = nt;
+    vec3 p = pos + t * rayDir;
+
+    vec3 rs; float ms; vec3 ext;
+    skMedium( p, rs, ms, ext );
+    vec3 sampleT = exp( -dt * ext );
+
+    vec3 tSun = skTransmittance( p, sunDir );
+    vec3 psiSun = skMultiScatter( p, sunDir );
+    vec3 inScatter = ( rs * ( rayS * tSun + psiSun ) + ms * ( mieS * tSun + psiSun ) ) * sunIrr;
+
+    vec3 tMoon = skTransmittance( p, moonDir );
+    vec3 psiMoon = skMultiScatter( p, moonDir );
+    inScatter += ( rs * ( rayM * tMoon + psiMoon ) + ms * ( mieM * tMoon + psiMoon ) ) * moonIrr;
+
+    // Analytic integration of the segment (Hillaire eq. 8): exact for constant
+    // media over dt, and unlike a midpoint sum it never overshoots when the
+    // optical depth of a step is large.
+    lum += trans * ( inScatter - inScatter * sampleT ) / max( ext, vec3( 1e-8 ) );
+    trans *= sampleT;
+  }
+  // No pi here. The integral above is sigma_s * P(theta) * E with E in scene
+  // light units, which *is* a radiance in the buffer's own convention (see the
+  // photometric note at the top of this file). Multiplying by pi puts the sky
+  // 1.65 stops above the surfaces it lights, which is what made every exterior
+  // read as white milk with clouds darker than the sky behind them.
+  return lum;
+}
+#endif
+`;function qM(o,t,e){const s=Math.exp(-o/Ie.rayleighScaleHeightKM),i=Math.exp(-o/Ie.mieScaleHeightKM),n=(Ie.mieScattering+Ie.mieAbsorption)*t*i,a=Math.max(0,1-Math.abs(o-Ie.ozoneCentreKM)/Ie.ozoneWidthKM);return e[0]=Ie.rayleigh[0]*s+n+Ie.ozone[0]*a,e[1]=Ie.rayleigh[1]*s+n+Ie.ozone[1]*a,e[2]=Ie.rayleigh[2]*s+n+Ie.ozone[2]*a,e}const Mc=[0,0,0];function em(o,t=1,e=[0,0,0]){const s=Ie.groundRadiusMM+Ie.viewAltitudeMM,i=Ie.atmosphereRadiusMM,n=s*s*o*o-s*s+i*i;if(n<=0)return e[0]=e[1]=e[2]=0,e;const a=-s*o+Math.sqrt(n),r=s*s*o*o-s*s+Ie.groundRadiusMM*Ie.groundRadiusMM;if(o<0&&r>0)return e[0]=e[1]=e[2]=0,e;const c=48,h=a/c;let l=0,u=0,d=0;for(let f=0;f<c;f++){const p=(f+.5)*h,g=(Math.sqrt(s*s+p*p+2*s*p*o)-Ie.groundRadiusMM)*1e3;qM(Math.max(0,g),t,Mc),l+=Mc[0]*h,u+=Mc[1]*h,d+=Mc[2]*h}return e[0]=Math.exp(-l),e[1]=Math.exp(-u),e[2]=Math.exp(-d),e}const Yg=`
+#ifndef SKY_SVLUT
+#define SKY_SVLUT
+uniform sampler2D uSkyViewLut;
+
+vec3 skSkyView( vec3 rayDir, vec3 sunDir ) {
+  float h = length( uViewPos );
+  vec3 up = uViewPos / h;
+  float horizon = skSafeAcos( sqrt( h * h - SK_GROUND_R * SK_GROUND_R ) / h );
+  float altitude = horizon - skSafeAcos( dot( rayDir, up ) );
+
+  float azimuth = 0.0;
+  if ( abs( altitude ) < ( 0.5 * SK_PI - 1e-4 ) ) {
+    vec3 right = cross( sunDir, up );
+    vec3 fwd = cross( up, right );
+    vec3 proj = normalize( rayDir - up * dot( rayDir, up ) );
+    azimuth = atan( dot( proj, right ), dot( proj, fwd ) ) + SK_PI;
+  }
+
+  float v = 0.5 + 0.5 * sign( altitude ) * sqrt( abs( altitude ) * 2.0 / SK_PI );
+  return texture( uSkyViewLut, vec2( azimuth / ( 2.0 * SK_PI ), v ) ).rgb;
+}
+#endif
+`,XM=`
+precision highp float;
+${Tr}
+in vec2 vUv;
+layout(location = 0) out vec4 fragColor;
+
+void main() {
+  float mu = vUv.x * 2.0 - 1.0;
+  float h = mix( SK_GROUND_R, SK_TOP_R, vUv.y );
+  vec3 pos = vec3( 0.0, h, 0.0 );
+  vec3 dir = vec3( sqrt( max( 0.0, 1.0 - mu * mu ) ), mu, 0.0 );
+
+  float t = skRaySphere( pos, dir, SK_TOP_R );
+  if ( t <= 0.0 ) { fragColor = vec4( 0.0, 0.0, 0.0, 1.0 ); return; }
+
+  const float STEPS = 40.0;
+  float dt = t / STEPS;
+  vec3 od = vec3( 0.0 );
+  for ( float i = 0.0; i < STEPS; i += 1.0 ) {
+    vec3 p = pos + ( i + 0.5 ) * dt * dir;
+    vec3 rs; float ms; vec3 ext;
+    skMedium( p, rs, ms, ext );
+    od += ext * dt;
+  }
+  fragColor = vec4( exp( -od ), 1.0 );
+}
+`,jM=`
+precision highp float;
+${Tr}
+${of}
+in vec2 vUv;
+layout(location = 0) out vec4 fragColor;
+
+const float MS_STEPS = 20.0;
+const int SQRT_SAMPLES = 8;
+
+void main() {
+  float mu = vUv.x * 2.0 - 1.0;
+  float h = mix( SK_GROUND_R + 1e-5, SK_TOP_R, vUv.y );
+  vec3 pos = vec3( 0.0, h, 0.0 );
+  vec3 sunDir = normalize( vec3( sqrt( max( 0.0, 1.0 - mu * mu ) ), mu, 0.0 ) );
+
+  vec3 lumTotal = vec3( 0.0 );
+  vec3 fmsTotal = vec3( 0.0 );
+  float invSamples = 1.0 / float( SQRT_SAMPLES * SQRT_SAMPLES );
+
+  for ( int i = 0; i < SQRT_SAMPLES; i ++ ) {
+    for ( int j = 0; j < SQRT_SAMPLES; j ++ ) {
+      // Uniform on the sphere: theta linear, cos(phi) linear.
+      float theta = SK_PI * ( float( i ) + 0.5 ) / float( SQRT_SAMPLES );
+      float phi = skSafeAcos( 1.0 - 2.0 * ( float( j ) + 0.5 ) / float( SQRT_SAMPLES ) );
+      float cp = cos( phi ), sp = sin( phi );
+      vec3 rayDir = vec3( sp * sin( theta ), cp, sp * cos( theta ) );
+
+      float topT = skRaySphere( pos, rayDir, SK_TOP_R );
+      float grnT = skRaySphere( pos, rayDir, SK_GROUND_R );
+      float tMax = grnT < 0.0 ? topT : grnT;
+      if ( tMax <= 0.0 ) continue;
+
+      vec3 lum = vec3( 0.0 );
+      vec3 fms = vec3( 0.0 );
+      vec3 trans = vec3( 1.0 );
+      float t = 0.0;
+      for ( float s = 0.0; s < MS_STEPS; s += 1.0 ) {
+        float nt = ( ( s + 0.5 ) / MS_STEPS ) * tMax;
+        float dt = nt - t;
+        t = nt;
+        vec3 p = pos + t * rayDir;
+        vec3 rs; float ms; vec3 ext;
+        skMedium( p, rs, ms, ext );
+        vec3 sampleT = exp( -dt * ext );
+
+        // f_ms: the fraction of light that scatters at least once more.
+        vec3 sNoPhase = rs + vec3( ms );
+        fms += trans * ( sNoPhase - sNoPhase * sampleT ) / max( ext, vec3( 1e-8 ) );
+
+        vec3 tSun = skTransmittance( p, sunDir );
+        vec3 inS = ( rs + vec3( ms ) ) * SK_ISO_PHASE * tSun;
+        lum += trans * ( inS - inS * sampleT ) / max( ext, vec3( 1e-8 ) );
+        trans *= sampleT;
+      }
+
+      if ( grnT > 0.0 ) {
+        vec3 hit = normalize( pos + grnT * rayDir ) * SK_GROUND_R;
+        if ( dot( hit, sunDir ) > 0.0 ) {
+          lum += trans * SK_GROUND_ALBEDO * skTransmittance( hit, sunDir );
+        }
+      }
+
+      lumTotal += lum * invSamples;
+      fmsTotal += fms * invSamples;
+    }
+  }
+
+  // Infinite geometric series of scattering orders, collapsed.
+  vec3 psi = lumTotal / max( vec3( 1.0 ) - fmsTotal, vec3( 1e-4 ) );
+  fragColor = vec4( psi, 1.0 );
+}
+`,YM=`
+precision highp float;
+${Tr}
+${of}
+${GM}
+${WM}
+in vec2 vUv;
+layout(location = 0) out vec4 fragColor;
+
+uniform vec3 uSunIrradiance;
+uniform vec3 uMoonIrradiance;
+uniform float uSunAltitude;   // radians above the horizon
+uniform float uMoonRelAz;     // moon azimuth relative to the sun, radians
+uniform float uMoonAltitude;
+
+void main() {
+  float azimuth = ( vUv.x - 0.5 ) * 2.0 * SK_PI;
+  float v = vUv.y;
+  float adjV = v < 0.5 ? -( 1.0 - 2.0 * v ) * ( 1.0 - 2.0 * v )
+                       :  ( 2.0 * v - 1.0 ) * ( 2.0 * v - 1.0 );
+
+  float h = length( uViewPos );
+  vec3 up = uViewPos / h;
+  float horizon = skSafeAcos( sqrt( h * h - SK_GROUND_R * SK_GROUND_R ) / h ) - 0.5 * SK_PI;
+  float altitude = adjV * 0.5 * SK_PI - horizon;
+  float ca = cos( altitude );
+  vec3 rayDir = vec3( ca * sin( azimuth ), sin( altitude ), -ca * cos( azimuth ) );
+
+  // The LUT frame puts the sun at azimuth 0 (along -Z).
+  vec3 sunDir = vec3( 0.0, sin( uSunAltitude ), -cos( uSunAltitude ) );
+  float cm = cos( uMoonAltitude );
+  vec3 moonDir = vec3( cm * sin( uMoonRelAz ), sin( uMoonAltitude ), -cm * cos( uMoonRelAz ) );
+
+  vec3 lum = skRaymarchSky( uViewPos, rayDir, sunDir, uSunIrradiance,
+                            moonDir, uMoonIrradiance, 40.0 );
+  fragColor = vec4( lum, 1.0 );
+}
+`,KM=`
+precision highp float;
+${Tr}
+${Yg}
+in vec2 vUv;
+layout(location = 0) out vec4 fragColor;
+uniform float uSunAltitude;
+
+void main() {
+  vec3 sunDir = vec3( 0.0, sin( uSunAltitude ), -cos( uSunAltitude ) );
+  bool horizonBand = vUv.x > 0.5;
+  vec3 sum = vec3( 0.0 );
+  float wsum = 0.0;
+  const int N = 64;
+  for ( int i = 0; i < N; i ++ ) {
+    // Fibonacci hemisphere.
+    float fi = ( float( i ) + 0.5 ) / float( N );
+    float phi = float( i ) * 2.39996323;
+    float ct = horizonBand ? mix( -0.12, 0.35, fi ) : sqrt( 1.0 - fi );
+    float st = sqrt( max( 0.0, 1.0 - ct * ct ) );
+    vec3 d = vec3( st * cos( phi ), ct, st * sin( phi ) );
+    float w = horizonBand ? 1.0 : max( 0.0, ct );
+    sum += skSkyView( d, sunDir ) * w;
+    wsum += w;
+  }
+  fragColor = vec4( sum / max( wsum, 1e-4 ), 1.0 );
+}
+`;class $M{constructor(t,e){this.renderer=t,this.transmittanceRt=VM(256,64,{name:"sky-transmittance"}),this.multiScatterRt=ko(32,32,{name:"sky-multiscatter"}),this.skyViewRt=ko(384,192,{name:"sky-view"}),this.ambientRt=ko(2,1,{name:"sky-ambient"}),this.skyViewRt.texture.wrapS=tn,e.uTransmittanceLut={value:this.transmittanceRt.texture},e.uMultiScatterLut={value:this.multiScatterRt.texture},e.uSkyViewLut={value:this.skyViewRt.texture},e.uSkyAmbientLut={value:this.ambientRt.texture},this.shared=e,this.transmittancePass=new ia("sky-transmittance",XM,{uMieScale:e.uMieScale,uViewPos:e.uViewPos}),this.multiScatterPass=new ia("sky-multiscatter",jM,{uMieScale:e.uMieScale,uViewPos:e.uViewPos,uTransmittanceLut:e.uTransmittanceLut}),this.skyViewPass=new ia("sky-view",YM,{uMieScale:e.uMieScale,uViewPos:e.uViewPos,uTransmittanceLut:e.uTransmittanceLut,uMultiScatterLut:e.uMultiScatterLut,uSunIrradiance:e.uSunIrradiance,uMoonIrradiance:e.uMoonIrradiance,uSunAltitude:e.uSunAltitude,uMoonAltitude:e.uMoonAltitude,uMoonRelAz:e.uMoonRelAz}),this.ambientPass=new ia("sky-ambient",KM,{uViewPos:e.uViewPos,uMieScale:e.uMieScale,uSkyViewLut:e.uSkyViewLut,uSunAltitude:e.uSunAltitude})}bakeStatic(){this.transmittancePass.render(this.renderer,this.transmittanceRt),this.multiScatterPass.render(this.renderer,this.multiScatterRt)}bakeSkyView(){this.skyViewPass.render(this.renderer,this.skyViewRt),this.ambientPass.render(this.renderer,this.ambientRt)}dispose(){this.transmittanceRt.dispose(),this.multiScatterRt.dispose(),this.skyViewRt.dispose(),this.ambientRt.dispose(),this.transmittancePass.dispose(),this.multiScatterPass.dispose(),this.skyViewPass.dispose(),this.ambientPass.dispose()}}const Kg=`
+#ifndef SKY_NOISE
+#define SKY_NOISE
+
+float skHash12( vec2 p ) {
+  vec3 p3 = fract( vec3( p.xyx ) * 0.1031 );
+  p3 += dot( p3, p3.yzx + 33.33 );
+  return fract( ( p3.x + p3.y ) * p3.z );
+}
+
+float skHash13( vec3 p ) {
+  p = fract( p * 0.1031 );
+  p += dot( p, p.yzx + 33.33 );
+  return fract( ( p.x + p.y ) * p.z );
+}
+
+vec3 skHash33( vec3 p ) {
+  p = fract( p * vec3( 0.1031, 0.11369, 0.13787 ) );
+  p += dot( p, p.yxz + 19.19 );
+  return fract( vec3( ( p.x + p.y ) * p.z, ( p.x + p.z ) * p.y, ( p.y + p.z ) * p.x ) );
+}
+
+/** Interleaved gradient noise (Jimenez) — the right dither for a raymarch. */
+float skIGN( vec2 p ) {
+  return fract( 52.9829189 * fract( dot( p, vec2( 0.06711056, 0.00583715 ) ) ) );
+}
+
+float skVal2( vec2 p ) {
+  vec2 i = floor( p ), f = fract( p );
+  f = f * f * ( 3.0 - 2.0 * f );
+  return mix( mix( skHash12( i ), skHash12( i + vec2( 1, 0 ) ), f.x ),
+              mix( skHash12( i + vec2( 0, 1 ) ), skHash12( i + vec2( 1, 1 ) ), f.x ), f.y );
+}
+
+float skVal3( vec3 p ) {
+  vec3 i = floor( p ), f = fract( p );
+  f = f * f * ( 3.0 - 2.0 * f );
+  return mix(
+    mix( mix( skHash13( i + vec3( 0, 0, 0 ) ), skHash13( i + vec3( 1, 0, 0 ) ), f.x ),
+         mix( skHash13( i + vec3( 0, 1, 0 ) ), skHash13( i + vec3( 1, 1, 0 ) ), f.x ), f.y ),
+    mix( mix( skHash13( i + vec3( 0, 0, 1 ) ), skHash13( i + vec3( 1, 0, 1 ) ), f.x ),
+         mix( skHash13( i + vec3( 0, 1, 1 ) ), skHash13( i + vec3( 1, 1, 1 ) ), f.x ), f.y ), f.z );
+}
+
+const mat2 SK_ROT = mat2( 0.8, 0.6, -0.6, 0.8 );
+
+float skFbm2( vec2 p, int oct ) {
+  float a = 0.5, s = 0.0, n = 0.0;
+  for ( int i = 0; i < oct; i ++ ) {
+    s += a * skVal2( p );
+    n += a;
+    p = SK_ROT * p * 2.04 + 7.13;
+    a *= 0.5;
+  }
+  return s / max( n, 1e-4 );
+}
+
+/** Ridged variant — fibrous cirrus streaks and wind-torn fog wisps. */
+float skRidge2( vec2 p, int oct ) {
+  float a = 0.5, s = 0.0, n = 0.0;
+  for ( int i = 0; i < oct; i ++ ) {
+    s += a * ( 1.0 - abs( skVal2( p ) * 2.0 - 1.0 ) );
+    n += a;
+    p = SK_ROT * p * 2.11 + 3.71;
+    a *= 0.52;
+  }
+  return s / max( n, 1e-4 );
+}
+
+float skFbm3( vec3 p, int oct ) {
+  float a = 0.5, s = 0.0, n = 0.0;
+  for ( int i = 0; i < oct; i ++ ) {
+    s += a * skVal3( p );
+    n += a;
+    p = p * 2.07 + vec3( 11.3, 5.1, 7.7 );
+    a *= 0.5;
+  }
+  return s / max( n, 1e-4 );
+}
+
+#endif
+`,ZM=`
+#ifndef SKY_STARS
+#define SKY_STARS
+
+uniform vec4 uStarParams;   // x brightness, y twinkle amount, z time, w milkyway gain
+uniform mat3 uCelestial;    // equatorial -> world; rotates the sky with the day
+
+/**
+ * How much of the blackbody hue survives.
+ *
+ * A star is a point source a couple of pixels wide, and a saturated point is not
+ * read as "a red giant", it is read as a stuck pixel or a dead sub-pixel on the
+ * monitor — which is exactly what the red-orange dots in the night frame were.
+ * Real naked-eye stars are close to white: even Betelgeuse is only a few percent
+ * off neutral once the eye has adapted. 0.11 holds the worst case (2600 K, whose
+ * normalised primaries are roughly 1.6 / 0.7 / 0.25) under 0.15 HSV saturation,
+ * which still tints a field of a thousand stars visibly without any of them
+ * reading as a coloured defect.
+ */
+const float SK_STAR_TINT = 0.11;
+
+/** Tanner Helland's blackbody fit, moved to linear light and normalised. */
+vec3 skBlackbody( float kelvin ) {
+  float t = clamp( kelvin, 1200.0, 40000.0 ) / 100.0;
+  float r, g, b;
+  if ( t <= 66.0 ) r = 1.0;
+  else r = clamp( 1.29293619 * pow( t - 60.0, -0.13320476 ), 0.0, 1.0 );
+  if ( t <= 66.0 ) g = clamp( 0.39008158 * log( t ) - 0.63184144, 0.0, 1.0 );
+  else g = clamp( 1.12989086 * pow( t - 60.0, -0.07551485 ), 0.0, 1.0 );
+  if ( t >= 66.0 ) b = 1.0;
+  else if ( t <= 19.0 ) b = 0.0;
+  else b = clamp( 0.54320679 * log( t - 10.0 ) - 1.19625409, 0.0, 1.0 );
+  vec3 c = pow( vec3( r, g, b ), vec3( 2.2 ) );
+  return c / max( 1e-4, dot( c, vec3( 0.2126, 0.7152, 0.0722 ) ) );
+}
+
+/** Kasten-Young relative airmass. 1 overhead, ~38 at the horizon. */
+float skAirmass( float cosZenith ) {
+  float z = degrees( acos( clamp( cosZenith, -1.0, 1.0 ) ) );
+  return 1.0 / ( max( cosZenith, 0.0 ) + 0.50572 * pow( max( 0.0, 96.07995 - z ), -1.6364 ) );
+}
+
+/**
+ * One star per grid cell of a 3D lattice sampled on the unit sphere. Because
+ * |dir * N| == N exactly, only one radial shell of cells is ever visited, so a
+ * single hash gives a stable star per direction with no neighbour search.
+ */
+vec3 skStarLayer( vec3 dir, float N, float keep, float gain, float seed,
+                  float sigma, float twinkle, float band ) {
+  vec3 cell = floor( dir * N ) + seed;
+  vec3 h = skHash33( cell );
+  float exist = step( 1.0 - keep, h.x );
+  if ( exist < 0.5 ) return vec3( 0.0 );
+
+  vec3 h2 = skHash33( cell + 91.7 );
+  vec3 starDir = normalize( floor( dir * N ) + 0.5 + ( h2 - 0.5 ) * 0.94 );
+
+  // sin(separation) — cheaper and better conditioned than acos near zero.
+  float d = length( cross( dir, starDir ) );
+
+  // Magnitude power law: most cells hold something you would never notice.
+  float mag = pow( h.y, 5.5 );
+  float flux = gain * ( mag + 0.0016 ) * ( 1.0 + band * 1.4 );
+
+  // Core plus a faint diffraction skirt; the skirt is what makes the bright
+  // ones read as stars rather than as dead pixels once bloom gets to them.
+  float core = exp( -( d * d ) / ( sigma * sigma ) );
+  float skirt = 0.055 * exp( -d / ( sigma * 3.4 ) );
+
+  float tw = 1.0 + twinkle * ( sin( uStarParams.z * ( 7.0 + 19.0 * h.z ) + h2.x * 43.0 )
+                             + 0.6 * sin( uStarParams.z * ( 23.0 + 31.0 * h2.y ) ) );
+  float kelvin = mix( 2600.0, 22000.0, pow( h2.z, 1.9 ) );
+  // Normalised blackbody, pulled back toward white — see SK_STAR_TINT.
+  vec3 tint = mix( vec3( 1.0 ), skBlackbody( kelvin ), SK_STAR_TINT );
+  return tint * ( flux * ( core + skirt ) * max( 0.0, tw ) );
+}
+
+/** Galactic plane: pole and centre direction, in the equatorial frame. */
+const vec3 SK_GAL_POLE = vec3( -0.4288, 0.7146, 0.5522 );
+const vec3 SK_GAL_CORE = vec3( 0.7549, -0.2154, -0.6194 );
+
+vec3 skMilkyWay( vec3 eq, float gain, int oct ) {
+  float lat = dot( eq, SK_GAL_POLE );
+  // Two nested bands: a tight bright spine inside a broad halo.
+  float spine = exp( -pow( abs( lat ) / 0.048, 1.55 ) );
+  float halo = exp( -pow( abs( lat ) / 0.165, 1.30 ) );
+  float band = clamp( 0.78 * spine + 0.48 * halo, 0.0, 1.4 );
+  if ( band < 0.002 ) return vec3( 0.0 );
+
+  float toCore = dot( eq, SK_GAL_CORE );
+  float bulge = exp( -pow( max( 0.0, 1.0 - toCore ) / 0.22, 1.1 ) );
+
+  vec3 q = eq * 9.0;
+  float clumps = skFbm3( q, oct );
+  // Dust lanes: a second, sharper field subtracted, biased to the spine.
+  float dust = skFbm3( eq * 21.0 + 3.7, max( 2, oct - 1 ) );
+  float lane = smoothstep( 0.36, 0.68, dust ) * spine;
+
+  // High clump contrast is what separates a galaxy from a painted stripe: the
+  // real band is mostly gaps, with a few very bright knots of unresolved stars.
+  float density = band * ( 0.20 + 1.35 * clumps * clumps ) * ( 1.0 - 0.80 * lane );
+  density *= 1.0 + 2.6 * bulge;
+
+  // Warm toward the obscured core, cool blue-white in the outer arms.
+  vec3 tint = mix( vec3( 0.72, 0.80, 1.06 ), vec3( 1.10, 0.86, 0.62 ), bulge * 0.85 );
+  return tint * ( density * gain );
+}
+
+/**
+ * Full night sky in scene radiance units.
+ * dir is a world-space direction; uCelestial takes it to the fixed sky.
+ */
+vec3 skNightSky( vec3 dir, int mwOctaves, bool points ) {
+  vec3 eq = uCelestial * dir;
+  float am = skAirmass( dir.y );
+  // Extinction ~0.16 mag/airmass in V, plus the horizon murk of a real city.
+  float ext = exp( -0.145 * am ) * smoothstep( -0.03, 0.10, dir.y );
+
+  float mw = clamp( dot( eq, SK_GAL_POLE ), -1.0, 1.0 );
+  float band = exp( -pow( abs( mw ) / 0.16, 1.4 ) );
+
+  vec3 col = skMilkyWay( eq, uStarParams.w, mwOctaves );
+
+  if ( points ) {
+    float tw = uStarParams.y * clamp( ( am - 1.0 ) * 0.16, 0.0, 0.85 );
+    // sigma is the Gaussian core radius in radians. At a 75-degree vertical fov
+    // over 1080 lines one pixel is 1.2e-3 rad, so anything under that lands
+    // inside a single pixel — and a single bright pixel is a stuck pixel, not a
+    // star. Every layer is now at least a pixel and a half across, which is also
+    // what lets TAA and the bloom prefilter treat it as image content instead of
+    // as a firefly to clamp away.
+    col += skStarLayer( eq, 21.0, 0.30, 1.00, 0.0, 0.00165, tw, band );
+    col += skStarLayer( eq, 43.0, 0.20, 0.34, 13.0, 0.00145, tw, band );
+    col += skStarLayer( eq, 87.0, 0.10, 0.11, 47.0, 0.00125, tw * 0.5, band * 2.2 );
+  }
+
+  // Airglow: real, faint, and greenish — it keeps the "empty" sky off zero.
+  col += vec3( 0.55, 1.0, 0.78 ) * 0.00030;
+
+  return col * ( uStarParams.x * ext );
+}
+
+#endif
+`,$g=`
+#ifndef SKY_CLOUDS
+#define SKY_CLOUDS
+
+// x coverage, y density, z detail gain, w time (seconds)
+uniform vec4 uCloudParams;
+// x cirrus coverage, y cirrus opacity, z wind x (km/s), w wind z (km/s)
+uniform vec4 uCloudParams2;
+
+const float SK_CUMULUS_KM = 1.5;
+const float SK_CIRRUS_KM = 7.8;
+
+/** Weather-scale coverage, in kilometres. Mirrored exactly on the CPU. */
+float skCloudMacro( vec2 p ) {
+  float a = sin( p.x * 0.412 + 0.7 ) * cos( p.y * 0.331 - 0.4 );
+  float b = sin( p.x * 0.173 - p.y * 0.209 + 1.9 );
+  float c = cos( p.x * 0.0871 + p.y * 0.1123 - 0.6 );
+  return clamp( 0.5 + 0.5 * ( 0.42 * a + 0.36 * b + 0.30 * c ), 0.0, 1.0 );
+}
+
+/**
+ * Ridged noise with a *parabolic* crest instead of an absolute-value one.
+ *
+ * skRidge2 in noise.js builds its ridge as 1 - |2v-1|, which has a crease at the
+ * crest: the derivative flips sign discontinuously, so any threshold applied to
+ * it produces a hairline. On the cumulus silhouette that crease is what makes the
+ * cauliflower edge, and it is right there. On an anisotropic field stretched
+ * across the sky it is a pen stroke, and a sky full of pen strokes was the second
+ * half of the cirrus problem — the first was where they pointed.
+ *
+ * 1 - (2v-1)^2 has the same crest lines and the same statistics but is C1 across
+ * them, so a fibre has a soft shoulder and a body several pixels wide. Two
+ * octaves only: the third would land near the pixel footprint again.
+ */
+float skSmoothRidge2( vec2 p, int oct ) {
+  float a = 0.62, s = 0.0, n = 0.0;
+  for ( int i = 0; i < oct; i ++ ) {
+    float v = skVal2( p ) * 2.0 - 1.0;
+    s += a * ( 1.0 - v * v );
+    n += a;
+    p = SK_ROT * p * 2.17 + 3.71;
+    a *= 0.45;
+  }
+  return s / max( n, 1e-4 );
+}
+
+/**
+ * One family of cirrus, p in kilometres on the deck.
+ *
+ * WHY THIS IS SHAPED THE WAY IT IS — the starburst, and its two successors.
+ *
+ * The deck is sampled where the view ray meets a shell 7.8 km up, so the map from
+ * screen space to p is a projection whose derivative grows without bound as the
+ * ray flattens toward that shell. Three separate artefacts came out of that, and
+ * each one had to be answered by a different part of this function:
+ *
+ *  1  STARBURST. A field with a locally constant direction is a family of
+ *     parallel lines, and parallel lines on a plane converge on a vanishing
+ *     point. With one rotation field at one turn per 80 km the direction was
+ *     effectively constant across a 90-degree frame, so every fibre pointed at
+ *     the same spot just above the top of the hero framing.
+ *  2  FINGERPRINT. Rotating the anisotropy frame by a full +-1.45 rad instead
+ *     removes the vanishing point and replaces it with something worse: the
+ *     direction field winds all the way round its own critical points, so the
+ *     fibres close into concentric whorls and the sky reads as wood grain.
+ *  3  BRUSH STROKES. Even a bounded wander leaves the *silhouette* of the layer
+ *     defined by a level set of a ridged field, and a level set is a continuous
+ *     curve that runs through as many cells as it likes. That is why raising the
+ *     noise frequency only ever made the strokes thinner, never shorter.
+ *
+ * The answer to all three is to stop letting the anisotropic field decide *where
+ * there is cloud*. What survives here is:
+ *
+ *   silhouette   an isotropic warped fbm, thresholded — the same construction as
+ *                the cumulus deck, so it reads as cloud and cannot smear, streak
+ *                or whorl no matter how the projection stretches it;
+ *   fibre        an anisotropic smooth-ridge field that only *modulates* that
+ *                silhouette between 0.35 and 1.2 of its density. Cirrus texture
+ *                is a brightness variation inside the patch, which is what it is
+ *                in a photograph too;
+ *   bearing      per family, +-0.55 rad of wander, and the two families in
+ *                skClouds sit 75 degrees apart so no single direction owns the
+ *                frame;
+ *   fronts       a patch mask at ~8 km, so the layer arrives in bands with clean
+ *                blue between them rather than as an even glaze.
+ */
+float skCirrusBand( vec2 p, float cov, float seed, float base,
+                    float rotKmInv, float lenKM, float aniso, int oct ) {
+  // ---- silhouette: isotropic, so it can never streak --------------------
+  vec2 w = vec2( skVal2( p * 0.30 + seed ), skVal2( p * 0.30 + seed + 11.7 ) ) - 0.5;
+  float n = skFbm2( p * 0.78 + w * 1.3, oct + 1 );
+  float d = smoothstep( 1.0 - cov * 1.65, 1.0 - cov * 0.60, n );
+  if ( d <= 0.001 ) return 0.0;
+
+  // ---- fronts ------------------------------------------------------------
+  d *= smoothstep( 0.36, 0.66, skVal2( p * 0.12 + seed * 0.5 ) );
+  if ( d <= 0.001 ) return 0.0;
+
+  // ---- fibre texture inside the patch ------------------------------------
+  float ang = base + ( skVal2( p * rotKmInv + seed ) - 0.5 ) * 1.1;
+  float ca = cos( ang ), sa = sin( ang );
+  vec2 pr = vec2( p.x * ca - p.y * sa, p.x * sa + p.y * ca );
+  float fa = 1.0 / max( 0.4, lenKM );
+  vec2 q = vec2( pr.x * fa, pr.y * fa * aniso );
+  float f = skSmoothRidge2( q + vec2( seed ), oct );
+  // Never zeroes the patch and never doubles it: the fibres are a texture on the
+  // cloud, not the cloud. The mean is close to 1 so coverage stays where the
+  // threshold above put it.
+  return d * ( 0.35 + 1.05 * f );
+}
+
+/** Cumulus optical thickness at a point on the deck, p in kilometres. */
+float skCumulusDensity( vec2 p, int oct ) {
+  float macro = skCloudMacro( p * 0.22 );
+  float cov = clamp( uCloudParams.x * ( 0.34 + 1.30 * macro ), 0.0, 1.0 );
+
+  // Domain warp before the shape fbm. Straight fbm gives evenly sized blobs;
+  // warping it stretches some and pinches others, which is what makes a cloud
+  // field read as weather rather than as noise.
+  vec2 w = vec2( skVal2( p * 0.42 ), skVal2( p * 0.42 + 19.7 ) ) - 0.5;
+  float n = skFbm2( p * 1.25 + w * 1.6, oct );
+
+  // Erode from below: coverage sets the threshold, the remainder is thickness.
+  float d = smoothstep( 1.0 - cov, 1.0 - cov * 0.34 + 0.05, n );
+
+  // Cauliflower the edges with a higher-frequency ridge, so the silhouette is
+  // not just a smooth level set of the base noise.
+  if ( d > 0.0 && d < 0.94 && oct > 3 ) {
+    float e = skRidge2( p * 5.3 + w * 2.0, 3 );
+    d = clamp( d - ( 1.0 - d ) * ( 0.50 - 0.50 * e ), 0.0, 1.0 );
+  }
+  return d;
+}
+
+/**
+ * Fraction of sunlight reaching a point on the cumulus deck. Marched along the
+ * sun's horizontal projection; the low-sun path through the slab is longer,
+ * which is why sunset clouds go dark grey underneath and blaze at the top.
+ */
+float skCumulusLight( vec2 p, vec3 lightDir, int oct ) {
+  vec2 step2 = normalize( lightDir.xz + vec2( 1e-4 ) ) * ( 0.20 / max( 0.12, abs( lightDir.y ) ) );
+  float tau = 0.0;
+  tau += skCumulusDensity( p + step2 * 1.0, oct ) * 1.0;
+  tau += skCumulusDensity( p + step2 * 2.4, oct ) * 0.7;
+  tau += skCumulusDensity( p + step2 * 4.6, oct ) * 0.4;
+  return exp( -tau * uCloudParams.y * 2.1 );
+}
+
+/**
+ * Composite both decks for a view ray.
+ * Returns rgb = radiance, a = coverage (0 lets the sky through untouched).
+ *
+ * sunLow/sunHigh are the solar irradiance already extinguished down to each
+ * deck's own altitude, so the two layers are lit by genuinely different spectra.
+ */
+vec4 skClouds( vec3 rayDir,
+               vec3 sunDir, vec3 sunLow, vec3 sunHigh,
+               vec3 moonDir, vec3 moonLow, vec3 moonHigh,
+               vec3 ambient, int quality ) {
+
+  if ( rayDir.y < -0.008 ) return vec4( 0.0 );
+
+  int octD = quality > 0 ? 6 : 3;
+  int octL = quality > 0 ? 4 : 2;
+  // Cirrus gets two octaves where the cumulus gets six, and that is not a
+  // performance decision. This deck is twenty kilometres away, where one screen
+  // pixel covers thirty metres of it; an octave finer than that is pure aliasing,
+  // and aliasing on an anisotropic field is precisely what a hairline smear is.
+  int octC = 2;
+  float t = uCloudParams.w;
+  vec2 wind = vec2( uCloudParams2.z, uCloudParams2.w ) * t;
+
+  float cosSun = dot( rayDir, sunDir );
+  float cosMoon = dot( rayDir, moonDir );
+
+  // ---- cirrus, 7.8 km ----------------------------------------------------
+  float tc = skRaySphere( uViewPos, rayDir, SK_GROUND_R + SK_CIRRUS_KM * 0.001 );
+  vec4 cirrus = vec4( 0.0 );
+  if ( tc > 0.0 ) {
+    float distKM = tc * 1000.0;
+
+    // Distance fade, and it is doing antialiasing as much as atmospherics.
+    // Below ~15 degrees of elevation this shell is 30 km away or more, and the
+    // derivative d(distance)/d(elevation) there is over 400 m per screen pixel —
+    // several times the width of a fibre. Nothing sampled per-pixel can survive
+    // that: the field aliases into hairline radial striations that all point at
+    // the same place on screen, which is one half of what read as a starburst
+    // (the other half was the field's own constant direction). Ending the layer
+    // at 90 km rather than 260 km removes the entire undersampled band, and a
+    // real cirrus deck does fade into the horizon haze at exactly that range.
+    float fade = 1.0 - smoothstep( 22.0, 90.0, distKM );
+
+    // Above ~35 degrees of elevation the same derivative blows up the other way:
+    // a kilometre on the deck covers a large and rapidly changing solid angle, so
+    // whatever the field does it smears radially through the zenith. Keep the
+    // layer to a third of its opacity up there — high cirrus overhead is thin
+    // anyway, and those smears were the loudest thing in the night frame.
+    fade *= 1.0 - 0.66 * smoothstep( 0.55, 0.85, rayDir.y );
+
+    if ( fade > 0.004 ) {
+      vec2 p = ( uViewPos + rayDir * tc ).xz * 1000.0 + wind * 2.4;
+      float cov = clamp( uCloudParams2.x, 0.0, 1.0 );
+
+      // Two decorrelated families: different seeds, different patch masks,
+      // different bearings (0.24 and 1.56 rad — 75 degrees apart), different
+      // rotation frequencies (one turn per 7.4 km and per 10.2 km) and different
+      // fibre scales. Each square of sky is dominated by one of them, which is how
+      // a real cirrus front looks, but the *frame* always contains both — and two
+      // families 75 degrees apart cannot share a vanishing point.
+      float d1 = skCirrusBand( p, cov, 0.0, 0.24, 0.135, 1.5, 4.0, octC );
+      float d2 = skCirrusBand( p + 137.4, cov * 0.92, 4.7, 1.56, 0.098, 2.0, 3.4, octC );
+      float d = 1.0 - ( 1.0 - d1 ) * ( 1.0 - d2 * 0.85 );
+
+      // Optically thin: even a solid-looking cirrus front only takes about two
+      // thirds of the sky behind it.
+      float a = clamp( d * uCloudParams2.y * fade, 0.0, 0.70 );
+
+      // Optically thin: mostly forward scatter plus whatever the sky gives back.
+      // Cirrus sit above most of the aerosol, so they keep far more blue than
+      // the cumulus below them — which is exactly why a sunset goes pink up high
+      // and orange-grey lower down.
+      float fwd = skHG( cosSun, 0.74 ) * 3.2 + 0.60;
+      vec3 col = ( sunHigh * fwd + moonHigh * ( skHG( cosMoon, 0.68 ) * 2.8 + 0.55 ) )
+                 / SK_PI + ambient * 0.85;
+      cirrus = vec4( col, a );
+    }
+  }
+
+  // ---- cumulus, 1.5 km ---------------------------------------------------
+  float tk = skRaySphere( uViewPos, rayDir, SK_GROUND_R + SK_CUMULUS_KM * 0.001 );
+  vec4 cumulus = vec4( 0.0 );
+  if ( tk > 0.0 ) {
+    float distKM = tk * 1000.0;
+    float fade = 1.0 - smoothstep( 14.0, 130.0, distKM );
+    if ( fade > 0.004 ) {
+      vec2 p0 = ( uViewPos + rayDir * tk ).xz * 1000.0 + wind;
+
+      // Fake vertical extent. A cumulus is several hundred metres tall;
+      // sampling a flat deck once gives a decal. So: probe the base, shift the
+      // sample along the view ray by the height the cloud would have there, and
+      // probe again. The result parallaxes — tops lean away from the camera,
+      // bases toward it — which is what gives the silhouette any depth at all.
+      float dBase = skCumulusDensity( p0, octD );
+      vec2 shear = rayDir.xz * ( 0.85 * dBase / max( 0.10, rayDir.y ) );
+      float d = max( skCumulusDensity( p0 + shear, octD ), dBase * 0.55 );
+
+      if ( d > 0.003 ) {
+        vec2 p = p0 + shear;
+        float lit = skCumulusLight( p, sunDir, octL );
+        float litM = skCumulusLight( p, moonDir, octL );
+
+        // Grazing rays travel further through a deck — but only up to a point,
+        // past which the deck is simply far away and the haze wins.
+        float graze = clamp( 0.09 / ( abs( rayDir.y ) + 0.09 ), 0.0, 1.0 );
+        float thick = d * uCloudParams.y * mix( 1.0, 1.7, graze );
+        float a = clamp( 1.0 - exp( -thick * 3.4 ), 0.0, 1.0 ) * fade;
+
+        // Powder (dark-edge) term. Note what it does and does not do: it is
+        // small where the slab is optically thin, so it darkens the *thin lit
+        // edge* relative to the deep lit core, which is the multiple-scattering
+        // deficit a real cloud shows against the sun. It is NOT what darkens
+        // bases — that is skCumulusLight above, whose sun path through the slab
+        // is what puts the underside in shadow. At density 1.9 the top-to-base
+        // spread inside a cloud body measures ~3.5 stops (it was the same spread
+        // at 1.4, but on a deck so continuous that almost nothing in frame was a
+        // lit top, which is why the shots read flat).
+        float powder = 1.0 - exp( -thick * 5.5 );
+        float rim = pow( clamp( 1.0 - d, 0.0, 1.0 ), 2.0 );
+
+        float fwdS = skHG( cosSun, 0.62 ) * 4.0 + 0.62;
+        float fwdM = skHG( cosMoon, 0.60 ) * 3.4 + 0.55;
+
+        vec3 direct = sunLow * ( lit * ( 0.55 + 0.45 * powder ) * fwdS + rim * lit * 0.9 );
+        direct += moonLow * ( litM * ( 0.55 + 0.45 * powder ) * fwdM + rim * litM * 0.9 );
+        // Sky fills the shaded sides; the deck's own base steals some of it.
+        vec3 fill = ambient * mix( 0.50, 1.5, clamp( d * 1.6, 0.0, 1.0 ) )
+                            * ( 0.32 + 0.68 * lit );
+        cumulus = vec4( direct / SK_PI + fill, a );
+      }
+    }
+  }
+
+  // Cumulus is below cirrus, so it goes on top from the ground's point of view.
+  float outA = cirrus.a + cumulus.a * ( 1.0 - cirrus.a );
+  vec3 outC = cirrus.rgb * cirrus.a + cumulus.rgb * cumulus.a * ( 1.0 - cirrus.a );
+  if ( outA > 1e-5 ) outC /= outA;
+  return vec4( outC, outA );
+}
+
+/**
+ * Sunlight reaching the ground through the cumulus deck, for a world XZ point.
+ * The volumetric fog uses this so shafts carry the cloud pattern; the sun's
+ * DirectionalLight uses the CPU twin of skCloudMacro for the same reason.
+ */
+float skCloudShadow( vec2 worldXZ, vec3 sunDir ) {
+  // Walk from the ground point up to the deck along the sun direction. sunDir
+  // is unit, so the horizontal offset is just sunDir.xz scaled by the slope.
+  vec2 p = worldXZ * 0.001 + sunDir.xz * ( SK_CUMULUS_KM / max( 0.10, sunDir.y ) )
+           + vec2( uCloudParams2.z, uCloudParams2.w ) * uCloudParams.w;
+  float d = skCumulusDensity( p, 4 );
+  return exp( -d * uCloudParams.y * 2.4 );
+}
+
+#endif
+`;function JM(o,t){const e=Math.sin(o*.412+.7)*Math.cos(t*.331-.4),s=Math.sin(o*.173-t*.209+1.9),i=Math.cos(o*.0871+t*.1123-.6);return Math.min(1,Math.max(0,.5+.5*(.42*e+.36*s+.3*i)))}function QM(o,t,e,s){const n=1.5/Math.max(.1,e.y),a=o*.001+e.x*n+s.windX*s.time,r=t*.001+e.z*n+s.windZ*s.time,c=JM(a*.22,r*.22),h=Math.min(1,Math.max(0,s.coverage*(.34+1.3*c))),l=Math.min(1,Math.max(0,(h-.42)/.62));return Math.exp(-l*s.density*1.55)}const Zg=`
+${Tr}
+${of}
+${Yg}
+${Kg}
+${ZM}
+${$g}
+
+uniform vec3 uSunDir;
+uniform vec3 uMoonDir;
+uniform vec3 uSunIrradiance;      // scene light units, at the ground
+uniform vec3 uMoonIrradiance;
+uniform vec3 uSunDiscRadiance;    // radiance of the disc before extinction
+uniform vec3 uMoonDiscRadiance;
+uniform vec4 uDisc;               // x sun ang. radius, y moon ang. radius,
+                                  // z sun draw scale, w moon draw scale
+uniform vec3 uGroundAlbedo;
+uniform float uHorizonMurk;       // city haze piled up at eye level
+uniform vec2 uSkyRolloff;         // x knee (scene radiance), y overshoot room
+
+float owSkLum( vec3 c ) { return dot( c, vec3( 0.2126, 0.7152, 0.0722 ) ); }
+
+/** 2x1: texel 0 = cosine-weighted sky average, texel 1 = horizon band average. */
+uniform sampler2D uSkyAmbientLut;
+
+vec3 skAmbientSky() { return texture( uSkyAmbientLut, vec2( 0.25, 0.5 ) ).rgb; }
+vec3 skAmbientHorizon() { return texture( uSkyAmbientLut, vec2( 0.75, 0.5 ) ).rgb; }
+
+/**
+ * Radiance of the solar disc, limb darkened. The exponents are the per-channel
+ * Hosek-Wilkie limb coefficients: blue falls off fastest, which is why the rim
+ * of a low sun is orange while the centre stays white.
+ */
+vec3 skSunDisc( vec3 rayDir, float theta ) {
+  float R = uDisc.x * uDisc.z;
+  float aa = max( 1.0e-6, fwidth( theta ) );
+  float cover = smoothstep( R + aa, R - aa, theta );
+  if ( cover <= 0.0 ) return vec3( 0.0 );
+  float r = clamp( theta / R, 0.0, 1.0 );
+  float mu = sqrt( max( 0.0, 1.0 - r * r ) );
+  vec3 limb = pow( vec3( mu ), vec3( 0.32, 0.44, 0.58 ) );
+  // Enlarging the disc for readability must not add energy, so divide by the
+  // area factor; bloom then behaves the same as it would at true angular size.
+  return uSunDiscRadiance * limb * cover * skTransmittance( uViewPos, uSunDir )
+         / ( uDisc.z * uDisc.z );
+}
+
+/**
+ * Circumsolar aureole — the bright white halo that surrounds a real sun out to
+ * ten or fifteen degrees.
+ *
+ * The sky-view LUT is 384x192, so one texel spans about a degree of azimuth.
+ * The Mie phase function at g = 0.8 puts most of its energy inside five
+ * degrees, and bilinear interpolation of a one-degree grid destroys exactly
+ * that peak — which is why a LUT-based Hillaire sky renders a sun as a hard
+ * white dot pasted on flat blue. This adds the missing energy back
+ * analytically: the aerosol optical depth along the view ray times the *excess*
+ * of the Mie phase over its value at the cutoff angle, so the term is
+ * continuous at the edge, vanishes when turbidity goes to zero, and reddens
+ * with the sun because it is driven by the same transmittance as everything
+ * else. It is a scattering integral, not a lens flare.
+ */
+vec3 skAureole( vec3 rayDir, vec3 lightDir, vec3 irradiance, float cosTheta ) {
+  const float CUT = 0.9135; // cos(24 degrees)
+  if ( cosTheta <= CUT ) return vec3( 0.0 );
+  // Aerosol column along the ray: sigma_s * H / cos(zenith), floored so a ray
+  // at the horizon does not blow up. The floor is small because the aureole of a
+  // *low* sun is the whole point: that is the ramp from the amber core out to
+  // eight or ten degrees that makes a sunset read as a sunset.
+  float mieOd = SK_MIE_S * uMieScale * 0.0012 / max( 0.055, rayDir.y + 0.055 );
+  float excess = max( 0.0, skMiePhase( cosTheta ) - skMiePhase( CUT ) );
+  // 4.2: the LUT holds a bilinear smear of this peak across a one-degree grid,
+  // and this restores what that interpolation threw away. The coefficient is the
+  // one number in the sky that is chosen by eye rather than derived, because what
+  // it is correcting is a sampling error, not a physical quantity — it is set so
+  // the aureole is about a stop over the sky it sits in at eight degrees out,
+  // which is what a photograph of a low sun shows. It carries the sun's own
+  // reddened spectrum through skTransmittance, so the ramp is amber at 19h and
+  // white at noon without a single hand-picked colour anywhere.
+  return irradiance * skTransmittance( uViewPos, rayDir ) * ( excess * mieOd * 4.2 );
+}
+
+/**
+ * Highlight roll-off for the sky, and only for the sky.
+ *
+ * At four degrees of solar elevation the aerosol forward peak puts the western
+ * horizon three to four stops over the street it is lighting. The street is what
+ * the meter is set for, so the whole sky above it lands on the flat top of the
+ * tone curve: one achromatic plateau, no Rayleigh column, no transition band, no
+ * gradient at all — which is exactly what the 19:20 frame was.
+ *
+ * This is the sky's own shoulder, applied before the discs. A Reinhard knee on
+ * LUMINANCE with the chromaticity carried through unchanged, so what comes back
+ * is compressed in level but identical in hue: the peach-to-crimson ramp
+ * survives instead of desaturating to white the way a per-channel clamp would.
+ * The knee is published as a fraction of the beam's own luminance (see
+ * SkySystem._updateCelestial), which makes it exposure-invariant — autoexposure
+ * follows the beam, so a knee that follows the beam lands at the same code value
+ * at every time of day, and a daylight sky, which never reaches it, is untouched.
+ *
+ *   uSkyRolloff.x  knee, in scene radiance units
+ *   uSkyRolloff.y  compression exponent above the knee (1 = none, 0.38 = ~2.6:1)
+ */
+vec3 skRolloff( vec3 col ) {
+  float knee = uSkyRolloff.x;
+  if ( knee <= 0.0 ) return col;
+  float l = max( owSkLum( col ), 1.0e-6 );
+  if ( l <= knee ) return col;
+  // POWER compressor, not a Reinhard knee. The Reinhard form asymptotes at
+  // knee * (1 + room), which is a hard ceiling: everything from eight degrees
+  // off the sun out to the far horizon piles onto the same value and the sunset
+  // sky comes back as one cream plateau — the very artefact the roll-off exists
+  // to prevent. x^p has no ceiling, so a 40:1 overshoot still comes out as a
+  // 4:1 gradient and the peach-to-crimson ramp survives all the way in to the
+  // aureole, while the disc (four decades over) still clips and blooms.
+  float p = uSkyRolloff.y;
+  return col * ( pow( l / knee, p ) * knee / l );
+}
+
+vec3 skMoonDisc( vec3 rayDir, float theta, int oct ) {
+  float R = uDisc.y * uDisc.w;
+  if ( theta > R * 1.6 ) return vec3( 0.0 );
+
+  vec3 ref = abs( uMoonDir.y ) > 0.97 ? vec3( 0.0, 0.0, 1.0 ) : vec3( 0.0, 1.0, 0.0 );
+  vec3 mr = normalize( cross( ref, uMoonDir ) );
+  vec3 mu3 = cross( uMoonDir, mr );
+
+  // Gnomonic projection is exact enough over a quarter of a degree.
+  vec2 p = vec2( dot( rayDir, mr ), dot( rayDir, mu3 ) ) / R;
+  float r2 = dot( p, p );
+  // Two pixels of edge, not one: the disc is six stops over the tonemap knee,
+  // so a one-pixel edge leaves a dotted rim once TAA and the sharpen filter
+  // have had a go at it.
+  float aa = max( 1.0e-4, 1.9 * fwidth( r2 ) );
+  float cover = smoothstep( 1.0 + aa, 1.0 - aa, r2 );
+  if ( cover <= 0.0 ) return vec3( 0.0 );
+
+  vec3 n = normalize( mr * p.x + mu3 * p.y - uMoonDir * sqrt( max( 0.0, 1.0 - min( r2, 1.0 ) ) ) );
+
+  // Maria are basalt floods over anorthositic highlands: albedo 0.06 vs 0.14.
+  float highlands = skFbm3( n * 6.5, oct );
+  float maria = smoothstep( 0.44, 0.63, skFbm3( n * 2.1 + 5.0, max( 2, oct - 1 ) ) );
+  float albedo = mix( 0.105, 0.155, highlands ) * mix( 1.0, 0.52, maria );
+
+  float NdL = max( 0.0, dot( n, uSunDir ) );
+  // Lunar regolith backscatters hard: the disc is nearly flat right up to the
+  // terminator, which a Lambert cosine gets badly wrong.
+  float shade = pow( NdL, 0.42 );
+  float earthshine = 0.014;
+
+  return uMoonDiscRadiance * ( albedo / 0.13 ) * ( shade + earthshine ) * cover;
+}
+
+/**
+ * @param rayDir  normalised world direction
+ * @param quality 1 = screen, 0 = environment map (fewer octaves, no star points)
+ */
+vec3 skSample( vec3 rayDir, int quality ) {
+  vec3 ambSky = skAmbientSky();
+  vec3 ambHor = skAmbientHorizon();
+
+  vec3 col = skSkyView( rayDir, uSunDir );
+
+  float cosS = dot( rayDir, uSunDir );
+  float cosM = dot( rayDir, uMoonDir );
+  float thetaS = skSafeAcos( cosS );
+  float thetaM = skSafeAcos( cosM );
+
+  // Aureoles go in before the discs so the discs sit *inside* their own glow.
+  // Both are driven by the same irradiances that light the scattering, so the
+  // lunar halo ends up the same *fraction* of the moonlit sky as the solar
+  // aureole is of the daylit sky — it scales with the night's exposure for free.
+  col += skAureole( rayDir, uSunDir, uSunIrradiance, cosS );
+  col += skAureole( rayDir, uMoonDir, uMoonIrradiance, cosM );
+
+  // ---- clouds -------------------------------------------------------------
+  // The two decks sit at very different altitudes, so they see very different
+  // solar spectra: the cumulus at 1.5 km looks through nearly the whole aerosol
+  // column while the cirrus at 7.8 km is above most of it. Sampling the
+  // transmittance LUT at each deck's own altitude is what makes a sunset read
+  // as pink cirrus over orange-grey cumulus instead of one flat orange wash.
+  vec3 pLow  = vec3( 0.0, SK_GROUND_R + 0.0015, 0.0 );
+  vec3 pHigh = vec3( 0.0, SK_GROUND_R + 0.0078, 0.0 );
+  vec3 sunLow   = uSunIrradiance  * skTransmittance( pLow,  uSunDir );
+  vec3 sunHigh  = uSunIrradiance  * skTransmittance( pHigh, uSunDir );
+  vec3 moonLow  = uMoonIrradiance * skTransmittance( pLow,  uMoonDir );
+  vec3 moonHigh = uMoonIrradiance * skTransmittance( pHigh, uMoonDir );
+  vec4 cl = skClouds( rayDir, uSunDir, sunLow, sunHigh,
+                      uMoonDir, moonLow, moonHigh, ambSky, quality );
+
+  // ---- night sky, BEHIND the decks ---------------------------------------
+  // Stars have to be occluded by cloud. A star seen *through* an opaque cumulus
+  // is the single most obvious tell in a night frame, and it was visible here
+  // because the starfield was added to the sky before the decks were composited
+  // over it — an 0.6-alpha cloud still let 40% of the field through, and the
+  // deck's own radiance at night is so low that 40% of a star is still a star.
+  // The multiplier is above one because a deck that is optically thick enough to
+  // hide its own texture is thick enough to hide a point source completely.
+  vec3 night = skNightSky( rayDir, quality > 0 ? 5 : 3, quality > 0 );
+  col += night * ( 1.0 - clamp( cl.a * 1.9, 0.0, 1.0 ) );
+
+  if ( cl.a > 1.0e-4 ) {
+    // Aerial perspective on the decks themselves. A cloud twenty kilometres out
+    // is seen through twenty kilometres of air, so it loses contrast toward the
+    // radiance of the sky in front of it. Keyed off view elevation, which is
+    // what sets the path length to a deck of fixed altitude. skClouds has
+    // already faded its own alpha with distance; this fades the *colour*, which
+    // is what stops a low cloud bank reading as a cut-out.
+    float bleed = 1.0 - smoothstep( 0.0, 0.22, rayDir.y );
+    col = mix( col, mix( cl.rgb, col, bleed * 0.82 ), cl.a );
+  }
+
+  // ---- ground / below the horizon ----------------------------------------
+  if ( rayDir.y < 0.0 ) {
+    // First bounce off the street: this is what fills the lower hemisphere of
+    // the IBL and gives upward-facing surfaces their warm fill.
+    vec3 ground = uGroundAlbedo *
+      ( ambHor + uSunIrradiance * max( 0.0, uSunDir.y ) / SK_PI
+                + uMoonIrradiance * max( 0.0, uMoonDir.y ) / SK_PI );
+    col = mix( col, ground, smoothstep( 0.0, -0.22, rayDir.y ) );
+  }
+
+  // A real city horizon is never clean: dust and exhaust pile up in the first
+  // few degrees. Scaled by the sky's own brightness so it can never glow.
+  float murk = uHorizonMurk * exp( -abs( rayDir.y ) * 26.0 );
+  col = mix( col, ambHor * 1.15, clamp( murk, 0.0, 0.85 ) );
+
+  // ---- horizon roll-off ---------------------------------------------------
+  col = skRolloff( col );
+
+  // The discs go in AFTER the roll-off: they are supposed to clip and bloom,
+  // and they are the only thing in the sky that is.
+  if ( quality > 0 ) col += skSunDisc( rayDir, thetaS );
+  col += skMoonDisc( rayDir, thetaM, quality > 0 ? 4 : 2 );
+
+  return max( col, vec3( 0.0 ) );
+}
+`,tS=`
+uniform mat4 uInvProj;
+uniform mat4 uCamWorld;
+out vec3 vRay;
+void main() {
+  vec2 ndc = position.xy;
+  vec4 h = uInvProj * vec4( ndc, 1.0, 1.0 );
+  vec3 vd = h.xyz / h.w;
+  // Normalise onto the z = -1 plane: that quantity is linear in screen space,
+  // so interpolating it and normalising in the fragment shader is exact.
+  vd /= max( 1.0e-6, -vd.z );
+  vRay = mat3( uCamWorld ) * vd;
+  gl_Position = vec4( ndc, 1.0, 1.0 );
+}
+`,eS=`
+precision highp float;
+${Zg}
+in vec3 vRay;
+layout(location = 0) out vec4 fragColor;
+void main() {
+  fragColor = vec4( skSample( normalize( vRay ), 1 ), 1.0 );
+}
+`,sS=`
+precision highp float;
+${Zg}
+in vec2 vUv;
+layout(location = 0) out vec4 fragColor;
+void main() {
+  float az = ( vUv.x - 0.5 ) * 2.0 * SK_PI;
+  float lat = ( vUv.y - 0.5 ) * SK_PI;
+  float cl = cos( lat );
+  vec3 dir = vec3( cl * cos( az ), sin( lat ), cl * sin( az ) );
+  fragColor = vec4( skSample( normalize( dir ), 0 ), 1.0 );
+}
+`;class iS{constructor(t){this.uniforms={...t,uInvProj:{value:new bt},uCamWorld:{value:new bt}},this.material=new Ls({name:"sky-dome",uniforms:this.uniforms,vertexShader:tS,fragmentShader:eS,glslVersion:ro,side:ys,depthTest:!1,depthWrite:!1,blending:zi,fog:!1,toneMapped:!1}),this.mesh=new re(HM(),this.material),this.mesh.name="sky-dome",this.mesh.frustumCulled=!1,this.mesh.renderOrder=-1e4,this.mesh.matrixAutoUpdate=!1,this.mesh.userData.owNoPrepass=!0,this.mesh.userData.owNoShadow=!0;const e=this.uniforms;this.mesh.onBeforeRender=(s,i,n)=>{e.uInvProj.value.copy(n.projectionMatrixInverse),e.uCamWorld.value.copy(n.matrixWorld)},this.envMaterial=new Ls({name:"sky-env",uniforms:this.uniforms,vertexShader:qg,fragmentShader:sS,glslVersion:ro,depthTest:!1,depthWrite:!1,blending:zi})}dispose(){this.material.dispose(),this.envMaterial.dispose()}}const Jg=`
+${Tr}
+${Kg}
+${$g}
+
+uniform sampler2D uSkyAmbientLut;
+uniform mat4 uInvProj;
+uniform mat4 uCamWorld;
+uniform vec3 uCamPos;
+uniform vec4 uFog;      // x sigmaS, y 1/heightScale, z baseY, w maxDistance
+uniform vec4 uFog2;     // x sigmaE, y key boost, z ambient boost, w noise amount
+uniform vec3 uFogExt;   // per-channel extinction, for the analytic transmittance
+uniform vec4 uPhase;    // x g fwd, y g back, z back weight, w noise scale
+uniform vec3 uKeyDir;
+uniform vec3 uKeyIrr;
+uniform vec3 uFogDrift;
+
+/**
+ * Colour of the haze, as a function of the angle to the key.
+ *
+ * A single ambient colour for the whole frame is what "grey fog at sunset" is:
+ * one number cannot be both the amber the air takes on when you look into a low
+ * sun and the blue it takes on when you look away from it, so it ends up neither
+ * and every facade past 40 m converges on the same neutral value as the sky.
+ *
+ * The two texels of the ambient LUT are exactly the two ends of that axis — the
+ * cosine-weighted whole-sky average (cool, Rayleigh dominated) and the horizon
+ * band average (warm, aerosol dominated, and at 19h it *is* the sunset) — so the
+ * split costs one extra tap and no new tuning. On top of that the forward lobe
+ * carries the key's own transmitted spectrum, because the aerosol that produces
+ * it is being lit by the beam, not by the sky. Result: distance separates by hue.
+ */
+vec3 skFogAmbient( float cosKey ) {
+  vec3 cool = texture( uSkyAmbientLut, vec2( 0.25, 0.5 ) ).rgb;
+  vec3 hor = texture( uSkyAmbientLut, vec2( 0.75, 0.5 ) ).rgb;
+  vec3 keyHue = uKeyIrr / max( 1.0e-4, max( uKeyIrr.x, max( uKeyIrr.y, uKeyIrr.z ) ) );
+  // Squared so the warm half is genuinely centred on the sun rather than
+  // covering the whole sunward hemisphere.
+  float f = 0.5 + 0.5 * clamp( cosKey, -1.0, 1.0 );
+  vec3 warm = hor * mix( vec3( 1.0 ), keyHue, 0.55 ) * 1.3;
+  return mix( cool, warm, f * f );
+}
+
+/** Dual-lobe HG: a forward peak for the shafts, a broad back lobe so the fog
+ *  is still visible when the sun is behind you. Real aerosol does both. */
+float skFogPhase( float cosTheta ) {
+  return mix( skHG( cosTheta, uPhase.x ), skHG( cosTheta, uPhase.y ), uPhase.z );
+}
+
+/**
+ * The shaft gain (uFog2.y) applied to the *anisotropic excess only*.
+ *
+ * Multiplying the whole phase function by 2.6 also multiplies its isotropic
+ * floor, and that floor covers every pixel in the frame regardless of where the
+ * sun is — so the knob that was supposed to make shafts readable was really a
+ * 2.6x blue-grey veil over the whole image. Lifting only the part of the phase
+ * function that rises above 1/4pi leaves the forward peak (where a shaft
+ * actually is) within a percent of what it was, and drops the 90°-off-sun
+ * inscatter that produces the veil by the full gain.
+ *
+ *   iso + ( p - iso ) * g   ==   p + max( 0, p - iso ) * ( g - 1 )
+ *
+ * written the second way because the first goes *negative* in the side lobes,
+ * where this dual-lobe phase dips under 1/4pi.
+ */
+float skFogInscatterPhase( float cosTheta ) {
+  const float iso = 1.0 / ( 4.0 * SK_PI );
+  float p = skFogPhase( cosTheta );
+  return p + max( 0.0, p - iso ) * ( uFog2.y - 1.0 );
+}
+
+/**
+ * Near-field scattering ramp. Twelve metres of real air scatters nothing you
+ * could measure: with sigmaS at 4.4e-3 the honest contribution of the first
+ * 20 m was ~10% of a sunlit surface's radiance, laid flat over the near
+ * geometry — a wash on the weapon, the hands and every wall inside arm's reach.
+ * It exists because an exponential-height fog tuned for 200 m of street has to
+ * start somewhere; ramping it in over the first few metres removes it without
+ * touching the distance falloff that the tuning was for.
+ */
+float skFogNearRamp( float t ) {
+  return smoothstep( 0.0, 12.0, t );
+}
+
+/** Normalised density: 1 at the fog base, exponential above, wind-torn. */
+float skFogDensity( vec3 p ) {
+  float h = exp( -( p.y - uFog.z ) * uFog.y );
+  if ( uFog2.w <= 0.001 ) return h;
+  vec3 q = p * uPhase.w + uFogDrift;
+  float n = skVal3( q ) * 0.63 + skVal3( q * 2.71 + 5.1 ) * 0.37;
+  return h * mix( 1.0, 0.30 + 1.55 * n, uFog2.w );
+}
+
+/**
+ * Closed form of integral(0..t) exp(-(y-b)/H) ds along a ray. Exact, so the
+ * transmittance applied to geometry is smooth at full resolution — none of the
+ * banding you get from reusing a low-resolution marched alpha.
+ */
+float skHeightIntegral( float y0, float dy, float t ) {
+  float d0 = exp( -( y0 - uFog.z ) * uFog.y );
+  float x = dy * uFog.y * t;
+  if ( abs( x ) < 1.0e-4 ) return d0 * t;
+  return d0 * ( 1.0 - exp( -x ) ) / ( dy * uFog.y );
+}
+
+/** World ray through a uv, normalised onto the z = -1 plane before rotation. */
+void skRayFor( vec2 uv, out vec3 dir, out float rayLen ) {
+  vec4 h = uInvProj * vec4( uv * 2.0 - 1.0, 1.0, 1.0 );
+  vec3 vd = h.xyz / h.w;
+  vd /= max( 1.0e-6, -vd.z );
+  vec3 w = mat3( uCamWorld ) * vd;
+  rayLen = length( w );
+  dir = w / rayLen;
+}
+`,nS=`
+uniform highp sampler2DArray owCsmMaps;
+uniform mat4 owCsmMatrix[ OW_CASCADES ];
+uniform vec4 owCsmSplit;
+uniform vec4 owCsmRange;
+uniform vec4 owCsmTexel;
+uniform vec4 owCsmParams;
+uniform vec2 owCsmMapSize;
+
+vec2 skVogel( int i, int n, float phi ) {
+  float r = sqrt( ( float( i ) + 0.5 ) / float( n ) );
+  float theta = float( i ) * 2.39996323 + phi;
+  return vec2( cos( theta ), sin( theta ) ) * r;
+}
+
+/**
+ * Sun/moon visibility at a world point. Four Vogel taps: a volumetric sample is
+ * already averaged along the ray and then temporally accumulated, so paying for
+ * a full PCSS lookup per step would buy nothing.
+ */
+float skSunVisibility( vec3 wPos, float viewDepth, float rot ) {
+  if ( owCsmParams.x <= 0.0 ) return 1.0;
+  if ( viewDepth >= owCsmSplit[ OW_CASCADES - 1 ] ) return 1.0;
+
+  int c = OW_CASCADES - 1;
+  for ( int i = 0; i < OW_CASCADES; i ++ ) {
+    if ( viewDepth < owCsmSplit[ i ] ) { c = i; break; }
+  }
+
+  vec4 sc = owCsmMatrix[ c ] * vec4( wPos, 1.0 );
+  vec3 proj = sc.xyz / sc.w * 0.5 + 0.5;
+  if ( proj.z >= 1.0 || proj.z <= 0.0 ) return 1.0;
+  vec2 edge = min( proj.xy, 1.0 - proj.xy );
+  if ( min( edge.x, edge.y ) <= 0.0 ) return 1.0;
+
+  // No surface normal out here, so the bias is purely depth based; two texels
+  // of the cascade's own range is enough to stop shafts self-shadowing.
+  float recv = proj.z - ( owCsmTexel[ c ] * 2.2 ) / owCsmRange[ c ];
+  float r = owCsmMapSize.y * 1.6;
+  float s = 0.0;
+  for ( int i = 0; i < 4; i ++ ) {
+    vec2 o = skVogel( i, 4, rot * 6.2831853 ) * r;
+    s += step( recv, texture( owCsmMaps, vec3( proj.xy + o, float( c ) ) ).r );
+  }
+  return mix( 1.0, s * 0.25, owCsmParams.x );
+}
+`,oS=`
+precision highp float;
+${Jg}
+${nS}
+uniform sampler2D tDepth;
+uniform float uFrame;
+in vec2 vUv;
+layout(location = 0) out vec4 fragColor;
+
+void main() {
+  vec3 dir;
+  float rayLen;
+  skRayFor( vUv, dir, rayLen );
+
+  float depth = texture( tDepth, vUv ).r;
+  bool sky = depth <= 0.0;
+  float maxT = sky ? uFog.w : min( depth * rayLen, uFog.w );
+  if ( maxT <= 0.02 ) { fragColor = vec4( 0.0, 0.0, 0.0, 1.0 ); return; }
+
+  float dith = skIGN( gl_FragCoord.xy + uFrame * 5.588238 );
+  float cosKey = dot( dir, uKeyDir );
+  float phase = skFogInscatterPhase( cosKey );
+  vec3 ambient = skFogAmbient( cosKey ) * uFog2.z;
+
+  // Cloud shadow, twice per ray rather than once per step. skCloudShadow runs a
+  // four-octave fbm plus a three-octave ridge; at 56 steps that was over half
+  // the cost of the whole pass, to resolve a field whose features are hundreds
+  // of metres across along a ray at most 900 m long. Two taps and a lerp are
+  // visually indistinguishable and about 25x cheaper.
+  float cloudNear = skCloudShadow( uCamPos.xz, uKeyDir );
+  float cloudFar = skCloudShadow( ( uCamPos + dir * maxT ).xz, uKeyDir );
+
+  vec3 L = vec3( 0.0 );
+  float T = 1.0;
+  float prev = 0.0;
+
+  for ( int i = 0; i < VOL_STEPS; i ++ ) {
+    // Exponential distribution: shafts need centimetres near the camera and
+    // tens of metres out at the far plane.
+    float f = ( float( i ) + dith ) / float( VOL_STEPS );
+    float t = maxT * f * f * ( 3.0 - 2.0 * f ) * 0.35 + maxT * f * f * f * 0.65;
+    float dt = t - prev;
+    prev = t;
+    if ( dt <= 1.0e-5 ) continue;
+
+    vec3 wp = uCamPos + dir * t;
+    float dens = skFogDensity( wp );
+    if ( dens <= 1.0e-4 ) continue;
+
+    float sigmaS = uFog.x * dens * skFogNearRamp( t );
+    float sigmaE = max( 1.0e-7, uFog2.x * dens );
+
+    float vis = skSunVisibility( wp, t / rayLen, dith );
+    vis *= mix( cloudNear, cloudFar, f );
+
+    // Ambient occlusion proxy: a shadowed sample is either inside a building or
+    // behind one, and in both cases it sees far less sky than a lit sample. It
+    // is an approximation, but it is the difference between an interior reading
+    // as an interior and reading as a foggy field.
+    float ambOcc = 0.42 + 0.58 * vis;
+
+    // phase already carries the shaft gain on its anisotropic part only, so
+    // this is the forward lobe lifted and nothing else.
+    vec3 j = uKeyIrr * ( vis * phase ) + ambient * ambOcc;
+
+    float aT = exp( -sigmaE * dt );
+    L += T * j * sigmaS * ( 1.0 - aT ) / sigmaE;
+    T *= aT;
+    if ( T < 0.004 ) break;
+  }
+
+  fragColor = vec4( L, T );
+}
+`,aS=`
+precision highp float;
+uniform sampler2D tCurrent;
+uniform sampler2D tHistory;
+uniform sampler2D tVelocity;
+uniform vec2 uTexel;
+uniform float uBlend;
+in vec2 vUv;
+layout(location = 0) out vec4 fragColor;
+
+void main() {
+  vec4 cur = texture( tCurrent, vUv );
+  vec2 vel = texture( tVelocity, vUv ).rg;
+  vec2 huv = vUv - vel;
+
+  vec4 lo = cur, hi = cur;
+  for ( int i = 0; i < 9; i ++ ) {
+    if ( i == 4 ) continue;
+    vec2 o = vec2( float( i % 3 ) - 1.0, float( i / 3 ) - 1.0 ) * uTexel;
+    vec4 n = texture( tCurrent, vUv + o );
+    lo = min( lo, n );
+    hi = max( hi, n );
+  }
+  // Widen slightly: clamping hard to the 3x3 range throws away the very
+  // convergence the accumulation exists to buy.
+  vec4 c = 0.5 * ( lo + hi );
+  vec4 e = 0.5 * ( hi - lo ) * 1.6 + 1.0e-5;
+  vec4 his = clamp( texture( tHistory, huv ), c - e, c + e );
+
+  float w = uBlend;
+  if ( huv.x < 0.0 || huv.x > 1.0 || huv.y < 0.0 || huv.y > 1.0 ) w = 0.0;
+  fragColor = mix( cur, his, w );
+}
+`,rS=`
+precision highp float;
+${Jg}
+uniform sampler2D tColor;
+uniform sampler2D tVolume;
+uniform sampler2D tDepth;
+uniform vec2 uTexelHalf;
+in vec2 vUv;
+layout(location = 0) out vec4 fragColor;
+
+#ifndef VOL_ANALYTIC
+/** Depth-aware 4-tap upsample: bilinear weights times a depth-similarity
+ *  weight, which stops a bright shaft bleeding across a foreground silhouette. */
+vec3 skUpsample( vec2 uv, float depth ) {
+  vec2 hp = uv / uTexelHalf - 0.5;
+  vec2 base = floor( hp );
+  vec2 f = hp - base;
+  vec3 sum = vec3( 0.0 );
+  float wsum = 0.0;
+  for ( int i = 0; i < 4; i ++ ) {
+    vec2 o = vec2( float( i & 1 ), float( i >> 1 ) );
+    vec2 tuv = ( base + o + 0.5 ) * uTexelHalf;
+    float bw = ( o.x < 0.5 ? 1.0 - f.x : f.x ) * ( o.y < 0.5 ? 1.0 - f.y : f.y );
+    float d = texture( tDepth, tuv ).r;
+    float w = bw / ( 0.05 + abs( d - depth ) * 0.35 ) + 1.0e-5;
+    sum += texture( tVolume, tuv ).rgb * w;
+    wsum += w;
+  }
+  return sum / wsum;
+}
+#endif
+
+void main() {
+  vec3 color = texture( tColor, vUv ).rgb;
+  vec3 dir;
+  float rayLen;
+  skRayFor( vUv, dir, rayLen );
+
+  float depth = texture( tDepth, vUv ).r;
+  bool sky = depth <= 0.0;
+  float dist = sky ? uFog.w : min( depth * rayLen, uFog.w );
+
+  // Analytic per-channel transmittance.
+  //
+  // This IS applied to sky pixels. The dome carries the full Rayleigh/Mie
+  // integral out to space, but this layer is the *ground haze* — dust, exhaust,
+  // the bottom 40 m of a hot street — and that layer is between the camera and
+  // the sky just as much as it is between the camera and a wall. Skipping it
+  // while still ADDING the in-scatter of a 900 m column made the fog a pure
+  // emitter over every sky pixel: at 2 degrees of elevation the optical depth
+  // through an 18 m-scale-height layer is ~1.9, so the horizon sky was being
+  // handed roughly its own radiance again in neutral in-scatter and no
+  // extinction to pay for it. That is the cream void the sunset sky reads as,
+  // and it is why the daylight zenith gradient stops dead a third of the way
+  // up the frame.
+  float od = skHeightIntegral( uCamPos.y, dir.y, dist );
+  vec3 trans = exp( -uFogExt * od );
+
+  #ifdef VOL_ANALYTIC
+    // No raymarch available: single scattering with a uniform visibility term.
+    // Same phase split and the same near-field ramp as the marched path, so the
+    // two quality levels agree instead of grading the scene differently. The
+    // ramp is folded in analytically: smoothstep(0,12,t) averages 0.5 over
+    // [0,12] and 1 past it, so subtracting half the optical depth of the first
+    // twelve metres reproduces the marched integral to within a few percent.
+    float odNear = skHeightIntegral( uCamPos.y, dir.y, min( dist, 12.0 ) );
+    float odS = max( 0.0, od - odNear * 0.5 );
+    float mono = 1.0 - exp( -uFog2.x * odS );
+    float cosKey = dot( dir, uKeyDir );
+    vec3 inscatter = ( uKeyIrr * ( skFogInscatterPhase( cosKey ) * 0.55 )
+                     + skFogAmbient( cosKey ) * uFog2.z )
+                     * ( uFog.x / max( 1.0e-6, uFog2.x ) ) * mono;
+  #else
+    vec3 inscatter = skUpsample( vUv, depth );
+  #endif
+
+  fragColor = vec4( color * trans + inscatter, 1.0 );
+}
+`;class cS{constructor(t,e,s={}){this.order=-70,this.enabled=!0;const i=e.csm;this.marchEnabled=s.volumetrics!==!1&&!!i;const n=s.steps??40;this.shared=t,this.scale=s.scale??.5,this.width=1,this.height=1,this.rtMarch=null,this.rtHistory=[null,null],this._flip=0,this._reset=!0;const a={uMieScale:t.uMieScale,uViewPos:t.uViewPos,uSkyAmbientLut:t.uSkyAmbientLut,uCloudParams:t.uCloudParams,uCloudParams2:t.uCloudParams2,uInvProj:t.uInvProj,uCamWorld:t.uCamWorld,uCamPos:t.uCamPos,uFog:t.uFog,uFog2:t.uFog2,uFogExt:t.uFogExt,uPhase:t.uPhase,uKeyDir:t.uKeyDir,uKeyIrr:t.uKeyIrr,uFogDrift:t.uFogDrift};this.marchEnabled&&(this.marchPass=new ia("sky-vol-march",oS,{...a,...i.uniforms,tDepth:{value:null},uFrame:{value:0}},{VOL_STEPS:n,OW_CASCADES:i.cascades}),this.resolvePass=new ia("sky-vol-resolve",aS,{tCurrent:{value:null},tHistory:{value:null},tVelocity:{value:null},uTexel:{value:new at},uBlend:{value:.9}})),this.compositePass=new ia("sky-vol-composite",rS,{...a,tColor:{value:null},tVolume:{value:null},tDepth:{value:null},uTexelHalf:{value:new at}},this.marchEnabled?{}:{VOL_ANALYTIC:1})}resize(t,e){if(!this.marchEnabled){this.width=t,this.height=e;return}const s=Math.max(1,Math.round(t*this.scale)),i=Math.max(1,Math.round(e*this.scale));this.rtMarch&&this.width===s&&this.height===i||(this.width=s,this.height=i,this.rtMarch?.dispose(),this.rtHistory[0]?.dispose(),this.rtHistory[1]?.dispose(),this.rtMarch=ko(s,i,{name:"sky-vol"}),this.rtHistory[0]=ko(s,i,{name:"sky-vol-h0"}),this.rtHistory[1]=ko(s,i,{name:"sky-vol-h1"}),this.resolvePass.uniforms.uTexel.value.set(1/s,1/i),this.compositePass.uniforms.uTexelHalf.value.set(1/s,1/i),this._reset=!0)}render(t,e,s,i){let n=null;if(this.marchEnabled){this.rtMarch||this.resize(i.screenSize.width,i.screenSize.height);const r=this.marchPass.uniforms;r.tDepth.value=i.depthTexture,r.uFrame.value=i.frame%64,this.marchPass.render(t,this.rtMarch);const c=this.resolvePass.uniforms,h=this.rtHistory[this._flip^1],l=this.rtHistory[this._flip];c.tCurrent.value=this.rtMarch.texture,c.tHistory.value=h.texture,c.tVelocity.value=i.velocityTexture,c.uBlend.value=this._reset?0:.9,this.resolvePass.render(t,l),this._reset=!1,this._flip^=1,n=l.texture}const a=this.compositePass.uniforms;a.tColor.value=e,a.tVolume.value=n,a.tDepth.value=i.depthTexture,this.compositePass.render(t,s)}reset(){this._reset=!0}dispose(){this.rtMarch?.dispose(),this.rtHistory[0]?.dispose(),this.rtHistory[1]?.dispose(),this.marchPass?.dispose(),this.resolvePass?.dispose(),this.compositePass.dispose()}}const lS={latitudeDeg:45,dayOfYear:172,northAngleDeg:0,moonHourOffsetDeg:244,moonDeclinationDeg:28},sa=Math.PI/180;function hS(o){return 23.44*sa*Math.sin(2*Math.PI/365*(284+o))}function sm(o,t,e,s={alt:0,az:0}){const i=e*sa,n=Math.sin(i),a=Math.cos(i),r=Math.sin(t),c=Math.cos(t),h=n*r+a*c*Math.cos(o),l=Math.asin(Xe.clamp(h,-1,1)),u=Math.cos(l);let d=0;u>1e-6&&a>1e-6&&(d=(r-h*n)/(u*a));let f=Math.acos(Xe.clamp(d,-1,1));return Math.sin(o)>0&&(f=2*Math.PI-f),s.alt=l,s.az=f,s}function im(o,t,e,s){const i=t+e,n=Math.cos(o);return s.set(n*Math.sin(i),Math.sin(o),-n*Math.cos(i)).normalize()}class uS{constructor(t=lS){this.site={...t},this.sun=new A(0,1,0),this.moon=new A(0,-1,0),this.sunAlt=0,this.sunAz=0,this.moonAlt=0,this.moonAz=0,this.moonPhase=1,this.moonElongation=Math.PI,this._aa={alt:0,az:0},this._m=new bt,this._tilt=new bt}setHour(t){const e=this.site,s=e.northAngleDeg*sa,i=hS(e.dayOfYear),n=(t-12)*15*sa;sm(n,i,e.latitudeDeg,this._aa),this.sunAlt=this._aa.alt,this.sunAz=this._aa.az,im(this.sunAlt,this.sunAz,s,this.sun);const a=n+e.moonHourOffsetDeg*sa;sm(a,e.moonDeclinationDeg*sa,e.latitudeDeg,this._aa),this.moonAlt=this._aa.alt,this.moonAz=this._aa.az,im(this.moonAlt,this.moonAz,s,this.moon),this.moonElongation=Math.acos(Xe.clamp(this.sun.dot(this.moon),-1,1)),this.moonPhase=.5*(1-Math.cos(this.moonElongation));const r=(90-e.latitudeDeg)*sa;return this._m.makeRotationY(-n+s),this._m.premultiply(this._tilt.makeRotationX(r)),this}celestialMatrix(t){return t.setFromMatrix4(this._m)}}const dS=.35,fS=1.55,pS=.15,mS=[.35,.5,1];class gS{static id="sky";static deps=["render","materials"];async init(t){this.ctx=t;const e=t.get("render");this.render=e,this.renderer=e.renderer;const s=t.config.q;this.celestial=new uS,this.hour=16.5,this.timeRate=0,this.weather={turbidity:1.35,cloudCoverage:.3,cloudDensity:1.9,cirrusCoverage:.21,cirrusOpacity:.3,windSpeed:.0042,windAngle:.7,horizonMurk:.13},this._fog={scatter:.0036,extinction:.00145,heightScale:18,baseY:-2,maxDistance:900,shaftGain:2.6,ambientGain:.22,noise:.55,noiseScale:.045,phaseForward:.76,phaseBackward:-.36,phaseBackWeight:.34,extinctionTint:new A(.94,1.02,1.24)};const i=Ie.groundRadiusMM+Ie.viewAltitudeMM;this.shared={uMieScale:{value:this.weather.turbidity},uViewPos:{value:new A(0,i,0)},uSunDir:{value:new A(0,1,0)},uMoonDir:{value:new A(0,-1,0)},uSunIrradiance:{value:new A},uMoonIrradiance:{value:new A},uSunDiscRadiance:{value:new A},uMoonDiscRadiance:{value:new A},uSunAltitude:{value:0},uMoonAltitude:{value:0},uMoonRelAz:{value:0},uDisc:{value:new Dt(.004654,.004516,3,4.2)},uGroundAlbedo:{value:new A(.33,.29,.225)},uHorizonMurk:{value:this.weather.horizonMurk},uSkyRolloff:{value:new at(.3,1.5)},uStarParams:{value:new Dt(0,.5,0,0)},uCelestial:{value:new ve},uCloudParams:{value:new Dt(this.weather.cloudCoverage,this.weather.cloudDensity,1,0)},uCloudParams2:{value:new Dt(this.weather.cirrusCoverage,this.weather.cirrusOpacity,.004,.0016)},uInvProj:{value:new bt},uCamWorld:{value:new bt},uCamPos:{value:new A},uFog:{value:new Dt},uFog2:{value:new Dt},uFogExt:{value:new A},uPhase:{value:new Dt},uKeyDir:{value:new A(0,1,0)},uKeyIrr:{value:new A},uFogDrift:{value:new A}},this.luts=new $M(this.renderer,this.shared),this.luts.bakeStatic(),this.dome=new iS(this.shared),t.scene.add(this.dome.mesh),t.scene.background=null,this.sunLight=new ta(16777215,4),this.sunLight.name="sky-sun",this.sunLight.castShadow=!1,this.sunLight.target.name="sky-sun-target",t.scene.add(this.sunLight,this.sunLight.target),e.addLight(this.sunLight,{range:1e9,priority:10}),this.moonLight=new ta(10469631,0),this.moonLight.name="sky-moon",this.moonLight.castShadow=!1,t.scene.add(this.moonLight,this.moonLight.target),e.addLight(this.moonLight,{range:1e9,priority:9}),this.keyLight=this.sunLight,this.envEquirect=ko(512,256,{name:"sky-equirect"}),this.envEquirect.texture.mapping=_0,this.pmrem=new vl(this.renderer),this.pmrem.compileEquirectangularShader(),this._pmremTarget=null,this.envMap=null;const n=s.volumetrics?t.config.quality==="ultra"?56:s.ssr?44:28:0;this.volumetrics=new cS(this.shared,e,{volumetrics:s.volumetrics,steps:Math.max(8,n),scale:.5}),this._unregisterPass=e.registerPass(this.volumetrics),this.ambientColor=new ie(0,0,0),this.indirectScale=1,this.exposureBias=0,this._beamGain=1,this._beamLuminance=0,this._sunT=[0,0,0],this._moonT=[0,0,0],this._envSunDir=new A(0,-1,0),this._tmp=new A,this._tmp2=new A,this._cloudOcclusion=1,this._cloudOccTarget=1,this._baseSunIntensity=0,this._envAge=1e9,this._skyDirty=!0,this._envDirty=!0,this._cloudTime=0,this._occParams={coverage:0,density:0,windX:0,windZ:0,time:0},this._applyWeather(),this._applyFog(),this.setTimeOfDay(this.hour),console.info(`[sky] atmosphere ready · lat ${this.celestial.site.latitudeDeg} · vol ${s.volumetrics?n+" steps @1/2":"analytic"} · 1 unit = ${jg} lx`)}get timeOfDay(){return this.hour}get sunDirection(){return this.celestial.sun}get moonDirection(){return this.celestial.moon}get sunAltitude(){return this.celestial.sunAlt}get fog(){return this._fog}setTimeOfDay(t){if(this.hour=(t%24+24)%24,this._skyDirty=!0,this._envDirty=!0,this._updateCelestial(),this._bakeSky(),this._bakeEnv(),this.volumetrics.reset(),this.ctx.events.emit("sky:changed",{hour:this.hour,sunDir:this.celestial.sun,sunIntensity:this.sunLight.intensity,moonIntensity:this.moonLight.intensity}),this.ctx.config.deterministic===!0){const e=this.celestial,s=this.sunLight.color;console.info(`[sky] t=${this.hour.toFixed(2)} sunAlt=${(e.sunAlt*180/Math.PI).toFixed(1)} sunI=${this.sunLight.intensity.toFixed(3)} sunCol=${s.r.toFixed(2)},${s.g.toFixed(2)},${s.b.toFixed(2)} moonI=${this.moonLight.intensity.toFixed(4)} beamLum=${(this._beamLuminance??0).toFixed(3)} amb=${this.ambientColor.r.toFixed(3)},${this.ambientColor.g.toFixed(3)},${this.ambientColor.b.toFixed(3)} indirect=${this.indirectScale.toFixed(2)} evBias=${this.exposureBias.toFixed(2)} knee=${this.shared.uSkyRolloff.value.x.toFixed(3)}`)}return this}setTimeRate(t){return this.timeRate=t||0,this}setWeather(t={}){if(Object.assign(this.weather,t),t.fogDensity!==void 0){const e=t.fogDensity;this._fog.scatter=.0036*e,this._fog.extinction=.00145*e}return t.fogHeight!==void 0&&(this._fog.heightScale=t.fogHeight),t.shaftGain!==void 0&&(this._fog.shaftGain=t.shaftGain),this._applyWeather(),this._applyFog(),t.turbidity!==void 0&&this.luts.bakeStatic(),this._skyDirty=!0,this._envDirty=!0,this}cloudShadowAt(t,e){const s=this._occParams;return s.coverage=this.weather.cloudCoverage,s.density=this.weather.cloudDensity,s.windX=this.shared.uCloudParams2.value.z,s.windZ=this.shared.uCloudParams2.value.w,s.time=this._cloudTime,QM(t,e,this.celestial.sun,s)}update(t,e){this._cloudTime=e.time.elapsed,this.shared.uCloudParams.value.w=this._cloudTime,this.shared.uStarParams.value.z=this._cloudTime,this.shared.uFogDrift.value.set(this._cloudTime*.09,this._cloudTime*.015,this._cloudTime*.045),this.timeRate!==0&&(this.hour=(this.hour+this.timeRate*t)%24,this._updateCelestial());const s=e.camera;this._cloudOccTarget=this.cloudShadowAt(s.position.x,s.position.z);const i=Math.min(1,t*.9);this._cloudOcclusion+=(this._cloudOccTarget-this._cloudOcclusion)*i,this._applyLightIntensities(),this._skyDirty&&this._bakeSky(),this._envAge+=t,this._envDirty&&this._envAge>.2&&this._bakeEnv()}lateUpdate(t,e){const s=e.camera;s.updateMatrixWorld(),this.shared.uInvProj.value.copy(s.projectionMatrixInverse),this.shared.uCamWorld.value.copy(s.matrixWorld),this.shared.uCamPos.value.setFromMatrixPosition(s.matrixWorld)}_applyWeather(){const t=this.weather;this.shared.uMieScale.value=t.turbidity,this.shared.uHorizonMurk.value=t.horizonMurk;const e=this.shared.uCloudParams.value;e.x=t.cloudCoverage,e.y=t.cloudDensity;const s=this.shared.uCloudParams2.value;s.x=t.cirrusCoverage,s.y=t.cirrusOpacity,s.z=Math.cos(t.windAngle)*t.windSpeed,s.w=Math.sin(t.windAngle)*t.windSpeed}_applyFog(){const t=this._fog;this.shared.uFog.value.set(t.scatter,1/t.heightScale,t.baseY,t.maxDistance),this.shared.uFog2.value.set(t.extinction,t.shaftGain,t.ambientGain,t.noise),this.shared.uFogExt.value.copy(t.extinctionTint).multiplyScalar(t.extinction),this.shared.uPhase.value.set(t.phaseForward,t.phaseBackward,t.phaseBackWeight,t.noiseScale)}_updateCelestial(){const t=this.celestial.setHour(this.hour),e=this.shared;e.uSunDir.value.copy(t.sun),e.uMoonDir.value.copy(t.moon),e.uSunAltitude.value=t.sunAlt,e.uMoonAltitude.value=t.moonAlt;let s=t.moonAz-t.sunAz;for(;s>Math.PI;)s-=2*Math.PI;for(;s<-Math.PI;)s+=2*Math.PI;e.uMoonRelAz.value=s,t.celestialMatrix(e.uCelestial.value);const i=this.weather.turbidity,n=Math.sin(t.sunAlt),a=Xe.clamp(.5+n/(2*.004654),0,1);em(Math.max(n,8e-4),i,this._sunT);const r=[1,.975,.94],c=this._sunT,h=Xe.lerp(.55,1,Xe.smoothstep(Xe.radToDeg(t.sunAlt),0,16)),l=Math.pow(c[0],h)*r[0],u=Math.pow(c[1],h)*r[1],d=Math.pow(c[2],h)*r[2],f=Math.max(1e-6,l,u,d);this.sunLight.color.setRGB(l/f,u/f,d/f);const p=.2126*l+.7152*u+.0722*d,m=Xe.radToDeg(t.sunAlt),g=Xe.smoothstep(m,-6,-1),v=dS*g,y=Math.max(1,v/Math.max(p,1e-5));this._beamGain=y,this._baseSunIntensity=Nr*f*a*y,this._beamLuminance=Nr*Math.max(p*y,1e-6)*a,e.uSunIrradiance.value.set(Nr*r[0],Nr*r[1],Nr*r[2]);const x=4e3;e.uSunDiscRadiance.value.set(x*r[0],x*r[1],x*r[2]);const w=Xe.smoothstep(-m,-3,5),_=Xe.smoothstep(-m,0,9),M=Math.sin(t.moonAlt),S=Xe.clamp(.5+M/(2*.004516),0,1);em(Math.max(M,8e-4),i,this._moonT);const b=this._moonT,T=[.66,.8,1],k=b[0]*T[0],E=b[1]*T[1],R=b[2]*T[2],P=Math.max(1e-6,k,E,R);this.moonLight.color.setRGB(k/P,E/P,R/P);let z=tm*t.moonPhase*P*S*w;Math.max(this._baseSunIntensity,z)<.03&&(z=.03),this.moonLight.intensity=z;const C=tm*t.moonPhase*w;e.uMoonIrradiance.value.set(C*T[0],C*T[1],C*T[2]);const D=Xe.lerp(.35,3.5,_);e.uMoonDiscRadiance.value.set(D,D*.985,D*.95);const I=(1-Xe.smoothstep(m,1,22))*g,F=1-g,B=mS,V=Xe.lerp(Xe.lerp(.36,B[0],F),this.sunLight.color.r,I),H=Xe.lerp(Xe.lerp(.56,B[1],F),this.sunLight.color.g,I),G=Xe.lerp(Xe.lerp(1,B[2],F),this.sunLight.color.b,I),q=pS*this._baseSunIntensity+.9*z;this.ambientColor.setRGB(V*q,H*q,G*q);const tt=Xe.lerp(.045,.11,Xe.smoothstep(m,2,15));e.uSkyRolloff.value.set(Math.max(tt*this._beamLuminance,.02+6*z),.34),this.exposureBias=1.35*(1-Xe.smoothstep(m,1,13))*g+.55*(1-g),this.indirectScale=Xe.lerp(2.2,Xe.lerp(.45,1,Xe.smoothstep(m,0,14)),g),e.uStarParams.value.x=.07*_,e.uStarParams.value.y=.55,e.uStarParams.value.w=.16*_,this._placeLight(this.sunLight,t.sun,.006),this._placeLight(this.moonLight,t.moon,.026),this._applyLightIntensities(),this._skyDirty=!0,this._envSunDir.dot(t.sun)<Math.cos(.35*(Math.PI/180))&&(this._envDirty=!0)}_placeLight(t,e,s){this._tmp.copy(e),this._tmp.y<s&&(this._tmp.y=s,this._tmp.normalize()),t.position.copy(this._tmp).multiplyScalar(600),t.target.position.set(0,0,0),t.updateMatrixWorld(!0),t.target.updateMatrixWorld(!0)}_applyLightIntensities(){const t=.58+.42*this._cloudOcclusion;this.sunLight.intensity=this._baseSunIntensity*t*fS;const e=this.sunLight.intensity,i=this.moonLight.intensity>e;this.keyLight=i?this.moonLight:this.sunLight;const n=this.keyLight,a=i?this.celestial.moon:this.celestial.sun;this.shared.uKeyDir.value.copy(a);const r=n.intensity;this.shared.uKeyIrr.value.set(n.color.r*r,n.color.g*r,n.color.b*r)}_bakeSky(){this.luts.bakeSkyView(),this._skyDirty=!1,this.renderer.setRenderTarget(null)}_bakeEnv(){Xg(this.renderer,this.dome.envMaterial,this.envEquirect),this._pmremTarget=this.pmrem.fromEquirectangular(this.envEquirect.texture,this._pmremTarget),this._pmremTarget.texture.name="sky-env",this.envMap=this._pmremTarget.texture,this.render.setEnvMap(this.envMap),this.renderer.setRenderTarget(null),this._envSunDir.copy(this.celestial.sun),this._envDirty=!1,this._envAge=0,this.ctx.events.emit("sky:env",{envMap:this.envMap,sunDir:this.celestial.sun})}dispose(){this._unregisterPass?.(),this.volumetrics.dispose(),this.ctx.scene.remove(this.dome.mesh),this.dome.dispose(),this.luts.dispose(),this.envEquirect.dispose(),this._pmremTarget?.dispose(),this.pmrem.dispose(),this.ctx.scene.remove(this.sunLight,this.sunLight.target),this.ctx.scene.remove(this.moonLight,this.moonLight.target),this.render.removeLight?.(this.sunLight),this.render.removeLight?.(this.moonLight),this.sunLight.dispose(),this.moonLight.dispose()}}const Ce=new A,Sc=new A,Tc=new A,ls=new A,nm=new ve;function vS(o,t,e){let s=Math.imul(Math.round(o*1013)^668265261,2246822507);return s=Math.imul(s^Math.round(t*1619),3266489909),s=Math.imul(s^Math.round(e*31337),668265263),s^=s>>>15,(s>>>0)/4294967296}function Uh(o){return o*o*(3-2*o)}function yS(o,t,e){const s=Math.floor(o),i=Math.floor(t),n=Math.floor(e),a=Uh(o-s),r=Uh(t-i),c=Uh(e-n);let h=0;for(let l=0;l<2;l++){const u=l?c:1-c;for(let d=0;d<2;d++){const f=d?r:1-r;for(let p=0;p<2;p++){const m=p?a:1-a;h+=vS(s+p,i+d,n+l)*m*f*u}}}return h}function Ve(o,t,e,s=3){let i=.5,n=0,a=0;for(let r=0;r<s;r++)n+=yS(o,t,e)*i,a+=i,i*=.5,o*=2.03,t*=2.01,e*=1.97;return n/a}const om=new be,am=new bs(0,0,0,"YXZ"),rm=new A,cm=new A;function La(o,t,e,s,i=0,n=1,a=n,r=n,c=0,h=0){return am.set(c,i,h),om.setFromEuler(am),rm.set(t,e,s),cm.set(n,a,r),o.compose(rm,om,cm)}class kc{constructor(t="merged"){this.name=t,this.pos=[],this.nrm=[],this.uv=[],this.col=[],this.idx=[],this.verts=0,this.tris=0}get empty(){return this.tris===0}add(t,e=null,s=null){const i=t.getAttribute("position");if(!i)return this;let n=t.getAttribute("normal");n||(t.computeVertexNormals(),n=t.getAttribute("normal"));const a=t.getAttribute("uv"),r=t.getAttribute("color"),c=t.getIndex(),h=this.verts,l=s?.masks??null,u=s?.paint??null,d=u?[0,0,0]:null;e&&nm.getNormalMatrix(e);for(let f=0;f<i.count;f++){Ce.fromBufferAttribute(i,f),e&&Ce.applyMatrix4(e),ls.fromBufferAttribute(n,f),e&&ls.applyMatrix3(nm).normalize(),this.pos.push(Ce.x,Ce.y,Ce.z),this.nrm.push(ls.x,ls.y,ls.z),this.uv.push(a?a.getX(f):0,a?a.getY(f):0);let p=r?r.getX(f):0,m=r?r.getY(f):0,g=r?r.getZ(f):0;l&&(p=Math.max(p,l[0]),m=Math.max(m,l[1]),g=Math.max(g,l[2])),u&&(d[0]=p,d[1]=m,d[2]=g,u(Ce.x,Ce.y,Ce.z,ls.x,ls.y,ls.z,d),p=d[0],m=d[1],g=d[2]),this.col.push(p,m,g),this.verts++}if(c){const f=c.array;for(let p=0;p<f.length;p++)this.idx.push(h+f[p]);this.tris+=f.length/3}else{for(let f=0;f<i.count;f++)this.idx.push(h+f);this.tris+=i.count/3}return this}build(){const t=new Ue;return t.name=this.name,t.setAttribute("position",new $t(this.pos,3)),t.setAttribute("normal",new $t(this.nrm,3)),t.setAttribute("uv",new $t(this.uv,2)),t.setAttribute("color",new $t(this.col,3)),t.setIndex(this.verts>65535?new qd(this.idx,1):new Wd(this.idx,1)),t.computeBoundingSphere(),t.computeBoundingBox(),this.pos=this.nrm=this.uv=this.col=this.idx=null,t}}function Vs(o,t){const e=o.getAttribute("position");let s=o.getAttribute("normal");s||(o.computeVertexNormals(),s=o.getAttribute("normal"));let i=o.getAttribute("color");i||(i=new $t(new Float32Array(e.count*3),3),o.setAttribute("color",i));const n=[0,0,0];for(let a=0;a<e.count;a++)n[0]=i.getX(a),n[1]=i.getY(a),n[2]=i.getZ(a),t(e.getX(a),e.getY(a),e.getZ(a),s.getX(a),s.getY(a),s.getZ(a),n,a),i.setXYZ(a,n[0],n[1],n[2]);return i.needsUpdate=!0,o}function Di(o,t=0,e=0,s=0){const i=o.getAttribute("position"),n=new Float32Array(i.count*3);for(let a=0;a<i.count;a++)n[a*3]=t,n[a*3+1]=e,n[a*3+2]=s;return o.setAttribute("color",new $t(n,3)),o}function oi(o,t,e,s=.012){const i=[o*.5,t*.5,e*.5],n=Math.max(5e-4,Math.min(s,Math.min(o,t,e)*.4)),a=[];for(let p=0;p<8;p++)a.push([p&1?1:-1,p&2?1:-1,p&4?1:-1]);const r=(p,m)=>{const g=a[p],v=[0,0,0];for(let y=0;y<3;y++)v[y]=g[y]*(y===m?i[y]:i[y]-n);return v},c=[],h=[],l=[],u=[],d=(p,m,g)=>{Ce.set(p[0][0],p[0][1],p[0][2]),Sc.set(p[1][0],p[1][1],p[1][2]),Tc.set(p[2][0],p[2][1],p[2][2]),ls.copy(Sc).sub(Ce).cross(Tc.clone().sub(Ce));let v=0,y=0,x=0;for(const w of p)v+=w[0],y+=w[1],x+=w[2];v/=p.length,y/=p.length,x/=p.length,ls.x*v+ls.y*y+ls.z*x<0&&(p=p.slice().reverse()),Ce.set(p[0][0],p[0][1],p[0][2]),Sc.set(p[1][0],p[1][1],p[1][2]),Tc.set(p[2][0],p[2][1],p[2][2]),ls.copy(Sc).sub(Ce).cross(Tc.clone().sub(Ce)).normalize();for(let w=1;w<p.length-1;w++){const _=[p[0],p[w],p[w+1]];for(const M of _){c.push(M[0],M[1],M[2]),h.push(ls.x,ls.y,ls.z);const S=Math.abs(ls.x)>Math.abs(ls.y)?Math.abs(ls.x)>Math.abs(ls.z)?0:2:Math.abs(ls.y)>Math.abs(ls.z)?1:2;l.push(S===0?M[2]:M[0],S===1?M[2]:M[1]);const b=ls.y<-.5?g+.35:g;u.push(m,Math.min(1,b),ls.y<-.4?.35:0)}}};for(let p=0;p<3;p++)for(const m of[-1,1]){const g=[];for(let x=0;x<8;x++)a[x][p]===m&&g.push(x);const v=(p+1)%3,y=(p+2)%3;g.sort((x,w)=>{const _=Math.atan2(a[x][y],a[x][v]),M=Math.atan2(a[w][y],a[w][v]);return _-M}),d(g.map(x=>r(x,p)),.06,0)}for(let p=0;p<3;p++)for(let m=p+1;m<3;m++)for(const g of[-1,1])for(const v of[-1,1]){const y=[];for(let x=0;x<8;x++)a[x][p]===g&&a[x][m]===v&&y.push(x);d([r(y[0],p),r(y[0],m),r(y[1],m),r(y[1],p)],1,0)}for(let p=0;p<8;p++)d([r(p,0),r(p,1),r(p,2)],1,0);const f=new Ue;return f.setAttribute("position",new $t(c,3)),f.setAttribute("normal",new $t(h,3)),f.setAttribute("uv",new $t(l,2)),f.setAttribute("color",new $t(u,3)),f.computeBoundingBox(),f.computeBoundingSphere(),f}function af(){const o=new Sn(1,1,1),t=o.getAttribute("position");return o.setAttribute("color",new $t(new Float32Array(t.count*3),3)),o.computeBoundingBox(),o.computeBoundingSphere(),o}function xS(o=1,t=1){const e=new qs(o,t,1,1),s=e.getAttribute("position");return e.setAttribute("color",new $t(new Float32Array(s.count*3),3)),e}function wS(o,t){const e=new gl,s=o.x-o.w/2,i=o.x+o.w/2,n=o.y-o.h/2,a=o.y+o.h/2;if(o.ragged){const c=o.ragged,h=[];for(let l=0;l<18;l++){const u=l/18*Math.PI*2,d=(s+i)/2,f=(n+a)/2,p=(i-s)/2,m=(a-n)/2,g=Math.cos(u),v=Math.sin(u),y=1/Math.max(Math.abs(g),Math.abs(v))**.85,x=1+(t?t.range(-c,c):0);h.push([d+g*y*p*x,f+v*y*m*x])}e.moveTo(h[0][0],h[0][1]);for(let l=1;l<h.length;l++)e.lineTo(h[l][0],h[l][1]);return e.closePath(),e}if(o.arch>0){const r=o.w/2*o.arch,c=a-r;e.moveTo(s,n),e.lineTo(i,n),e.lineTo(i,c),e.quadraticCurveTo(i,a,o.x,a),e.quadraticCurveTo(s,a,s,c),e.lineTo(s,n)}else e.moveTo(s,n),e.lineTo(i,n),e.lineTo(i,a),e.lineTo(s,a);return e.closePath(),e}function bS(o,t,e,s=[],i={}){const{bevel:n=.02,rng:a=null,top:r="flat",raggedAmp:c=.5,jag:h=0}=i,l=new H0,u=-o/2,d=o/2;if(l.moveTo(u,0),l.lineTo(d,0),r==="ragged"){const p=Math.max(4,Math.round(o/.55)),m=[];for(let g=0;g<=p;g++){const v=d-g/p*o,y=g/p,x=c*t*(.25+.75*Ve(v*.6+11,3.1,2.7,3))*(.35+y);m.push([v,Math.max(.4,t-x)])}l.lineTo(d,m[0][1]);for(let g=0;g<m.length;g++){const[v,y]=m[g],x=g<m.length-1?m[g+1][0]:u;l.lineTo(v,y),l.lineTo(x,y+(a?a.range(-.12,.12):0))}l.lineTo(u,m[m.length-1][1])}else{if(l.lineTo(d,t),h>0){const p=Math.max(3,Math.round(o/1.2));for(let m=p-1;m>=1;m--){const g=u+m/p*o;l.lineTo(g,t+(Ve(g*1.7,5.5,1.3,2)-.5)*h)}}l.lineTo(u,t)}l.lineTo(u,0);for(const p of s)l.holes.push(wS(p,a));const f=new Mr(l,{depth:Math.max(.02,e-n*2),bevelEnabled:n>0,bevelThickness:n,bevelSize:n,bevelOffset:0,bevelSegments:1,curveSegments:i.curveSegments??6,steps:1});return n>0&&f.translate(0,0,n),f.computeVertexNormals(),f.computeBoundingBox(),Vs(f,(p,m,g,v,y,x,w)=>{const M=1-Math.abs(x),S=Ve(p*2.3,m*2.1,g*2.7,2);w[0]=Math.min(1,M*.55*(.4+S)+Math.max(0,y)*.3),w[1]=Math.min(1,M*.42*(.5+S)+Math.max(0,-y)*.55),w[2]=Math.min(1,M*.4+Math.max(0,-y)*.4)}),f}function Nh(o,t,e,s={}){const{amount:i=.9,cols:n=5,rows:a=7,wander:r=.35}=s,c=o?o.float()*40:0,h=[],l=[],u=[],d=[],f=[];for(let g=0;g<=a;g++){const v=g/a,y=(Ve(c+v*2.3,4.1,1.7,2)-.5)*r*t*v,x=t*(1-v*.42)*(.85+.3*Ve(c+9,v*3.1,2.2,2));for(let w=0;w<=n;w++){const _=w/n;h.push((_-.5)*x+y,-v*e,0),l.push(0,0,1),u.push(_,v);const M=Math.sin(Math.PI*_)**.8,S=Math.min(1,v/.1),b=1-v*v,T=.55+.75*Ve(c+_*4.3,v*5.7,3.3,2),k=Math.min(1,i*M*S*b*T);d.push(0,k,k*.45)}}const p=n+1;for(let g=0;g<a;g++)for(let v=0;v<n;v++){const y=g*p+v;f.push(y,y+p,y+1,y+1,y+p,y+p+1)}const m=new Ue;return m.setAttribute("position",new $t(h,3)),m.setAttribute("normal",new $t(l,3)),m.setAttribute("uv",new $t(u,2)),m.setAttribute("color",new $t(d,3)),m.setIndex(f),m.computeBoundingBox(),m.computeBoundingSphere(),m}function _S(o,t,e){const s=new Set([-o/2,o/2]);for(const a of e)s.add(Math.max(-o/2,a.x-a.w/2)),s.add(Math.min(o/2,a.x+a.w/2));const i=[...s].sort((a,r)=>a-r),n=[];for(let a=0;a<i.length-1;a++){const r=i[a],c=i[a+1];if(c-r<1e-4)continue;const h=(r+c)/2,l=e.filter(d=>h>d.x-d.w/2&&h<d.x+d.w/2).map(d=>[Math.max(0,d.y-d.h/2),Math.min(t,d.y+d.h/2)]).sort((d,f)=>d[0]-f[0]);let u=0;for(const[d,f]of l)d>u&&n.push({x:(r+c)/2,y:(u+d)/2,w:c-r,h:d-u}),u=Math.max(u,f);u<t&&n.push({x:(r+c)/2,y:(u+t)/2,w:c-r,h:t-u})}return n}function Qg(o,t,e={}){const s=new H0;s.moveTo(o[0][0],o[0][1]);for(let n=1;n<o.length;n++)s.lineTo(o[n][0],o[n][1]);s.closePath();const i=new Mr(s,{depth:t,bevelEnabled:!!e.bevel,bevelThickness:e.bevel??0,bevelSize:e.bevel??0,bevelSegments:1,steps:1});return i.rotateX(-Math.PI/2),i.computeVertexNormals(),i.computeBoundingBox(),i}function Js(o,t,e={}){const{lobes:s=9,wobble:i=.45,sag:n=0}=e,a=[],r=[],c=[],h=[];a.push(0,0,0),r.push(0,1,0),c.push(0,0);const l=[];for(let d=0;d<s;d++)l.push(t*(1-i+o.float()*i*2));for(let d=0;d<s;d++){const f=d/s*Math.PI*2,p=l[d];a.push(Math.cos(f)*p,-n,Math.sin(f)*p),r.push(0,1,0),c.push(Math.cos(f),Math.sin(f))}for(let d=0;d<s;d++)h.push(0,1+d,1+(d+1)%s);const u=new Ue;return u.setAttribute("position",new $t(a,3)),u.setAttribute("normal",new $t(r,3)),u.setAttribute("uv",new $t(c,2)),u.setIndex(h),u.computeBoundingBox(),u.computeBoundingSphere(),u}function Or(o,t,e,s,i={}){const n=Math.max(4,Math.round(t/.55)),a=i.nz??4,r=[],c=[],h=[],l=[],u=o.float()*30;for(let p=0;p<=n;p++){const m=p/n,g=(m-.5)*t,v=Math.min(1,Math.min(m,1-m)*6),y=.45+Ve(g*.7+u,2.1,u,3)*1.1,x=s*y*v,w=e*(.6+Ve(g*.5+u+7,5.3,1.9,2)*.85);for(let _=0;_<=a;_++){const M=_/a,S=x*Math.cos(M*Math.PI/2)**1.7,b=Ve(g*2.3+u,M*3.1,8.4,2)-.5;r.push(g,Math.max(0,S+b*s*.22*(1-M)),M*w),c.push(0,1,0),h.push(g*.5,M*w*.5)}}const d=a+1;for(let p=0;p<n;p++)for(let m=0;m<a;m++){const g=p*d+m;l.push(g,g+1,g+d,g+1,g+d+1,g+d)}const f=new Ue;return f.setAttribute("position",new $t(r,3)),f.setAttribute("normal",new $t(c,3)),f.setAttribute("uv",new $t(h,2)),f.setIndex(l),f.computeVertexNormals(),f.computeBoundingBox(),f.computeBoundingSphere(),f}function mr(o,t=.3,e=1,s=.7){const i=new zl(t*.5,e),n=i.getAttribute("position"),a=o.float()*40;for(let r=0;r<n.count;r++){Ce.fromBufferAttribute(n,r);const h=.62+Ve(Ce.x*7+a,Ce.y*7+a,Ce.z*7+a,2)*.72;Ce.multiplyScalar(h),Ce.y*=s,n.setXYZ(r,Ce.x,Ce.y,Ce.z)}return i.computeVertexNormals(),i.computeBoundingBox(),i.computeBoundingSphere(),i}function ci(o,t,e={}){const{segX:s=10,segY:i=8,sag:n=.12,wrinkle:a=.03,twist:r=0,rng:c=null,bulge:h=0,uRange:l=null,seed:u=null,thickness:d=.0022,hem:f=1,fray:p=0,bow:m=1}=e,g=l?l[0]:0,v=l?l[1]:1,y=o*(v-g),x=s+1,w=i+1,_=x*w,M=u??(c?c.float()*30:0),S=new Float32Array(_*3),b=new Float32Array(_*3),T=new Float32Array(_*2),k=new Float32Array(_),E=new Float32Array(_),R=q=>{const tt=(q%1+1)%1;return tt<.5?tt*4-1:3-tt*4};for(let q=0;q<w;q++)for(let tt=0;tt<x;tt++){const lt=q*x+tt,X=tt/s,Y=g+X*(v-g),ct=q/i;let mt=(Y-.5)*o,xt=(ct-.5)*t;const _t=Math.cosh((Y-.5)*2.2)-1;let Gt=-_t*n*(1-ct*.35);Gt+=Math.sin(ct*7.1+Y*3.3+M)*a*(.4+Y*(1-Y)*3),Gt+=Math.sin(Y*11.3+M*2)*a*.5*ct;const O=R(Y*2.6+ct*1.15+M*.37);Gt+=O*a*.85*(.4+.6*(1-ct)),Gt-=h*Math.sin(Y*Math.PI)*Math.sin(ct*Math.PI),Gt*=m,xt-=_t*n*.5,mt+=r*(ct-.5)*Math.sin(Y*4+M),q===0&&p>0&&(xt-=p*(.3+.7*Math.abs(Math.sin(Y*8.7+M*1.7))),mt+=p*.35*Math.sin(Y*15.3+M)),S[lt*3]=mt,S[lt*3+1]=xt,S[lt*3+2]=Gt,T[lt*2]=X,T[lt*2+1]=ct;const et=ct*t,J=(1-ct)*t,$=Math.min(X,1-X)*y,st=Math.max(Math.max(0,1-et/.045),.55*Math.max(0,1-Math.min(J,$)/.03));k[lt]=d*.5*(1+f*2.8*st*st),E[lt]=Math.max(0,-O)*.4+st*.3}const P=[0,0,0],z=[0,0,0];for(let q=0;q<w;q++)for(let tt=0;tt<x;tt++){const lt=q*x+tt,X=tt>0?tt-1:tt,Y=tt<x-1?tt+1:tt,ct=q>0?q-1:q,mt=q<w-1?q+1:q;for(let et=0;et<3;et++)P[et]=S[(q*x+Y)*3+et]-S[(q*x+X)*3+et],z[et]=S[(mt*x+tt)*3+et]-S[(ct*x+tt)*3+et];let xt=P[1]*z[2]-P[2]*z[1],_t=P[2]*z[0]-P[0]*z[2],Gt=P[0]*z[1]-P[1]*z[0];const O=Math.hypot(xt,_t,Gt)||1;b[lt*3]=xt/O,b[lt*3+1]=_t/O,b[lt*3+2]=Gt/O}const C=[],D=[],I=[],F=[],B=[],V=(q,tt,lt,X,Y,ct,mt,xt,_t,Gt,O)=>(C.push(q,tt,lt),D.push(X,Y,ct),I.push(mt,xt),F.push(_t,Gt,O),C.length/3-1);for(let q=0;q<2;q++){const tt=q===0?1:-1,lt=C.length/3;for(let X=0;X<_;X++){const Y=k[X]*tt,ct=q===0?E[X]*.5:.28+E[X]*.5;V(S[X*3]+b[X*3]*Y,S[X*3+1]+b[X*3+1]*Y,S[X*3+2]+b[X*3+2]*Y,b[X*3]*tt,b[X*3+1]*tt,b[X*3+2]*tt,T[X*2],T[X*2+1],E[X]*.5,ct,E[X]*(q===0?1:1.3))}for(let X=0;X<i;X++)for(let Y=0;Y<s;Y++){const ct=lt+X*x+Y,mt=ct+1,xt=ct+x,_t=xt+1;tt>0?B.push(ct,mt,_t,ct,_t,xt):B.push(ct,_t,mt,ct,xt,_t)}}const H=[];for(let q=0;q<x-1;q++)H.push(q);for(let q=0;q<w-1;q++)H.push(q*x+(x-1));for(let q=x-1;q>0;q--)H.push((w-1)*x+q);for(let q=w-1;q>0;q--)H.push(q*x);for(let q=0;q<H.length;q++){const tt=H[q],lt=H[(q+1)%H.length],X=S[tt*3],Y=S[tt*3+1],ct=S[tt*3+2],mt=S[lt*3],xt=S[lt*3+1],_t=S[lt*3+2],Gt=mt-X,O=xt-Y,et=_t-ct,J=(b[tt*3]+b[lt*3])*.5,$=(b[tt*3+1]+b[lt*3+1])*.5,st=(b[tt*3+2]+b[lt*3+2])*.5;let pt=O*st-et*$,ht=et*J-Gt*st,Tt=Gt*$-O*J;const Zt=Math.hypot(pt,ht,Tt)||1;pt/=Zt,ht/=Zt,Tt/=Zt;const Wt=[];for(const[N,L]of[[tt,1],[tt,-1],[lt,-1],[lt,1]]){const Z=k[N]*L;Wt.push(V(S[N*3]+b[N*3]*Z,S[N*3+1]+b[N*3+1]*Z,S[N*3+2]+b[N*3+2]*Z,pt,ht,Tt,T[N*2],T[N*2+1],.45,.3+E[N]*.4,Math.min(1,E[N]+.2)))}B.push(Wt[0],Wt[1],Wt[2],Wt[0],Wt[2],Wt[3])}const G=new Ue;return G.setAttribute("position",new $t(C,3)),G.setAttribute("normal",new $t(D,3)),G.setAttribute("uv",new $t(I,2)),G.setAttribute("color",new $t(F,3)),G.setIndex(B),G.computeBoundingBox(),G.computeBoundingSphere(),G}function nr(o,t,e,s,i={}){const{seg:n=12,radial:a=4,jitter:r=0}=i,c=[],h=Math.cosh(1.5)-1;for(let d=0;d<=n;d++){const f=d/n,p=(Math.cosh(1.5)-Math.cosh((f-.5)*3))/h;c.push(new A(o[0]+(t[0]-o[0])*f+(r?(Ve(d*3.1,1.2,4.4,2)-.5)*r:0),o[1]+(t[1]-o[1])*f-e*p,o[2]+(t[2]-o[2])*f+(r?(Ve(d*2.7,8.2,1.4,2)-.5)*r:0)))}const l=new kg(c),u=new Jd(l,n,s,a,!1);return u.computeBoundingBox(),u}function MS(o,t=.5,e=.17,s=.3,i={}){const{variant:n=0,box:a=3.1,lump:r=1}=i,c=new co(.5,20,12),h=c.getAttribute("position"),l=o.float()*50;for(let u=0;u<h.count;u++){Ce.fromBufferAttribute(h,u);let d=Ce.x*2,f=Ce.y*2,p=Ce.z*2;const m=a,g=Math.abs(d)**m+Math.abs(f)**m+Math.abs(p)**m,v=g>1e-6?1/g**(1/m):1;d*=v,f*=v,p*=v;const y=f>0?1-f*f*.2:1,x=Ve(d*3.4+l,f*3.4+l,p*3.4+l,3)-.5,w=Ve(d*9+l*2,f*8+l,p*9+l*3,2)-.5;let _=d*t*.5*(1+x*.09*r),M=p*s*.5*y*(1+x*.26*r+w*.11*r),S=f*e*.5*(1+x*.24*r+w*.1*r);const b=_/(t*.5),T=Math.max(0,Math.abs(b)-.7)/.3;if(M*=1-T*T*.3,S*=1-T*T*.55,T>.55&&(S+=Math.sign(f)*e*.02*(T-.55)*2),f>.15&&(S+=e*.05*Math.exp(-((M/(s*.42))**2)*6)*(1-T*.8)),n===0)M*=1+.06*Math.cos(b*2.6);else if(n===1){_+=t*.04*b;const k=1+.13*(.5-b);M*=k,S*=k*(1-.16*Math.exp(-((b/.32)**2))),f>.3&&(S-=e*.05*Math.exp(-((b/.45)**2)))}else{const k=Math.exp(-(((b-.1)/.16)**2));M*=1-k*.2,S*=1-k*.26,b>.5&&(S*=1-(b-.5)*.5,M*=1+(b-.5)*.22)}h.setXYZ(u,_,S,M)}return c.computeVertexNormals(),c.computeBoundingBox(),c}function t2(o,t,e={}){const{radial:s=8,taper:i=1,open:n=!1,seg:a=1}=e,r=new ho(o*i,o,t,s,a,n);return r.translate(0,t/2,0),r.computeBoundingBox(),r}function e2(o,t=.02,e=1.1,s=0){const i=o.getAttribute("position");for(let n=0;n<i.count;n++){Ce.fromBufferAttribute(i,n);const a=Ve(Ce.x*e+s,Ce.y*e+s*1.7,Ce.z*e+s*2.3,2)-.5,r=Ve(Ce.z*e+s*3.1,Ce.y*e,Ce.x*e,2)-.5;i.setXYZ(n,Ce.x+a*t,Ce.y+r*t*.5,Ce.z+r*t)}return o.computeVertexNormals(),o.computeBoundingBox(),o}const lm={plaster_cream:{name:"plaster",surface:"plaster",opts:{vertexMasks:!0,tint:13615268,scale:2.35,weather:[.4,.5,1.4,.55]}},plaster_sand:{name:"plaster",surface:"plaster",opts:{vertexMasks:!0,tint:12166530,scale:2.1,weather:[.45,.5,1.5,.6]}},plaster_blue:{name:"plaster",surface:"plaster",opts:{vertexMasks:!0,tint:9411232,scale:2.2,weather:[.4,.55,1.5,.6]}},plaster_pink:{name:"plaster",surface:"plaster",opts:{vertexMasks:!0,tint:12622470,scale:2.5,weather:[.45,.5,1.3,.55]}},plaster_white:{name:"plaster",surface:"plaster",opts:{vertexMasks:!0,tint:14209732,scale:1.9,weather:[.3,.35,.9,.5]}},brick:{name:"brick",surface:"concrete",opts:{vertexMasks:!0,tint:11043948,scale:1.3}},brick_fine:{name:"brick",surface:"concrete",opts:{vertexMasks:!0,tint:10256488,scale:.62,weather:[.45,.5,.8,.6]}},concrete:{name:"concrete",surface:"concrete",opts:{vertexMasks:!0,tint:11117722,scale:2.5}},concrete_prop:{name:"concrete",surface:"concrete",opts:{vertexMasks:!0,tint:10854550,scale:.9,normalStrength:1.3,weather:[.45,.5,.35,.55]}},concrete_dark:{name:"concrete",surface:"concrete",opts:{vertexMasks:!0,tint:8223347,scale:2.2,weather:[.4,.6,1.2,.6]}},roof_screed:{name:"concrete",surface:"concrete",opts:{vertexMasks:!0,tint:11905426,scale:2.8,weather:[.6,.2,.3,.45]}},floor_concrete:{name:"concrete_floor",surface:"concrete",opts:{vertexMasks:!0,tint:10394257,scale:3}},tile_floor:{name:"tile",surface:"concrete",opts:{vertexMasks:!0,tint:11116685,scale:1.4}},road_dust:{name:"gravel",surface:"dirt",opts:{vertexMasks:!0,tint:13219990,scale:2.2,detile:.9,weather:[.4,.04,.08,.14],wear:[0,.5,.45,0]}},asphalt:{name:"asphalt",surface:"concrete",opts:{vertexMasks:!0,tint:10327690,scale:3.2,detile:.6,wear:[0,.55,.45,0]}},road_rut:{name:"asphalt",surface:"concrete",opts:{vertexMasks:!0,tint:7301730,scale:1.5,detile:.7,weather:[.3,.5,.15,.28],wear:[0,.55,.45,0]}},sand:{name:"sand",surface:"sand",opts:{vertexMasks:!0,scale:2.6,detile:.7,wear:[0,.45,.45,0]}},dirt:{name:"dirt",surface:"dirt",opts:{vertexMasks:!0,scale:2.4,detile:.8,wear:[0,.5,.45,0]}},gravel:{name:"gravel",surface:"dirt",opts:{vertexMasks:!0,scale:1.8,wear:[0,.5,.45,0]}},dust_skirt:{name:"gravel",surface:"dirt",opts:{vertexMasks:!0,tint:11050374,scale:1.1,weather:[.3,0,0,.16],wear:[0,.9,.7,0]}},metal_rust:{name:"metal_rust",surface:"metal",opts:{vertexMasks:!0,scale:1.1}},metal_rust_prop:{name:"metal_rust",surface:"metal",opts:{vertexMasks:!0,tint:10320998,scale:.4,normalStrength:1.35,weather:[.5,.35,.3,.5]}},metal_blue:{name:"metal_painted",surface:"metal",opts:{vertexMasks:!0,t
