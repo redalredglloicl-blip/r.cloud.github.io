@@ -2,48 +2,47 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ألعاب Rio 🎮</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>عالم ريو 🌍</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{min-height:100%;background:radial-gradient(ellipse at 50% 20%,#16213e 0%,#0b0f1a 70%);font-family:'Segoe UI',Tahoma,Arial,sans-serif;color:#fff}
-.wrap{max-width:720px;margin:0 auto;padding:40px 18px 60px;text-align:center}
-h1{font-size:38px;margin-bottom:6px}
-h1 .rio{background:linear-gradient(90deg,#4fc3f7,#a5ff8a);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.sub{color:#9fb3c8;font-size:14px;margin-bottom:30px}
-.cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media(max-width:520px){.cards{grid-template-columns:1fr}}
-.card{background:#141d33;border:1px solid #2a3a55;border-radius:20px;padding:26px 18px;text-decoration:none;color:#fff;display:block;transition:transform .15s,border-color .15s}
-.card:hover{transform:translateY(-4px);border-color:#4fc3f7}
-.card .em{font-size:52px;display:block;margin-bottom:12px}
-.card h2{font-size:20px;margin-bottom:8px}
-.card p{font-size:13px;color:#9fb3c8;line-height:1.7}
-.card .play{display:inline-block;margin-top:14px;padding:10px 26px;border-radius:12px;background:linear-gradient(135deg,#4fc3f7,#2e9bd6);font-weight:bold;font-size:14px}
-.card.new{position:relative;border-color:#4fc3f766}
-.badge{position:absolute;top:12px;left:12px;background:#ff7043;color:#fff;font-size:11px;font-weight:bold;padding:4px 10px;border-radius:20px}
-.foot{margin-top:34px;color:#3a4a63;font-size:12px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#0b0f1a;font-family:'Segoe UI',Tahoma,Arial,sans-serif;touch-action:none;user-select:none}
+#game{position:fixed;inset:0}
+#load{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 30%,#16213e 0%,#0b0f1a 70%);color:#fff;padding:24px;text-align:center}
+#load h1{font-size:30px;margin-bottom:14px}
+#barWrap{width:min(380px,84vw);height:10px;background:#1c2946;border-radius:6px;overflow:hidden;margin-bottom:12px}
+#bar{height:100%;width:0%;background:linear-gradient(90deg,#4fc3f7,#a5ff8a);border-radius:6px;transition:width .3s}
+#loadMsg{font-size:14px;color:#9fd8ff;line-height:1.8;max-width:420px}
+#hud{position:fixed;inset:0;z-index:20;pointer-events:none;display:none}
+#hint{position:absolute;bottom:12px;right:50%;transform:translateX(50%);background:rgba(0,0,0,.5);color:#cfe3ff;border-radius:20px;padding:7px 18px;font-size:12px;white-space:nowrap}
+#title{position:absolute;top:10px;right:50%;transform:translateX(50%);background:rgba(0,0,0,.5);color:#fff;border-radius:20px;padding:7px 20px;font-size:14px;font-weight:bold}
+#credit{position:absolute;bottom:12px;left:10px;color:#ffffff88;font-size:10px;background:rgba(0,0,0,.35);padding:4px 10px;border-radius:10px}
+#touch{position:fixed;inset:0;z-index:25;pointer-events:none;display:none}
+#joy{position:absolute;bottom:70px;left:26px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.25);pointer-events:auto}
+#knob{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;background:rgba(79,195,247,.5);border:2px solid rgba(255,255,255,.4)}
+#jumpBtn{position:absolute;bottom:80px;right:30px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.3);color:#fff;font-size:14px;pointer-events:auto;display:flex;align-items:center;justify-content:center}
+#msg{position:fixed;top:60px;right:50%;transform:translateX(50%);z-index:30;background:rgba(0,0,0,.75);color:#ffe082;border-radius:12px;padding:10px 20px;font-size:14px;display:none;max-width:90vw;text-align:center}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>🎮 ألعاب <span class="rio">Rio</span></h1>
-  <div class="sub">اختر لعبتك وانطلق!</div>
-  <div class="cards">
-    <a class="card new" href="drive.html">
-      <span class="badge">جديد 🔥</span>
-      <span class="em">🌍</span>
-      <h2>Rio Drive</h2>
-      <p>سُق سيارتك على <b>شوارع حقيقية</b>! اكتب اسم أي مدينة بالعالم — بغداد، دبي، إسطنبول — واللعبة تبنيها لك بخرائط حقيقية</p>
-      <span class="play">العب الآن 🚀</span>
-    </a>
-    <a class="card" href="gta.html">
-      <span class="em">🏙️</span>
-      <h2>GTA العراق — لوس سانتوس</h2>
-      <p>عالم مفتوح: امشِ، اسرق سيارات 🚗، اهرب من الشرطة 🚔، استكشف داون تاون وشاطئ البحر ولافتة VINEWOOD</p>
-      <span class="play">العب الآن 🚀</span>
-    </a>
-  </div>
-  <div class="foot">صُنعت بـ ❤️ بواسطة Muse لرضا</div>
+<div id="game"></div>
+<div id="load">
+  <h1>🌍 عالم ريو</h1>
+  <div id="barWrap"><div id="bar"></div></div>
+  <div id="loadMsg">جاري التحميل...</div>
 </div>
+<div id="hud">
+  <div id="title">🌍 عالم ريو</div>
+  <div id="hint">WASD / الأسهم للمشي • Shift للركض • مسافة للقفز • اسحب لتدوير الكاميرا</div>
+  <div id="credit"></div>
+</div>
+<div id="msg"></div>
+<div id="touch">
+  <div id="joy"><div id="knob"></div></div>
+  <div id="jumpBtn">قفز</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="game.js"></script>
 </body>
 </html>
