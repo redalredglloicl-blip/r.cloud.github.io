@@ -243,25 +243,87 @@ function dlUpdate(stage,full){
   $('dlLeft').textContent=(Math.max(0,total-done)/1048576).toFixed(1);
   if(stage)$('loadMsg').innerHTML=stage;
 }
-// ====== تنزيل ملف مع تقدم ومهلة وإعادة محاولة ======
-function dlFile(url,onp){
+// ====== تنزيل مجزّأ: قطع 2MB بإعادة محاولة مستقلة لكل قطعة ======
+var CHUNK=2*1048576;
+function dlSingle(url,onp,knownSize){
   return new Promise(function(res,rej){
     var tries=0;
     function attempt(){
       tries++;
       var xhr=new XMLHttpRequest();
       xhr.open('GET',url,true);xhr.responseType='arraybuffer';xhr.timeout=90000;
-      xhr.onprogress=function(e){onp(e.loaded,e.lengthComputable?e.total:0);};
+      xhr.onprogress=function(e){onp(e.loaded,e.lengthComputable?e.total:(knownSize||0));};
       xhr.onload=function(){
         if(xhr.status>=200&&xhr.status<300)res(xhr.response);
-        else if(tries<3){onp(0,0);attempt();}
-        else rej(new Error('HTTP '+xhr.status));
+        else if(tries<4)attempt();else rej(new Error('HTTP '+xhr.status));
       };
-      xhr.onerror=function(){if(tries<3){onp(0,0);attempt();}else rej(new Error('network'));};
-      xhr.ontimeout=function(){if(tries<3){onp(0,0);attempt();}else rej(new Error('timeout'));};
+      xhr.onerror=function(){if(tries<4)attempt();else rej(new Error('net'));};
+      xhr.ontimeout=function(){if(tries<4)attempt();else rej(new Error('timeout'));};
       xhr.send();
     }
     attempt();
+  });
+}
+function dlChunked(url,onp,size){
+  var n=Math.ceil(size/CHUNK),parts=new Array(n),prog=new Array(n).fill(0);
+  function sum(){var s=0;for(var k=0;k<n;k++)s+=prog[k];return s;}
+  function getChunk(i){
+    return new Promise(function(res,rej){
+      var tries=0;
+      function attempt(){
+        tries++;
+        var xhr=new XMLHttpRequest();
+        xhr.open('GET',url,true);xhr.responseType='arraybuffer';xhr.timeout=60000;
+        xhr.setRequestHeader('Range','bytes='+(i*CHUNK)+'-'+Math.min((i+1)*CHUNK-1,size-1));
+        xhr.onprogress=function(e){prog[i]=e.loaded;onp(sum(),size);};
+        xhr.onload=function(){
+          if(xhr.status===206){
+            parts[i]=xhr.response;prog[i]=xhr.response.byteLength;onp(sum(),size);res();
+          }
+          else if(tries<5){prog[i]=0;attempt();}
+          else rej(new Error('HTTP '+xhr.status));
+        };
+        xhr.onerror=function(){if(tries<5){prog[i]=0;attempt();}else rej(new Error('net'));};
+        xhr.ontimeout=function(){if(tries<5){prog[i]=0;attempt();}else rej(new Error('timeout'));};
+        xhr.send();
+      }
+      attempt();
+    });
+  }
+  var idx=0;
+  function worker(){
+    if(idx>=n)return Promise.resolve();
+    var i=idx++;
+    return getChunk(i).then(worker);
+  }
+  var workers=[],W=Math.min(3,n);
+  for(var w=0;w<W;w++)workers.push(worker());
+  return Promise.all(workers).then(function(){
+    var buf=new Uint8Array(size),off=0;
+    for(var j=0;j<n;j++){
+      if(!parts[j])throw new Error('missing chunk '+j);
+      buf.set(new Uint8Array(parts[j]),off);off+=parts[j].byteLength;
+    }
+    return buf.buffer;
+  });
+}
+function dlFile(url,onp){
+  // فحص سريع: هل يدعم الخادم التحميل المجزأ؟
+  return new Promise(function(res,rej){
+    var px=new XMLHttpRequest();
+    px.open('GET',url,true);px.responseType='arraybuffer';px.timeout=25000;
+    px.setRequestHeader('Range','bytes=0-1');
+    px.onload=function(){
+      if(px.status===206){
+        var cr=px.getResponseHeader('Content-Range')||'';
+        var size=parseInt(cr.split('/')[1],10);
+        if(size>0){dlChunked(url,onp,size).then(res,rej);return;}
+      }
+      dlSingle(url,onp,0).then(res,rej);
+    };
+    px.onerror=function(){dlSingle(url,onp,0).then(res,rej);};
+    px.ontimeout=function(){dlSingle(url,onp,0).then(res,rej);};
+    px.send();
   });
 }
 function loadError(msg){
