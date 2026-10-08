@@ -159,24 +159,22 @@
     </div>
   </div>
 
-  <div style="position:fixed;right:8px;bottom:8px;z-index:99;color:#ffa040;background:rgba(0,0,0,.55);font:11px ui-monospace,monospace;padding:3px 8px;border-radius:6px;pointer-events:none">WARZONE · تجربة v1.0</div>
-  <script type="module">
-    // Trial bootstrap: three.min.js ships in chunks (GitHub API arg limits)
-    const parts = [];
-    for (let i = 0; i < 7; i++) {
-      const r = await fetch('assets/t' + i + '.bin');
-      if (!r.ok) throw new Error('chunk t' + i);
-      parts.push(await r.text());
-    }
-    const load = (src) => new Promise((res, rej) => {
-      const s = document.createElement('script');
-      s.src = src; s.onload = res; s.onerror = rej;
-      document.head.appendChild(s);
-    });
-    const blob = URL.createObjectURL(new Blob(parts, { type: 'text/javascript' }));
-    await load(blob);
-    for (const f of ['js/audio.js','js/controls.js','js/bullet.js','js/weapon.js','js/enemy.js','js/player.js','js/ui.js','maps/map1.js','js/map.js','js/game.js','main.js']) await load(f);
-  </script>
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
+  <!-- Game scripts (in order) -->
+  <script src="js/audio.js"></script>
+  <script src="js/controls.js"></script>
+  <script src="js/bullet.js"></script>
+  <script src="js/weapon.js"></script>
+  <script src="js/enemy.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="maps/map1.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/game.js"></script>
+  <script src="main.js"></script>
+
+<div style="position:fixed;right:8px;bottom:8px;z-index:99;color:#ffa040;background:rgba(0,0,0,.55);font:11px ui-monospace,monospace;padding:3px 8px;border-radius:6px;pointer-events:none">WARZONE · تجربة v1.0</div>
 </body>
 </html>

@@ -3,7 +3,7 @@
  * Initializes loading sequence then starts the game.
  */
 
-const __boot = () => {
+window.addEventListener('DOMContentLoaded', () => {
   const loadBar  = document.getElementById('load-bar');
   const loadText = document.getElementById('load-text');
   const loadScreen = document.getElementById('loading-screen');
@@ -34,9 +34,7 @@ const __boot = () => {
     setTimeout(nextStep, 300 + Math.random() * 250);
   }
   setTimeout(nextStep, 200);
-};
-if (document.readyState === 'loading') window.addEventListener('DOMContentLoaded', __boot);
-else __boot();
+});
 
 /* ---- Menu wiring ---- */
 function setupMenu() {
