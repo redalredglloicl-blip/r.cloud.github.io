@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ريو — صانع المحادثات</title>
+<meta name="description" content="اصنع سكرين شات محادثة واتساب أو تيليغرام أو إنستغرام وهمية بثواني — مجاني ومن متصفحك">
+<script src="h2c.js"></script>
+<style>
+  :root{--bg:#0b0f17;--panel:#121826;--panel2:#182034;--line:#26314d;--txt:#eef2fb;--mut:#93a0bd;
+    --acc:#ff5a1f;--acc2:#ffb020;--rad:16px}
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{background:radial-gradient(1200px 600px at 80% -10%,#1c2b52 0%,var(--bg) 55%);color:var(--txt);
+    font-family:"Segoe UI",Tahoma,system-ui,-apple-system,sans-serif;min-height:100vh}
+  header{display:flex;align-items:center;gap:12px;padding:16px 20px;max-width:1180px;margin:0 auto}
+  .logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#25d366,#128c7e);
+    display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 6px 20px rgba(37,211,102,.3)}
+  header h1{font-size:22px;line-height:1.1}
+  header small{color:var(--mut);font-size:12px}
+  .ver{margin-inline-start:auto;color:var(--mut);font-size:11px;border:1px solid var(--line);padding:4px 10px;border-radius:99px;background:var(--panel)}
+  main{max-width:1180px;margin:0 auto;padding:0 16px 40px}
+  .grid{display:grid;grid-template-columns:400px 1fr;gap:20px;align-items:start}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--rad);padding:16px}
+  .card h3{font-size:15px;margin-bottom:12px}
+  .row{margin-bottom:12px}
+  .row label{display:block;font-size:13px;color:var(--mut);margin-bottom:6px}
+  input[type=text],textarea,select{width:100%;background:var(--panel2);color:var(--txt);border:1px solid var(--line);
+    border-radius:10px;padding:10px;font-size:14px;font-family:inherit}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{padding:8px 13px;border-radius:99px;border:1px solid var(--line);background:var(--panel2);color:var(--mut);font-size:13px;cursor:pointer}
+  .chip.on{border-color:var(--acc);color:#fff;background:rgba(255,90,31,.18)}
+  .inline{display:flex;gap:8px;align-items:center}
+  .inline>*{flex:1}
+  .btn{width:100%;padding:13px;border:none;border-radius:12px;cursor:pointer;font-size:15px;font-weight:800;
+    background:linear-gradient(135deg,var(--acc),var(--acc2));color:#1b1005}
+  .btn.alt{background:linear-gradient(135deg,#25d366,#128c7e);color:#06281e}
+  .btn:active{transform:scale(.98)}
+  .ghost{padding:9px 14px;border-radius:10px;cursor:pointer;font-size:13px;background:transparent;border:1px solid var(--line);color:var(--mut)}
+  .hint{font-size:12px;color:var(--mut);line-height:1.7}
+  /* قائمة الرسائل */
+  .msglist{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow:auto}
+  .msgitem{display:flex;gap:8px;align-items:center;background:var(--panel2);border:1px solid var(--line);
+    border-radius:10px;padding:8px 10px;font-size:13px}
+  .msgitem span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .msgitem .who{font-size:11px;color:var(--mut);flex:none}
+  .msgitem button{flex:none;background:none;border:none;color:#ff7a6b;font-size:16px;cursor:pointer}
+  .msgitem .tm{flex:none;color:var(--mut);font-size:11px}
+
+  /* ===== الهاتف ===== */
+  .phonewrap{display:flex;justify-content:center}
+  #phone{width:380px;max-width:100%;border-radius:28px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.55);
+    border:1px solid #2a3350;background:#000;font-family:"Segoe UI",Tahoma,sans-serif}
+  /* شريط الحالة */
+  .statusbar{display:flex;justify-content:space-between;align-items:center;padding:7px 16px 3px;font-size:12.5px;font-weight:600}
+  .statusbar .ic{display:flex;gap:5px;align-items:center;font-size:11px}
+  /* ترويسة المحادثة */
+  .chathead{display:flex;align-items:center;gap:9px;padding:8px 12px}
+  .chathead .back{font-size:19px;opacity:.9}
+  .avatar{width:38px;height:38px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:16px;color:#fff;background:#7d8aa5;overflow:hidden}
+  .avatar img{width:100%;height:100%;object-fit:cover}
+  .chathead .who{flex:1;min-width:0}
+  .chathead .nm{font-size:15.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chathead .st{font-size:12px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chathead .acts{display:flex;gap:16px;font-size:16px;opacity:.9}
+  /* منطقة الرسائل */
+  .chatbody{padding:14px 10px 8px;min-height:430px;display:flex;flex-direction:column;gap:3px}
+  .daychip{align-self:center;font-size:11px;padding:4px 10px;border-radius:8px;margin:6px 0;opacity:.95}
+  .bubble{max-width:78%;padding:7px 9px 5px;border-radius:10px;font-size:14.5px;line-height:1.45;position:relative;
+    word-wrap:break-word;white-space:pre-wrap;box-shadow:0 1px 1px rgba(0,0,0,.12)}
+  .bubble .meta{float:left;margin:8px 0 0 8px;font-size:10.5px;opacity:.65;display:flex;gap:3px;align-items:center}
+  .bubble.me{align-self:flex-start;border-start-end-radius:2px}
+  .bubble.them{align-self:flex-end;border-start-start-radius:2px}
+  [dir="rtl"] .bubble.me{align-self:flex-end}
+  [dir="rtl"] .bubble.them{align-self:flex-start}
+  .ticks{font-size:11px;letter-spacing:-3px}
+  /* شريط الإدخال */
+  .inputbar{display:flex;align-items:center;gap:8px;padding:8px 10px 12px}
+  .inputbar .fakein{flex:1;border-radius:24px;padding:10px 14px;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+  .inputbar .mic{width:42px;height:42px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff}
+
+  /* === أنماط التطبيقات === */
+  /* واتساب */
+  .app-wa .statusbar{background:#075e54;color:#fff}
+  .app-wa .chathead{background:#075e54;color:#fff}
+  .app-wa .chatbody{background:#e5ddd2;background-image:radial-gradient(rgba(0,0,0,.05) 1px,transparent 1px);background-size:18px 18px}
+  .app-wa .daychip{background:#fdf3c6;color:#5a543a;box-shadow:0 1px 1px rgba(0,0,0,.15)}
+  .app-wa .bubble.me{background:#dcf8c6;color:#111}
+  .app-wa .bubble.them{background:#fff;color:#111}
+  .app-wa .inputbar{background:#f0ebe4}
+  .app-wa .fakein{background:#fff;color:#888}
+  .app-wa .mic{background:#075e54}
+  .app-wa .ticks.read{color:#34b7f1}
+  /* تيليغرام */
+  .app-tg .statusbar{background:#17212b;color:#fff}
+  .app-tg .chathead{background:#17212b;color:#fff}
+  .app-tg .chatbody{background:#0e1621}
+  .app-tg .daychip{background:rgba(255,255,255,.14);color:#dbe7f3}
+  .app-tg .bubble.me{background:#2b5278;color:#fff}
+  .app-tg .bubble.them{background:#182533;color:#fff}
+  .app-tg .inputbar{background:#17212b}
+  .app-tg .fakein{background:#242f3d;color:#7f91a4}
+  .app-tg .mic{background:#2b5278}
+  .app-tg .ticks.read{color:#5aa2e0}
+  /* إنستغرام */
+  .app-ig .statusbar{background:#fff;color:#111}
+  .app-ig .chathead{background:#fff;color:#111;border-bottom:1px solid #eee}
+  .app-ig .chatbody{background:#fff}
+  .app-ig .daychip{background:transparent;color:#8e8e8e}
+  .app-ig .bubble.me{background:linear-gradient(45deg,#833ab4,#fd1d1d,#fcb045);color:#fff}
+  .app-ig .bubble.them{background:#efefef;color:#111}
+  .app-ig .inputbar{background:#fff}
+  .app-ig .fakein{background:#fff;border:1px solid #dbdbdb;color:#8e8e8e}
+  .app-ig .mic{background:#0095f6}
+  footer{max-width:1180px;margin:0 auto;padding:0 20px 26px;color:var(--mut);font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">💬</div>
+  <div>
+    <h1>ريو — صانع المحادثات</h1>
+    <small>سكرين شات محادثة وهمية بثواني — للضحك والميمز فقط 😄</small>
+  </div>
+  <span class="ver">الإصدار 1.0</span>
+</header>
+
+<main>
+  <div class="grid">
+    <!-- المعاينة -->
+    <div class="phonewrap">
+      <div id="phone" class="app-wa">
+        <div class="statusbar">
+          <span id="sb-time">21:45</span>
+          <span class="ic"><span>📶</span><span>📡</span><span id="sb-batt">🔋 82%</span></span>
+        </div>
+        <div class="chathead">
+          <span class="back">‹</span>
+          <div class="avatar" id="p-avatar">أ</div>
+          <div class="who">
+            <div class="nm" id="p-name">أحمد</div>
+            <div class="st" id="p-status">متصل الآن</div>
+          </div>
+          <div class="acts"><span>📹</span><span>📞</span><span>⋮</span></div>
+        </div>
+        <div class="chatbody" id="p-body"></div>
+        <div class="inputbar">
+          <div class="fakein"><span>رسالة…</span><span>📎 📷</span></div>
+          <div class="mic">🎤</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- الإعدادات -->
+    <div>
+      <div class="card">
+        <h3>⚙️ إعدادات المحادثة</h3>
+        <div class="row">
+          <label>التطبيق</label>
+          <div class="chips" id="app-chips">
+            <button class="chip on" data-app="app-wa">واتساب</button>
+            <button class="chip" data-app="app-tg">تيليغرام</button>
+            <button class="chip" data-app="app-ig">إنستغرام</button>
+          </div>
+        </div>
+        <div class="row inline">
+          <div>
+            <label>اسم الشخص</label>
+            <input type="text" id="f-name" value="أحمد">
+          </div>
+          <div>
+            <label>الحالة</label>
+            <input type="text" id="f-status" value="متصل الآن">
+          </div>
+        </div>
+        <div class="row inline">
+          <div>
+            <label>ساعة الهاتف</label>
+            <input type="text" id="f-clock" value="21:45">
+          </div>
+          <div>
+            <label>البطارية %</label>
+            <input type="text" id="f-batt" value="82">
+          </div>
+        </div>
+        <div class="row">
+          <label>صورة البروفايل (اختياري)</label>
+          <div class="inline">
+            <input type="file" id="f-avatar" accept="image/*">
+            <button class="ghost" id="btn-avatar-clear" style="flex:none">بدون صورة</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3>✉️ إضافة رسالة</h3>
+        <div class="row">
+          <textarea id="m-text" rows="2" placeholder="نص الرسالة…"></textarea>
+        </div>
+        <div class="row inline">
+          <div class="chips" id="side-chips" style="flex:1.4">
+            <button class="chip on" data-side="them">من الطرف الثاني</button>
+            <button class="chip" data-side="me">مني أنا</button>
+          </div>
+          <div style="flex:.7">
+            <input type="text" id="m-time" value="21:45">
+          </div>
+        </div>
+        <div class="row">
+          <label class="hint"><input type="checkbox" id="m-read" checked style="accent-color:#ff5a1f"> مقروءة (✓✓ زرقاء) — لرسائلي فقط</label>
+        </div>
+        <button class="btn alt" id="btn-add">➕ أضف الرسالة</button>
+        <div class="row" style="margin-top:14px">
+          <label>الرسائل الحالية (اضغط ✕ للحذف — وللتجربة السريعة جرّب الأزرار تحت)</label>
+          <div class="msglist" id="msglist"></div>
+        </div>
+        <div class="inline">
+          <button class="ghost" id="btn-demo">محادثة تجريبية 😂</button>
+          <button class="ghost" id="btn-clear">مسح الكل</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <button class="btn" id="btn-shot">📸 تحميل كصورة PNG</button>
+        <p class="hint" style="margin-top:8px">تنحفظ صورة عالية الجودة جاهزة للمشاركة. هذا الصانع للترفيه والميمز — لا تستخدمه بخداع الناس 🙏</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>ريو — صانع المحادثات © 2026 · للترفيه والميمز فقط</footer>
+
+<script>
+'use strict';
+const $ = (s) => document.querySelector(s);
+const phone = $('#phone'), body = $('#p-body');
+
+let messages = [];   // {text, side:'me'|'them', time, read}
+let avatarUrl = null;
+
+// رسالة ترحيبية
+messages = [
+  { text: 'هلا والله 👋', side: 'them', time: '21:43', read: true },
+  { text: 'هلا بيك، شلونك؟', side: 'me', time: '21:44', read: true },
+];
+
+function esc(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function render() {
+  $('#p-name').textContent = $('#f-name').value || 'بدون اسم';
+  $('#p-status').textContent = $('#f-status').value || '';
+  $('#sb-time').textContent = $('#f-clock').value || '';
+  $('#sb-batt').textContent = '🔋 ' + ($('#f-batt').value || '82') + '%';
+  const av = $('#p-avatar');
+  if (avatarUrl) {
+    av.innerHTML = `<img src="${avatarUrl}" alt="">`;
+  } else {
+    av.textContent = ($('#f-name').value || '؟').trim().charAt(0) || '؟';
+  }
+  // الرسائل
+  body.innerHTML = '<div class="daychip">اليوم</div>' + messages.map((m) => {
+    const ticks = m.side === 'me' ? `<span class="ticks ${m.read ? 'read' : ''}">✓✓</span>` : '';
+    return `<div class="bubble ${m.side}">${esc(m.text)}<span class="meta">${esc(m.time)} ${ticks}</span></div>`;
+  }).join('');
+  // قائمة الرسائل
+  $('#msglist').innerHTML = messages.map((m, i) =>
+    `<div class="msgitem"><span class="who">${m.side === 'me' ? 'أنا' : 'هو'}</span><span>${esc(m.text)}</span><span class="tm">${esc(m.time)}</span><button data-del="${i}">✕</button></div>`
+  ).join('') || '<p class="hint">لا توجد رسائل بعد</p>';
+  body.scrollTop = body.scrollHeight;
+}
+
+// التطبيق
+$('#app-chips').addEventListener('click', (e) => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  document.querySelectorAll('#app-chips .chip').forEach(x => x.classList.toggle('on', x === c));
+  phone.className = c.dataset.app;
+});
+
+// الحقول
+['f-name', 'f-status', 'f-clock', 'f-batt'].forEach(id => $('#' + id).addEventListener('input', render));
+
+// البروفايل
+$('#f-avatar').addEventListener('change', (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  avatarUrl = URL.createObjectURL(f);
+  render();
+});
+$('#btn-avatar-clear').addEventListener('click', () => {
+  avatarUrl = null; $('#f-avatar').value = ''; render();
+});
+
+// إضافة رسالة
+let side = 'them';
+$('#side-chips').addEventListener('click', (e) => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  document.querySelectorAll('#side-chips .chip').forEach(x => x.classList.toggle('on', x === c));
+  side = c.dataset.side;
+});
+$('#btn-add').addEventListener('click', addMsg);
+$('#m-text').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addMsg(); } });
+function addMsg() {
+  const text = $('#m-text').value.trim();
+  if (!text) return;
+  messages.push({ text, side, time: $('#m-time').value || '21:45', read: $('#m-read').checked });
+  $('#m-text').value = '';
+  render();
+}
+
+// حذف
+$('#msglist').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-del]'); if (!b) return;
+  messages.splice(+b.dataset.del, 1);
+  render();
+});
+$('#btn-clear').addEventListener('click', () => { messages = []; render(); });
+
+// محادثة تجريبية
+$('#btn-demo').addEventListener('click', () => {
+  messages = [
+    { text: 'حبيبي وينك؟ صارلي ساعة أنتظرك 😤', side: 'them', time: '21:40', read: true },
+    { text: 'آسف حياتي انشغلت بالشغل', side: 'me', time: '21:41', read: true },
+    { text: 'شغل؟ لو بلايستيشن؟ 🎮', side: 'them', time: '21:42', read: true },
+    { text: '…اثنينهم', side: 'me', time: '21:43', read: true },
+    { text: 'شفتك متصل وتلعب، لا تكذب 😂', side: 'them', time: '21:44', read: true },
+    { text: 'طيب تعالي العبي وياي', side: 'me', time: '21:45', read: true },
+    { text: 'ماشي بس إذا خسرت تسوي العشا 🍳', side: 'them', time: '21:45', read: true },
+  ];
+  render();
+});
+
+// تصدير صورة — html2canvas مضغوط محلياً (h2c.js)، مع بديل CDN عند الحاجة
+async function ensureHtml2Canvas() {
+  if (window.html2canvas) return;
+  try {
+    const bytes = Uint8Array.from(atob(window.__H2C_B64), (c) => c.charCodeAt(0));
+    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    const code = await new Response(stream).text();
+    const s = document.createElement('script');
+    s.src = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+    await new Promise((res, rej) => { s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+  } catch {
+    await new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      s.onload = res; s.onerror = rej; document.head.appendChild(s);
+    });
+  }
+}
+$('#btn-shot').addEventListener('click', async () => {
+  const btn = $('#btn-shot');
+  btn.textContent = '⏳ جاري التصوير…';
+  try {
+    await ensureHtml2Canvas();
+    const canvas = await html2canvas(phone, { scale: 2.5, backgroundColor: null, logging: false });
+    const a = document.createElement('a');
+    a.download = 'rio-chat.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  } finally {
+    btn.textContent = '📸 تحميل كصورة PNG';
+  }
+});
+
+render();
+</script>
+</body>
+</html>
