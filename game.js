@@ -243,70 +243,111 @@ function dlUpdate(stage,full){
   $('dlLeft').textContent=(Math.max(0,total-done)/1048576).toFixed(1);
   if(stage)$('loadMsg').innerHTML=stage;
 }
-function loadWorld(){
-  dlUpdate('🌍 الاتصال بالخادم...');
-  var loader=new THREE.GLTFLoader();
-  loader.load(WORLD_URL,function(glb){
-    var w=glb.scene;
-    // قياس العالم وتوحيد حجمه
-    worldBox=new THREE.Box3().setFromObject(w);
-    var size=new THREE.Vector3();worldBox.getSize(size);
-    var maxDim=Math.max(size.x,size.z);
-    var s=maxDim>0?320/maxDim:1;
-    if(s!==1){w.scale.setScalar(s);worldBox=new THREE.Box3().setFromObject(w);}
-    // توسيط العالم على الأصل
-    var c=new THREE.Vector3();worldBox.getCenter(c);
-    w.position.x-=c.x;w.position.z-=c.z;
-    worldBox=new THREE.Box3().setFromObject(w);
-    w.traverse(function(o){if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
-    worldG.add(w);
-    groundTargets.push(w);
-    // بناء الضواحي حول المدينة (توسيع العالم)
-    buildOutskirts(worldBox.min.y);
-    // ظل الشمس يتبع اللاعب (يُحدّث كل إطار)
-    sun.shadow.camera.left=-70;sun.shadow.camera.right=70;
-    sun.shadow.camera.top=70;sun.shadow.camera.bottom=-70;
-    sun.shadow.camera.far=600;sun.shadow.camera.updateProjectionMatrix();
-    dlUpdate('🧍 تحميل الشخصية...');
-    loadChar();
-  },function(xhr){
-    if(xhr.loaded){DL.w=xhr.loaded;if(xhr.total)DL.wT=xhr.total;}
-    dlUpdate('🌍 تنزيل العالم...');
-  },function(err){
-    dlUpdate('❌ فشل تحميل العالم — تحقق من الاتصال وحدّث الصفحة',true);
+// ====== تنزيل ملف مع تقدم ومهلة وإعادة محاولة ======
+function dlFile(url,onp){
+  return new Promise(function(res,rej){
+    var tries=0;
+    function attempt(){
+      tries++;
+      var xhr=new XMLHttpRequest();
+      xhr.open('GET',url,true);xhr.responseType='arraybuffer';xhr.timeout=90000;
+      xhr.onprogress=function(e){onp(e.loaded,e.lengthComputable?e.total:0);};
+      xhr.onload=function(){
+        if(xhr.status>=200&&xhr.status<300)res(xhr.response);
+        else if(tries<3){onp(0,0);attempt();}
+        else rej(new Error('HTTP '+xhr.status));
+      };
+      xhr.onerror=function(){if(tries<3){onp(0,0);attempt();}else rej(new Error('network'));};
+      xhr.ontimeout=function(){if(tries<3){onp(0,0);attempt();}else rej(new Error('timeout'));};
+      xhr.send();
+    }
+    attempt();
   });
 }
-
-// ====== تحميل الشخصية ======
-function loadChar(){
-  var loader=new THREE.GLTFLoader();
-  loader.load(CHAR_URL,function(glb){
-    var m=glb.scene;
-    m.traverse(function(o){if(o.isMesh){o.castShadow=true;}});
-    charG.add(m);
-    mixer=new THREE.AnimationMixer(m);
-    (glb.animations||[]).forEach(function(a){
-      anims[a.name]=mixer.clipAction(a);
-    });
-    // نقطة البداية: ابحث عن أرض منخفضة قرب الوسط (تجنّب أسطح المباني)
-    var c=new THREE.Vector3();worldBox.getCenter(c);
-    var bx=c.x,bz=c.z,bg=groundAt(bx,bz);
-    for(var a=0;a<10;a++){
-      var nx=c.x+Math.cos(a/10*Math.PI*2)*28,nz=c.z+Math.sin(a/10*Math.PI*2)*28;
-      var ng=groundAt(nx,nz);
-      if(ng<bg-1&&ng>-40){bg=ng;bx=nx;bz=nz;}
-    }
-    P.x=bx;P.z=bz;
-    P.y=(bg>-40?bg:0)+0.02;
-    playAnim('idle');
-    dlUpdate('✅ اكتمل التنزيل!',true);
-    setTimeout(startGame,600);
-  },function(xhr){
-    if(xhr.loaded){DL.c=xhr.loaded;if(xhr.total)DL.cT=xhr.total;}
-    dlUpdate('🧍 تنزيل الشخصية...');
-  },function(err){
-    dlUpdate('❌ فشل تحميل الشخصية — حدّث الصفحة',true);
+function loadError(msg){
+  $('loadMsg').innerHTML='❌ '+msg;
+  $('retryBtn').style.display='inline-block';
+  $('dlTitle').textContent='فشل التحميل';
+}
+// ====== بدء التحميل: الملفان معاً بالتوازي ======
+function boot(){
+  $('retryBtn').style.display='none';
+  DL.w=0;DL.c=0;
+  dlUpdate('🌍 جاري تنزيل الموارد...');
+  var wP=dlFile(WORLD_URL,function(l,t){DL.w=l;if(t)DL.wT=t;dlUpdate('🌍 تنزيل العالم...');});
+  var cP=dlFile(CHAR_URL,function(l,t){DL.c=l;if(t)DL.cT=t;dlUpdate('🧍 تنزيل الشخصية...');});
+  Promise.all([wP,cP]).then(function(rs){
+    var loader=new THREE.GLTFLoader();
+    dlUpdate('🔨 بناء العالم... <small>(قد يأخذ ثواني)</small>');
+    setTimeout(function(){
+      try{
+        loader.parse(rs[0],'',function(glb){
+          try{
+            onWorldLoaded(glb);
+            dlUpdate('🔨 تجهيز الشخصية...');
+            setTimeout(function(){
+              try{
+                loader.parse(rs[1],'',function(glb2){
+                  try{
+                    onCharLoaded(glb2);
+                    dlUpdate('✅ اكتمل التنزيل!',true);
+                    setTimeout(startGame,600);
+                  }catch(e){loadError('فشل تجهيز الشخصية');}
+                },function(e){loadError('فشل معالجة ملف الشخصية');});
+              }catch(e){loadError('فشل معالجة ملف الشخصية');}
+            },60);
+          }catch(e){loadError('فشل بناء العالم');}
+        },function(e){loadError('فشل معالجة ملف العالم');});
+      }catch(e){loadError('فشل معالجة ملف العالم');}
+    },80);
+  }).catch(function(e){
+    loadError('تعذر تنزيل الموارد — تحقق من الاتصال بالإنترنت');
   });
+}
+// ====== بناء العالم بعد التنزيل ======
+function onWorldLoaded(glb){
+  var w=glb.scene;
+  // قياس العالم وتوحيد حجمه
+  worldBox=new THREE.Box3().setFromObject(w);
+  var size=new THREE.Vector3();worldBox.getSize(size);
+  var maxDim=Math.max(size.x,size.z);
+  var s=maxDim>0?320/maxDim:1;
+  if(s!==1){w.scale.setScalar(s);worldBox=new THREE.Box3().setFromObject(w);}
+  // توسيط العالم على الأصل
+  var c=new THREE.Vector3();worldBox.getCenter(c);
+  w.position.x-=c.x;w.position.z-=c.z;
+  worldBox=new THREE.Box3().setFromObject(w);
+  w.traverse(function(o){if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+  worldG.add(w);
+  groundTargets.push(w);
+  // بناء الضواحي حول المدينة (توسيع العالم)
+  buildOutskirts(worldBox.min.y);
+  // ظل الشمس يتبع اللاعب (يُحدّث كل إطار)
+  sun.shadow.camera.left=-70;sun.shadow.camera.right=70;
+  sun.shadow.camera.top=70;sun.shadow.camera.bottom=-70;
+  sun.shadow.camera.far=600;sun.shadow.camera.updateProjectionMatrix();
+}
+
+// ====== تجهيز الشخصية بعد التنزيل ======
+function onCharLoaded(glb){
+  var m=glb.scene;
+  m.traverse(function(o){if(o.isMesh){o.castShadow=true;}});
+  charG.add(m);
+  mixer=new THREE.AnimationMixer(m);
+  (glb.animations||[]).forEach(function(a){
+    anims[a.name]=mixer.clipAction(a);
+  });
+  // نقطة البداية: ابحث عن أرض منخفضة قرب الوسط (تجنّب أسطح المباني)
+  var c=new THREE.Vector3();worldBox.getCenter(c);
+  var bx=c.x,bz=c.z,bg=groundAt(bx,bz);
+  for(var a=0;a<10;a++){
+    var nx=c.x+Math.cos(a/10*Math.PI*2)*28,nz=c.z+Math.sin(a/10*Math.PI*2)*28;
+    var ng=groundAt(nx,nz);
+    if(ng<bg-1&&ng>-40){bg=ng;bx=nx;bz=nz;}
+  }
+  P.x=bx;P.z=bz;
+  P.y=(bg>-40?bg:0)+0.02;
+  playAnim('idle');
 }
 
 // ====== ارتفاع الأرض (فوق الأهداف الأرضية فقط) ======
@@ -457,6 +498,7 @@ function showMsg(t){
 if(typeof THREE.GLTFLoader==='undefined'){
   dlUpdate('❌ تعذر تحميل مكتبة GLTF',true);
 }else{
-  loadWorld();
+  $('retryBtn').onclick=function(){boot();};
+  boot();
 }
 })();
