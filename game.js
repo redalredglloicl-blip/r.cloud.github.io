@@ -126,9 +126,125 @@ function setupTouch(){
 
 // ====== تحميل العالم ======
 var worldBox=null,rayc=new THREE.Raycaster(),downV=new THREE.Vector3(0,-1,0);
-function setLoad(p,t){$('bar').style.width=Math.round(p*100)+'%';if(t)$('loadMsg').innerHTML=t;}
+var groundTargets=[],colliders=[],clouds=[],suburbDots=[];
+var BOUNDS=740;
+
+// ====== الضواحي: توسيع العالم حول المدينة المستوردة ======
+function scaleUV(geo,sx,sy){
+  var uv=geo.attributes.uv;
+  for(var i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*sx,uv.getY(i)*sy);
+}
+function buildOutskirts(baseY){
+  var R0=195,R1=710;
+  // أرضية شاسعة
+  var gp=new THREE.Mesh(new THREE.PlaneGeometry(2200,2200),
+    new THREE.MeshLambertMaterial({color:0x5f8f4e}));
+  gp.rotation.x=-Math.PI/2;gp.position.y=baseY-0.08;gp.receiveShadow=true;
+  worldG.add(gp);groundTargets.push(gp);
+  var roadM=new THREE.MeshLambertMaterial({color:0x3a3a42});
+  // طريق دائري
+  var ringG=new THREE.RingGeometry(358,372,72);ringG.rotateX(-Math.PI/2);
+  var ring=new THREE.Mesh(ringG,roadM);ring.position.y=baseY+0.02;ring.receiveShadow=true;worldG.add(ring);
+  // طرق شعاعية
+  for(var k=0;k<4;k++){
+    var rg=new THREE.PlaneGeometry(15,R1-R0+80);rg.rotateX(-Math.PI/2);
+    var rad=new THREE.Mesh(rg,roadM);
+    var a=k*Math.PI/2,rr=(R0+R1)/2;
+    rad.position.set(Math.sin(a)*rr,baseY+0.02,Math.cos(a)*rr);
+    rad.rotation.y=a;rad.receiveShadow=true;worldG.add(rad);
+  }
+  // مباني الضواحي
+  var bcols=[0xc9bfae,0xb8a894,0xd6cfc0,0xa89a88,0x9fb3c8,0xc4b49a];
+  var placed=[];
+  for(var b=0;b<60;b++){
+    var ok=false,px=0,pz=0,tr=0;
+    while(!ok&&tr<25){
+      tr++;
+      var aa=Math.random()*Math.PI*2,rad2=R0+20+Math.random()*(R1-R0-40);
+      px=Math.cos(aa)*rad2;pz=Math.sin(aa)*rad2;
+      ok=true;
+      for(var j=0;j<placed.length;j++){
+        if(Math.hypot(px-placed[j][0],pz-placed[j][1])<52){ok=false;break;}
+      }
+    }
+    if(!ok)continue;
+    placed.push([px,pz]);
+    var w=14+Math.random()*14,d=14+Math.random()*14,h=10+Math.random()*30;
+    var bg=new THREE.BoxGeometry(w,h,d);
+    scaleUV(bg,Math.max(w,d)/7,h/7);
+    var bm=new THREE.Mesh(bg,new THREE.MeshLambertMaterial({
+      color:bcols[Math.floor(Math.random()*bcols.length)],map:WIN}));
+    bm.position.set(px,baseY+h/2,pz);
+    bm.rotation.y=(Math.random()<0.5?0:Math.PI/2);
+    bm.castShadow=true;bm.receiveShadow=true;
+    worldG.add(bm);groundTargets.push(bm);
+    colliders.push({x0:px-w/2-0.5,x1:px+w/2+0.5,z0:pz-d/2-0.5,z1:pz+d/2+0.5});
+    suburbDots.push([px,pz]);
+  }
+  // أشجار
+  var trunkG=new THREE.CylinderGeometry(0.3,0.4,1.6,6);
+  var trunkM=new THREE.MeshLambertMaterial({color:0x6b4a2e});
+  var topG=new THREE.ConeGeometry(2.2,5.5,7);
+  var topM=new THREE.MeshLambertMaterial({color:0x2f7a35});
+  for(var t=0;t<110;t++){
+    var ta=Math.random()*Math.PI*2,tr2=R0+10+Math.random()*(R1-R0);
+    var tx=Math.cos(ta)*tr2,tz=Math.sin(ta)*tr2;
+    var near=false;
+    for(var j2=0;j2<placed.length;j2++){
+      if(Math.hypot(tx-placed[j2][0],tz-placed[j2][1])<20){near=true;break;}
+    }
+    if(near)continue;
+    var trk=new THREE.Mesh(trunkG,trunkM);trk.position.set(tx,baseY+0.8,tz);worldG.add(trk);
+    var tp=new THREE.Mesh(topG,topM);tp.position.set(tx,baseY+4.2,tz);worldG.add(tp);
+  }
+  // أعمدة إنارة على الطريق الدائري
+  var poleG=new THREE.CylinderGeometry(0.18,0.24,7,6);
+  var poleM=new THREE.MeshLambertMaterial({color:0x3a3f45});
+  var lampM=new THREE.MeshBasicMaterial({color:0xffe9a8});
+  for(var l=0;l<16;l++){
+    var la=l/16*Math.PI*2;
+    var lx=Math.cos(la)*365,lz=Math.sin(la)*365;
+    var pole=new THREE.Mesh(poleG,poleM);pole.position.set(lx,baseY+3.5,lz);worldG.add(pole);
+    var lamp=new THREE.Mesh(new THREE.SphereGeometry(0.55,8,6),lampM);
+    lamp.position.set(lx,baseY+7.1,lz);worldG.add(lamp);
+  }
+  // جبال بعيدة للأفق
+  var mM=new THREE.MeshLambertMaterial({color:0x6f8272});
+  for(var mI=0;mI<10;mI++){
+    var ma=mI/10*Math.PI*2+Math.random()*0.4;
+    var mr=1050+Math.random()*250,mh=160+Math.random()*140,mw=150+Math.random()*120;
+    var mn=new THREE.Mesh(new THREE.ConeGeometry(mw,mh,7),mM);
+    mn.position.set(Math.cos(ma)*mr,mh/2-10,Math.sin(ma)*mr);
+    worldG.add(mn);
+  }
+  // غيوم متحركة
+  var cM=new THREE.MeshLambertMaterial({color:0xffffff,transparent:true,opacity:0.85});
+  for(var cI=0;cI<7;cI++){
+    var cg=new THREE.Group();
+    for(var sI=0;sI<4;sI++){
+      var s=new THREE.Mesh(new THREE.SphereGeometry(9+Math.random()*9,10,8),cM);
+      s.position.set(sI*13-20+Math.random()*6,Math.random()*4,Math.random()*8-4);
+      s.scale.y=0.55;cg.add(s);
+    }
+    cg.position.set(Math.random()*1600-800,130+Math.random()*70,Math.random()*1600-800);
+    cg.userData.sp=1.5+Math.random()*2;
+    worldG.add(cg);clouds.push(cg);
+  }
+}
+// ====== تتبع التنزيل (عداد احترافي) ======
+var DL={w:0,c:0,wT:12.26*1048576,cT:2.93*1048576};
+function dlUpdate(stage,full){
+  var done=DL.w+DL.c,total=DL.wT+DL.cT;
+  var p=full?1:Math.min(1,done/total);
+  $('bar').style.width=(p*100)+'%';
+  $('pct').textContent=Math.round(p*100)+'%';
+  $('dlDone').textContent=(Math.min(done,total)/1048576).toFixed(1);
+  $('dlTotal').textContent=(total/1048576).toFixed(1);
+  $('dlLeft').textContent=(Math.max(0,total-done)/1048576).toFixed(1);
+  if(stage)$('loadMsg').innerHTML=stage;
+}
 function loadWorld(){
-  setLoad(0.05,'🌍 جاري تحميل العالم...');
+  dlUpdate('🌍 الاتصال بالخادم...');
   var loader=new THREE.GLTFLoader();
   loader.load(WORLD_URL,function(glb){
     var w=glb.scene;
@@ -144,20 +260,20 @@ function loadWorld(){
     worldBox=new THREE.Box3().setFromObject(w);
     w.traverse(function(o){if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
     worldG.add(w);
-    // ظل الشمس يغطي العالم
-    var sz=new THREE.Vector3();worldBox.getSize(sz);
-    var ext=Math.max(sz.x,sz.z)/2;
-    sun.shadow.camera.left=-ext;sun.shadow.camera.right=ext;
-    sun.shadow.camera.top=ext;sun.shadow.camera.bottom=-ext;
-    sun.shadow.camera.far=800;sun.shadow.camera.updateProjectionMatrix();
-    sun.position.set(ext*0.6,ext*1.1,ext*0.4);
-    sun.target.position.set(0,0,0);
-    setLoad(0.55,'🧍 جاري تحميل الشخصية...');
+    groundTargets.push(w);
+    // بناء الضواحي حول المدينة (توسيع العالم)
+    buildOutskirts(worldBox.min.y);
+    // ظل الشمس يتبع اللاعب (يُحدّث كل إطار)
+    sun.shadow.camera.left=-70;sun.shadow.camera.right=70;
+    sun.shadow.camera.top=70;sun.shadow.camera.bottom=-70;
+    sun.shadow.camera.far=600;sun.shadow.camera.updateProjectionMatrix();
+    dlUpdate('🧍 تحميل الشخصية...');
     loadChar();
   },function(xhr){
-    if(xhr.total)setLoad(0.05+0.45*(xhr.loaded/xhr.total),'🌍 جاري تحميل العالم... '+Math.round(xhr.loaded/1024)+'KB');
+    if(xhr.loaded){DL.w=xhr.loaded;if(xhr.total)DL.wT=xhr.total;}
+    dlUpdate('🌍 تنزيل العالم...');
   },function(err){
-    setLoad(0,'❌ فشل تحميل العالم — تحقق من الاتصال وحدّث الصفحة');
+    dlUpdate('❌ فشل تحميل العالم — تحقق من الاتصال وحدّث الصفحة',true);
   });
 }
 
@@ -172,24 +288,31 @@ function loadChar(){
     (glb.animations||[]).forEach(function(a){
       anims[a.name]=mixer.clipAction(a);
     });
-    // نقطة البداية: وسط العالم
+    // نقطة البداية: ابحث عن أرض منخفضة قرب الوسط (تجنّب أسطح المباني)
     var c=new THREE.Vector3();worldBox.getCenter(c);
-    P.x=c.x;P.z=c.z+10;
-    P.y=groundAt(P.x,P.z)+0.02;
+    var bx=c.x,bz=c.z,bg=groundAt(bx,bz);
+    for(var a=0;a<10;a++){
+      var nx=c.x+Math.cos(a/10*Math.PI*2)*28,nz=c.z+Math.sin(a/10*Math.PI*2)*28;
+      var ng=groundAt(nx,nz);
+      if(ng<bg-1&&ng>-40){bg=ng;bx=nx;bz=nz;}
+    }
+    P.x=bx;P.z=bz;
+    P.y=(bg>-40?bg:0)+0.02;
     playAnim('idle');
-    setLoad(1,'✅ جاهز!');
-    setTimeout(startGame,400);
+    dlUpdate('✅ اكتمل التنزيل!',true);
+    setTimeout(startGame,600);
   },function(xhr){
-    if(xhr.total)setLoad(0.55+0.4*(xhr.loaded/xhr.total),'🧍 جاري تحميل الشخصية...');
+    if(xhr.loaded){DL.c=xhr.loaded;if(xhr.total)DL.cT=xhr.total;}
+    dlUpdate('🧍 تنزيل الشخصية...');
   },function(err){
-    setLoad(0,'❌ فشل تحميل الشخصية — حدّث الصفحة');
+    dlUpdate('❌ فشل تحميل الشخصية — حدّث الصفحة',true);
   });
 }
 
-// ====== ارتفاع الأرض ======
+// ====== ارتفاع الأرض (فوق الأهداف الأرضية فقط) ======
 function groundAt(x,z){
-  rayc.set(new THREE.Vector3(x,500,z),downV);
-  var hits=rayc.intersectObject(worldG,true);
+  rayc.set(new THREE.Vector3(x,600,z),downV);
+  var hits=rayc.intersectObjects(groundTargets,true);
   return hits.length?hits[0].point.y:-50;
 }
 
@@ -212,11 +335,19 @@ function stepPlayer(dt){
     P.x+=Math.sin(P.hd)*P.speed*dt;
     P.z+=Math.cos(P.hd)*P.speed*dt;
   }
-  // حدود العالم
-  if(worldBox){
-    var m=2;
-    P.x=Math.max(worldBox.min.x+m,Math.min(worldBox.max.x-m,P.x));
-    P.z=Math.max(worldBox.min.z+m,Math.min(worldBox.max.z-m,P.z));
+  // حدود العالم الموسّع
+  P.x=Math.max(-BOUNDS,Math.min(BOUNDS,P.x));
+  P.z=Math.max(-BOUNDS,Math.min(BOUNDS,P.z));
+  // تصادم مع مباني الضواحي (دفع خارج الصندوق)
+  for(var ci=0;ci<colliders.length;ci++){
+    var cb=colliders[ci];
+    if(P.x>cb.x0-0.7&&P.x<cb.x1+0.7&&P.z>cb.z0-0.7&&P.z<cb.z1+0.7){
+      var dxl=P.x-(cb.x0-0.7),dxr=(cb.x1+0.7)-P.x;
+      var dzl=P.z-(cb.z0-0.7),dzr=(cb.z1+0.7)-P.z;
+      var mn=Math.min(dxl,dxr,dzl,dzr);
+      if(mn===dxl)P.x=cb.x0-0.7;else if(mn===dxr)P.x=cb.x1+0.7;
+      else if(mn===dzl)P.z=cb.z0-0.7;else P.z=cb.z1+0.7;
+    }
   }
   // الجاذبية والقفز
   var g=groundAt(P.x,P.z);
@@ -232,6 +363,7 @@ function stepPlayer(dt){
   charG.position.set(P.x,P.y,P.z);
   charG.rotation.y=P.hd;
   // الأنيميشن حسب السرعة
+  P.moving=moving;P.run=wantRun;
   if(!P.onGround)playAnim('idle');
   else if(P.speed>5.5)playAnim('run');
   else if(P.speed>0.6)playAnim('walk');
@@ -251,6 +383,39 @@ function stepCam(dt){
   camera.position.y+=(ty-camera.position.y)*k;
   camera.position.z+=(tz-camera.position.z)*k;
   camera.lookAt(P.x,P.y+1.7,P.z);
+  // توسع مجال الرؤية عند الركض
+  var tf=(P.moving&&P.run)?68:60;
+  if(Math.abs(camera.fov-tf)>0.05){
+    camera.fov+=(tf-camera.fov)*Math.min(1,dt*5);
+    camera.updateProjectionMatrix();
+  }
+}
+
+// ====== الخريطة المصغرة ======
+var mmapT=0;
+function drawMap(dt){
+  mmapT+=dt;if(mmapT<0.4)return;mmapT=0;
+  var cv=$('mmap');if(!cv||!started)return;
+  var x=cv.getContext('2d'),W=cv.width,cx=W/2,sc=(W/2-6)/BOUNDS;
+  x.clearRect(0,0,W,W);
+  x.fillStyle='rgba(10,20,35,0.9)';
+  x.beginPath();x.arc(cx,cx,cx-2,0,7);x.fill();
+  x.save();
+  x.beginPath();x.arc(cx,cx,cx-2,0,7);x.clip();
+  // مباني الضواحي
+  x.fillStyle='#5a7a9a';
+  for(var i=0;i<suburbDots.length;i++){
+    x.fillRect(cx+suburbDots[i][0]*sc-1.5,cx+suburbDots[i][1]*sc-1.5,3,3);
+  }
+  // وسط المدينة
+  x.fillStyle='#4fc3f7';
+  x.fillRect(cx-8,cx-8,16,16);
+  // اللاعب
+  var px=cx+P.x*sc,pz=cx+P.z*sc;
+  x.save();x.translate(px,pz);x.rotate(-P.hd+Math.PI);
+  x.fillStyle='#fff';
+  x.beginPath();x.moveTo(0,-6);x.lineTo(4,4);x.lineTo(-4,4);x.closePath();x.fill();
+  x.restore();x.restore();
 }
 
 // ====== الحلقة ======
@@ -259,6 +424,17 @@ function loop(){
   requestAnimationFrame(loop);
   var dt=Math.min(clock.getDelta(),0.05);
   stepPlayer(dt);stepCam(dt);
+  // الشمس وظلالها تتبع اللاعب
+  sun.position.set(P.x+55,P.y+95,P.z+38);
+  sun.target.position.set(P.x,P.y,P.z);
+  sun.target.updateMatrixWorld();
+  // الغيوم تنجرف
+  for(var i=0;i<clouds.length;i++){
+    var c=clouds[i];
+    c.position.x+=c.userData.sp*dt;
+    if(c.position.x>950)c.position.x=-950;
+  }
+  drawMap(dt);
   renderer.render(scene,camera);
 }
 function startGame(){
@@ -279,7 +455,7 @@ function showMsg(t){
 
 // ====== انطلاق ======
 if(typeof THREE.GLTFLoader==='undefined'){
-  setLoad(0,'❌ تعذر تحميل مكتبة GLTF');
+  dlUpdate('❌ تعذر تحميل مكتبة GLTF',true);
 }else{
   loadWorld();
 }
