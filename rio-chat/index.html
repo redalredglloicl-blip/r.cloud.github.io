@@ -3,152 +3,222 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ريو — صانع المحادثات</title>
-<meta name="description" content="اصنع سكرين شات محادثة واتساب أو تيليغرام أو إنستغرام وهمية بثواني — مجاني ومن متصفحك">
+<title>ريو شات — صانع محادثات</title>
+<meta name="description" content="صانع سكرين شات محادثات واتساب وتيليغرام وإنستغرام بتصميم حديث وواقعي">
 <script src="h2c.js"></script>
 <style>
-  :root{--bg:#0b0f17;--panel:#121826;--panel2:#182034;--line:#26314d;--txt:#eef2fb;--mut:#93a0bd;
-    --acc:#ff5a1f;--acc2:#ffb020;--rad:16px}
+  /* ============ واجهة الموقع (احترافية نظيفة) ============ */
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --line:#e3e6ea; --ink:#16181d; --mut:#6b7280;
+    --acc:#0e7a5f; --acc-ink:#ffffff; --radius:14px;
+    --shadow:0 1px 2px rgba(16,24,40,.05),0 8px 24px -12px rgba(16,24,40,.12);
+  }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{background:radial-gradient(1200px 600px at 80% -10%,#1c2b52 0%,var(--bg) 55%);color:var(--txt);
-    font-family:"Segoe UI",Tahoma,system-ui,-apple-system,sans-serif;min-height:100vh}
-  header{display:flex;align-items:center;gap:12px;padding:16px 20px;max-width:1180px;margin:0 auto}
-  .logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#25d366,#128c7e);
-    display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 6px 20px rgba(37,211,102,.3)}
-  header h1{font-size:22px;line-height:1.1}
-  header small{color:var(--mut);font-size:12px}
-  .ver{margin-inline-start:auto;color:var(--mut);font-size:11px;border:1px solid var(--line);padding:4px 10px;border-radius:99px;background:var(--panel)}
-  main{max-width:1180px;margin:0 auto;padding:0 16px 40px}
-  .grid{display:grid;grid-template-columns:400px 1fr;gap:20px;align-items:start}
-  @media (max-width:900px){.grid{grid-template-columns:1fr}}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--rad);padding:16px}
-  .card h3{font-size:15px;margin-bottom:12px}
+  body{background:var(--bg);color:var(--ink);
+    font-family:"Segoe UI",Tahoma,system-ui,-apple-system,"Helvetica Neue",sans-serif;min-height:100vh}
+  header{background:var(--card);border-bottom:1px solid var(--line)}
+  .hbar{max-width:1200px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:12px}
+  .mark{width:38px;height:38px;border-radius:10px;background:var(--ink);display:flex;align-items:center;justify-content:center}
+  .mark svg{width:20px;height:20px;fill:#fff}
+  header h1{font-size:19px;font-weight:700;letter-spacing:-.2px}
+  header small{display:block;color:var(--mut);font-size:12px;font-weight:400;margin-top:1px}
+  .ver{margin-inline-start:auto;font-size:11px;color:var(--mut);border:1px solid var(--line);
+    border-radius:99px;padding:4px 11px;background:#fafbfc}
+  main{max-width:1200px;margin:0 auto;padding:22px 16px 44px}
+  .grid{display:grid;grid-template-columns:400px 1fr;gap:22px;align-items:start}
+  @media (max-width:920px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+  .card+.card{margin-top:16px}
+  .card h3{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .card h3::after{content:"";flex:1;height:1px;background:var(--line)}
   .row{margin-bottom:12px}
-  .row label{display:block;font-size:13px;color:var(--mut);margin-bottom:6px}
-  input[type=text],textarea,select{width:100%;background:var(--panel2);color:var(--txt);border:1px solid var(--line);
-    border-radius:10px;padding:10px;font-size:14px;font-family:inherit}
-  .chips{display:flex;gap:6px;flex-wrap:wrap}
-  .chip{padding:8px 13px;border-radius:99px;border:1px solid var(--line);background:var(--panel2);color:var(--mut);font-size:13px;cursor:pointer}
-  .chip.on{border-color:var(--acc);color:#fff;background:rgba(255,90,31,.18)}
-  .inline{display:flex;gap:8px;align-items:center}
+  .row label{display:block;font-size:12.5px;color:var(--mut);margin-bottom:6px;font-weight:600}
+  input[type=text],textarea,select{width:100%;background:#fff;color:var(--ink);border:1px solid var(--line);
+    border-radius:9px;padding:10px 12px;font-size:14px;font-family:inherit;transition:border-color .15s, box-shadow .15s}
+  input[type=text]:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(14,122,95,.14)}
+  textarea{resize:vertical}
+  .seg{display:flex;background:#eef1f4;border-radius:10px;padding:3px;gap:3px}
+  .seg button{flex:1;border:none;background:transparent;padding:8px 4px;border-radius:8px;font-size:13px;
+    font-family:inherit;color:var(--mut);cursor:pointer;font-weight:600}
+  .seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.15)}
+  .inline{display:flex;gap:10px}
   .inline>*{flex:1}
-  .btn{width:100%;padding:13px;border:none;border-radius:12px;cursor:pointer;font-size:15px;font-weight:800;
-    background:linear-gradient(135deg,var(--acc),var(--acc2));color:#1b1005}
-  .btn.alt{background:linear-gradient(135deg,#25d366,#128c7e);color:#06281e}
-  .btn:active{transform:scale(.98)}
-  .ghost{padding:9px 14px;border-radius:10px;cursor:pointer;font-size:13px;background:transparent;border:1px solid var(--line);color:var(--mut)}
-  .hint{font-size:12px;color:var(--mut);line-height:1.7}
-  /* قائمة الرسائل */
-  .msglist{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow:auto}
-  .msgitem{display:flex;gap:8px;align-items:center;background:var(--panel2);border:1px solid var(--line);
-    border-radius:10px;padding:8px 10px;font-size:13px}
-  .msgitem span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .msgitem .who{font-size:11px;color:var(--mut);flex:none}
-  .msgitem button{flex:none;background:none;border:none;color:#ff7a6b;font-size:16px;cursor:pointer}
+  .btn{width:100%;padding:12px;border:none;border-radius:10px;cursor:pointer;font-size:14.5px;font-weight:700;
+    font-family:inherit;background:var(--ink);color:#fff;transition:opacity .15s, transform .05s}
+  .btn:active{transform:scale(.99)}
+  .btn.primary{background:var(--acc);color:var(--acc-ink)}
+  .btn:disabled{opacity:.55}
+  .ghost{padding:9px 14px;border-radius:9px;cursor:pointer;font-size:13px;background:#fff;
+    border:1px solid var(--line);color:var(--ink);font-family:inherit;font-weight:600}
+  .ghost.danger{color:#b42318}
+  .hint{font-size:12px;color:var(--mut);line-height:1.8}
+  .check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);cursor:pointer}
+  .check input{width:17px;height:17px;accent-color:var(--acc)}
+  input[type=file]{font-size:13px;color:var(--mut)}
+  .msglist{display:flex;flex-direction:column;gap:6px;max-height:250px;overflow:auto}
+  .msgitem{display:flex;gap:8px;align-items:center;background:#fafbfc;border:1px solid var(--line);
+    border-radius:9px;padding:8px 10px;font-size:13px}
+  .msgitem .who{flex:none;font-size:11px;font-weight:700;color:var(--acc)}
+  .msgitem .who.them{color:#6941c6}
+  .msgitem span.txt{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .msgitem .tm{flex:none;color:var(--mut);font-size:11px}
+  .msgitem button{flex:none;background:none;border:none;color:#b42318;font-size:15px;cursor:pointer;line-height:1}
+  footer{max-width:1200px;margin:0 auto;padding:0 20px 28px;color:var(--mut);font-size:12px;text-align:center}
 
-  /* ===== الهاتف ===== */
-  .phonewrap{display:flex;justify-content:center}
-  #phone{width:380px;max-width:100%;border-radius:28px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.55);
-    border:1px solid #2a3350;background:#000;font-family:"Segoe UI",Tahoma,sans-serif}
-  /* شريط الحالة */
-  .statusbar{display:flex;justify-content:space-between;align-items:center;padding:7px 16px 3px;font-size:12.5px;font-weight:600}
-  .statusbar .ic{display:flex;gap:5px;align-items:center;font-size:11px}
-  /* ترويسة المحادثة */
-  .chathead{display:flex;align-items:center;gap:9px;padding:8px 12px}
-  .chathead .back{font-size:19px;opacity:.9}
-  .avatar{width:38px;height:38px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
-    font-weight:700;font-size:16px;color:#fff;background:#7d8aa5;overflow:hidden}
+  /* ============ إطار الجهاز + الشاشة ============ */
+  .stage{position:sticky;top:18px}
+  @media (max-width:920px){.stage{position:static}}
+  .device{width:384px;max-width:100%;margin:0 auto;background:#0a0a0c;border-radius:44px;padding:11px;
+    box-shadow:0 30px 70px -18px rgba(16,24,40,.45),inset 0 0 0 2px #2c2c30}
+  #phone{border-radius:34px;overflow:hidden;background:#000;height:720px;display:flex;flex-direction:column;
+    font-family:-apple-system,"Segoe UI","Helvetica Neue",Tahoma,sans-serif;position:relative}
+  #phone svg{display:block}
+
+  /* شريط حالة iOS */
+  .statusbar{height:38px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;
+    padding:0 26px 4px;font-size:14.5px;font-weight:600;position:relative;z-index:3}
+  .statusbar .sic{display:flex;align-items:center;gap:6px}
+  .notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:96px;height:24px;
+    background:#000;border-radius:14px;z-index:4}
+
+  /* ترويسة */
+  .chathead{flex:none;display:flex;align-items:center;gap:8px;padding:6px 10px 8px;position:relative;z-index:2}
+  .chathead .bk{display:flex;align-items:center;gap:1px;font-size:15px}
+  .avatar{width:37px;height:37px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+    font-weight:600;font-size:15px;color:#fff;background:#8e8e93;overflow:hidden}
   .avatar img{width:100%;height:100%;object-fit:cover}
   .chathead .who{flex:1;min-width:0}
-  .chathead .nm{font-size:15.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .chathead .st{font-size:12px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .chathead .acts{display:flex;gap:16px;font-size:16px;opacity:.9}
-  /* منطقة الرسائل */
-  .chatbody{padding:14px 10px 8px;min-height:430px;display:flex;flex-direction:column;gap:3px}
-  .daychip{align-self:center;font-size:11px;padding:4px 10px;border-radius:8px;margin:6px 0;opacity:.95}
-  .bubble{max-width:78%;padding:7px 9px 5px;border-radius:10px;font-size:14.5px;line-height:1.45;position:relative;
-    word-wrap:break-word;white-space:pre-wrap;box-shadow:0 1px 1px rgba(0,0,0,.12)}
-  .bubble .meta{float:left;margin:8px 0 0 8px;font-size:10.5px;opacity:.65;display:flex;gap:3px;align-items:center}
-  .bubble.me{align-self:flex-start;border-start-end-radius:2px}
-  .bubble.them{align-self:flex-end;border-start-start-radius:2px}
-  [dir="rtl"] .bubble.me{align-self:flex-end}
-  [dir="rtl"] .bubble.them{align-self:flex-start}
-  .ticks{font-size:11px;letter-spacing:-3px}
-  /* شريط الإدخال */
-  .inputbar{display:flex;align-items:center;gap:8px;padding:8px 10px 12px}
-  .inputbar .fakein{flex:1;border-radius:24px;padding:10px 14px;font-size:14px;display:flex;justify-content:space-between;align-items:center}
-  .inputbar .mic{width:42px;height:42px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff}
+  .chathead .nm{font-size:16px;font-weight:600;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chathead .st{font-size:12px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chathead .acts{display:flex;gap:20px;align-items:center;padding-inline-end:4px}
 
-  /* === أنماط التطبيقات === */
-  /* واتساب */
-  .app-wa .statusbar{background:#075e54;color:#fff}
-  .app-wa .chathead{background:#075e54;color:#fff}
-  .app-wa .chatbody{background:#e5ddd2;background-image:radial-gradient(rgba(0,0,0,.05) 1px,transparent 1px);background-size:18px 18px}
-  .app-wa .daychip{background:#fdf3c6;color:#5a543a;box-shadow:0 1px 1px rgba(0,0,0,.15)}
-  .app-wa .bubble.me{background:#dcf8c6;color:#111}
-  .app-wa .bubble.them{background:#fff;color:#111}
-  .app-wa .inputbar{background:#f0ebe4}
-  .app-wa .fakein{background:#fff;color:#888}
-  .app-wa .mic{background:#075e54}
-  .app-wa .ticks.read{color:#34b7f1}
-  /* تيليغرام */
+  /* جسم المحادثة */
+  .chatbody{flex:1;overflow-y:auto;padding:10px 12px 6px;display:flex;flex-direction:column;scrollbar-width:none}
+  .chatbody::-webkit-scrollbar{display:none}
+  .daychip{align-self:center;font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:8px;margin:8px 0 10px}
+  .bubble{max-width:76%;padding:6px 8px 7px;font-size:15px;line-height:1.38;position:relative;
+    word-wrap:break-word;overflow-wrap:anywhere;box-shadow:0 1px 1px rgba(11,20,26,.13);margin-top:10px}
+  .bubble.grp{margin-top:2px}
+  .bubble .meta{display:inline-flex;align-items:center;gap:3px;float:left;margin:9px 2px 0 8px;
+    font-size:10.5px;line-height:1;user-select:none}
+  .bubble::after{content:"";position:absolute;bottom:0;width:8px;height:13px}
+  .bubble.tail-r::after{inset-inline-end:-8px}
+  .bubble.tail-l::after{inset-inline-start:-8px}
+  .seenline{align-self:flex-start;font-size:11px;margin:3px 6px 0}
+
+  /* شريط الكتابة */
+  .inputbar{flex:none;display:flex;align-items:flex-end;gap:7px;padding:7px 9px 16px}
+  .fakein{flex:1;border-radius:22px;padding:9px 6px;display:flex;align-items:center;gap:6px;font-size:15px;min-height:40px}
+  .fakein .ph{flex:1;padding:0 6px}
+  .sendbtn{width:41px;height:41px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center}
+
+  /* ==== واتساب (حديث، فاتح) ==== */
+  .app-wa{background:#ece5dd}
+  .app-wa .statusbar{background:#f6f6f6;color:#111}
+  .app-wa .chathead{background:#f6f6f6;color:#111;border-bottom:1px solid rgba(0,0,0,.06)}
+  .app-wa .chathead .st{color:#667781}
+  .app-wa .chathead .bk{color:#007aff}
+  .app-wa .chatbody{background-color:#ece5dd;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110' viewBox='0 0 110 110'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.045' stroke-width='1.3'%3E%3Ccircle cx='18' cy='20' r='5'/%3E%3Cpath d='M52 12l2.4 5 5.4.7-4 3.8 1 5.4-4.8-2.6-4.8 2.6 1-5.4-4-3.8 5.4-.7z'/%3E%3Cpath d='M84 34c3 4 3 8 0 12-3-4-3-8 0-12z'/%3E%3Crect x='24' y='58' width='9' height='9' rx='2'/%3E%3Cpath d='M66 66q6-7 12 0-6 7-12 0z'/%3E%3Ccircle cx='92' cy='86' r='4'/%3E%3Cpath d='M14 92l6-3 3 6-6 3z'/%3E%3C/g%3E%3C/svg%3E")}
+  .app-wa .daychip{background:#fff;color:#54656f;box-shadow:0 1px 1px rgba(11,20,26,.13)}
+  .app-wa .bubble{color:#111b21}
+  .app-wa .bubble.me{background:#d9fdd3;align-self:flex-start;border-radius:9px;border-start-end-radius:0}
+  .app-wa .bubble.them{background:#fff;align-self:flex-end;border-radius:9px;border-start-start-radius:0}
+  [dir="rtl"] .app-wa .bubble.me{align-self:flex-end;border-radius:9px;border-start-start-radius:0}
+  [dir="rtl"] .app-wa .bubble.them{align-self:flex-start;border-radius:9px;border-start-end-radius:0}
+  .app-wa .bubble.me.tail-r::after{background:#d9fdd3;clip-path:polygon(0 0,0 100%,100% 100%)}
+  .app-wa .bubble.them.tail-l::after{background:#fff;clip-path:polygon(100% 0,0 100%,100% 100%)}
+  [dir="rtl"] .app-wa .bubble.me.tail-r::after{clip-path:polygon(100% 0,0 100%,100% 100%)}
+  [dir="rtl"] .app-wa .bubble.them.tail-l::after{clip-path:polygon(0 0,0 100%,100% 100%)}
+  .app-wa .bubble .meta{color:#667781}
+  .app-wa .inputbar{background:#f0f0f0}
+  .app-wa .fakein{background:#fff;color:#8696a0}
+  .app-wa .sendbtn{background:#00a884}
+  .app-wa .seenline{display:none}
+
+  /* ==== تيليغرام (داكن) ==== */
+  .app-tg{background:#0e1621}
   .app-tg .statusbar{background:#17212b;color:#fff}
   .app-tg .chathead{background:#17212b;color:#fff}
+  .app-tg .chathead .st{color:#7f91a4}
+  .app-tg .chathead .bk{color:#fff}
   .app-tg .chatbody{background:#0e1621}
-  .app-tg .daychip{background:rgba(255,255,255,.14);color:#dbe7f3}
-  .app-tg .bubble.me{background:#2b5278;color:#fff}
-  .app-tg .bubble.them{background:#182533;color:#fff}
+  .app-tg .daychip{background:rgba(23,33,43,.85);color:#fff}
+  .app-tg .bubble{color:#fff;box-shadow:none}
+  .app-tg .bubble.me{background:#2b5278;align-self:flex-start;border-radius:12px;border-end-end-radius:3px}
+  .app-tg .bubble.them{background:#182533;align-self:flex-end;border-radius:12px;border-end-start-radius:3px}
+  [dir="rtl"] .app-tg .bubble.me{align-self:flex-end}
+  [dir="rtl"] .app-tg .bubble.them{align-self:flex-start}
+  .app-tg .bubble .meta{color:#7fb2d9}
+  .app-tg .bubble.them .meta{color:#63788f}
   .app-tg .inputbar{background:#17212b}
-  .app-tg .fakein{background:#242f3d;color:#7f91a4}
-  .app-tg .mic{background:#2b5278}
-  .app-tg .ticks.read{color:#5aa2e0}
-  /* إنستغرام */
+  .app-tg .fakein{background:transparent;color:#5d7186;padding:9px 2px}
+  .app-tg .sendbtn{background:transparent}
+  .app-tg .seenline{display:none}
+
+  /* ==== إنستغرام ==== */
+  .app-ig{background:#fff}
   .app-ig .statusbar{background:#fff;color:#111}
-  .app-ig .chathead{background:#fff;color:#111;border-bottom:1px solid #eee}
+  .app-ig .chathead{background:#fff;color:#111;border-bottom:1px solid #efefef}
+  .app-ig .chathead .st{color:#8e8e8e}
+  .app-ig .chathead .bk{color:#111}
   .app-ig .chatbody{background:#fff}
-  .app-ig .daychip{background:transparent;color:#8e8e8e}
-  .app-ig .bubble.me{background:linear-gradient(45deg,#833ab4,#fd1d1d,#fcb045);color:#fff}
-  .app-ig .bubble.them{background:#efefef;color:#111}
+  .app-ig .daychip{background:transparent;color:#8e8e8e;font-weight:400}
+  .app-ig .bubble{box-shadow:none;font-size:15px}
+  .app-ig .bubble.me{background:linear-gradient(45deg,#7b3ff2,#c13584,#f77737);color:#fff;align-self:flex-start;border-radius:20px}
+  .app-ig .bubble.them{background:#efefef;color:#111;align-self:flex-end;border-radius:20px}
+  [dir="rtl"] .app-ig .bubble.me{align-self:flex-end}
+  [dir="rtl"] .app-ig .bubble.them{align-self:flex-start}
+  .app-ig .bubble .meta{color:rgba(255,255,255,.75)}
+  .app-ig .bubble.them .meta{color:#8e8e8e}
+  .app-ig .seenline{color:#8e8e8e;align-self:flex-start}
+  [dir="rtl"] .app-ig .seenline{align-self:flex-end}
   .app-ig .inputbar{background:#fff}
-  .app-ig .fakein{background:#fff;border:1px solid #dbdbdb;color:#8e8e8e}
-  .app-ig .mic{background:#0095f6}
-  footer{max-width:1180px;margin:0 auto;padding:0 20px 26px;color:var(--mut);font-size:12px;text-align:center}
+  .app-ig .fakein{background:#fff;border:1px solid #dbdbdb;color:#8e8e8e;border-radius:24px}
+  .app-ig .sendbtn{background:transparent}
+  .app-ig .bubble::after{display:none}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">💬</div>
-  <div>
-    <h1>ريو — صانع المحادثات</h1>
-    <small>سكرين شات محادثة وهمية بثواني — للضحك والميمز فقط 😄</small>
+  <div class="hbar">
+    <div class="mark">
+      <svg viewBox="0 0 24 24"><path d="M12 3C6.5 3 2 6.9 2 11.8c0 2.8 1.5 5.3 3.9 7L5.6 22l3.5-1.7c.9.2 1.9.3 2.9.3 5.5 0 10-3.9 10-8.8S17.5 3 12 3z"/></svg>
+    </div>
+    <div>
+      <h1>ريو شات</h1>
+      <small>صانع سكرين شات محادثات — واتساب · تيليغرام · إنستغرام</small>
+    </div>
+    <span class="ver">الإصدار 2.0</span>
   </div>
-  <span class="ver">الإصدار 1.0</span>
 </header>
 
 <main>
   <div class="grid">
     <!-- المعاينة -->
-    <div class="phonewrap">
-      <div id="phone" class="app-wa">
-        <div class="statusbar">
-          <span id="sb-time">21:45</span>
-          <span class="ic"><span>📶</span><span>📡</span><span id="sb-batt">🔋 82%</span></span>
-        </div>
-        <div class="chathead">
-          <span class="back">‹</span>
-          <div class="avatar" id="p-avatar">أ</div>
-          <div class="who">
-            <div class="nm" id="p-name">أحمد</div>
-            <div class="st" id="p-status">متصل الآن</div>
+    <div class="stage">
+      <div class="device">
+        <div id="phone" class="app-wa">
+          <div class="statusbar">
+            <span id="sb-time">21:45</span>
+            <span class="notch"></span>
+            <span class="sic" id="sb-icons"></span>
           </div>
-          <div class="acts"><span>📹</span><span>📞</span><span>⋮</span></div>
-        </div>
-        <div class="chatbody" id="p-body"></div>
-        <div class="inputbar">
-          <div class="fakein"><span>رسالة…</span><span>📎 📷</span></div>
-          <div class="mic">🎤</div>
+          <div class="chathead">
+            <span class="bk" id="hd-back"></span>
+            <div class="avatar" id="p-avatar">أ</div>
+            <div class="who">
+              <div class="nm" id="p-name">أحمد</div>
+              <div class="st" id="p-status">متصل الآن</div>
+            </div>
+            <div class="acts" id="hd-acts"></div>
+          </div>
+          <div class="chatbody" id="p-body"></div>
+          <div class="inputbar">
+            <div class="fakein" id="fakein"></div>
+            <div class="sendbtn" id="sendbtn"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -156,13 +226,13 @@
     <!-- الإعدادات -->
     <div>
       <div class="card">
-        <h3>⚙️ إعدادات المحادثة</h3>
+        <h3>المحادثة</h3>
         <div class="row">
           <label>التطبيق</label>
-          <div class="chips" id="app-chips">
-            <button class="chip on" data-app="app-wa">واتساب</button>
-            <button class="chip" data-app="app-tg">تيليغرام</button>
-            <button class="chip" data-app="app-ig">إنستغرام</button>
+          <div class="seg" id="app-seg">
+            <button class="on" data-app="wa">واتساب</button>
+            <button data-app="tg">تيليغرام</button>
+            <button data-app="ig">إنستغرام</button>
           </div>
         </div>
         <div class="row inline">
@@ -182,126 +252,183 @@
           </div>
           <div>
             <label>البطارية %</label>
-            <input type="text" id="f-batt" value="82">
+            <input type="text" id="f-batt" value="82" inputmode="numeric">
           </div>
         </div>
         <div class="row">
           <label>صورة البروفايل (اختياري)</label>
-          <div class="inline">
+          <div class="inline" style="align-items:center">
             <input type="file" id="f-avatar" accept="image/*">
-            <button class="ghost" id="btn-avatar-clear" style="flex:none">بدون صورة</button>
+            <button class="ghost" id="btn-avatar-clear" style="flex:none">إزالة</button>
           </div>
         </div>
       </div>
 
-      <div class="card" style="margin-top:16px">
-        <h3>✉️ إضافة رسالة</h3>
+      <div class="card">
+        <h3>الرسائل</h3>
         <div class="row">
           <textarea id="m-text" rows="2" placeholder="نص الرسالة…"></textarea>
         </div>
-        <div class="row inline">
-          <div class="chips" id="side-chips" style="flex:1.4">
-            <button class="chip on" data-side="them">من الطرف الثاني</button>
-            <button class="chip" data-side="me">مني أنا</button>
+        <div class="row inline" style="align-items:end">
+          <div style="flex:1.5">
+            <label>المرسل</label>
+            <div class="seg" id="side-seg">
+              <button class="on" data-side="them">الطرف الثاني</button>
+              <button data-side="me">أنا</button>
+            </div>
           </div>
-          <div style="flex:.7">
+          <div style="flex:.6">
+            <label>الوقت</label>
             <input type="text" id="m-time" value="21:45">
           </div>
         </div>
         <div class="row">
-          <label class="hint"><input type="checkbox" id="m-read" checked style="accent-color:#ff5a1f"> مقروءة (✓✓ زرقاء) — لرسائلي فقط</label>
+          <label class="check"><input type="checkbox" id="m-read" checked> مقروءة (لرسائلي)</label>
         </div>
-        <button class="btn alt" id="btn-add">➕ أضف الرسالة</button>
-        <div class="row" style="margin-top:14px">
-          <label>الرسائل الحالية (اضغط ✕ للحذف — وللتجربة السريعة جرّب الأزرار تحت)</label>
+        <button class="btn primary" id="btn-add">إضافة الرسالة</button>
+        <div class="row" style="margin-top:16px">
+          <label>الرسائل الحالية</label>
           <div class="msglist" id="msglist"></div>
         </div>
         <div class="inline">
-          <button class="ghost" id="btn-demo">محادثة تجريبية 😂</button>
-          <button class="ghost" id="btn-clear">مسح الكل</button>
+          <button class="ghost" id="btn-demo">محادثة تجريبية</button>
+          <button class="ghost danger" id="btn-clear">مسح الكل</button>
         </div>
       </div>
 
-      <div class="card" style="margin-top:16px">
-        <button class="btn" id="btn-shot">📸 تحميل كصورة PNG</button>
-        <p class="hint" style="margin-top:8px">تنحفظ صورة عالية الجودة جاهزة للمشاركة. هذا الصانع للترفيه والميمز — لا تستخدمه بخداع الناس 🙏</p>
+      <div class="card">
+        <button class="btn" id="btn-shot">تحميل كصورة PNG</button>
+        <p class="hint" style="margin-top:10px">تُنزّل صورة بدقة عالية جاهزة للمشاركة. الأداة للترفيه والميمز — لا تستخدمها لخداع أحد.</p>
       </div>
     </div>
   </div>
 </main>
 
-<footer>ريو — صانع المحادثات © 2026 · للترفيه والميمز فقط</footer>
+<footer>ريو شات © 2026</footer>
 
 <script>
 'use strict';
 const $ = (s) => document.querySelector(s);
 const phone = $('#phone'), body = $('#p-body');
 
-let messages = [];   // {text, side:'me'|'them', time, read}
+/* ---------- أيقونات SVG (بدون إيموجي) ---------- */
+const I = {
+  sig: (c) => `<svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="7" width="3" height="5" rx="1" fill="${c}"/><rect x="4.5" y="5" width="3" height="7" rx="1" fill="${c}"/><rect x="9" y="2.5" width="3" height="9.5" rx="1" fill="${c}"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="${c}"/></svg>`,
+  wifi: (c) => `<svg width="17" height="12" viewBox="0 0 17 12"><path d="M8.5 10.6a1.9 1.9 0 1 1 0 .01zM8.5 7.4c1.2 0 2.3.5 3.1 1.3l-1.5 1.5A2.3 2.3 0 0 0 8.5 9.8c-.6 0-1.2.2-1.6.5L5.4 8.7A4.4 4.4 0 0 1 8.5 7.4zM8.5 3.6c2.3 0 4.4.9 6 2.5L13 7.6A6.4 6.4 0 0 0 8.5 5.7c-1.7 0-3.3.7-4.5 1.9L2.5 6.1A8.5 8.5 0 0 1 8.5 3.6zM8.5 0c3.4 0 6.6 1.3 9 3.7L16 5.2A10.6 10.6 0 0 0 8.5 2.1C5.8 2.1 3.3 3.2 1.5 5.2L0 3.7A12.7 12.7 0 0 1 8.5 0z" fill="${c}" transform="scale(0.94)"/></svg>`,
+  batt: (pct, c) => {
+    const w = Math.max(2, Math.min(20, 20 * pct / 100));
+    return `<svg width="27" height="12" viewBox="0 0 27 12"><rect x="0.5" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="${c}" stroke-opacity=".45"/><rect x="2" y="2" width="${w}" height="8" rx="2" fill="${c}"/><path d="M24.5 4v4a2.2 2.2 0 0 0 0-4z" fill="${c}" fill-opacity=".5"/></svg>`;
+  },
+  back: (c) => `<svg width="12" height="20" viewBox="0 0 12 20"><path d="M10 2L2.5 10L10 18" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  video: (c) => `<svg width="24" height="16" viewBox="0 0 24 16"><rect x="0" y="1.5" width="15" height="13" rx="3.5" fill="${c}"/><path d="M17.5 6l6-3.5v11l-6-3.5z" fill="${c}"/></svg>`,
+  call: (c) => `<svg width="20" height="20" viewBox="0 0 24 24"><path d="M6.6 3.2c.3-.3.8-.4 1.2-.2l1.9 1c.4.2.6.7.5 1.1L9.6 8.3c-.1.4 0 .8.3 1.1.8 1 1.8 2 2.8 2.8.3.3.7.4 1.1.3l3.2-.6c.5-.1.9.1 1.1.5l1 1.9c.2.4.1.9-.2 1.2l-1.2 1.1c-.4.4-1 .5-1.5.4C10.4 18.6 5.4 13.6 4 6.8c-.1-.5 0-1.1.4-1.5l2.2-2.1z" fill="${c}"/></svg>`,
+  dots: (c) => `<svg width="5" height="18" viewBox="0 0 5 18"><circle cx="2.5" cy="2.5" r="2.1" fill="${c}"/><circle cx="2.5" cy="9" r="2.1" fill="${c}"/><circle cx="2.5" cy="15.5" r="2.1" fill="${c}"/></svg>`,
+  tick1: (c) => `<svg width="15" height="11" viewBox="0 0 15 11"><path d="M1 6.2l3.4 3.3L13.4 1" fill="none" stroke="${c}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  tick2: (c) => `<svg width="19" height="11" viewBox="0 0 19 11"><path d="M1 6.2l3.4 3.3L13.4 1" fill="none" stroke="${c}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.5 9.9l1.2 1L17.7 2" fill="none" stroke="${c}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" transform="translate(-1.8 -.6)"/></svg>`,
+  smile: (c) => `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.7"><circle cx="12" cy="12" r="9.2"/><circle cx="8.8" cy="10" r="1.2" fill="${c}" stroke="none"/><circle cx="15.2" cy="10" r="1.2" fill="${c}" stroke="none"/><path d="M7.8 14.2c1.1 1.6 2.6 2.4 4.2 2.4s3.1-.8 4.2-2.4"/></svg>`,
+  plus: (c) => `<svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="${c}" stroke-width="2.1" stroke-linecap="round"/></svg>`,
+  clip: (c) => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round"><path d="M20 12.5l-8.2 8.2a5.3 5.3 0 0 1-7.5-7.5L12.7 4.8a3.5 3.5 0 0 1 5 5L9.5 18a1.8 1.8 0 0 1-2.6-2.5l7.6-7.6"/></svg>`,
+  cam: (c) => `<svg width="24" height="20" viewBox="0 0 26 20"><path d="M4 5h4l2-2.5h6L18 5h4a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z" fill="${c}"/><circle cx="13" cy="11.5" r="4" fill="#fff" fill-opacity=".85"/></svg>`,
+  mic: (c) => `<svg width="15" height="22" viewBox="0 0 16 24"><rect x="4.5" y="1" width="7" height="13" rx="3.5" fill="${c}"/><path d="M2 10.5a6 6 0 0 0 12 0M8 16.5V22M4.5 22h7" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round"/></svg>`,
+  plane: (c) => `<svg width="21" height="21" viewBox="0 0 24 24"><path d="M21.4 2.6L2.9 11.2l7 2.6 2.7 7.1 3.4-5.3 5 4.1-1-3.2 3.4-13.9z" fill="${c}"/><path d="M9.9 13.8l11.5-11.2" stroke="#0e1621" stroke-opacity="0" /></svg>`,
+  heart: (c) => `<svg width="22" height="20" viewBox="0 0 24 22"><path d="M12 20.5S2.5 14.6 2.5 8.6A5 5 0 0 1 12 5.4a5 5 0 0 1 9.5 3.2c0 6-9.5 11.9-9.5 11.9z" fill="none" stroke="${c}" stroke-width="1.9"/></svg>`,
+  img: (c) => `<svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.8"><rect x="2.5" y="2.5" width="19" height="19" rx="4"/><circle cx="8.6" cy="8.6" r="1.7" fill="${c}" stroke="none"/><path d="M21 16.5l-5-5L5.5 21"/></svg>`,
+};
+
+/* ---------- لكل تطبيق: ألوان الأيقونات ونصوصها ---------- */
+const APPS = {
+  wa: { head: '#111', accent: '#00a884', chip: null,
+    acts: () => I.video('#111') + I.call('#111'),
+    input: () => I.smile('#8696a0') + '<span class="ph">رسالة</span>' + I.clip('#8696a0') + I.cam('#8696a0'),
+    send: () => I.mic('#fff'), sendBg: null,
+    tick: (m) => m.read ? I.tick2('#53bdeb') : I.tick2('#667781'),
+    ph: 'رسالة' },
+  tg: { head: '#fff', accent: '#2b5278', chip: null,
+    acts: () => I.call('#fff') + I.dots('#fff'),
+    input: () => I.smile('#5d7186') + '<span class="ph">رسالة</span>' + I.clip('#5d7186'),
+    send: () => I.plane('#64a9dc'), sendBg: null,
+    tick: (m) => m.read ? I.tick2('#5aa2e0') : I.tick1('#7fb2d9'),
+    ph: 'رسالة' },
+  ig: { head: '#111', accent: '#0095f6', chip: null,
+    acts: () => I.call('#111') + I.video('#111'),
+    input: () => I.cam('#111') + '<span class="ph">مراسلة…</span>' + I.mic('#111') + I.img('#111') + I.heart('#111'),
+    send: () => I.plane('#0095f6'), sendBg: null,
+    tick: () => '', ph: 'مراسلة…' },
+};
+let curApp = 'wa';
+
+/* ---------- الحالة ---------- */
+let messages = [
+  { text: 'هلا والله، وصلت؟', side: 'them', time: '21:43', read: true },
+  { text: 'اي وصلت، خمس دقايق وأكون عندك', side: 'me', time: '21:44', read: true },
+];
 let avatarUrl = null;
 
-// رسالة ترحيبية
-messages = [
-  { text: 'هلا والله 👋', side: 'them', time: '21:43', read: true },
-  { text: 'هلا بيك، شلونك؟', side: 'me', time: '21:44', read: true },
-];
-
 function esc(s) {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 function render() {
+  const A = APPS[curApp];
+  const dark = curApp === 'tg';
+  const ink = dark ? '#fff' : '#111';
   $('#p-name').textContent = $('#f-name').value || 'بدون اسم';
   $('#p-status').textContent = $('#f-status').value || '';
   $('#sb-time').textContent = $('#f-clock').value || '';
-  $('#sb-batt').textContent = '🔋 ' + ($('#f-batt').value || '82') + '%';
+  $('#sb-icons').innerHTML = I.sig(ink) + I.wifi(ink) + I.batt(parseInt($('#f-batt').value) || 82, ink);
+  $('#hd-back').innerHTML = I.back(curApp === 'wa' ? '#007aff' : ink) + (curApp === 'wa' ? '' : '');
+  $('#hd-acts').innerHTML = A.acts();
   const av = $('#p-avatar');
-  if (avatarUrl) {
-    av.innerHTML = `<img src="${avatarUrl}" alt="">`;
-  } else {
-    av.textContent = ($('#f-name').value || '؟').trim().charAt(0) || '؟';
-  }
-  // الرسائل
-  body.innerHTML = '<div class="daychip">اليوم</div>' + messages.map((m) => {
-    const ticks = m.side === 'me' ? `<span class="ticks ${m.read ? 'read' : ''}">✓✓</span>` : '';
-    return `<div class="bubble ${m.side}">${esc(m.text)}<span class="meta">${esc(m.time)} ${ticks}</span></div>`;
-  }).join('');
-  // قائمة الرسائل
+  if (avatarUrl) av.innerHTML = `<img src="${avatarUrl}" alt="">`;
+  else av.textContent = ($('#f-name').value || '؟').trim().charAt(0) || '؟';
+
+  // الرسائل مع التجميع والذيول
+  let html = '<div class="daychip">اليوم</div>';
+  messages.forEach((m, i) => {
+    const prev = messages[i - 1];
+    const grp = prev && prev.side === m.side;
+    const next = messages[i + 1];
+    const isLastOfGroup = !next || next.side !== m.side;
+    const tailCls = curApp === 'wa' && isLastOfGroup ? (m.side === 'me' ? 'tail-r' : 'tail-l') : '';
+    const tick = m.side === 'me' ? A.tick(m) : '';
+    html += `<div class="bubble ${m.side}${grp ? ' grp' : ''} ${tailCls}">${esc(m.text)}<span class="meta">${esc(m.time)} ${tick}</span></div>`;
+    if (curApp === 'ig' && m.side === 'me' && m.read && i === messages.length - 1) {
+      html += '<div class="seenline">تمت المشاهدة الآن</div>';
+    }
+  });
+  body.innerHTML = html;
+  $('#fakein').innerHTML = A.input();
+  $('#sendbtn').innerHTML = A.send();
+
   $('#msglist').innerHTML = messages.map((m, i) =>
-    `<div class="msgitem"><span class="who">${m.side === 'me' ? 'أنا' : 'هو'}</span><span>${esc(m.text)}</span><span class="tm">${esc(m.time)}</span><button data-del="${i}">✕</button></div>`
+    `<div class="msgitem"><span class="who ${m.side === 'them' ? 'them' : ''}">${m.side === 'me' ? 'أنا' : 'هو'}</span><span class="txt">${esc(m.text)}</span><span class="tm">${esc(m.time)}</span><button data-del="${i}" title="حذف">✕</button></div>`
   ).join('') || '<p class="hint">لا توجد رسائل بعد</p>';
   body.scrollTop = body.scrollHeight;
 }
 
-// التطبيق
-$('#app-chips').addEventListener('click', (e) => {
-  const c = e.target.closest('.chip'); if (!c) return;
-  document.querySelectorAll('#app-chips .chip').forEach(x => x.classList.toggle('on', x === c));
-  phone.className = c.dataset.app;
+/* ---------- أحداث ---------- */
+$('#app-seg').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('#app-seg button').forEach(x => x.classList.toggle('on', x === b));
+  curApp = b.dataset.app;
+  phone.className = 'app-' + curApp;
+  render();
 });
-
-// الحقول
 ['f-name', 'f-status', 'f-clock', 'f-batt'].forEach(id => $('#' + id).addEventListener('input', render));
 
-// البروفايل
 $('#f-avatar').addEventListener('change', (e) => {
   const f = e.target.files[0]; if (!f) return;
   avatarUrl = URL.createObjectURL(f);
   render();
 });
-$('#btn-avatar-clear').addEventListener('click', () => {
-  avatarUrl = null; $('#f-avatar').value = ''; render();
-});
+$('#btn-avatar-clear').addEventListener('click', () => { avatarUrl = null; $('#f-avatar').value = ''; render(); });
 
-// إضافة رسالة
 let side = 'them';
-$('#side-chips').addEventListener('click', (e) => {
-  const c = e.target.closest('.chip'); if (!c) return;
-  document.querySelectorAll('#side-chips .chip').forEach(x => x.classList.toggle('on', x === c));
-  side = c.dataset.side;
+$('#side-seg').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('#side-seg button').forEach(x => x.classList.toggle('on', x === b));
+  side = b.dataset.side;
 });
-$('#btn-add').addEventListener('click', addMsg);
-$('#m-text').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addMsg(); } });
 function addMsg() {
   const text = $('#m-text').value.trim();
   if (!text) return;
@@ -309,8 +436,9 @@ function addMsg() {
   $('#m-text').value = '';
   render();
 }
+$('#btn-add').addEventListener('click', addMsg);
+$('#m-text').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addMsg(); } });
 
-// حذف
 $('#msglist').addEventListener('click', (e) => {
   const b = e.target.closest('[data-del]'); if (!b) return;
   messages.splice(+b.dataset.del, 1);
@@ -318,21 +446,19 @@ $('#msglist').addEventListener('click', (e) => {
 });
 $('#btn-clear').addEventListener('click', () => { messages = []; render(); });
 
-// محادثة تجريبية
 $('#btn-demo').addEventListener('click', () => {
   messages = [
-    { text: 'حبيبي وينك؟ صارلي ساعة أنتظرك 😤', side: 'them', time: '21:40', read: true },
-    { text: 'آسف حياتي انشغلت بالشغل', side: 'me', time: '21:41', read: true },
-    { text: 'شغل؟ لو بلايستيشن؟ 🎮', side: 'them', time: '21:42', read: true },
-    { text: '…اثنينهم', side: 'me', time: '21:43', read: true },
-    { text: 'شفتك متصل وتلعب، لا تكذب 😂', side: 'them', time: '21:44', read: true },
-    { text: 'طيب تعالي العبي وياي', side: 'me', time: '21:45', read: true },
-    { text: 'ماشي بس إذا خسرت تسوي العشا 🍳', side: 'them', time: '21:45', read: true },
+    { text: 'وينك؟ تأخرت', side: 'them', time: '21:38', read: true },
+    { text: 'بالطريق، الازدحام مو طبيعي اليوم', side: 'me', time: '21:40', read: true },
+    { text: 'من أي ساعة طالع؟', side: 'them', time: '21:41', read: true },
+    { text: 'من الستة ونص، ولسا بنص الطريق', side: 'me', time: '21:42', read: true },
+    { text: 'طيب خذ راحتك، الأكل ما يبرد بسرعة', side: 'them', time: '21:43', read: true },
+    { text: 'تمام، ربع ساعة وأوصل', side: 'me', time: '21:45', read: true },
   ];
   render();
 });
 
-// تصدير صورة — html2canvas مضغوط محلياً (h2c.js)، مع بديل CDN عند الحاجة
+/* ---------- تصدير PNG (html2canvas محلي مضغوط) ---------- */
 async function ensureHtml2Canvas() {
   if (window.html2canvas) return;
   try {
@@ -352,16 +478,19 @@ async function ensureHtml2Canvas() {
 }
 $('#btn-shot').addEventListener('click', async () => {
   const btn = $('#btn-shot');
-  btn.textContent = '⏳ جاري التصوير…';
+  const old = btn.textContent;
+  btn.textContent = 'جاري تجهيز الصورة…';
+  btn.disabled = true;
   try {
     await ensureHtml2Canvas();
-    const canvas = await html2canvas(phone, { scale: 2.5, backgroundColor: null, logging: false });
+    const canvas = await html2canvas(phone, { scale: 3, backgroundColor: null, logging: false });
     const a = document.createElement('a');
     a.download = 'rio-chat.png';
     a.href = canvas.toDataURL('image/png');
     a.click();
   } finally {
-    btn.textContent = '📸 تحميل كصورة PNG';
+    btn.textContent = old;
+    btn.disabled = false;
   }
 });
 
