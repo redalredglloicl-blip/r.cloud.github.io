@@ -79,6 +79,21 @@
   .stickybar .btn{width:auto;padding:12px 30px;margin-inline-start:auto}
   footer{max-width:1200px;margin:0 auto;padding:4px 20px 16px;color:var(--mut);font-size:12px;text-align:center}
 
+  /* نافذة نتيجة الحفظ */
+  .modal{position:fixed;inset:0;z-index:90;background:rgba(10,12,16,.72);display:none;
+    align-items:center;justify-content:center;padding:18px}
+  .modal.on{display:flex}
+  .modal .box{background:#fff;border-radius:16px;max-width:420px;width:100%;padding:16px;text-align:center;
+    max-height:92vh;overflow:auto}
+  .modal img{width:100%;border-radius:10px;border:1px solid var(--line)}
+  .modal h4{font-size:16px;margin-bottom:6px}
+  .modal p{font-size:13px;color:var(--mut);line-height:1.7;margin:8px 0 12px}
+  .modal .rowbtns{display:flex;gap:8px}
+  .toast{position:fixed;bottom:96px;inset-inline:0;z-index:99;display:flex;justify-content:center;pointer-events:none}
+  .toast span{background:#b42318;color:#fff;font-size:13.5px;padding:10px 18px;border-radius:99px;
+    box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;transition:opacity .25s}
+  .toast.on span{opacity:1}
+
   /* ============ إطار الجهاز والشاشة ============ */
   .stage{position:sticky;top:18px}
   @media (max-width:920px){.stage{position:static}}
@@ -203,7 +218,7 @@
       <h1>ريو شات</h1>
       <small>صانع سكرين شات محادثات — واتساب · تيليغرام · إنستغرام</small>
     </div>
-    <span class="ver">الإصدار 3.0</span>
+    <span class="ver">الإصدار 4.0</span>
   </div>
 </header>
 
@@ -273,6 +288,15 @@
               <label>البطارية %</label>
               <input type="text" id="f-batt" value="82" inputmode="numeric">
             </div>
+            <div>
+              <label>الشبكة</label>
+              <select id="f-net">
+                <option value="5G" selected>5G</option>
+                <option value="LTE">LTE</option>
+                <option value="4G">4G</option>
+                <option value="">بدون</option>
+              </select>
+            </div>
           </div>
           <div class="row">
             <label>صورة البروفايل (اختياري)</label>
@@ -335,6 +359,20 @@
   </div>
 </div>
 
+<!-- نافذة نتيجة الحفظ -->
+<div class="modal" id="modal">
+  <div class="box">
+    <h4>صورتك جاهزة</h4>
+    <img id="modal-img" alt="سكرين شات المحادثة">
+    <p>اضغط زر المشاركة واختر «حفظ الصورة»، أو اضغط مطولاً على الصورة نفسها واختر «إضافة إلى الصور».</p>
+    <div class="rowbtns">
+      <button class="btn primary" id="btn-share">مشاركة / حفظ</button>
+      <button class="ghost" id="btn-close" style="flex:none">إغلاق</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"><span></span></div>
+
 <script>
 'use strict';
 const $ = (s) => document.querySelector(s);
@@ -346,10 +384,10 @@ const I = {
   sig: (c) => `<svg width="18" height="11" viewBox="0 0 18 11"><rect x="0" y="7" width="3" height="4" rx="1" fill="${c}"/><rect x="4.6" y="5" width="3" height="6" rx="1" fill="${c}"/><rect x="9.2" y="2.6" width="3" height="8.4" rx="1" fill="${c}"/><rect x="13.8" y="0.2" width="3" height="10.8" rx="1" fill="${c}"/></svg>`,
   // واي فاي iOS
   wifi: (c) => `<svg width="16" height="11" viewBox="0 0 16 11"><path d="M8 9.4a1.6 1.6 0 1 1 0 .01zM8 6.2c1 0 2 .4 2.7 1.1l-1.4 1.4A1.9 1.9 0 0 0 8 8.4c-.5 0-1 .2-1.3.5L5.3 7.3A3.9 3.9 0 0 1 8 6.2zM8 3c1.9 0 3.7.8 5 2.1L11.6 6.5A5.6 5.6 0 0 0 8 5.1c-1.4 0-2.7.5-3.6 1.4L3 5.1A7.5 7.5 0 0 1 8 3zM8-.2c2.8 0 5.4 1.1 7.3 3L13.9 4.2A8.6 8.6 0 0 0 8 1.9C6 1.9 4.1 2.6 2.7 4.2L1.3 2.8A10.4 10.4 0 0 1 8-.2z" fill="${c}"/></svg>`,
-  // بطارية iOS: إطار + تعبئة حسب النسبة + قطب
-  batt: (pct, c) => {
-    const w = Math.max(2, Math.min(18.5, 18.5 * pct / 100));
-    return `<svg width="27" height="12" viewBox="0 0 27 12"><rect x="0.5" y="0.5" width="22" height="11" rx="3.4" fill="none" stroke="${c}" stroke-opacity=".4"/><rect x="2" y="2" width="${w}" height="8" rx="1.8" fill="${c}"/><path d="M24.6 4v4a2.1 2.1 0 0 0 0-4z" fill="${c}" fill-opacity=".45"/></svg>`;
+  // بطارية iOS الحالية: إطار ناعم + نسبة مئوية داخل الأيقونة + قطب
+  batt: (pct, c, bgc) => {
+    const w = Math.max(2, Math.min(17, 17 * pct / 100));
+    return `<svg width="30" height="13" viewBox="0 0 30 13"><rect x="0.6" y="0.6" width="24" height="11.8" rx="4" fill="none" stroke="${c}" stroke-opacity=".45" stroke-width="1"/><rect x="2.2" y="2.2" width="${w}" height="8.6" rx="2.2" fill="${c}"/><text x="12.6" y="10.3" text-anchor="middle" font-size="8.2" font-weight="700" font-family="-apple-system,sans-serif" fill="${bgc}">${pct}</text><path d="M27.2 4.6v3.8a2 2 0 0 0 0-3.8z" fill="${c}" fill-opacity=".5"/></svg>`;
   },
   back: (c) => `<svg width="11" height="19" viewBox="0 0 11 19"><path d="M9.2 1.8L2.4 9.5l6.8 7.7" fill="none" stroke="${c}" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   video: (c) => `<svg width="23" height="15" viewBox="0 0 24 16"><rect x="0" y="1.5" width="15" height="13" rx="3.5" fill="${c}"/><path d="M17.5 6l6-3.5v11l-6-3.5z" fill="${c}"/></svg>`,
@@ -370,21 +408,21 @@ const I = {
 
 /* ---------- تجهيزات كل تطبيق ---------- */
 const APPS = {
-  wa: { ink: '#111',
+  wa: { ink: '#111', sbbg: '#f6f6f6',
     acts: () => I.video('#111') + I.call('#111'),
     back: () => I.back('#007aff'),
     input: () => I.smile('#8696a0') + '<span class="ph">رسالة</span>' + I.clip('#8696a0') + I.cam('#8696a0'),
     send: () => I.mic('#fff'),
     tick: (m) => m.read ? I.tick2('#53bdeb') : I.tick2('#667781'),
     enc: 'الرسائل مشفرة تماماً بين الطرفين. اضغط لمعرفة المزيد.' },
-  tg: { ink: '#fff',
+  tg: { ink: '#fff', sbbg: '#17212b',
     acts: () => I.call('#fff') + I.dots('#fff'),
     back: () => I.back('#fff'),
     input: () => I.smile('#5d7186') + '<span class="ph">رسالة</span>' + I.clip('#5d7186'),
     send: () => I.plane('#64a9dc'),
     tick: (m) => m.read ? I.tick2('#5aa2e0') : I.tick1('#7fb2d9'),
     enc: '' },
-  ig: { ink: '#111',
+  ig: { ink: '#111', sbbg: '#ffffff',
     acts: () => I.call('#111') + I.video('#111'),
     back: () => I.back('#111'),
     input: () => I.cam('#111') + '<span class="ph">مراسلة…</span>' + I.mic('#111') + I.img('#111') + I.heart('#111'),
@@ -412,7 +450,7 @@ function render() {
   $('#p-name').textContent = $('#f-name').value || 'بدون اسم';
   $('#p-status').textContent = $('#f-status').value || '';
   $('#sb-time').textContent = arDigits($('#f-clock').value || '');
-  $('#sb-icons').innerHTML = I.sig(A.ink) + I.wifi(A.ink) + I.batt(parseInt($('#f-batt').value) || 82, A.ink);
+  $('#sb-icons').innerHTML = `<span style="font-size:12.5px;font-weight:600">${esc($('#f-net').value)}</span>` + I.sig(A.ink) + I.wifi(A.ink) + I.batt(parseInt($('#f-batt').value) || 82, A.ink, A.sbbg);
   $('#hd-back').innerHTML = A.back();
   $('#hd-acts').innerHTML = A.acts();
   const av = $('#p-avatar');
@@ -458,6 +496,7 @@ $('#app-seg').addEventListener('click', (e) => {
   render();
 });
 ['f-name', 'f-status', 'f-clock', 'f-batt'].forEach(id => $('#' + id).addEventListener('input', render));
+$('#f-net').addEventListener('change', render);
 
 $('#f-avatar').addEventListener('change', (e) => {
   const f = e.target.files[0]; if (!f) return;
@@ -519,17 +558,39 @@ async function ensureHtml2Canvas() {
     });
   }
 }
+let resultBlob = null;
+function showToast(msg) {
+  const t = $('#toast');
+  t.querySelector('span').textContent = msg;
+  t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 3200);
+}
 async function shoot(btn) {
   const old = btn.textContent;
   btn.textContent = 'جاري تجهيز الصورة…';
   btn.disabled = true;
   try {
     await ensureHtml2Canvas();
-    const canvas = await html2canvas(phone, { scale: 3, backgroundColor: null, logging: false });
-    const a = document.createElement('a');
-    a.download = 'rio-chat.png';
-    a.href = canvas.toDataURL('image/png');
-    a.click();
+    const prevRadius = phone.style.borderRadius;
+    phone.style.borderRadius = '0px';   // السكرين شات الحقيقي زواياه حادة
+    let canvas;
+    try {
+      canvas = await html2canvas(phone, { scale: 2.5, backgroundColor: null, logging: false });
+    } finally {
+      phone.style.borderRadius = prevRadius;
+    }
+    resultBlob = await new Promise((r) => canvas.toBlob(r, 'image/png'));
+    if (!resultBlob) throw new Error('empty blob');
+    // على الآيفون: عرض الصورة بنافذة للضغط المطول/المشاركة (التحميل المباشر محجوب)
+    const oldUrl = $('#modal-img').dataset.url;
+    if (oldUrl) URL.revokeObjectURL(oldUrl);
+    const url = URL.createObjectURL(resultBlob);
+    const imgEl = $('#modal-img');
+    imgEl.src = url;
+    imgEl.dataset.url = url;
+    $('#modal').classList.add('on');
+  } catch (err) {
+    showToast('صار خلل بتجهيز الصورة — حدّث الصفحة وجرّب مرة ثانية');
   } finally {
     btn.textContent = old;
     btn.disabled = false;
@@ -537,6 +598,16 @@ async function shoot(btn) {
 }
 $('#btn-shot').addEventListener('click', (e) => shoot(e.currentTarget));
 $('#btn-shot2').addEventListener('click', (e) => shoot(e.currentTarget));
+$('#btn-close').addEventListener('click', () => $('#modal').classList.remove('on'));
+$('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal') $('#modal').classList.remove('on'); });
+$('#btn-share').addEventListener('click', async () => {
+  if (!resultBlob) return;
+  const file = new File([resultBlob], 'rio-chat.png', { type: 'image/png' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file] }); return; } catch { /* المستخدم أغلق */ return; }
+  }
+  window.open($('#modal-img').dataset.url, '_blank');
+});
 
 render();
 </script>
