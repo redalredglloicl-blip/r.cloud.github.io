@@ -39,6 +39,12 @@ addEventListener('resize',function(){camera.aspect=innerWidth/innerHeight;camera
 })();
 var hemi=new THREE.HemisphereLight(0xcfe5ff,0x6a7a5a,0.85);scene.add(hemi);
 var sun=new THREE.DirectionalLight(0xfff1d6,1.15);
+// ====== خامة النوافذ لمباني الضواحي ======
+function winTex(){var c=document.createElement('canvas');c.width=64;c.height=64;
+  var x=c.getContext('2d');x.fillStyle='#9aa0a8';x.fillRect(0,0,64,64);
+  x.fillStyle='#2b3f55';for(var r=0;r<4;r++)for(var q=0;q<4;q++)x.fillRect(6+q*15,6+r*15,9,9);
+  var t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;}
+var WIN=winTex();
 sun.position.set(120,190,70);sun.castShadow=true;
 sun.shadow.mapSize.set(2048,2048);
 sun.shadow.bias=-0.0004;
@@ -358,9 +364,9 @@ function boot(){
                 },function(e){loadError('فشل معالجة ملف الشخصية');});
               }catch(e){loadError('فشل معالجة ملف الشخصية');}
             },60);
-          }catch(e){loadError('فشل بناء العالم');}
+          }catch(e){console.error('onWorldLoaded:',e);loadError('فشل بناء العالم');}
         },function(e){loadError('فشل معالجة ملف العالم');});
-      }catch(e){loadError('فشل معالجة ملف العالم');}
+      }catch(e){console.error('parse world:',e);loadError('فشل معالجة ملف العالم');}
     },80);
   }).catch(function(e){
     loadError('تعذر تنزيل الموارد — تحقق من الاتصال بالإنترنت');
