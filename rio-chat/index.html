@@ -4,68 +4,82 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ريو شات — صانع محادثات</title>
-<meta name="description" content="صانع سكرين شات محادثات واتساب وتيليغرام وإنستغرام بتصميم حديث وواقعي">
+<meta name="description" content="صانع سكرين شات محادثات واتساب وتيليغرام وإنستغرام بمطابقة كاملة للتصاميم الحالية">
 <script src="h2c.js"></script>
 <style>
-  /* ============ واجهة الموقع (احترافية نظيفة) ============ */
+  /* ============ واجهة الموقع ============ */
   :root{
     --bg:#f4f5f7; --card:#ffffff; --line:#e3e6ea; --ink:#16181d; --mut:#6b7280;
-    --acc:#0e7a5f; --acc-ink:#ffffff; --radius:14px;
+    --acc:#0e7a5f; --radius:14px;
     --shadow:0 1px 2px rgba(16,24,40,.05),0 8px 24px -12px rgba(16,24,40,.12);
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{background:var(--bg);color:var(--ink);
-    font-family:"Segoe UI",Tahoma,system-ui,-apple-system,"Helvetica Neue",sans-serif;min-height:100vh}
+    font-family:"Segoe UI",Tahoma,system-ui,-apple-system,"Helvetica Neue",sans-serif;min-height:100vh;padding-bottom:86px}
   header{background:var(--card);border-bottom:1px solid var(--line)}
-  .hbar{max-width:1200px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:12px}
-  .mark{width:38px;height:38px;border-radius:10px;background:var(--ink);display:flex;align-items:center;justify-content:center}
-  .mark svg{width:20px;height:20px;fill:#fff}
-  header h1{font-size:19px;font-weight:700;letter-spacing:-.2px}
-  header small{display:block;color:var(--mut);font-size:12px;font-weight:400;margin-top:1px}
+  .hbar{max-width:1200px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:12px}
+  .mark{width:36px;height:36px;border-radius:10px;background:var(--ink);display:flex;align-items:center;justify-content:center}
+  .mark svg{width:19px;height:19px;fill:#fff}
+  header h1{font-size:18px;font-weight:700;letter-spacing:-.2px}
+  header small{display:block;color:var(--mut);font-size:11.5px;font-weight:400}
   .ver{margin-inline-start:auto;font-size:11px;color:var(--mut);border:1px solid var(--line);
     border-radius:99px;padding:4px 11px;background:#fafbfc}
-  main{max-width:1200px;margin:0 auto;padding:22px 16px 44px}
-  .grid{display:grid;grid-template-columns:400px 1fr;gap:22px;align-items:start}
+  main{max-width:1200px;margin:0 auto;padding:20px 16px 30px}
+  .grid{display:grid;grid-template-columns:392px 1fr;gap:22px;align-items:start}
   @media (max-width:920px){.grid{grid-template-columns:1fr}}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
-  .card+.card{margin-top:16px}
-  .card h3{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-  .card h3::after{content:"";flex:1;height:1px;background:var(--line)}
-  .row{margin-bottom:12px}
-  .row label{display:block;font-size:12.5px;color:var(--mut);margin-bottom:6px;font-weight:600}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .card+.card{margin-top:14px}
+
+  /* تبويبات المحرر */
+  .etabs{display:flex;gap:4px;padding:6px;border-bottom:1px solid var(--line)}
+  .etab{flex:1;border:none;background:transparent;padding:9px 4px;border-radius:9px;font-size:13.5px;
+    font-family:inherit;color:var(--mut);cursor:pointer;font-weight:700}
+  .etab.on{background:#eef1f4;color:var(--ink)}
+  .epane{display:none;padding:16px}
+  .epane.on{display:block}
+  .row{margin-bottom:11px}
+  .row label{display:block;font-size:12.5px;color:var(--mut);margin-bottom:5px;font-weight:600}
   input[type=text],textarea,select{width:100%;background:#fff;color:var(--ink);border:1px solid var(--line);
-    border-radius:9px;padding:10px 12px;font-size:14px;font-family:inherit;transition:border-color .15s, box-shadow .15s}
+    border-radius:9px;padding:9px 11px;font-size:14px;font-family:inherit;transition:border-color .15s, box-shadow .15s}
   input[type=text]:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(14,122,95,.14)}
   textarea{resize:vertical}
   .seg{display:flex;background:#eef1f4;border-radius:10px;padding:3px;gap:3px}
-  .seg button{flex:1;border:none;background:transparent;padding:8px 4px;border-radius:8px;font-size:13px;
+  .seg button{flex:1;border:none;background:transparent;padding:7px 4px;border-radius:8px;font-size:13px;
     font-family:inherit;color:var(--mut);cursor:pointer;font-weight:600}
   .seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.15)}
-  .inline{display:flex;gap:10px}
+  .inline{display:flex;gap:9px}
   .inline>*{flex:1}
   .btn{width:100%;padding:12px;border:none;border-radius:10px;cursor:pointer;font-size:14.5px;font-weight:700;
     font-family:inherit;background:var(--ink);color:#fff;transition:opacity .15s, transform .05s}
   .btn:active{transform:scale(.99)}
-  .btn.primary{background:var(--acc);color:var(--acc-ink)}
+  .btn.primary{background:var(--acc)}
   .btn:disabled{opacity:.55}
-  .ghost{padding:9px 14px;border-radius:9px;cursor:pointer;font-size:13px;background:#fff;
-    border:1px solid var(--line);color:var(--ink);font-family:inherit;font-weight:600}
+  .ghost{padding:9px 12px;border-radius:9px;cursor:pointer;font-size:13px;background:#fff;
+    border:1px solid var(--line);color:var(--ink);font-family:inherit;font-weight:600;flex:1}
   .ghost.danger{color:#b42318}
   .hint{font-size:12px;color:var(--mut);line-height:1.8}
   .check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);cursor:pointer}
   .check input{width:17px;height:17px;accent-color:var(--acc)}
-  input[type=file]{font-size:13px;color:var(--mut)}
-  .msglist{display:flex;flex-direction:column;gap:6px;max-height:250px;overflow:auto}
+  input[type=file]{font-size:13px;color:var(--mut);width:100%}
+  .msglist{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow:auto}
   .msgitem{display:flex;gap:8px;align-items:center;background:#fafbfc;border:1px solid var(--line);
-    border-radius:9px;padding:8px 10px;font-size:13px}
+    border-radius:9px;padding:7px 10px;font-size:13px}
   .msgitem .who{flex:none;font-size:11px;font-weight:700;color:var(--acc)}
   .msgitem .who.them{color:#6941c6}
   .msgitem span.txt{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .msgitem .tm{flex:none;color:var(--mut);font-size:11px}
   .msgitem button{flex:none;background:none;border:none;color:#b42318;font-size:15px;cursor:pointer;line-height:1}
-  footer{max-width:1200px;margin:0 auto;padding:0 20px 28px;color:var(--mut);font-size:12px;text-align:center}
 
-  /* ============ إطار الجهاز + الشاشة ============ */
+  /* شريط التحميل الثابت */
+  .stickybar{position:fixed;inset-inline:0;bottom:0;z-index:50;background:rgba(255,255,255,.88);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+  .stickybar .in{max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+  .stickybar .t{font-size:13px;font-weight:700}
+  .stickybar .t small{display:block;color:var(--mut);font-weight:400;font-size:11px}
+  .stickybar .btn{width:auto;padding:12px 30px;margin-inline-start:auto}
+  footer{max-width:1200px;margin:0 auto;padding:4px 20px 16px;color:var(--mut);font-size:12px;text-align:center}
+
+  /* ============ إطار الجهاز والشاشة ============ */
   .stage{position:sticky;top:18px}
   @media (max-width:920px){.stage{position:static}}
   .device{width:384px;max-width:100%;margin:0 auto;background:#0a0a0c;border-radius:44px;padding:11px;
@@ -74,76 +88,75 @@
     font-family:-apple-system,"Segoe UI","Helvetica Neue",Tahoma,sans-serif;position:relative}
   #phone svg{display:block}
 
-  /* شريط حالة iOS */
-  .statusbar{height:38px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;
-    padding:0 26px 4px;font-size:14.5px;font-weight:600;position:relative;z-index:3}
-  .statusbar .sic{display:flex;align-items:center;gap:6px}
-  .notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:96px;height:24px;
-    background:#000;border-radius:14px;z-index:4}
+  /* شريط حالة iOS — مطابق للأصلي */
+  .statusbar{height:44px;flex:none;display:flex;align-items:center;justify-content:space-between;
+    padding:6px 30px 0;font-size:15.5px;font-weight:600;letter-spacing:.1px;position:relative;z-index:3}
+  .statusbar .sic{display:flex;align-items:center;gap:7px}
 
-  /* ترويسة */
-  .chathead{flex:none;display:flex;align-items:center;gap:8px;padding:6px 10px 8px;position:relative;z-index:2}
-  .chathead .bk{display:flex;align-items:center;gap:1px;font-size:15px}
+  /* ترويسة المحادثة */
+  .chathead{flex:none;display:flex;align-items:center;gap:8px;padding:6px 12px 9px;position:relative;z-index:2}
+  .chathead .bk{display:flex;align-items:center}
   .avatar{width:37px;height:37px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
     font-weight:600;font-size:15px;color:#fff;background:#8e8e93;overflow:hidden}
   .avatar img{width:100%;height:100%;object-fit:cover}
   .chathead .who{flex:1;min-width:0}
-  .chathead .nm{font-size:16px;font-weight:600;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .chathead .st{font-size:12px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .chathead .acts{display:flex;gap:20px;align-items:center;padding-inline-end:4px}
+  .chathead .nm{font-size:16.5px;font-weight:600;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chathead .st{font-size:12.5px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chathead .acts{display:flex;gap:21px;align-items:center;padding-inline-end:3px}
 
   /* جسم المحادثة */
-  .chatbody{flex:1;overflow-y:auto;padding:10px 12px 6px;display:flex;flex-direction:column;scrollbar-width:none}
+  .chatbody{flex:1;overflow-y:auto;padding:8px 12px 6px;display:flex;flex-direction:column;scrollbar-width:none}
   .chatbody::-webkit-scrollbar{display:none}
-  .daychip{align-self:center;font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:8px;margin:8px 0 10px}
-  .bubble{max-width:76%;padding:6px 8px 7px;font-size:15px;line-height:1.38;position:relative;
+  .daychip{align-self:center;font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:8px;margin:8px 0 4px}
+  .enc{align-self:center;font-size:11px;line-height:1.5;text-align:center;max-width:88%;padding:6px 12px;border-radius:8px;margin:4px 0 6px}
+  .bubble{max-width:76%;padding:6px 8px 7px;font-size:15.5px;line-height:1.38;position:relative;
     word-wrap:break-word;overflow-wrap:anywhere;box-shadow:0 1px 1px rgba(11,20,26,.13);margin-top:10px}
   .bubble.grp{margin-top:2px}
-  .bubble .meta{display:inline-flex;align-items:center;gap:3px;float:left;margin:9px 2px 0 8px;
+  .bubble .meta{display:inline-flex;align-items:center;gap:3px;float:left;margin:10px 2px 0 9px;
     font-size:10.5px;line-height:1;user-select:none}
-  .bubble::after{content:"";position:absolute;bottom:0;width:8px;height:13px}
-  .bubble.tail-r::after{inset-inline-end:-8px}
-  .bubble.tail-l::after{inset-inline-start:-8px}
+  /* ذيول واتساب: بالأعلى مثل الأصلي */
+  .bubble::after{content:"";position:absolute;top:0;width:8px;height:13px;display:none}
+  .app-wa .bubble.tail-r::after,.app-wa .bubble.tail-l::after{display:block}
   .seenline{align-self:flex-start;font-size:11px;margin:3px 6px 0}
 
   /* شريط الكتابة */
-  .inputbar{flex:none;display:flex;align-items:flex-end;gap:7px;padding:7px 9px 16px}
-  .fakein{flex:1;border-radius:22px;padding:9px 6px;display:flex;align-items:center;gap:6px;font-size:15px;min-height:40px}
-  .fakein .ph{flex:1;padding:0 6px}
+  .inputbar{flex:none;display:flex;align-items:flex-end;gap:7px;padding:7px 9px 18px}
+  .fakein{flex:1;border-radius:22px;padding:9px 6px;display:flex;align-items:center;gap:6px;font-size:15.5px;min-height:41px}
+  .fakein .ph{flex:1;padding:0 4px}
   .sendbtn{width:41px;height:41px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center}
 
-  /* ==== واتساب (حديث، فاتح) ==== */
+  /* ==== واتساب (التصميم الحالي) ==== */
   .app-wa{background:#ece5dd}
   .app-wa .statusbar{background:#f6f6f6;color:#111}
-  .app-wa .chathead{background:#f6f6f6;color:#111;border-bottom:1px solid rgba(0,0,0,.06)}
+  .app-wa .chathead{background:#f6f6f6;color:#111;border-bottom:1px solid rgba(0,0,0,.05)}
   .app-wa .chathead .st{color:#667781}
-  .app-wa .chathead .bk{color:#007aff}
   .app-wa .chatbody{background-color:#ece5dd;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110' viewBox='0 0 110 110'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.045' stroke-width='1.3'%3E%3Ccircle cx='18' cy='20' r='5'/%3E%3Cpath d='M52 12l2.4 5 5.4.7-4 3.8 1 5.4-4.8-2.6-4.8 2.6 1-5.4-4-3.8 5.4-.7z'/%3E%3Cpath d='M84 34c3 4 3 8 0 12-3-4-3-8 0-12z'/%3E%3Crect x='24' y='58' width='9' height='9' rx='2'/%3E%3Cpath d='M66 66q6-7 12 0-6 7-12 0z'/%3E%3Ccircle cx='92' cy='86' r='4'/%3E%3Cpath d='M14 92l6-3 3 6-6 3z'/%3E%3C/g%3E%3C/svg%3E")}
   .app-wa .daychip{background:#fff;color:#54656f;box-shadow:0 1px 1px rgba(11,20,26,.13)}
+  .app-wa .enc{background:#fdf3c6;color:#54656f;box-shadow:0 1px 1px rgba(11,20,26,.13)}
   .app-wa .bubble{color:#111b21}
-  .app-wa .bubble.me{background:#d9fdd3;align-self:flex-start;border-radius:9px;border-start-end-radius:0}
-  .app-wa .bubble.them{background:#fff;align-self:flex-end;border-radius:9px;border-start-start-radius:0}
-  [dir="rtl"] .app-wa .bubble.me{align-self:flex-end;border-radius:9px;border-start-start-radius:0}
-  [dir="rtl"] .app-wa .bubble.them{align-self:flex-start;border-radius:9px;border-start-end-radius:0}
-  .app-wa .bubble.me.tail-r::after{background:#d9fdd3;clip-path:polygon(0 0,0 100%,100% 100%)}
-  .app-wa .bubble.them.tail-l::after{background:#fff;clip-path:polygon(100% 0,0 100%,100% 100%)}
-  [dir="rtl"] .app-wa .bubble.me.tail-r::after{clip-path:polygon(100% 0,0 100%,100% 100%)}
-  [dir="rtl"] .app-wa .bubble.them.tail-l::after{clip-path:polygon(0 0,0 100%,100% 100%)}
+  .app-wa .bubble.me{background:#d9fdd3;align-self:flex-start;border-radius:8px;border-start-end-radius:0}
+  .app-wa .bubble.them{background:#fff;align-self:flex-end;border-radius:8px;border-start-start-radius:0}
+  [dir="rtl"] .app-wa .bubble.me{align-self:flex-end;border-radius:8px;border-start-start-radius:0}
+  [dir="rtl"] .app-wa .bubble.them{align-self:flex-start;border-radius:8px;border-start-end-radius:0}
+  .app-wa .bubble.tail-r::after{inset-inline-end:-8px;background:#d9fdd3;clip-path:polygon(0 0,0 100%,100% 100%)}
+  .app-wa .bubble.tail-l::after{inset-inline-start:-8px;background:#fff;clip-path:polygon(100% 0,0 100%,100% 100%)}
+  [dir="rtl"] .app-wa .bubble.tail-r::after{clip-path:polygon(100% 0,0 100%,100% 100%)}
+  [dir="rtl"] .app-wa .bubble.tail-l::after{clip-path:polygon(0 0,0 100%,100% 100%)}
   .app-wa .bubble .meta{color:#667781}
   .app-wa .inputbar{background:#f0f0f0}
   .app-wa .fakein{background:#fff;color:#8696a0}
   .app-wa .sendbtn{background:#00a884}
   .app-wa .seenline{display:none}
 
-  /* ==== تيليغرام (داكن) ==== */
+  /* ==== تيليغرام ==== */
   .app-tg{background:#0e1621}
   .app-tg .statusbar{background:#17212b;color:#fff}
   .app-tg .chathead{background:#17212b;color:#fff}
   .app-tg .chathead .st{color:#7f91a4}
-  .app-tg .chathead .bk{color:#fff}
   .app-tg .chatbody{background:#0e1621}
-  .app-tg .daychip{background:rgba(23,33,43,.85);color:#fff}
+  .app-tg .daychip{background:rgba(23,33,43,.88);color:#fff}
+  .app-tg .enc{display:none}
   .app-tg .bubble{color:#fff;box-shadow:none}
   .app-tg .bubble.me{background:#2b5278;align-self:flex-start;border-radius:12px;border-end-end-radius:3px}
   .app-tg .bubble.them{background:#182533;align-self:flex-end;border-radius:12px;border-end-start-radius:3px}
@@ -161,15 +174,15 @@
   .app-ig .statusbar{background:#fff;color:#111}
   .app-ig .chathead{background:#fff;color:#111;border-bottom:1px solid #efefef}
   .app-ig .chathead .st{color:#8e8e8e}
-  .app-ig .chathead .bk{color:#111}
   .app-ig .chatbody{background:#fff}
   .app-ig .daychip{background:transparent;color:#8e8e8e;font-weight:400}
-  .app-ig .bubble{box-shadow:none;font-size:15px}
+  .app-ig .enc{display:none}
+  .app-ig .bubble{box-shadow:none}
   .app-ig .bubble.me{background:linear-gradient(45deg,#7b3ff2,#c13584,#f77737);color:#fff;align-self:flex-start;border-radius:20px}
   .app-ig .bubble.them{background:#efefef;color:#111;align-self:flex-end;border-radius:20px}
   [dir="rtl"] .app-ig .bubble.me{align-self:flex-end}
   [dir="rtl"] .app-ig .bubble.them{align-self:flex-start}
-  .app-ig .bubble .meta{color:rgba(255,255,255,.75)}
+  .app-ig .bubble .meta{color:rgba(255,255,255,.8)}
   .app-ig .bubble.them .meta{color:#8e8e8e}
   .app-ig .seenline{color:#8e8e8e;align-self:flex-start}
   [dir="rtl"] .app-ig .seenline{align-self:flex-end}
@@ -190,7 +203,7 @@
       <h1>ريو شات</h1>
       <small>صانع سكرين شات محادثات — واتساب · تيليغرام · إنستغرام</small>
     </div>
-    <span class="ver">الإصدار 2.0</span>
+    <span class="ver">الإصدار 3.0</span>
   </div>
 </header>
 
@@ -201,8 +214,7 @@
       <div class="device">
         <div id="phone" class="app-wa">
           <div class="statusbar">
-            <span id="sb-time">21:45</span>
-            <span class="notch"></span>
+            <span id="sb-time">٢١:٤٥</span>
             <span class="sic" id="sb-icons"></span>
           </div>
           <div class="chathead">
@@ -223,82 +235,91 @@
       </div>
     </div>
 
-    <!-- الإعدادات -->
+    <!-- المحرر -->
     <div>
       <div class="card">
-        <h3>المحادثة</h3>
-        <div class="row">
-          <label>التطبيق</label>
-          <div class="seg" id="app-seg">
-            <button class="on" data-app="wa">واتساب</button>
-            <button data-app="tg">تيليغرام</button>
-            <button data-app="ig">إنستغرام</button>
-          </div>
+        <div class="etabs">
+          <button class="etab on" data-pane="chat">المحادثة</button>
+          <button class="etab" data-pane="msgs">الرسائل</button>
+          <button class="etab" data-pane="exp">الحفظ</button>
         </div>
-        <div class="row inline">
-          <div>
-            <label>اسم الشخص</label>
-            <input type="text" id="f-name" value="أحمد">
-          </div>
-          <div>
-            <label>الحالة</label>
-            <input type="text" id="f-status" value="متصل الآن">
-          </div>
-        </div>
-        <div class="row inline">
-          <div>
-            <label>ساعة الهاتف</label>
-            <input type="text" id="f-clock" value="21:45">
-          </div>
-          <div>
-            <label>البطارية %</label>
-            <input type="text" id="f-batt" value="82" inputmode="numeric">
-          </div>
-        </div>
-        <div class="row">
-          <label>صورة البروفايل (اختياري)</label>
-          <div class="inline" style="align-items:center">
-            <input type="file" id="f-avatar" accept="image/*">
-            <button class="ghost" id="btn-avatar-clear" style="flex:none">إزالة</button>
-          </div>
-        </div>
-      </div>
 
-      <div class="card">
-        <h3>الرسائل</h3>
-        <div class="row">
-          <textarea id="m-text" rows="2" placeholder="نص الرسالة…"></textarea>
-        </div>
-        <div class="row inline" style="align-items:end">
-          <div style="flex:1.5">
-            <label>المرسل</label>
-            <div class="seg" id="side-seg">
-              <button class="on" data-side="them">الطرف الثاني</button>
-              <button data-side="me">أنا</button>
+        <!-- تبويب المحادثة -->
+        <div class="epane on" id="ep-chat">
+          <div class="row">
+            <label>التطبيق</label>
+            <div class="seg" id="app-seg">
+              <button class="on" data-app="wa">واتساب</button>
+              <button data-app="tg">تيليغرام</button>
+              <button data-app="ig">إنستغرام</button>
             </div>
           </div>
-          <div style="flex:.6">
-            <label>الوقت</label>
-            <input type="text" id="m-time" value="21:45">
+          <div class="row inline">
+            <div>
+              <label>اسم الشخص</label>
+              <input type="text" id="f-name" value="أحمد">
+            </div>
+            <div>
+              <label>الحالة</label>
+              <input type="text" id="f-status" value="متصل الآن">
+            </div>
+          </div>
+          <div class="row inline">
+            <div>
+              <label>ساعة الهاتف</label>
+              <input type="text" id="f-clock" value="21:45">
+            </div>
+            <div>
+              <label>البطارية %</label>
+              <input type="text" id="f-batt" value="82" inputmode="numeric">
+            </div>
+          </div>
+          <div class="row">
+            <label>صورة البروفايل (اختياري)</label>
+            <div class="inline" style="align-items:center">
+              <input type="file" id="f-avatar" accept="image/*">
+              <button class="ghost" id="btn-avatar-clear" style="flex:none">إزالة</button>
+            </div>
           </div>
         </div>
-        <div class="row">
-          <label class="check"><input type="checkbox" id="m-read" checked> مقروءة (لرسائلي)</label>
-        </div>
-        <button class="btn primary" id="btn-add">إضافة الرسالة</button>
-        <div class="row" style="margin-top:16px">
-          <label>الرسائل الحالية</label>
-          <div class="msglist" id="msglist"></div>
-        </div>
-        <div class="inline">
-          <button class="ghost" id="btn-demo">محادثة تجريبية</button>
-          <button class="ghost danger" id="btn-clear">مسح الكل</button>
-        </div>
-      </div>
 
-      <div class="card">
-        <button class="btn" id="btn-shot">تحميل كصورة PNG</button>
-        <p class="hint" style="margin-top:10px">تُنزّل صورة بدقة عالية جاهزة للمشاركة. الأداة للترفيه والميمز — لا تستخدمها لخداع أحد.</p>
+        <!-- تبويب الرسائل -->
+        <div class="epane" id="ep-msgs">
+          <div class="row">
+            <textarea id="m-text" rows="2" placeholder="نص الرسالة…"></textarea>
+          </div>
+          <div class="row inline" style="align-items:end">
+            <div style="flex:1.5">
+              <label>المرسل</label>
+              <div class="seg" id="side-seg">
+                <button class="on" data-side="them">الطرف الثاني</button>
+                <button data-side="me">أنا</button>
+              </div>
+            </div>
+            <div style="flex:.6">
+              <label>الوقت</label>
+              <input type="text" id="m-time" value="21:45">
+            </div>
+          </div>
+          <div class="row">
+            <label class="check"><input type="checkbox" id="m-read" checked> مقروءة (لرسائلي)</label>
+          </div>
+          <button class="btn primary" id="btn-add">إضافة الرسالة</button>
+          <div class="row" style="margin-top:14px">
+            <label>الرسائل الحالية</label>
+            <div class="msglist" id="msglist"></div>
+          </div>
+          <div class="inline">
+            <button class="ghost" id="btn-demo">محادثة تجريبية</button>
+            <button class="ghost danger" id="btn-clear">مسح الكل</button>
+          </div>
+        </div>
+
+        <!-- تبويب الحفظ -->
+        <div class="epane" id="ep-exp">
+          <button class="btn primary" id="btn-shot2">تحميل كصورة PNG</button>
+          <p class="hint" style="margin-top:10px">تُنزّل الصورة بدقة عالية جاهزة للمشاركة. الأداة للترفيه والميمز — لا تستخدمها لخداع أحد.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -306,54 +327,70 @@
 
 <footer>ريو شات © 2026</footer>
 
+<!-- شريط التحميل الثابت -->
+<div class="stickybar">
+  <div class="in">
+    <div class="t">جاهز؟<small>راجع المعاينة ثم حمّل الصورة</small></div>
+    <button class="btn primary" id="btn-shot">تحميل الصورة PNG</button>
+  </div>
+</div>
+
 <script>
 'use strict';
 const $ = (s) => document.querySelector(s);
 const phone = $('#phone'), body = $('#p-body');
 
-/* ---------- أيقونات SVG (بدون إيموجي) ---------- */
+/* ---------- أيقونات SVG مرسومة بدقة (بدون إيموجي) ---------- */
 const I = {
-  sig: (c) => `<svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="7" width="3" height="5" rx="1" fill="${c}"/><rect x="4.5" y="5" width="3" height="7" rx="1" fill="${c}"/><rect x="9" y="2.5" width="3" height="9.5" rx="1" fill="${c}"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="${c}"/></svg>`,
-  wifi: (c) => `<svg width="17" height="12" viewBox="0 0 17 12"><path d="M8.5 10.6a1.9 1.9 0 1 1 0 .01zM8.5 7.4c1.2 0 2.3.5 3.1 1.3l-1.5 1.5A2.3 2.3 0 0 0 8.5 9.8c-.6 0-1.2.2-1.6.5L5.4 8.7A4.4 4.4 0 0 1 8.5 7.4zM8.5 3.6c2.3 0 4.4.9 6 2.5L13 7.6A6.4 6.4 0 0 0 8.5 5.7c-1.7 0-3.3.7-4.5 1.9L2.5 6.1A8.5 8.5 0 0 1 8.5 3.6zM8.5 0c3.4 0 6.6 1.3 9 3.7L16 5.2A10.6 10.6 0 0 0 8.5 2.1C5.8 2.1 3.3 3.2 1.5 5.2L0 3.7A12.7 12.7 0 0 1 8.5 0z" fill="${c}" transform="scale(0.94)"/></svg>`,
+  // إشارة شبكة iOS: أربعة أعمدة متصاعدة
+  sig: (c) => `<svg width="18" height="11" viewBox="0 0 18 11"><rect x="0" y="7" width="3" height="4" rx="1" fill="${c}"/><rect x="4.6" y="5" width="3" height="6" rx="1" fill="${c}"/><rect x="9.2" y="2.6" width="3" height="8.4" rx="1" fill="${c}"/><rect x="13.8" y="0.2" width="3" height="10.8" rx="1" fill="${c}"/></svg>`,
+  // واي فاي iOS
+  wifi: (c) => `<svg width="16" height="11" viewBox="0 0 16 11"><path d="M8 9.4a1.6 1.6 0 1 1 0 .01zM8 6.2c1 0 2 .4 2.7 1.1l-1.4 1.4A1.9 1.9 0 0 0 8 8.4c-.5 0-1 .2-1.3.5L5.3 7.3A3.9 3.9 0 0 1 8 6.2zM8 3c1.9 0 3.7.8 5 2.1L11.6 6.5A5.6 5.6 0 0 0 8 5.1c-1.4 0-2.7.5-3.6 1.4L3 5.1A7.5 7.5 0 0 1 8 3zM8-.2c2.8 0 5.4 1.1 7.3 3L13.9 4.2A8.6 8.6 0 0 0 8 1.9C6 1.9 4.1 2.6 2.7 4.2L1.3 2.8A10.4 10.4 0 0 1 8-.2z" fill="${c}"/></svg>`,
+  // بطارية iOS: إطار + تعبئة حسب النسبة + قطب
   batt: (pct, c) => {
-    const w = Math.max(2, Math.min(20, 20 * pct / 100));
-    return `<svg width="27" height="12" viewBox="0 0 27 12"><rect x="0.5" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="${c}" stroke-opacity=".45"/><rect x="2" y="2" width="${w}" height="8" rx="2" fill="${c}"/><path d="M24.5 4v4a2.2 2.2 0 0 0 0-4z" fill="${c}" fill-opacity=".5"/></svg>`;
+    const w = Math.max(2, Math.min(18.5, 18.5 * pct / 100));
+    return `<svg width="27" height="12" viewBox="0 0 27 12"><rect x="0.5" y="0.5" width="22" height="11" rx="3.4" fill="none" stroke="${c}" stroke-opacity=".4"/><rect x="2" y="2" width="${w}" height="8" rx="1.8" fill="${c}"/><path d="M24.6 4v4a2.1 2.1 0 0 0 0-4z" fill="${c}" fill-opacity=".45"/></svg>`;
   },
-  back: (c) => `<svg width="12" height="20" viewBox="0 0 12 20"><path d="M10 2L2.5 10L10 18" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  video: (c) => `<svg width="24" height="16" viewBox="0 0 24 16"><rect x="0" y="1.5" width="15" height="13" rx="3.5" fill="${c}"/><path d="M17.5 6l6-3.5v11l-6-3.5z" fill="${c}"/></svg>`,
-  call: (c) => `<svg width="20" height="20" viewBox="0 0 24 24"><path d="M6.6 3.2c.3-.3.8-.4 1.2-.2l1.9 1c.4.2.6.7.5 1.1L9.6 8.3c-.1.4 0 .8.3 1.1.8 1 1.8 2 2.8 2.8.3.3.7.4 1.1.3l3.2-.6c.5-.1.9.1 1.1.5l1 1.9c.2.4.1.9-.2 1.2l-1.2 1.1c-.4.4-1 .5-1.5.4C10.4 18.6 5.4 13.6 4 6.8c-.1-.5 0-1.1.4-1.5l2.2-2.1z" fill="${c}"/></svg>`,
-  dots: (c) => `<svg width="5" height="18" viewBox="0 0 5 18"><circle cx="2.5" cy="2.5" r="2.1" fill="${c}"/><circle cx="2.5" cy="9" r="2.1" fill="${c}"/><circle cx="2.5" cy="15.5" r="2.1" fill="${c}"/></svg>`,
-  tick1: (c) => `<svg width="15" height="11" viewBox="0 0 15 11"><path d="M1 6.2l3.4 3.3L13.4 1" fill="none" stroke="${c}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  tick2: (c) => `<svg width="19" height="11" viewBox="0 0 19 11"><path d="M1 6.2l3.4 3.3L13.4 1" fill="none" stroke="${c}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.5 9.9l1.2 1L17.7 2" fill="none" stroke="${c}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" transform="translate(-1.8 -.6)"/></svg>`,
-  smile: (c) => `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.7"><circle cx="12" cy="12" r="9.2"/><circle cx="8.8" cy="10" r="1.2" fill="${c}" stroke="none"/><circle cx="15.2" cy="10" r="1.2" fill="${c}" stroke="none"/><path d="M7.8 14.2c1.1 1.6 2.6 2.4 4.2 2.4s3.1-.8 4.2-2.4"/></svg>`,
-  plus: (c) => `<svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="${c}" stroke-width="2.1" stroke-linecap="round"/></svg>`,
-  clip: (c) => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round"><path d="M20 12.5l-8.2 8.2a5.3 5.3 0 0 1-7.5-7.5L12.7 4.8a3.5 3.5 0 0 1 5 5L9.5 18a1.8 1.8 0 0 1-2.6-2.5l7.6-7.6"/></svg>`,
-  cam: (c) => `<svg width="24" height="20" viewBox="0 0 26 20"><path d="M4 5h4l2-2.5h6L18 5h4a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z" fill="${c}"/><circle cx="13" cy="11.5" r="4" fill="#fff" fill-opacity=".85"/></svg>`,
-  mic: (c) => `<svg width="15" height="22" viewBox="0 0 16 24"><rect x="4.5" y="1" width="7" height="13" rx="3.5" fill="${c}"/><path d="M2 10.5a6 6 0 0 0 12 0M8 16.5V22M4.5 22h7" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round"/></svg>`,
-  plane: (c) => `<svg width="21" height="21" viewBox="0 0 24 24"><path d="M21.4 2.6L2.9 11.2l7 2.6 2.7 7.1 3.4-5.3 5 4.1-1-3.2 3.4-13.9z" fill="${c}"/><path d="M9.9 13.8l11.5-11.2" stroke="#0e1621" stroke-opacity="0" /></svg>`,
-  heart: (c) => `<svg width="22" height="20" viewBox="0 0 24 22"><path d="M12 20.5S2.5 14.6 2.5 8.6A5 5 0 0 1 12 5.4a5 5 0 0 1 9.5 3.2c0 6-9.5 11.9-9.5 11.9z" fill="none" stroke="${c}" stroke-width="1.9"/></svg>`,
-  img: (c) => `<svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.8"><rect x="2.5" y="2.5" width="19" height="19" rx="4"/><circle cx="8.6" cy="8.6" r="1.7" fill="${c}" stroke="none"/><path d="M21 16.5l-5-5L5.5 21"/></svg>`,
+  back: (c) => `<svg width="11" height="19" viewBox="0 0 11 19"><path d="M9.2 1.8L2.4 9.5l6.8 7.7" fill="none" stroke="${c}" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  video: (c) => `<svg width="23" height="15" viewBox="0 0 24 16"><rect x="0" y="1.5" width="15" height="13" rx="3.5" fill="${c}"/><path d="M17.5 6l6-3.5v11l-6-3.5z" fill="${c}"/></svg>`,
+  call: (c) => `<svg width="19" height="19" viewBox="0 0 24 24"><path d="M6.6 3.2c.3-.3.8-.4 1.2-.2l1.9 1c.4.2.6.7.5 1.1L9.6 8.3c-.1.4 0 .8.3 1.1.8 1 1.8 2 2.8 2.8.3.3.7.4 1.1.3l3.2-.6c.5-.1.9.1 1.1.5l1 1.9c.2.4.1.9-.2 1.2l-1.2 1.1c-.4.4-1 .5-1.5.4C10.4 18.6 5.4 13.6 4 6.8c-.1-.5 0-1.1.4-1.5l2.2-2.1z" fill="${c}"/></svg>`,
+  dots: (c) => `<svg width="5" height="17" viewBox="0 0 5 17"><circle cx="2.5" cy="2.5" r="2" fill="${c}"/><circle cx="2.5" cy="8.5" r="2" fill="${c}"/><circle cx="2.5" cy="14.5" r="2" fill="${c}"/></svg>`,
+  // صح واتساب المفرد والمزدوج (ضربات دقيقة)
+  tick1: (c) => `<svg width="14" height="10" viewBox="0 0 14 10"><path d="M1 5.8l3.2 3.1L12.8.9" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  tick2: (c) => `<svg width="18" height="10" viewBox="0 0 18 10"><path d="M.8 5.8l3.2 3.1L12.6.9" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.4 9l1 .9 8-8" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  smile: (c) => `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.7"><circle cx="12" cy="12" r="9.2"/><circle cx="8.8" cy="10" r="1.15" fill="${c}" stroke="none"/><circle cx="15.2" cy="10" r="1.15" fill="${c}" stroke="none"/><path d="M7.9 14.1c1.1 1.6 2.5 2.4 4.1 2.4s3-.8 4.1-2.4"/></svg>`,
+  plus: (c) => `<svg width="21" height="21" viewBox="0 0 24 24"><path d="M12 4.5v15M4.5 12h15" stroke="${c}" stroke-width="2" stroke-linecap="round"/></svg>`,
+  clip: (c) => `<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round"><path d="M20 12.5l-8.2 8.2a5.3 5.3 0 0 1-7.5-7.5L12.7 4.8a3.5 3.5 0 0 1 5 5L9.5 18a1.8 1.8 0 0 1-2.6-2.5l7.6-7.6"/></svg>`,
+  cam: (c) => `<svg width="23" height="19" viewBox="0 0 26 20"><path d="M4 5h4l2-2.5h6L18 5h4a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z" fill="${c}"/><circle cx="13" cy="11.5" r="3.8" fill="#fff" fill-opacity=".85"/></svg>`,
+  mic: (c) => `<svg width="14" height="21" viewBox="0 0 16 24"><rect x="4.5" y="1" width="7" height="13" rx="3.5" fill="${c}"/><path d="M2 10.5a6 6 0 0 0 12 0M8 16.5V22M4.5 22h7" fill="none" stroke="${c}" stroke-width="1.9" stroke-linecap="round"/></svg>`,
+  plane: (c) => `<svg width="20" height="20" viewBox="0 0 24 24"><path d="M21.4 2.6L2.9 11.2l7 2.6 2.7 7.1 3.4-5.3 5 4.1-.8-3.1 3.2-14z" fill="${c}"/></svg>`,
+  heart: (c) => `<svg width="21" height="19" viewBox="0 0 24 22"><path d="M12 20.5S2.5 14.6 2.5 8.6A5 5 0 0 1 12 5.4a5 5 0 0 1 9.5 3.2c0 6-9.5 11.9-9.5 11.9z" fill="none" stroke="${c}" stroke-width="1.9"/></svg>`,
+  img: (c) => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="1.8"><rect x="2.5" y="2.5" width="19" height="19" rx="4"/><circle cx="8.6" cy="8.6" r="1.7" fill="${c}" stroke="none"/><path d="M21 16.5l-5-5L5.5 21"/></svg>`,
 };
 
-/* ---------- لكل تطبيق: ألوان الأيقونات ونصوصها ---------- */
+/* ---------- تجهيزات كل تطبيق ---------- */
 const APPS = {
-  wa: { head: '#111', accent: '#00a884', chip: null,
+  wa: { ink: '#111',
     acts: () => I.video('#111') + I.call('#111'),
+    back: () => I.back('#007aff'),
     input: () => I.smile('#8696a0') + '<span class="ph">رسالة</span>' + I.clip('#8696a0') + I.cam('#8696a0'),
-    send: () => I.mic('#fff'), sendBg: null,
+    send: () => I.mic('#fff'),
     tick: (m) => m.read ? I.tick2('#53bdeb') : I.tick2('#667781'),
-    ph: 'رسالة' },
-  tg: { head: '#fff', accent: '#2b5278', chip: null,
+    enc: 'الرسائل مشفرة تماماً بين الطرفين. اضغط لمعرفة المزيد.' },
+  tg: { ink: '#fff',
     acts: () => I.call('#fff') + I.dots('#fff'),
+    back: () => I.back('#fff'),
     input: () => I.smile('#5d7186') + '<span class="ph">رسالة</span>' + I.clip('#5d7186'),
-    send: () => I.plane('#64a9dc'), sendBg: null,
+    send: () => I.plane('#64a9dc'),
     tick: (m) => m.read ? I.tick2('#5aa2e0') : I.tick1('#7fb2d9'),
-    ph: 'رسالة' },
-  ig: { head: '#111', accent: '#0095f6', chip: null,
+    enc: '' },
+  ig: { ink: '#111',
     acts: () => I.call('#111') + I.video('#111'),
+    back: () => I.back('#111'),
     input: () => I.cam('#111') + '<span class="ph">مراسلة…</span>' + I.mic('#111') + I.img('#111') + I.heart('#111'),
-    send: () => I.plane('#0095f6'), sendBg: null,
-    tick: () => '', ph: 'مراسلة…' },
+    send: () => I.plane('#0095f6'),
+    tick: () => '',
+    enc: '' },
 };
 let curApp = 'wa';
 
@@ -367,29 +404,29 @@ let avatarUrl = null;
 function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
+// أرقام عربية مشرقية مثل هواتف المنطقة (١٢٣)
+const arDigits = (s) => String(s).replace(/[0-9]/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]);
 
 function render() {
   const A = APPS[curApp];
-  const dark = curApp === 'tg';
-  const ink = dark ? '#fff' : '#111';
   $('#p-name').textContent = $('#f-name').value || 'بدون اسم';
   $('#p-status').textContent = $('#f-status').value || '';
-  $('#sb-time').textContent = $('#f-clock').value || '';
-  $('#sb-icons').innerHTML = I.sig(ink) + I.wifi(ink) + I.batt(parseInt($('#f-batt').value) || 82, ink);
-  $('#hd-back').innerHTML = I.back(curApp === 'wa' ? '#007aff' : ink) + (curApp === 'wa' ? '' : '');
+  $('#sb-time').textContent = arDigits($('#f-clock').value || '');
+  $('#sb-icons').innerHTML = I.sig(A.ink) + I.wifi(A.ink) + I.batt(parseInt($('#f-batt').value) || 82, A.ink);
+  $('#hd-back').innerHTML = A.back();
   $('#hd-acts').innerHTML = A.acts();
   const av = $('#p-avatar');
   if (avatarUrl) av.innerHTML = `<img src="${avatarUrl}" alt="">`;
   else av.textContent = ($('#f-name').value || '؟').trim().charAt(0) || '؟';
 
-  // الرسائل مع التجميع والذيول
   let html = '<div class="daychip">اليوم</div>';
+  if (A.enc) html += `<div class="enc">${A.enc}</div>`;
   messages.forEach((m, i) => {
     const prev = messages[i - 1];
     const grp = prev && prev.side === m.side;
     const next = messages[i + 1];
-    const isLastOfGroup = !next || next.side !== m.side;
-    const tailCls = curApp === 'wa' && isLastOfGroup ? (m.side === 'me' ? 'tail-r' : 'tail-l') : '';
+    const firstOfGroup = !grp;
+    const tailCls = curApp === 'wa' && firstOfGroup ? (m.side === 'me' ? 'tail-r' : 'tail-l') : '';
     const tick = m.side === 'me' ? A.tick(m) : '';
     html += `<div class="bubble ${m.side}${grp ? ' grp' : ''} ${tailCls}">${esc(m.text)}<span class="meta">${esc(m.time)} ${tick}</span></div>`;
     if (curApp === 'ig' && m.side === 'me' && m.read && i === messages.length - 1) {
@@ -405,6 +442,12 @@ function render() {
   ).join('') || '<p class="hint">لا توجد رسائل بعد</p>';
   body.scrollTop = body.scrollHeight;
 }
+
+/* ---------- تبويبات المحرر ---------- */
+document.querySelectorAll('.etab').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.etab').forEach(x => x.classList.toggle('on', x === t));
+  document.querySelectorAll('.epane').forEach(p => p.classList.toggle('on', p.id === 'ep-' + t.dataset.pane));
+}));
 
 /* ---------- أحداث ---------- */
 $('#app-seg').addEventListener('click', (e) => {
@@ -458,7 +501,7 @@ $('#btn-demo').addEventListener('click', () => {
   render();
 });
 
-/* ---------- تصدير PNG (html2canvas محلي مضغوط) ---------- */
+/* ---------- تصدير PNG ---------- */
 async function ensureHtml2Canvas() {
   if (window.html2canvas) return;
   try {
@@ -476,8 +519,7 @@ async function ensureHtml2Canvas() {
     });
   }
 }
-$('#btn-shot').addEventListener('click', async () => {
-  const btn = $('#btn-shot');
+async function shoot(btn) {
   const old = btn.textContent;
   btn.textContent = 'جاري تجهيز الصورة…';
   btn.disabled = true;
@@ -492,7 +534,9 @@ $('#btn-shot').addEventListener('click', async () => {
     btn.textContent = old;
     btn.disabled = false;
   }
-});
+}
+$('#btn-shot').addEventListener('click', (e) => shoot(e.currentTarget));
+$('#btn-shot2').addEventListener('click', (e) => shoot(e.currentTarget));
 
 render();
 </script>
