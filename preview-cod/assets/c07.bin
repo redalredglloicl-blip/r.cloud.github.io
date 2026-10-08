@@ -1,4 +1,4 @@
-elief:t.relief??.02}}releaseScratch(){let t=0;for(const e of this._heightRTs.values())e.dispose(),t++;return this._heightRTs.clear(),this._sobelMat.uniforms.uHeight.value=null,t}buildDetail(t=1024,e=1){return this.build({key:"__detail",glsl:vM,size:t,seed:e,worldSize:.25,relief:.0034,linearAlbedo:!0,orm:!1})}buildMacro(t=256,e=2){return this.build({key:"__macro",glsl:yM,size:t,seed:e,worldSize:32,relief:.5,linearAlbedo:!0,orm:!1,normal:!1})}dispose(){for(const t of this._heightRTs.values())t.dispose();for(const t of this._owned)t.dispose();for(const t of this._programs.values())t.dispose();this._heightRTs.clear(),this._owned.length=0,this._programs.clear(),this._sobelMat.dispose(),this._geo.dispose()}}const Qp=`
+at,this._sobelMat.uniforms.uHeight.value=d.texture,this._sobelMat.uniforms.uTexel.value.set(1/s,1/s),this._sobelMat.uniforms.uStrength.value=(t.relief??.02)/(t.worldSize??2),e.setRenderTarget(u),e.render(this._scene,this._camera)),e.setRenderTarget(a),e.autoClear=r,{albedo:h.texture,orm:l?.texture??null,normal:u?.texture??null,size:s,worldSize:t.worldSize??2,relief:t.relief??.02}}releaseScratch(){let t=0;for(const e of this._heightRTs.values())e.dispose(),t++;return this._heightRTs.clear(),this._sobelMat.uniforms.uHeight.value=null,t}buildDetail(t=1024,e=1){return this.build({key:"__detail",glsl:MM,size:t,seed:e,worldSize:.25,relief:.0034,linearAlbedo:!0,orm:!1})}buildMacro(t=256,e=2){return this.build({key:"__macro",glsl:SM,size:t,seed:e,worldSize:32,relief:.5,linearAlbedo:!0,orm:!1,normal:!1})}dispose(){for(const t of this._heightRTs.values())t.dispose();for(const t of this._owned)t.dispose();for(const t of this._programs.values())t.dispose();this._heightRTs.clear(),this._owned.length=0,this._programs.clear(),this._sobelMat.dispose(),this._geo.dispose()}}const om=`
 void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float metal, out float ao){
   const vec2 P = vec2(8.0);
   vec2 p = uv * P + uSeed * 13.7;
@@ -162,7 +162,7 @@ void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float me
   ao = clamp(ao, 0.15, 1.0);
   h = clamp(h, 0.0, 1.0);
 }
-`,wM=`
+`,kM=`
 void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float metal, out float ao){
   const vec2 P = vec2(8.0);
   const float COLS = 6.0;     // bricks across the tile
@@ -317,7 +317,7 @@ void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float me
   ao = clamp(ao, 0.12, 1.0);
   h = clamp(h, 0.0, 1.0);
 }
-`,bM=`
+`,EM=`
 void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float metal, out float ao){
   const vec2 P = vec2(8.0);
   vec2 p = uv * P + uSeed * 5.3;
@@ -478,7 +478,7 @@ void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float me
   ao = clamp(ao, 0.15, 1.0);
   h = clamp(h, 0.0, 1.0);
 }
-`,_M=`
+`,AM=`
 void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float metal, out float ao){
   const vec2 P = vec2(8.0);
   const float N = 6.0;
@@ -540,7 +540,7 @@ void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float me
   ao = clamp(ao, 0.15, 1.0);
   h = clamp(h, 0.0, 1.0);
 }
-`,MM=`
+`,RM=`
 void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float metal, out float ao){
   const vec2 P = vec2(8.0);
   vec2 p = uv * P + uSeed * 6.9;
@@ -641,7 +641,7 @@ void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float me
   ao = clamp(ao, 0.68, 1.0);
   h = clamp(h, 0.0, 1.0);
 }
-`,SM=`
+`,PM=`
 void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float metal, out float ao){
   const vec2 P = vec2(8.0);
   vec2 p = uv * P + uSeed * 8.2;
@@ -699,7 +699,7 @@ void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float me
   ao = clamp(ao, 0.80, 1.0);
   h = clamp(h, 0.0, 1.0);
 }
-`,TM=`
+`,CM=`
 void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float metal, out float ao){
   const vec2 P = vec2(8.0);
   vec2 p = uv * P + uSeed * 3.4;
@@ -766,7 +766,7 @@ void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float me
   ao = clamp(ao, 0.72, 1.0);
   h = clamp(h, 0.0, 1.0);
 }
-`,kM=`
+`,zM=`
 void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float metal, out float ao){
   const vec2 P = vec2(8.0);
   vec2 p = uv * P + uSeed * 2.7;
@@ -882,7 +882,7 @@ void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float me
   ao = clamp(ao, 0.72, 1.0);
   h = clamp(h, 0.0, 1.0);
 }
-`,EM=`
+`,DM=`
 void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float metal, out float ao){
   const vec2 P = vec2(8.0);
   const float PLANKS = 5.0;
@@ -994,7 +994,7 @@ void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float me
   ao = clamp(ao, 0.12, 1.0);
   h = clamp(h, 0.0, 1.0);
 }
-`,AM=`
+`,LM=`
 void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float metal, out float ao){
   const vec2 P = vec2(8.0);
   const float THREADS = 96.0;
@@ -1071,7 +1071,7 @@ void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float me
   ao = clamp(ao, 0.25, 1.0);
   h = clamp(h, 0.0, 1.0);
 }
-`,RM=`
+`,IM=`
 void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float metal, out float ao){
   const vec2 P = vec2(8.0);
   const float THREADS = 34.0;      // hessian is coarse
@@ -1127,7 +1127,7 @@ void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float me
   ao = clamp(ao, 0.2, 1.0);
   h = clamp(h, 0.0, 1.0);
 }
-`,PM=`
+`,FM=`
 void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float metal, out float ao){
   const vec2 P = vec2(8.0);
   const float CELLS = 5.0;
@@ -1196,7 +1196,7 @@ void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float me
   metal = 0.0;
   ao = clamp(0.55 + bestDepth * 0.45, 0.3, 1.0);
 }
-`,CM=`
+`,UM=`
 void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float metal, out float ao){
   const vec2 P = vec2(8.0);
   vec2 p = uv * P + uSeed * 9.6;
@@ -1246,7 +1246,7 @@ void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float me
   ao = clamp(ao, 0.3, 1.0);
   h = clamp(h, 0.0, 1.0);
 }
-`,zM=`
+`,NM=`
 void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float metal, out float ao){
   const vec2 P = vec2(8.0);
   vec2 p = uv * P + uSeed * 2.2;
@@ -1279,7 +1279,7 @@ void owSurface(vec2 uv, out vec3 alb, out float h, out float rough, out float me
   rough = clamp(rough, 0.02, 0.7);
   h = clamp(h, 0.0, 1.0);
 }
-`,ja={concrete:{glsl:Qp,surface:"concrete",bake:{size:1024,worldSize:2.5,relief:.09,seed:11,param:[1,0,0,0]},mat:{scale:2.5,parallax:.016,detile:.4,detail:[9,.95,.58,26],macro:[.085,.62,.24,.45],macroBig:[2.05,.13,.028,0],patch:[.28,2,.145,-.08],weather:[.42,.4,.55,.5],wearColor:10131343,dustColor:9142122,grimeColor:2828323,roughness:[.98,-.01,.24]}},concrete_floor:{glsl:Qp,surface:"concrete",bake:{size:1024,worldSize:2.5,relief:.075,seed:47,param:[0,1,0,0]},mat:{scale:3.2,parallax:.01,detile:0,detail:[9,.9,.52,26],macro:[.075,.48,.18,.3],macroRelief:.3,weather:[.55,.1,.15,.5],roughness:[1,0,.22]}},brick:{glsl:wM,surface:"concrete",bake:{size:1024,worldSize:1.35,relief:.055,seed:23},mat:{scale:1.35,parallax:.024,parallaxLayers:24,detile:0,detail:[7,.88,.48,22],macro:[.09,.58,.22,.55],macroBig:[1.95,.115,.03,0],weather:[.4,.5,.6,.55],wearColor:10520184,grimeColor:2367257,roughness:[.98,-.01,.26]}},plaster:{glsl:bM,surface:"plaster",bake:{size:1024,worldSize:2.2,relief:.06,seed:5},mat:{scale:2.2,parallax:.014,detile:.8,detail:[10,.95,.54,24],macro:[.085,.72,.26,.5],macroBig:[2.15,.15,.026,0],patch:[.34,2.2,.175,-.1],weather:[.34,.5,.6,.5],wearColor:11576978,dustColor:10259052,grimeColor:2762013,roughness:[.97,-.02,.26]}},tile:{glsl:_M,surface:"concrete",bake:{size:1024,worldSize:1.5,relief:.03,seed:31},mat:{scale:1.5,parallax:.03,parallaxLayers:20,detail:[8,.6,.36,18],macro:[.09,.4,.16,.3],macroBig:[1.7,.075,.032,0],patch:[.14,1.7,.1,-.05],weather:[.3,.2,.3,.5],roughness:[.9,-.04,.16]}},asphalt:{glsl:MM,surface:"concrete",bake:{size:1024,worldSize:3,relief:.075,seed:71},mat:{scale:3,parallax:.014,detile:1,detail:[8,.8,.42,18],macro:[.062,.52,.22,.25],macroRelief:.55,weather:[.45,.05,.1,.26],dustColor:9142385,grimeColor:2302240,roughness:[.98,-.02,.3]}},sand:{glsl:SM,surface:"sand",bake:{size:1024,worldSize:2.5,relief:.1,seed:91},mat:{uvMode:"triplanar",scale:2.5,detile:0,detail:[8,.7,.3,18],macro:[.05,.44,.14,.35],macroRelief:.45,weather:[.15,0,0,.18],dustColor:11047014,grimeColor:4997426,roughness:[1,0,.3]}},dirt:{glsl:TM,surface:"dirt",bake:{size:1024,worldSize:2.5,relief:.12,seed:13},mat:{uvMode:"triplanar",scale:2.5,detail:[7,.85,.36,18],macro:[.055,.48,.18,.4],macroRelief:.6,weather:[.2,0,0,.22],dustColor:9732188,grimeColor:3616799,roughness:[.98,-.02,.3]}},gravel:{glsl:kM,bake:{size:1024,worldSize:1.6,relief:.055,seed:57},surface:"dirt",mat:{uvMode:"triplanar",scale:1.6,detail:[6,.8,.34,20],macro:[.07,.44,.2,.3],macroRelief:.7,weather:[.2,0,0,.16],dustColor:10654842,grimeColor:4866616,roughness:[.96,-.03,.28]}},metal_rust:{glsl:hM,surface:"metal",bake:{size:1024,worldSize:1.2,relief:.035,seed:37},mat:{scale:1.2,parallax:.004,detail:[9,.7,.36,16],macro:[.1,.3,.14,.4],weather:[.25,.4,.5,.35],wearColor:9211795,wearMaterial:[.28,1,0,.85]}},metal_painted:{glsl:uM,surface:"metal",bake:{size:1024,worldSize:1.5,relief:.018,seed:61,tintA:4870976,tintB:2764582},mat:{scale:1.5,parallax:.003,detail:[10,.6,.32,16],macro:[.1,.28,.14,.35],weather:[.3,.45,.35,.35],wearColor:9409174,wearMaterial:[.3,1,0,.9],roughness:[.92,-.03,.22]}},metal_brushed:{glsl:dM,surface:"metal",bake:{size:512,worldSize:.8,relief:.004,seed:83},mat:{scale:.8,detail:[8,.25,.15,8],macro:[.09,.14,.1,.2],weather:[.15,.15,.2,.2],wearColor:12172480,wearMaterial:[.16,1,0,.9]},three:{anisotropy:.65,anisotropyRotation:0,physical:!0}},corrugated:{glsl:fM,surface:"metal",bake:{size:1024,worldSize:2.4,relief:.075,seed:29},mat:{scale:2.4,parallax:.03,parallaxLayers:24,detail:[10,.6,.32,18],macro:[.09,.26,.12,.3],weather:[.3,.5,.5,.4],wearColor:10133668,wearMaterial:[.32,1,0,.85]}},wood:{glsl:EM,surface:"wood",bake:{size:1024,worldSize:2,relief:.038,seed:19},mat:{scale:2,parallax:.008,detail:[10,.8,.42,18],macro:[.085,.34,.14,.5],weather:[.3,.35,.5,.45],wearColor:11045730,wearMaterial:[.5,0,0,.7]}},fabric:{glsl:AM,surface:"fabric",bake:{size:512,worldSize:.7,relief:.008,seed:43,tintA:5919813,tintB:3815472},mat:{scale:.7,detail:[6,.42,.28,10],macro:[.12,.34,.12,.3],macroBig:[1.8,.07,.09,0],weather:[.25,.2,.3,.35],normalStrength:1.15,cloth:[.2,.72,.26,0]},three:{physical:!0,sheen:.55,sheenRoughness:.85,sheenColor:9077362}},burlap:{glsl:RM,surface:"fabric",bake:{size:512,worldSize:.5,relief:.018,seed:67},mat:{scale:.5,parallax:.003,detail:[6,.4,.28,9],macro:[.14,.32,.12,.35],macroBig:[1.7,.06,.11,0],weather:[.4,.15,.35,.4],dustColor:10258272,normalStrength:1.15,cloth:[.06,.86,.1,0]},three:{physical:!0,sheen:.4,sheenRoughness:.95,sheenColor:10259304}},foliage:{glsl:PM,surface:"foliage",bake:{size:512,worldSize:.6,relief:.02,seed:79},mat:{uvMode:"mesh",scale:1,alphaMask:!0,detail:[4,.25,.15,8],macro:[.16,.3,.08,.6],weather:[.15,0,0,.2]},three:{side:ys,alphaTest:.45,physical:!0,sheen:.3,sheenRoughness:.8,sheenColor:10468714}},rubber:{glsl:CM,surface:"rubber",bake:{size:512,worldSize:.5,relief:.013,seed:97},mat:{scale:.45,detail:[7,.62,.42,13],macro:[.16,.36,.2,.18],macroBig:[1.8,.1,.11,0],weather:[.4,.18,.22,.45],dustColor:9274488,grimeColor:1578773,tint:16775922,normalStrength:1.25,roughness:[.94,-.03,.34]}},glass:{glsl:zM,surface:"glass",bake:{size:512,worldSize:2,relief:8e-4,seed:3},mat:{scale:2,detail:[3,.06,.05,6],macro:[.05,.1,.06,.1],weather:[.1,.3,.4,.15],normalStrength:.35,roughness:[.9,-.01,.03]},three:{physical:!0,transparent:!0,opacity:.22,side:ys,envMapIntensity:1.6,ior:1.52,specularIntensity:1,depthWrite:!1}}},DM={metal:"metal_painted",steel:"metal_brushed",rust:"metal_rust",sandbag:"burlap",ground:"dirt",road:"asphalt",stucco:"plaster",wall:"concrete",floor:"concrete_floor",plank:"wood",leaf:"foliage",window:"glass"};function tm(o){return ja[o]?o:DM[o]??o}const LM=`
+`,ja={concrete:{glsl:om,surface:"concrete",bake:{size:1024,worldSize:2.5,relief:.09,seed:11,param:[1,0,0,0]},mat:{scale:2.5,parallax:.016,detile:.4,detail:[9,.95,.58,26],macro:[.085,.62,.24,.45],macroBig:[2.05,.13,.028,0],patch:[.28,2,.145,-.08],weather:[.42,.4,.55,.5],wearColor:10131343,dustColor:9142122,grimeColor:2828323,roughness:[.98,-.01,.24]}},concrete_floor:{glsl:om,surface:"concrete",bake:{size:1024,worldSize:2.5,relief:.075,seed:47,param:[0,1,0,0]},mat:{scale:3.2,parallax:.01,detile:0,detail:[9,.9,.52,26],macro:[.075,.48,.18,.3],macroRelief:.3,weather:[.55,.1,.15,.5],roughness:[1,0,.22]}},brick:{glsl:kM,surface:"concrete",bake:{size:1024,worldSize:1.35,relief:.055,seed:23},mat:{scale:1.35,parallax:.024,parallaxLayers:24,detile:0,detail:[7,.88,.48,22],macro:[.09,.58,.22,.55],macroBig:[1.95,.115,.03,0],weather:[.4,.5,.6,.55],wearColor:10520184,grimeColor:2367257,roughness:[.98,-.01,.26]}},plaster:{glsl:EM,surface:"plaster",bake:{size:1024,worldSize:2.2,relief:.06,seed:5},mat:{scale:2.2,parallax:.014,detile:.8,detail:[10,.95,.54,24],macro:[.085,.72,.26,.5],macroBig:[2.15,.15,.026,0],patch:[.34,2.2,.175,-.1],weather:[.34,.5,.6,.5],wearColor:11576978,dustColor:10259052,grimeColor:2762013,roughness:[.97,-.02,.26]}},tile:{glsl:AM,surface:"concrete",bake:{size:1024,worldSize:1.5,relief:.03,seed:31},mat:{scale:1.5,parallax:.03,parallaxLayers:20,detail:[8,.6,.36,18],macro:[.09,.4,.16,.3],macroBig:[1.7,.075,.032,0],patch:[.14,1.7,.1,-.05],weather:[.3,.2,.3,.5],roughness:[.9,-.04,.16]}},asphalt:{glsl:RM,surface:"concrete",bake:{size:1024,worldSize:3,relief:.075,seed:71},mat:{scale:3,parallax:.014,detile:1,detail:[8,.8,.42,18],macro:[.062,.52,.22,.25],macroRelief:.55,weather:[.45,.05,.1,.26],dustColor:9142385,grimeColor:2302240,roughness:[.98,-.02,.3]}},sand:{glsl:PM,surface:"sand",bake:{size:1024,worldSize:2.5,relief:.1,seed:91},mat:{uvMode:"triplanar",scale:2.5,detile:0,detail:[8,.7,.3,18],macro:[.05,.44,.14,.35],macroRelief:.45,weather:[.15,0,0,.18],dustColor:11047014,grimeColor:4997426,roughness:[1,0,.3]}},dirt:{glsl:CM,surface:"dirt",bake:{size:1024,worldSize:2.5,relief:.12,seed:13},mat:{uvMode:"triplanar",scale:2.5,detail:[7,.85,.36,18],macro:[.055,.48,.18,.4],macroRelief:.6,weather:[.2,0,0,.22],dustColor:9732188,grimeColor:3616799,roughness:[.98,-.02,.3]}},gravel:{glsl:zM,bake:{size:1024,worldSize:1.6,relief:.055,seed:57},surface:"dirt",mat:{uvMode:"triplanar",scale:1.6,detail:[6,.8,.34,20],macro:[.07,.44,.2,.3],macroRelief:.7,weather:[.2,0,0,.16],dustColor:10654842,grimeColor:4866616,roughness:[.96,-.03,.28]}},metal_rust:{glsl:gM,surface:"metal",bake:{size:1024,worldSize:1.2,relief:.035,seed:37},mat:{scale:1.2,parallax:.004,detail:[9,.7,.36,16],macro:[.1,.3,.14,.4],weather:[.25,.4,.5,.35],wearColor:9211795,wearMaterial:[.28,1,0,.85]}},metal_painted:{glsl:vM,surface:"metal",bake:{size:1024,worldSize:1.5,relief:.018,seed:61,tintA:4870976,tintB:2764582},mat:{scale:1.5,parallax:.003,detail:[10,.6,.32,16],macro:[.1,.28,.14,.35],weather:[.3,.45,.35,.35],wearColor:9409174,wearMaterial:[.3,1,0,.9],roughness:[.92,-.03,.22]}},metal_brushed:{glsl:yM,surface:"metal",bake:{size:512,worldSize:.8,relief:.004,seed:83},mat:{scale:.8,detail:[8,.25,.15,8],macro:[.09,.14,.1,.2],weather:[.15,.15,.2,.2],wearColor:12172480,wearMaterial:[.16,1,0,.9]},three:{anisotropy:.65,anisotropyRotation:0,physical:!0}},corrugated:{glsl:xM,surface:"metal",bake:{size:1024,worldSize:2.4,relief:.075,seed:29},mat:{scale:2.4,parallax:.03,parallaxLayers:24,detail:[10,.6,.32,18],macro:[.09,.26,.12,.3],weather:[.3,.5,.5,.4],wearColor:10133668,wearMaterial:[.32,1,0,.85]}},wood:{glsl:DM,surface:"wood",bake:{size:1024,worldSize:2,relief:.038,seed:19},mat:{scale:2,parallax:.008,detail:[10,.8,.42,18],macro:[.085,.34,.14,.5],weather:[.3,.35,.5,.45],wearColor:11045730,wearMaterial:[.5,0,0,.7]}},fabric:{glsl:LM,surface:"fabric",bake:{size:512,worldSize:.7,relief:.008,seed:43,tintA:5919813,tintB:3815472},mat:{scale:.7,detail:[6,.42,.28,10],macro:[.12,.34,.12,.3],macroBig:[1.8,.07,.09,0],weather:[.25,.2,.3,.35],normalStrength:1.15,cloth:[.2,.72,.26,0]},three:{physical:!0,sheen:.55,sheenRoughness:.85,sheenColor:9077362}},burlap:{glsl:IM,surface:"fabric",bake:{size:512,worldSize:.5,relief:.018,seed:67},mat:{scale:.5,parallax:.003,detail:[6,.4,.28,9],macro:[.14,.32,.12,.35],macroBig:[1.7,.06,.11,0],weather:[.4,.15,.35,.4],dustColor:10258272,normalStrength:1.15,cloth:[.06,.86,.1,0]},three:{physical:!0,sheen:.4,sheenRoughness:.95,sheenColor:10259304}},foliage:{glsl:FM,surface:"foliage",bake:{size:512,worldSize:.6,relief:.02,seed:79},mat:{uvMode:"mesh",scale:1,alphaMask:!0,detail:[4,.25,.15,8],macro:[.16,.3,.08,.6],weather:[.15,0,0,.2]},three:{side:ys,alphaTest:.45,physical:!0,sheen:.3,sheenRoughness:.8,sheenColor:10468714}},rubber:{glsl:UM,surface:"rubber",bake:{size:512,worldSize:.5,relief:.013,seed:97},mat:{scale:.45,detail:[7,.62,.42,13],macro:[.16,.36,.2,.18],macroBig:[1.8,.1,.11,0],weather:[.4,.18,.22,.45],dustColor:9274488,grimeColor:1578773,tint:16775922,normalStrength:1.25,roughness:[.94,-.03,.34]}},glass:{glsl:NM,surface:"glass",bake:{size:512,worldSize:2,relief:8e-4,seed:3},mat:{scale:2,detail:[3,.06,.05,6],macro:[.05,.1,.06,.1],weather:[.1,.3,.4,.15],normalStrength:.35,roughness:[.9,-.01,.03]},three:{physical:!0,transparent:!0,opacity:.22,side:ys,envMapIntensity:1.6,ior:1.52,specularIntensity:1,depthWrite:!1}}},OM={metal:"metal_painted",steel:"metal_brushed",rust:"metal_rust",sandbag:"burlap",ground:"dirt",road:"asphalt",stucco:"plaster",wall:"concrete",floor:"concrete_floor",plank:"wood",leaf:"foliage",window:"glass"};function am(o){return ja[o]?o:OM[o]??o}const BM=`
 varying vec3 vOwWPos;
 varying vec3 vOwWNrm;
 #ifdef OW_OBJECT_SPACE
@@ -1290,7 +1290,7 @@ varying vec3 vOwWNrm;
 #ifdef OW_PARALLAX
   varying vec3 vOwViewDirP;
 #endif
-`,IM=`
+`,HM=`
 {
   mat4 owModel = modelMatrix;
   #ifdef USE_BATCHING
@@ -1321,7 +1321,7 @@ varying vec3 vOwWNrm;
     #endif
   #endif
 }
-`,FM=`
+`,VM=`
 varying vec3 vOwWPos;
 varying vec3 vOwWNrm;
 #ifdef OW_OBJECT_SPACE
@@ -1498,7 +1498,7 @@ void owHeightBlend( inout vec4 a, inout vec3 ormA, inout vec3 nA,
   ormA = ( ormA * wa + ormB * wb ) * inv;
   nA = normalize( ( nA * wa + nB * wb ) * inv );
 }
-`,UM=`
+`,GM=`
 {
   float owDist = length( vViewPosition );
   float owFaceDir = gl_FrontFacing ? 1.0 : -1.0;
@@ -1880,7 +1880,7 @@ diffuseColor.rgb *= owAlbedo.rgb;
 #ifdef OW_ALPHA_MASK
   diffuseColor.a *= owAlbedo.a;
 #endif
-`,NM=`
+`,WM=`
 #if defined( OW_CLOTH ) && ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )
 {
   vec3 owTrans = vec3( 0.0 );
@@ -1895,8 +1895,8 @@ diffuseColor.rgb *= owAlbedo.rgb;
     * ( owClothP.x * clamp( owORM.r, 0.0, 1.0 ) );
 }
 #endif
-`,OM=[["#include <color_fragment>","// vertex colours are masks here, see OW_VCOL_MASKS"],["#include <lights_fragment_end>",`#include <lights_fragment_end>
-`+NM],["#include <roughnessmap_fragment>","float roughnessFactor = roughness * owORM.g;"],["#include <metalnessmap_fragment>","float metalnessFactor = metalness * owORM.b;"],["#include <normal_fragment_maps>","normal = owNormalV;"],["#include <aomap_fragment>",`
+`,qM=[["#include <color_fragment>","// vertex colours are masks here, see OW_VCOL_MASKS"],["#include <lights_fragment_end>",`#include <lights_fragment_end>
+`+WM],["#include <roughnessmap_fragment>","float roughnessFactor = roughness * owORM.g;"],["#include <metalnessmap_fragment>","float metalnessFactor = metalness * owORM.b;"],["#include <normal_fragment_maps>","normal = owNormalV;"],["#include <aomap_fragment>",`
     {
       float ambientOcclusion = ( owORM.r - 1.0 ) * owAoAmt + 1.0;
       reflectedLight.indirectDiffuse *= ambientOcclusion;
@@ -1913,7 +1913,7 @@ diffuseColor.rgb *= owAlbedo.rgb;
         float aoSpec = mix( 1.0, clamp( ambientOcclusion, 0.0, 1.0 ), 0.6 );
         reflectedLight.indirectSpecular *= computeSpecularOcclusion( dotNV, aoSpec, material.roughness );
       #endif
-    }`]],Zo={uvMode:"planar",localSpace:!1,scale:2,offset:[0,0],parallax:0,parallaxFade:[6,14],parallaxLayers:22,detail:[11,.55,.35,16],detailWorld:.26,macro:[.045,.35,.1,.35],macroBig:[1,0,.03,0],patch:[0,2.6,.12,-.08],cloth:[0,1,0,0],macroRelief:0,detile:0,weather:[.35,.3,.55,.4],groundY:0,wear:[.5,.7,.5,0],wearMaterial:[.42,0,0,.5],wearColor:9276294,dustColor:7037268,grimeColor:2762272,rustColor:7158300,tint:16777215,normalStrength:1,roughness:[1,0,.06],aoStrength:1,alphaMask:!1,vertexMasks:!1,noGrad:!1};function Nr(o){return o instanceof ie?o.clone():new ie(o)}function BM(o,t,e){const s=t.uvMode==="mesh"?t.scale:1/t.scale,i=t.detailWorld??Zo.detailWorld,n=t.uvMode==="mesh"||!(i>0)||t.scale<.3?t.detail[0]:Math.max(1.2,t.scale/i),a={owDetailNrm:{value:e.detailNormal},owDetailTex:{value:e.detailAlbedo??e.detailNormal},owMacroTex:{value:e.macro},owTile:{value:new Dt(s,s,t.offset[0],t.offset[1])},owDetailP:{value:new Dt(n,t.detail[1],t.detail[2],t.detail[3])},owMacroP:{value:new Dt(...t.macro)},owMacroBig:{value:new Dt(...t.macroBig??Zo.macroBig)},owPatchP:{value:new Dt(...t.patch??Zo.patch)},owClothP:{value:new Dt(...t.cloth??Zo.cloth)},owParallaxP:{value:new Dt(t.parallax,t.parallaxFade[0],t.parallaxFade[1],t.parallaxLayers)},owWeatherP:{value:new Dt(...t.weather)},owWearP:{value:new Dt(...t.wear)},owTintCol:{value:Nr(t.tint)},owDustCol:{value:Nr(t.dustColor)},owGrimeCol:{value:Nr(t.grimeColor)},owRustCol:{value:Nr(t.rustColor??Zo.rustColor)},owWearCol:{value:Nr(t.wearColor)},owWearMat:{value:new Dt(...t.wearMaterial)},owRoughP:{value:new Dt(t.roughness[0],t.roughness[1],t.detile,t.roughness[2]??Zo.roughness[2])},owNormalAmp:{value:t.normalStrength},owGroundY:{value:t.groundY},owAoAmt:{value:t.aoStrength},owMacroRelief:{value:t.macroRelief??0}},r={};t.uvMode==="triplanar"?r.OW_TRIPLANAR="":t.uvMode==="mesh"&&(r.OW_MESH_UV=""),t.localSpace&&(r.OW_OBJECT_SPACE=""),t.parallax>0&&t.uvMode!=="triplanar"&&(r.OW_PARALLAX=""),t.detile>0&&t.uvMode!=="triplanar"&&(r.OW_DETILE=""),(t.weather[0]>0||t.weather[1]>0||t.weather[2]>0)&&(r.OW_WEATHER=""),(t.patch?.[0]??0)>0&&(r.OW_PATCH=""),((t.cloth?.[0]??0)>0||(t.cloth?.[1]??1)<1)&&(r.OW_CLOTH=""),(t.macroRelief??0)>0&&(r.OW_MACRO_RELIEF=""),t.vertexMasks&&(r.OW_VCOL_MASKS=""),t.alphaMask&&(r.OW_ALPHA_MASK=""),t.noGrad&&(r.OW_NOGRAD=""),Object.assign(o.defines??(o.defines={}),r),o.userData.owUniforms=a,o.userData.owParams=t;const c=Object.keys(r).sort().join("|");return o.customProgramCacheKey=()=>"ow:"+c,o.onBeforeCompile=h=>{Object.assign(h.uniforms,a),h.vertexShader=h.vertexShader.replace("#include <common>",`#include <common>
-`+LM).replace("#include <worldpos_vertex>",`#include <worldpos_vertex>
-`+IM);let l=h.fragmentShader.replace("#include <clipping_planes_pars_fragment>",`#include <clipping_planes_pars_fragment>
-`+FM).replace("#include <map_fragment>",UM);for(const[u,d]of OM)l=l.replace(u,d);h.fragmentShader=l},o.needsUpdate=!0,o}const _s=new Float64Array(9);function em(o){if(o.itemSize===3&&!o.normalized&&!o.isInterleavedBufferAttribute)return o.array;const t=new Float64Array(o.count*3);for(let e=0;e<o.count;e++)t[e*3]=o.getX(e),t[e*3+1]=o.getY(e),t[e*3+2]=o.getZ(e);return t}function HM(o,t={}){const{wear:e=1,grime:s=1,ao:i=1,edgeThreshold:n=.06,downGrime:a=.35,upWear:r=.15,rng:c=null}=t,h=o.getAttribute("position");if(!h)return o;let l=o.getAttribute("normal");l||(o.computeVertexNormals(),l=o.getAttribute("normal"));const u=h.count,d=o.getIndex(),f=d?d.array:null,p=f?f.length/3:u/3,m=em(h),g=em(l),v=new Int32Array(u),y=new Float64Array(u),x=new Float64Array(u),w=new Float64Array(u),_=new Int32Array(u),M=new Map;let S=0;for(let C=0;C<u;C++){const D=C*3,I=Math.round(m[D]*8192),F=Math.round(m[D+1]*8192),B=Math.round(m[D+2]*8192),V=Math.imul(I,73856093)^Math.imul(F,19349663)^Math.imul(B,83492791)|0;let H=M.get(V);H===void 0&&(H=-1);let G=-1;for(;H>=0;){if(y[H]===I&&x[H]===F&&w[H]===B){G=H;break}H=_[H]}G<0&&(G=S++,y[G]=I,x[G]=F,w[G]=B,_[G]=M.has(V)?M.get(V):-1,M.set(V,G)),v[C]=G}const b=new Float32Array(S*3),T=new Float32Array(S),k=new Float32Array(S),E=new Float32Array(S*3),R=new Float32Array(S);for(let C=0;C<p;C++){const D=C*3,I=f?f[D]:D,F=f?f[D+1]:D+1,B=f?f[D+2]:D+2;_s[0]=m[I*3],_s[1]=m[I*3+1],_s[2]=m[I*3+2],_s[3]=m[F*3],_s[4]=m[F*3+1],_s[5]=m[F*3+2],_s[6]=m[B*3],_s[7]=m[B*3+1],_s[8]=m[B*3+2];for(let V=0;V<3;V++){const H=V===0?I:V===1?F:B,G=v[H],q=G*3,tt=V*3,lt=(V+1)%3*3,X=(V+2)%3*3,Y=_s[lt]-_s[tt],ct=_s[lt+1]-_s[tt+1],mt=_s[lt+2]-_s[tt+2],xt=1/(Math.sqrt(Y*Y+ct*ct+mt*mt)||1),_t=_s[X]-_s[tt],Gt=_s[X+1]-_s[tt+1],O=_s[X+2]-_s[tt+2],et=1/(Math.sqrt(_t*_t+Gt*Gt+O*O)||1);b[q+0]+=Y*xt+_t*et,b[q+1]+=ct*xt+Gt*et,b[q+2]+=mt*xt+O*et,T[G]+=2;const J=H*3;E[q+0]+=g[J],E[q+1]+=g[J+1],E[q+2]+=g[J+2],R[G]+=1}}const P=new Float32Array(S);for(let C=0;C<S;C++){const D=Math.hypot(E[C*3],E[C*3+1],E[C*3+2]);if(k[C]=Math.min(1,Math.max(0,1-D/Math.max(1,R[C]))),D>1e-6&&T[C]>0){const I=1/(D*T[C]);P[C]=(E[C*3]*b[C*3]+E[C*3+1]*b[C*3+1]+E[C*3+2]*b[C*3+2])*I}}const z=new Float32Array(u*3);for(let C=0;C<u;C++){const D=v[C],I=P[D],F=Math.min(1,k[D]/.18),B=F*Math.min(1,Math.max(0,(-I-n)/.22)),V=F*Math.min(1,Math.max(0,(I-n)/.22)),H=g[C*3+1],G=Math.max(0,H),q=Math.max(0,-H);let tt=B*e+G*G*r*e,lt=V*s+q*a*s,X=V*i;if(c){const Y=.85+c.float()*.3;tt*=Y,lt*=2-Y}z[C*3+0]=Math.min(1,tt),z[C*3+1]=Math.min(1,lt),z[C*3+2]=Math.min(1,X)}return o.setAttribute("color",new pe(z,3)),o}function VM(o,{wear:t=0,grime:e=0,ao:s=0}={}){const i=o.getAttribute("position");if(!i)return o;const n=new Float32Array(i.count*3);for(let a=0;a<i.count;a++)n[a*3+0]=t,n[a*3+1]=e,n[a*3+2]=s;return o.setAttribute("color",new pe(n,3)),o}class GM{static id="materials";static deps=["render"];constructor(t={}){this._injectedRenderer=t.renderer??null,this._sets=new Map,this._materials=new Map,this._forge=null,this._shared=null,this._groundY=0,this._built=!1,this._warned=!1,this._quality=1,this._idle=0,this._scratchFreed=!1}async init(t){this.ctx=t;const e=t?.config?.q;this._anisotropy=e?.anisotropy??8,this._quality=t?.config?.quality==="low"?.5:t?.config?.quality==="medium"?.75:1,this._tryBuild()}_renderer(){if(this._injectedRenderer)return this._injectedRenderer;const t=this.ctx?.peek?.("render");return t?.renderer??t?.getRenderer?.()??null}_tryBuild(){if(this._built)return!0;const t=this._renderer();if(!t)return this._warned||(console.warn("[materials] no WebGLRenderer available yet — deferring texture bake"),this._warned=!0),!1;const e=performance.now();this._forge=new xM(t,{anisotropy:this._anisotropy});const s=this._forge.buildDetail(this._size(1024)),i=this._forge.buildMacro(256);this._shared={detailNormal:s.normal,detailAlbedo:s.albedo,macro:i.albedo},this._built=!0;const n=performance.now()-e;return n>30&&console.info(`[materials] shared maps ${n.toFixed(0)}ms`),!0}_size(t){const e=Math.max(128,Math.round(t*this._quality/128)*128);return 1<<Math.round(Math.log2(e))}_resolve(t){const e=tm(t);return ja[e]?e:(this._missing||(this._missing=new Set),this._missing.has(t)||(this._missing.add(t),console.warn(`[materials] unknown surface "${t}" — falling back to concrete`)),"concrete")}_bakeKey(t,e){return`${t}|${e.size}|${e.seed}|${e.tintA??""}|${e.tintB??""}|${(e.param??[]).join("_")}`}getTextureSet(t,e={}){const s=this._resolve(t),i=ja[s];if(!this._tryBuild())return null;const n={...i.bake,...e.bake??{}};n.size=this._size(n.size);const a=this._bakeKey(s,n);let r=this._sets.get(a);if(r)return r;const c=performance.now();this._idle=0,this._scratchFreed=!1,r=this._forge.build({key:s,glsl:i.glsl,size:n.size,seed:n.seed??1,worldSize:n.worldSize,relief:n.relief,tintA:n.tintA!==void 0?new ie(n.tintA):void 0,tintB:n.tintB!==void 0?new ie(n.tintB):void 0,param:n.param?new Dt().fromArray(n.param):void 0}),r.name=s,this._sets.set(a,r);const h=performance.now()-c;return h>40&&console.info(`[materials] bake ${s} ${n.size}px ${h.toFixed(0)}ms`),r}update(t){this._scratchFreed||!this._forge||(this._idle+=t>.25?.25:t,!(this._idle<5)&&(this._scratchFreed=!0,t
+    }`]],Zo={uvMode:"planar",localSpace:!1,scale:2,offset:[0,0],parallax:0,parallaxFade:[6,14],parallaxLayers:22,detail:[11,.55,.35,16],detailWorld:.26,macro:[.045,.35,.1,.35],macroBig:[1,0,.03,0],patch:[0,2.6,.12,-.08],cloth:[0,1,0,0],macroRelief:0,detile:0,weather:[.35,.3,.55,.4],groundY:0,wear:[.5,.7,.5,0],wearMaterial:[.42,0,0,.5],wearColor:9276294,dustColor:7037268,grimeColor:2762272,rustColor:7158300,tint:16777215,normalStrength:1,roughness:[1,0,.06],aoStrength:1,alphaMask:!1,vertexMasks:!1,noGrad:!1};function Nr(o){return o instanceof ie?o.clone():new ie(o)}function XM(o,t,e){const s=t.uvMode==="mesh"?t.scale:1/t.scale,i=t.detailWorld??Zo.detailWorld,n=t.uvMode==="mesh"||!(i>0)||t.scale<.3?t.detail[0]:Math.max(1.2,t.scale/i),a={owDetailNrm:{value:e.detailNormal},owDetailTex:{value:e.detailAlbedo??e.detailNormal},owMacroTex:{value:e.macro},owTile:{value:new Dt(s,s,t.offset[0],t.offset[1])},owDetailP:{value:new Dt(n,t.detail[1],t.detail[2],t.detail[3])},owMacroP:{value:new Dt(...t.macro)},owMacroBig:{value:new Dt(...t.macroBig??Zo.macroBig)},owPatchP:{value:new Dt(...t.patch??Zo.patch)},owClothP:{value:new Dt(...t.cloth??Zo.cloth)},owParallaxP:{value:new Dt(t.parallax,t.parallaxFade[0],t.parallaxFade[1],t.parallaxLayers)},owWeatherP:{value:new Dt(...t.weather)},owWearP:{value:new Dt(...t.wear)},owTintCol:{value:Nr(t.tint)},owDustCol:{value:Nr(t.dustColor)},owGrimeCol:{value:Nr(t.grimeColor)},owRustCol:{value:Nr(t.rustColor??Zo.rustColor)},owWearCol:{value:Nr(t.wearColor)},owWearMat:{value:new Dt(...t.wearMaterial)},owRoughP:{value:new Dt(t.roughness[0],t.roughness[1],t.detile,t.roughness[2]??Zo.roughness[2])},owNormalAmp:{value:t.normalStrength},owGroundY:{value:t.groundY},owAoAmt:{value:t.aoStrength},owMacroRelief:{value:t.macroRelief??0}},r={};t.uvMode==="triplanar"?r.OW_TRIPLANAR="":t.uvMode==="mesh"&&(r.OW_MESH_UV=""),t.localSpace&&(r.OW_OBJECT_SPACE=""),t.parallax>0&&t.uvMode!=="triplanar"&&(r.OW_PARALLAX=""),t.detile>0&&t.uvMode!=="triplanar"&&(r.OW_DETILE=""),(t.weather[0]>0||t.weather[1]>0||t.weather[2]>0)&&(r.OW_WEATHER=""),(t.patch?.[0]??0)>0&&(r.OW_PATCH=""),((t.cloth?.[0]??0)>0||(t.cloth?.[1]??1)<1)&&(r.OW_CLOTH=""),(t.macroRelief??0)>0&&(r.OW_MACRO_RELIEF=""),t.vertexMasks&&(r.OW_VCOL_MASKS=""),t.alphaMask&&(r.OW_ALPHA_MASK=""),t.noGrad&&(r.OW_NOGRAD=""),Object.assign(o.defines??(o.defines={}),r),o.userData.owUniforms=a,o.userData.owParams=t;const c=Object.keys(r).sort().join("|");return o.customProgramCacheKey=()=>"ow:"+c,o.onBeforeCompile=h=>{Object.assign(h.uniforms,a),h.vertexShader=h.vertexShader.replace("#include <common>",`#include <common>
+`+BM).replace("#include <worldpos_vertex>",`#include <worldpos_vertex>
+`+HM);let l=h.fragmentShader.replace("#include <clipping_planes_pars_fragment>",`#include <clipping_planes_pars_fragment>
+`+VM).replace("#include <map_fragment>",GM);for(const[u,d]of qM)l=l.replace(u,d);h.fragmentShader=l},o.needsUpdate=!0,o}const _s=new Float64Array(9);function rm(o){if(o.itemSize===3&&!o.normalized&&!o.isInterleavedBufferAttribute)return o.array;const t=new Float64Array(o.count*3);for(let e=0;e<o.count;e++)t[e*3]=o.getX(e),t[e*3+1]=o.getY(e),t[e*3+2]=o.getZ(e);return t}function jM(o,t={}){const{wear:e=1,grime:s=1,ao:i=1,edgeThreshold:n=.06,downGrime:a=.35,upWear:r=.15,rng:c=null}=t,h=o.getAttribute("position");if(!h)return o;let l=o.getAttribute("normal");l||(o.computeVertexNormals(),l=o.getAttribute("normal"));const u=h.count,d=o.getIndex(),f=d?d.array:null,p=f?f.length/3:u/3,m=rm(h),g=rm(l),v=new Int32Array(u),y=new Float64Array(u),x=new Float64Array(u),w=new Float64Array(u),_=new Int32Array(u),M=new Map;let S=0;for(let C=0;C<u;C++){const D=C*3,I=Math.round(m[D]*8192),F=Math.round(m[D+1]*8192),B=Math.round(m[D+2]*8192),V=Math.imul(I,73856093)^Math.imul(F,19349663)^Math.imul(B,83492791)|0;let H=M.get(V);H===void 0&&(H=-1);let G=-1;for(;H>=0;){if(y[H]===I&&x[H]===F&&w[H]===B){G=H;break}H=_[H]}G<0&&(G=S++,y[G]=I,x[G]=F,w[G]=B,_[G]=M.has(V)?M.get(V):-1,M.set(V,G)),v[C]=G}const b=new Float32Array(S*3),T=new Float32Array(S),k=new Float32Array(S),E=new Float32Array(S*3),R=new Float32Array(S);for(let C=0;C<p;C++){const D=C*3,I=f?f[D]:D,F=f?f[D+1]:D+1,B=f?f[D+2]:D+2;_s[0]=m[I*3],_s[1]=m[I*3+1],_s[2]=m[I*3+2],_s[3]=m[F*3],_s[4]=m[F*3+1],_s[5]=m[F*3+2],_s[6]=m[B*3],_s[7]=m[B*3+1],_s[8]=m[B*3+2];for(let V=0;V<3;V++){const H=V===0?I:V===1?F:B,G=v[H],q=G*3,tt=V*3,lt=(V+1)%3*3,X=(V+2)%3*3,Y=_s[lt]-_s[tt],ct=_s[lt+1]-_s[tt+1],mt=_s[lt+2]-_s[tt+2],xt=1/(Math.sqrt(Y*Y+ct*ct+mt*mt)||1),_t=_s[X]-_s[tt],Gt=_s[X+1]-_s[tt+1],O=_s[X+2]-_s[tt+2],et=1/(Math.sqrt(_t*_t+Gt*Gt+O*O)||1);b[q+0]+=Y*xt+_t*et,b[q+1]+=ct*xt+Gt*et,b[q+2]+=mt*xt+O*et,T[G]+=2;const J=H*3;E[q+0]+=g[J],E[q+1]+=g[J+1],E[q+2]+=g[J+2],R[G]+=1}}const P=new Float32Array(S);for(let C=0;C<S;C++){const D=Math.hypot(E[C*3],E[C*3+1],E[C*3+2]);if(k[C]=Math.min(1,Math.max(0,1-D/Math.max(1,R[C]))),D>1e-6&&T[C]>0){const I=1/(D*T[C]);P[C]=(E[C*3]*b[C*3]+E[C*3+1]*b[C*3+1]+E[C*3+2]*b[C*3+2])*I}}const z=new Float32Array(u*3);for(let C=0;C<u;C++){const D=v[C],I=P[D],F=Math.min(1,k[D]/.18),B=F*Math.min(1,Math.max(0,(-I-n)/.22)),V=F*Math.min(1,Math.max(0,(I-n)/.22)),H=g[C*3+1],G=Math.max(0,H),q=Math.max(0,-H);let tt=B*e+G*G*r*e,lt=V*s+q*a*s,X=V*i;if(c){const Y=.85+c.float()*.3;tt*=Y,lt*=2-Y}z[C*3+0]=Math.min(1,tt),z[C*3+1]=Math.min(1,lt),z[C*3+2]=Math.min(1,X)}return o.setAttribute("color",new pe(z,3)),o}function YM(o,{wear:t=0,grime:e=0,ao:s=0}={}){const i=o.getAttribute("position");if(!i)return o;const n=new Float32Array(i.count*3);for(let a=0;a<i.count;a++)n[a*3+0]=t,n[a*3+1]=e,n[a*3+2]=s;return o.setAttribute("color",new pe(n,3)),o}class KM{static id="materials";static deps=["render"];constructor(t={}){this._injectedRenderer=t.renderer??null,this._sets=new Map,this._materials=new Map,this._forge=null,this._shared=null,this._groundY=0,this._built=!1,this._warned=!1,this._quality=1,this._idle=0,this._scratchFreed=!1}async init(t){this.ctx=t;const e=t?.config?.q;this._anisotropy=e?.anisotropy??8,this._quality=t?.config?.quality==="low"?.5:t?.config?.quality==="medium"?.75:1,this._tryBuild()}_renderer(){if(this._injectedRenderer)return this._injectedRenderer;const t=this.ctx?.peek?.("render");return t?.renderer??t?.getRenderer?.()??null}_tryBuild(){if(this._built)return!0;const t=this._renderer();if(!t)return this._warned||(console.warn("[materials] no WebGLRenderer available yet — deferring texture bake"),this._warned=!0),!1;const e=performance.now();this._forge=new TM(t,{anisotropy:this._anisotropy});const s=this._forge.buildDetail(this._size(1024)),i=this._forge.buildMacro(256);this._shared={detailNormal:s.normal,detailAlbedo:s.albedo,macro:i.albedo},this._built=!0;const n=performance.now()-e;return n>30&&console.info(`[materials] shared maps ${n.toFixed(0)}ms`),!0}_size(t){const e=Math.max(128,Math.round(t*this._quality/128)*128);return 1<<Math.round(Math.log2(e))}_resolve(t){const e=am(t);return ja[e]?e:(this._missing||(this._missing=new Set),this._missing.has(t)||(this._missing.add(t),console.warn(`[materials] unknown surface "${t}" — falling back to concrete`)),"concrete")}_bakeKey(t,e){return`${t}|${e.size}|${e.seed}|${e.tintA??""}|${e.tintB??""}|${(e.param??[]).join("_")}`}getTextureSet(t,e={}){const s=this._resolve(t),i=ja[s];if(!this._tryBuild())return null;const n={...i.bake,...e.bake??{}};n.size=this._size(n.size);const a=this._bakeKey(s,n);let r=this._sets.get(a);if(r)return r;const c=performance.now();this._idle=0,this._scratchFreed=!1,r=this._forge.build({key:s,glsl:i.glsl,size:n.size,seed:n.seed??1,worldSize:n.worldSize,relief:n.relief,tintA:n.tintA!==void 0?new ie(n
