@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>WARZONE BROWSER — FPS</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- LOADING SCREEN -->
+  <div id="loading-screen">
+    <div class="loading-inner">
+      <div class="load-title">WARZONE<span>BROWSER</span></div>
+      <div class="load-bar-wrap"><div id="load-bar"></div></div>
+      <div id="load-text">Initializing systems...</div>
+    </div>
+  </div>
+
+  <!-- MAIN MENU -->
+  <div id="main-menu" class="hidden">
+    <div class="menu-bg"></div>
+    <div class="menu-content">
+      <div class="menu-title">WARZONE<span>BROWSER</span></div>
+      <div class="menu-subtitle">FIRST PERSON SHOOTER</div>
+      <div class="menu-buttons">
+        <button id="btn-play" class="menu-btn primary">▶ DEPLOY</button>
+        <button id="btn-settings" class="menu-btn">⚙ SETTINGS</button>
+      </div>
+      <div class="menu-hint">WASD · MOUSE · LMB SHOOT · R RELOAD · SPACE JUMP</div>
+    </div>
+  </div>
+
+  <!-- SETTINGS PANEL -->
+  <div id="settings-panel" class="hidden">
+    <div class="panel-box">
+      <h2>SETTINGS</h2>
+      <label>Mouse Sensitivity
+        <input type="range" id="sens-slider" min="0.5" max="5" step="0.1" value="2">
+        <span id="sens-val">2.0</span>
+      </label>
+      <label>Master Volume
+        <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="0.5">
+        <span id="vol-val">50%</span>
+      </label>
+      <label>Show FPS
+        <input type="checkbox" id="fps-toggle" checked>
+      </label>
+      <button id="btn-settings-close" class="menu-btn">← BACK</button>
+    </div>
+  </div>
+
+  <!-- GAME CANVAS -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+
+    <!-- Crosshair -->
+    <div id="crosshair">
+      <div class="ch-line ch-top"></div>
+      <div class="ch-line ch-bottom"></div>
+      <div class="ch-line ch-left"></div>
+      <div class="ch-line ch-right"></div>
+      <div class="ch-dot"></div>
+    </div>
+
+    <!-- Health -->
+    <div id="hud-health">
+      <div class="hud-label">HEALTH</div>
+      <div id="health-bar-bg">
+        <div id="health-bar"></div>
+        <span id="health-text">100</span>
+      </div>
+    </div>
+
+    <!-- Ammo -->
+    <div id="hud-ammo">
+      <span id="ammo-current">30</span>
+      <span class="ammo-sep">/</span>
+      <span id="ammo-reserve">90</span>
+      <div id="reload-indicator" class="hidden">RELOADING…</div>
+    </div>
+
+    <!-- Weapon name -->
+    <div id="hud-weapon">AK-47</div>
+
+    <!-- Kill feed -->
+    <div id="kill-feed"></div>
+
+    <!-- Kill counter -->
+    <div id="hud-score">
+      <div class="score-label">KILLS</div>
+      <div id="score-value">0</div>
+    </div>
+
+    <!-- Hit marker (overlay flash) -->
+    <div id="hit-marker" class="hidden">✕</div>
+
+    <!-- FPS counter -->
+    <div id="fps-counter">60 FPS</div>
+
+    <!-- Damage vignette -->
+    <div id="damage-vignette" class="hidden"></div>
+
+    <!-- Sprint indicator -->
+    <div id="sprint-icon" class="hidden">⚡ SPRINT</div>
+
+  </div>
+
+  <!-- MINIMAP -->
+  <canvas id="minimap-canvas"></canvas>
+
+  <!-- PAUSE MENU -->
+  <div id="pause-menu" class="hidden">
+    <div class="pause-box">
+      <div class="pause-title">PAUSED</div>
+      <button id="btn-resume" class="menu-btn primary">▶ RESUME</button>
+      <button id="btn-menu" class="menu-btn">⌂ MAIN MENU</button>
+    </div>
+  </div>
+
+  <!-- DEATH SCREEN -->
+  <div id="death-screen" class="hidden">
+    <div class="death-box">
+      <div class="death-title">YOU WERE ELIMINATED</div>
+      <div class="death-sub">Respawning in <span id="respawn-timer">3</span>s…</div>
+    </div>
+  </div>
+
+  <!-- GAME OVER / WIN -->
+  <div id="gameover-screen" class="hidden">
+    <div class="gameover-box">
+      <div id="gameover-title">MISSION COMPLETE</div>
+      <div id="final-score">Kills: 0</div>
+      <button id="btn-restart" class="menu-btn primary">↩ PLAY AGAIN</button>
+      <button id="btn-to-menu" class="menu-btn">⌂ MAIN MENU</button>
+    </div>
+  </div>
+
+  <!-- MOBILE CONTROLS -->
+  <div id="mobile-controls" class="hidden">
+    <div id="joystick-zone">
+      <div id="joystick-base">
+        <div id="joystick-stick"></div>
+      </div>
+    </div>
+    <div id="mobile-aim-zone"></div>
+    <button id="mobile-shoot" class="mobile-btn">🔫</button>
+    <button id="mobile-reload" class="mobile-btn small">R</button>
+    <button id="mobile-jump" class="mobile-btn small">↑</button>
+  </div>
+
+  <!-- Click to start overlay -->
+  <div id="click-to-start" class="hidden">
+    <div class="cts-inner">
+      <div class="cts-title">CLICK TO ENTER BATTLEFIELD</div>
+      <div class="cts-hint">ESC to pause · R to reload · SHIFT to sprint</div>
+    </div>
+  </div>
+
+  <div style="position:fixed;right:8px;bottom:8px;z-index:99;color:#ffa040;background:rgba(0,0,0,.55);font:11px ui-monospace,monospace;padding:3px 8px;border-radius:6px;pointer-events:none">WARZONE · تجربة v1.0</div>
+  <script type="module">
+    // Trial bootstrap: three.min.js ships in chunks (GitHub API arg limits)
+    const parts = [];
+    for (let i = 0; i < 7; i++) {
+      const r = await fetch('assets/t' + i + '.bin');
+      if (!r.ok) throw new Error('chunk t' + i);
+      parts.push(await r.text());
+    }
+    const load = (src) => new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = src; s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+    const blob = URL.createObjectURL(new Blob(parts, { type: 'text/javascript' }));
+    await load(blob);
+    for (const f of ['js/audio.js','js/controls.js','js/bullet.js','js/weapon.js','js/enemy.js','js/player.js','js/ui.js','maps/map1.js','js/map.js','js/game.js','main.js']) await load(f);
+  </script>
+
+</body>
+</html>
