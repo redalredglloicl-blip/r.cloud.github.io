@@ -7,6 +7,7 @@ var $=function(id){return document.getElementById(id);};
 var WORLD_URL='https://static.poly.pizza/8164c856-b42f-4936-8b3f-c8d9cc75cde0.glb';
 var WORLD_CREDIT='العالم: J-Toastie (CC-BY) عبر poly.pizza';
 var CHAR_URL='https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/Xbot.glb';
+var GAME_VER='1.4'; // رقم الإصدار — يظهر بشاشة التحميل
 
 // ====== المشهد ======
 var scene,camera,renderer,clock,mixer;
