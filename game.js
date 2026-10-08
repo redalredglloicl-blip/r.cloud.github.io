@@ -7,7 +7,7 @@ var $=function(id){return document.getElementById(id);};
 var WORLD_URL='https://static.poly.pizza/8164c856-b42f-4936-8b3f-c8d9cc75cde0.glb';
 var WORLD_CREDIT='العالم: J-Toastie (CC-BY) عبر poly.pizza';
 var CHAR_URL='https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/Xbot.glb';
-var GAME_VER='1.4'; // رقم الإصدار — يظهر بشاشة التحميل
+var GAME_VER='1.5'; // رقم الإصدار — يظهر بشاشة التحميل
 
 // ====== المشهد ======
 var scene,camera,renderer,clock,mixer;
@@ -134,6 +134,8 @@ function setupTouch(){
 // ====== تحميل العالم ======
 var worldBox=null,rayc=new THREE.Raycaster(),downV=new THREE.Vector3(0,-1,0);
 var groundTargets=[],colliders=[],clouds=[],suburbDots=[];
+var traffic=[],peds=[],birds=[];
+var baseYG=0,lifeSpawned=false;
 var BOUNDS=740;
 
 // ====== الضواحي: توسيع العالم حول المدينة المستوردة ======
@@ -142,6 +144,7 @@ function scaleUV(geo,sx,sy){
   for(var i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*sx,uv.getY(i)*sy);
 }
 function buildOutskirts(baseY){
+  baseYG=baseY;
   var R0=195,R1=710;
   // أرضية شاسعة
   var gp=new THREE.Mesh(new THREE.PlaneGeometry(2200,2200),
@@ -337,6 +340,113 @@ function loadError(msg){
   $('loadMsg').innerHTML='❌ '+msg;
   $('retryBtn').style.display='inline-block';
   $('dlTitle').textContent='فشل التحميل';
+}
+// ====== الحياة: سيارات ومشاة وطيور ======
+var carBodyG=new THREE.BoxGeometry(2,0.8,4.4);
+var carCabG=new THREE.BoxGeometry(1.7,0.7,2.2);
+var carWheelG=new THREE.CylinderGeometry(0.42,0.42,0.35,10);carWheelG.rotateZ(Math.PI/2);
+var wheelM=new THREE.MeshLambertMaterial({color:0x161616});
+var glassM=new THREE.MeshLambertMaterial({color:0x1c2733});
+function buildCarMesh(color){
+  var g=new THREE.Group();
+  var body=new THREE.Mesh(carBodyG,new THREE.MeshLambertMaterial({color:color}));
+  body.position.y=0.75;body.castShadow=true;g.add(body);
+  var cab=new THREE.Mesh(carCabG,glassM);cab.position.set(0,1.4,-0.2);cab.castShadow=true;g.add(cab);
+  [[-1,1.4],[1,1.4],[-1,-1.4],[1,-1.4]].forEach(function(p){
+    var w=new THREE.Mesh(carWheelG,wheelM);w.position.set(p[0],0.42,p[1]);g.add(w);
+  });
+  var hl=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.22,0.1),
+    new THREE.MeshBasicMaterial({color:0xfff6c0}));hl.position.set(0,0.8,2.22);g.add(hl);
+  return g;
+}
+var legG=new THREE.BoxGeometry(0.18,0.75,0.2);legG.translate(0,-0.32,0);
+var armG=new THREE.BoxGeometry(0.13,0.6,0.15);armG.translate(0,-0.26,0);
+var headG=new THREE.SphereGeometry(0.22,10,8);
+var torsoG=new THREE.BoxGeometry(0.5,0.65,0.3);
+var skinM=new THREE.MeshLambertMaterial({color:0xd9a066});
+function buildPed(shirtColor){
+  var g=new THREE.Group();
+  var shirt=new THREE.MeshLambertMaterial({color:shirtColor});
+  var pants=new THREE.MeshLambertMaterial({color:0x33415c});
+  var head=new THREE.Mesh(headG,skinM);head.position.y=1.62;head.castShadow=true;g.add(head);
+  var torso=new THREE.Mesh(torsoG,shirt);torso.position.y=1.15;torso.castShadow=true;g.add(torso);
+  var legL=new THREE.Mesh(legG,pants);legL.position.set(-0.13,0.8,0);g.add(legL);
+  var legR=new THREE.Mesh(legG,pants);legR.position.set(0.13,0.8,0);g.add(legR);
+  var armL=new THREE.Mesh(armG,shirt);armL.position.set(-0.34,1.42,0);g.add(armL);
+  var armR=new THREE.Mesh(armG,shirt);armR.position.set(0.34,1.42,0);g.add(armR);
+  g.userData={legL:legL,legR:legR,armL:armL,armR:armR};
+  return g;
+}
+function spawnLife(){
+  if(lifeSpawned)return;lifeSpawned=true;
+  // --- سيارات ---
+  var cols=[0xd23c2e,0x2e6fd2,0xf2c12e,0x2ed27a,0xe8e8e8,0x7a4fd2,0xff8c42,0x3a3f45];
+  for(var i=0;i<9;i++){
+    var cm=buildCarMesh(cols[i%cols.length]);
+    worldG.add(cm);
+    if(i<6)traffic.push({m:cm,mode:'ring',a:Math.random()*Math.PI*2,dir:i%2?1:-1,sp:11+Math.random()*7,lane:i%2?4:-4});
+    else traffic.push({m:cm,mode:'radial',road:(i-6)%4,t:Math.random()*1200-600,rdir:i%2?1:-1,sp:12+Math.random()*6,lane:(i%2?3.5:-3.5)});
+  }
+  // --- مشاة على الرصيف ---
+  var shirts=[0xd24a4a,0x4a7ad2,0x4ad27a,0xd2b44a,0x9a4ad2,0x4ad2c8,0xe8e8e8,0xd27a4a];
+  for(var j=0;j<9;j++){
+    var pm=buildPed(shirts[j%shirts.length]);
+    worldG.add(pm);
+    peds.push({m:pm,a:Math.random()*Math.PI*2,dir:j%2?1:-1,sp:1.3+Math.random()*1.3,
+      r:j%2?379:351,ph:Math.random()*6});
+  }
+  // --- طيور ---
+  var bM=new THREE.MeshBasicMaterial({color:0x2c2c38,side:THREE.DoubleSide});
+  var wingG=new THREE.PlaneGeometry(1.7,0.55);
+  for(var k=0;k<6;k++){
+    var bg=new THREE.Group();
+    var wl=new THREE.Mesh(wingG,bM);wl.position.x=-0.8;bg.add(wl);
+    var wr=new THREE.Mesh(wingG,bM);wr.position.x=0.8;bg.add(wr);
+    scene.add(bg);
+    birds.push({g:bg,wl:wl,wr:wr,a:Math.random()*Math.PI*2,r:140+Math.random()*320,
+      h:55+Math.random()*90,sp:0.12+Math.random()*0.15,ph:Math.random()*6});
+  }
+}
+function stepTraffic(dt){
+  for(var i=0;i<traffic.length;i++){var c=traffic[i],m=c.m;
+    if(c.mode==='ring'){
+      c.a+=c.dir*c.sp/365*dt;
+      var r=365+c.lane;
+      m.position.set(Math.cos(c.a)*r,baseYG,Math.sin(c.a)*r);
+      m.rotation.y=Math.atan2(-Math.sin(c.a)*c.dir,Math.cos(c.a)*c.dir);
+    }else{
+      c.t+=c.rdir*c.sp*dt;
+      if(c.t>680){c.t=680;c.rdir=-1;}
+      if(c.t<-680){c.t=-680;c.rdir=1;}
+      var a2=c.road*Math.PI/2;
+      // إزاحة جانبية بسيطة عن وسط الطريق
+      var ox=Math.cos(a2)*c.lane,oz=-Math.sin(a2)*c.lane;
+      m.position.set(Math.sin(a2)*c.t+ox,baseYG,Math.cos(a2)*c.t+oz);
+      m.rotation.y=Math.atan2(Math.sin(a2)*c.rdir,Math.cos(a2)*c.rdir);
+    }
+  }
+}
+function stepPeds(dt){
+  for(var i=0;i<peds.length;i++){var c=peds[i],m=c.m;
+    c.a+=c.dir*c.sp/c.r*dt;
+    c.ph+=dt*c.sp*3.4;
+    var sw=Math.sin(c.ph);
+    m.position.set(Math.cos(c.a)*c.r,baseYG+Math.abs(sw)*0.05,Math.sin(c.a)*c.r);
+    m.rotation.y=Math.atan2(-Math.sin(c.a)*c.dir,Math.cos(c.a)*c.dir);
+    var u=m.userData;
+    u.legL.rotation.x=sw*0.55;u.legR.rotation.x=-sw*0.55;
+    u.armL.rotation.x=-sw*0.4;u.armR.rotation.x=sw*0.4;
+  }
+}
+function stepBirds(dt){
+  var t=performance.now()*0.012;
+  for(var i=0;i<birds.length;i++){var b=birds[i];
+    b.a+=b.sp*dt;
+    b.g.position.set(Math.cos(b.a)*b.r,b.h+Math.sin(b.a*2+i)*5,Math.sin(b.a)*b.r);
+    b.g.rotation.y=-b.a;
+    var f=Math.sin(t+b.ph)*0.55;
+    b.wl.rotation.z=f;b.wr.rotation.z=-f;
+  }
 }
 // ====== بدء التحميل: الملفان معاً بالتوازي ======
 function boot(){
@@ -534,6 +644,7 @@ function loop(){
   requestAnimationFrame(loop);
   var dt=Math.min(clock.getDelta(),0.05);
   stepPlayer(dt);stepCam(dt);
+  stepTraffic(dt);stepPeds(dt);stepBirds(dt);
   // الشمس وظلالها تتبع اللاعب
   sun.position.set(P.x+55,P.y+95,P.z+38);
   sun.target.position.set(P.x,P.y,P.z);
@@ -553,6 +664,7 @@ function startGame(){
   $('hud').style.display='block';
   $('credit').textContent=WORLD_CREDIT;
   setupTouch();
+  spawnLife();
   clock.getDelta();
   loop();
   showMsg('🎮 امشِ بالأسهم / WASD — اسحب لتدوير الكاميرا');
