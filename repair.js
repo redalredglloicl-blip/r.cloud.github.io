@@ -69,10 +69,12 @@ document.head.appendChild(st);
 function appRepair(el){
 S.repair=S.repair||store.get('repair',{out:{},so:{}});
 const outc=rrPartsOutCt();
-el.innerHTML='<div style="text-align:center;padding:30px 18px">'+
-'<div style="font-size:16px;font-weight:800;margin-bottom:8px">فك الآيباد الحقيقي</div>'+
-'<p class="mut" style="font-size:13px;line-height:2;margin:0 0 6px">فك الشاشة والبطارية واللوحة الأم والكاميرات<br>قطعة قطعة — على جهاز الآيباد نفسه<br>ورجع ركبهن وشغله</p>'+
-(outc?'<p style="font-size:13px;color:#ff9f0a;font-weight:700">القطع المفكوكة حالياً: '+arabNum(outc)+' من '+arabNum(RR_PARTS.length)+'</p>':'')+
+el.innerHTML='<div style="text-align:center;padding:36px 20px">'+
+'<img src="'+ICONS.maint+'" style="width:88px;height:88px;border-radius:22px;margin-bottom:16px;box-shadow:0 8px 24px rgba(10,132,255,.35)">'+
+'<div style="font-size:18px;font-weight:800;margin-bottom:8px">فك الآيباد الحقيقي</div>'+
+'<p class="mut" style="font-size:13.5px;line-height:2.1;margin:0 0 4px">فك الشاشة والبطارية واللوحة الأم والكاميرات<br>قطعة قطعة \u2014 على جهاز الآيباد نفسه</p>'+
+'<p class="mut" style="font-size:12.5px;line-height:2;margin:0 0 6px">\u0661. فك البراغي \u0662. فك القطع \u0663. ركبهن ودوس التشغيل</p>'+
+(outc?'<p style="font-size:13px;color:#ff9f0a;font-weight:700">القطع المفكوكة حاليا: '+arabNum(outc)+' من '+arabNum(RR_PARTS.length)+'</p>':'')+
 '<button class="btn" id="rrStart" style="width:100%;padding:14px;font-size:16px;margin-top:12px">فك الآيباد</button></div>';
 el.querySelector('#rrStart').addEventListener('click',()=>{sfx('click');closeApp();setTimeout(startRealRepair,450);});
 }
