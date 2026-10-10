@@ -2,26 +2,33 @@ S.msgs=[];store.set('msgs',[]);
 S.notifs=store.get('notifs',[]);
 S.locked=true;
 const IOS_EASE='cubic-bezier(.32,.72,.24,1)';
+const IOS_SPRING='cubic-bezier(.30,1.08,.36,1)';
 function iconImgOf(el){if(!el)return null;const im=el.tagName==='IMG'?el:el.querySelector&&el.querySelector('img');if(!im)return null;return im.currentSrc||im.src}
 function showAppWin(fromEl){
 const win=$('#appWin');S._from=fromEl||null;const tok=(S._anim=(S._anim||0)+1);
 win.classList.add('open');document.body.classList.add('appopen');syncPill();
-win.style.transition='none';win.style.opacity='0';win.style.transform='scale(.965)';
-const src=iconImgOf(fromEl);let clone=null;
-if(src&&fromEl.getBoundingClientRect){
-const scr=$('#screen').getBoundingClientRect(),r=fromEl.getBoundingClientRect();
-clone=document.createElement('img');clone.src=src;clone.alt='';
-clone.style.cssText='position:absolute;z-index:45;pointer-events:none;left:'+(r.left-scr.left)+'px;top:'+(r.top-scr.top)+'px;width:'+r.width+'px;height:'+r.height+'px;border-radius:24%;object-fit:cover;box-shadow:0 10px 30px rgba(0,0,0,.35);transform-origin:0 0;will-change:transform,opacity';
-$('#screen').appendChild(clone);
-clone.getBoundingClientRect();
-clone.style.transition='transform .40s '+IOS_EASE+',border-radius .40s '+IOS_EASE+',opacity .15s ease .27s';
-clone.style.transform='translate('+(-(r.left-scr.left)).toFixed(1)+'px,'+(-(r.top-scr.top)).toFixed(1)+'px) scale('+(scr.width/Math.max(1,r.width)).toFixed(3)+','+(scr.height/Math.max(1,r.height)).toFixed(3)+')';
-clone.style.borderRadius='0px';clone.style.opacity='0';
-}
+$('#screen').classList.add('appzoom');
+const scr=$('#screen').getBoundingClientRect();
+const r=(fromEl&&fromEl.getBoundingClientRect)?fromEl.getBoundingClientRect():null;
+const hasIcon=r&&r.width>=8&&r.right>scr.left&&r.left<scr.right&&r.top<scr.bottom&&r.bottom>scr.top;
+win.style.transformOrigin='0 0';win.style.overflow='hidden';
+if(hasIcon){
+win.style.transition='none';win.style.opacity='1';
+win.style.transform='translate('+((r.left-scr.left)).toFixed(1)+'px,'+((r.top-scr.top)).toFixed(1)+'px) scale('+((r.width/scr.width)).toFixed(4)+','+((r.height/scr.height)).toFixed(4)+')';
+win.style.borderRadius=((15*scr.width/Math.max(1,r.width)).toFixed(0))+'px/'+((15*scr.height/Math.max(1,r.height)).toFixed(0))+'px';
+win.style.boxShadow='0 16px 48px rgba(0,0,0,.38)';
 win.getBoundingClientRect();
-win.style.transition='opacity .30s ease .10s,transform .40s '+IOS_EASE;
+win.style.transition='transform .55s '+IOS_SPRING+',border-radius .55s '+IOS_SPRING+',box-shadow .55s ease';
+win.style.transform='translate(0px,0px) scale(1,1)';
+win.style.borderRadius='0px';
+setTimeout(()=>{if(S._anim!==tok)return;win.style.transition='';win.style.transform='';win.style.borderRadius='';win.style.boxShadow='';win.style.transformOrigin=''},580);
+}else{
+win.style.transition='none';win.style.opacity='0';win.style.transform='scale(.94)';
+win.getBoundingClientRect();
+win.style.transition='opacity .3s ease,transform .45s '+IOS_SPRING;
 win.style.opacity='1';win.style.transform='none';
-setTimeout(()=>{if(clone)clone.remove();if(S._anim===tok){win.style.transition='';win.style.transform='';win.style.opacity=''}},470);
+setTimeout(()=>{if(S._anim!==tok)return;win.style.transition='';win.style.transform='';win.style.opacity=''},480);
+}
 }
 function snapCur(){if(!S.app)return;try{S.snaps=S.snaps||{};S.snaps[S.app]=$('#appBody').innerHTML.replace(/ id="[^"]*"/g,'').slice(0,60000)}catch(e){}}
 function noteRunning(id,title,ic){if(!id)return;S.running=S.running||[];S.running=S.running.filter(r=>r.id!==id);S.running.unshift({id,title,ic})}
@@ -39,12 +46,13 @@ const scr=$('#screen').getBoundingClientRect();let r=back?back.getBoundingClient
 if(!r||r.width<8||r.right<scr.left||r.left>scr.right||r.top>scr.bottom)r={left:scr.left+scr.width/2-26,top:scr.bottom-130,width:52,height:52};
 win.getBoundingClientRect();
 win.style.transformOrigin='0 0';
-win.style.transition='transform .38s '+IOS_EASE+',border-radius .38s '+IOS_EASE+',opacity .22s ease .16s,box-shadow .38s';
-win.style.borderRadius='26px';win.style.boxShadow='0 18px 50px rgba(0,0,0,.35)';
+win.style.transition='transform .48s '+IOS_EASE+',border-radius .48s '+IOS_EASE+',opacity .22s ease .2s,box-shadow .48s';
+win.style.borderRadius=((15*scr.width/Math.max(1,r.width)).toFixed(0))+'px/'+((15*scr.height/Math.max(1,r.height)).toFixed(0))+'px';win.style.boxShadow='0 18px 50px rgba(0,0,0,.35)';
 win.style.transform='translate('+((r.left-scr.left)).toFixed(1)+'px,'+((r.top-scr.top)).toFixed(1)+'px) scale('+((r.width/scr.width)).toFixed(3)+','+((r.height/scr.height)).toFixed(3)+')';
 win.style.opacity='0';
 setTimeout(()=>{if(S._anim!==tok)return;
-win.classList.remove('open');document.body.classList.remove('appopen');syncPill();win.style.transition='';win.style.transform='';win.style.opacity='';win.style.borderRadius='';win.style.boxShadow='';win.style.transformOrigin='';S._from=null},400);
+win.classList.remove('open');document.body.classList.remove('appopen');$('#screen').classList.remove('appzoom');syncPill();win.style.transition='';win.style.transform='';win.style.opacity='';win.style.borderRadius='';win.style.boxShadow='';win.style.transformOrigin='';S._from=null;
+const land=back&&(back.closest?back.closest('.app'):null);if(land&&land.animate)land.animate([{transform:'scale(1)'},{transform:'scale(1.09)'},{transform:'scale(1)'}],{duration:240,easing:'ease-out'})},500);
 }
 function renderSwitcher(){
 const track=$('#swTrack');const list=S.running||[];
@@ -243,7 +251,7 @@ return;
 if(S.setPage==='about'){
 el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button><div class="setgroup">'+
 row('الاسم','',"Rio's iPad")+row('طراز الجهاز','', 'iPad Pro 11')+row('نظام التشغيل','', 'RioOS 26.0')+
-row('إصدار اللعبة','', 'Rio iPad 2.7')+row('السعة','', '64 GB')+row('المساحة المتوفرة','', '51.2 GB')+
+row('إصدار اللعبة','', 'Rio iPad 2.8')+row('السعة','', '64 GB')+row('المساحة المتوفرة','', '51.2 GB')+
 row('الرقم التسلسلي','', 'RGX2IPAD2026')+row('المشغل','', 'Zain — 4.5G+')+'</div>';
 $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});return;
 }
