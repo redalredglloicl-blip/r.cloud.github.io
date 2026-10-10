@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Rio iPad">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Rio iPad 8.1</title>
+<title>Rio iPad 8.2</title>
 <style>.sq{width:29px;height:29px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overflow:hidden;background:radial-gradient(120% 100% at 50% 0%,#2b3348 0%,#141821 60%,#0b0e14 100%);font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif}
@@ -41,8 +41,9 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 @media (orientation:portrait){#rotateHint.on{display:block}}
 #padWrap.away{opacity:0;pointer-events:none;transform:translate(-50%,-50%) translateY(60px)}
 #ipad{position:absolute;inset:0;background:#111318;border-radius:26px;padding:11px;box-shadow:inset 0 0 0 2px #2c2f36}
-#screen{position:relative;width:100%;height:100%;border-radius:17px;overflow:hidden;background:#000;direction:ltr}
-#padCam{position:absolute;top:5px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#5b7ea6,#10151d 70%);z-index:60;pointer-events:none}
+#screen{position:relative;width:100%;height:100%;border-radius:17px;overflow:hidden;background:#000;direction:ltr;box-shadow:0 0 0 2px #050607,0 0 14px rgba(0,0,0,.55)}
+#padCam{position:absolute;top:4px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#5b7ea6,#10151d 70%);z-index:60;pointer-events:none}
+#padAls{position:absolute;top:8px;left:calc(50% + 15px);width:5px;height:5px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#334052,#090c12 78%);z-index:60;pointer-events:none;opacity:.85}
 #sheen{position:absolute;inset:0;border-radius:17px;background:linear-gradient(115deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,0) 32%);z-index:55;pointer-events:none}
 #wall{position:absolute;inset:0;background:linear-gradient(160deg,#3a7bd5 0%,#7d5fd0 45%,#e2698a 100%)}
 #wallImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -223,9 +224,9 @@ body{touch-action:manipulation}
 #ctxMenu{position:absolute;z-index:60;display:none;background:rgba(250,250,252,.94);backdrop-filter:blur(14px);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);min-width:178px;overflow:hidden;color:#111}
 #ctxMenu button{display:block;width:100%;text-align:right;padding:11px 14px;background:none;border:none;border-bottom:1px solid rgba(0,0,0,.06);font-size:13.5px;cursor:pointer}
 #ctxMenu button.danger{color:#ff3b30;font-weight:700}
-#ipad{background:linear-gradient(150deg,#3b3e45,#14161a 42%,#1d1f24);box-shadow:inset 0 0 0 2px #43464e,inset 0 1px 0 rgba(255,255,255,.28),0 24px 44px rgba(0,15,40,.45)}
-#padCam{width:9px;height:9px;background:radial-gradient(circle at 38% 35%,#7fa8d8 0 18%,#24344d 42%,#05070c 78%);box-shadow:inset 0 0 2px #000,0 0 0 2.5px rgba(20,22,28,.9)}
-.hwBtn{position:absolute;background:linear-gradient(90deg,#565a63,#2b2e34);border-radius:3px;z-index:2}
+#ipad{background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,0) 22%),linear-gradient(150deg,#3b3e45,#14161a 42%,#1d1f24);box-shadow:inset 0 0 0 2px #43464e,inset 0 1px 0 rgba(255,255,255,.28),0 24px 44px rgba(0,15,40,.45)}
+#padCam{width:14px;height:14px;background:radial-gradient(circle at 30% 24%,rgba(170,205,255,.95) 0%,rgba(170,205,255,0) 20%),radial-gradient(circle at 70% 75%,rgba(96,64,150,.6) 0%,rgba(96,64,150,0) 32%),radial-gradient(circle at 50% 50%,#04060a 0%,#0e1728 55%,#020409 100%);box-shadow:inset 0 0 0 2px #33373f,inset 0 0 0 3.5px #0e1013,0 0 0 1px rgba(0,0,0,.65),0 1px 2px rgba(0,0,0,.5)}
+.hwBtn{position:absolute;background:linear-gradient(90deg,#71767f,#34373d 55%,#1e2126);border-radius:3px;z-index:2;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -1px 0 rgba(0,0,0,.4)}
 .hidden{display:none!important}
 #ipad.dark #appWin{background:#000!important}
 #ipad.dark #appHead{background:rgba(18,18,20,.94)!important;color:#fff!important}
@@ -346,7 +347,7 @@ img,a{-webkit-user-drag:none!important}
 <body>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 8.1</div>
+  <div id="verTag">Rio iPad 8.2</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -358,7 +359,7 @@ img,a{-webkit-user-drag:none!important}
   <!-- iPad -->
   <div id="rotateHint">لفّ جهازك بالعرض — اللعبة تنلعب أفضل أفقياً</div>
   <div id="padWrap" class="away"><span class="hwBtn" style="right:-3px;top:88px;width:4px;height:58px"></span><span class="hwBtn" style="left:-3px;top:110px;width:4px;height:38px"></span><span class="hwBtn" style="left:-3px;top:154px;width:4px;height:38px"></span>
-    <div id="ipad"><div id="padCam"></div><div id="screen"><div id="sheen"></div>
+    <div id="ipad"><div id="padCam"></div><div id="padAls"></div><div id="screen"><div id="sheen"></div>
       <div id="wall"><img id="wallImg" src="https://picsum.photos/seed/riowall/700/900" onerror="this.remove()"></div>
       <div id="homeApps"></div><div id="editBar"><button id="editDone">تم</button></div><div id="ctxMenu"></div>
       <button id="spotPill">بحث</button><div id="dock"></div>
@@ -398,7 +399,7 @@ img,a{-webkit-user-drag:none!important}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 8.1</div>
+    <div class="ver">Rio iPad 8.2</div>
   </div>
   <div id="toast"></div>
 </div>
