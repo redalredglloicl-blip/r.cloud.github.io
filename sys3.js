@@ -1,5 +1,7 @@
 /* ===== Rio iPad 3.0 system layer ===== */
 S.fx=Object.assign({focus:{sched:false,from:'22:00',to:'07:00',mute:['YouTube','TikTok']},nstyle:'stack',summary:'21:00',lastSum:'',lock:{wcol:'#ffffff',bold:true,widgets:['battery','weather','music'],shuffle:false},acc:{night:false,reduce:false,bold:false,dzoom:false},icons:{mode:'light',big:false,nolabel:false},limits:{},downtime:{on:false,from:'23:00',to:'06:00'},use:{date:'',sec:{}},seen:{},airSeen:0,peers:[],autos:[]},store.get('fx3',{}));
+const FXDEF={celldata:true,hotspot:{on:false,pass:'rio2026'},vpn:false,snd:{lock:true,keys:true,send:true,ring:'افتتاحية'},btdev:{},perms:{location:true,camera:true,microphone:true,photos:true,tracking:false},pass:'',passLen:0,faceid:false,autolock:0,dt24:false,textscale:100,truetone:false,airdrop:'all',searchOn:true,siri:true,gcname:'',cards:[],vault:[],appNotif:{},searchApps:{},bgref:{},camgrid:false,camfmt:'HEIF',sosBtn:true,solidCC:false,cellUsed:1.24,caps:true};
+for(const k in FXDEF)if(S.fx[k]===undefined)S.fx[k]=FXDEF[k];
 S.alarms=store.get('alarms',[]);
 S.musPos=S.musPos||0;
 function saveFx(){store.set('fx3',S.fx)}
@@ -12,6 +14,10 @@ let _ac=null;
 function tone(f,t0,dur,type,vol){try{if(!_ac)_ac=new (window.AudioContext||window.webkitAudioContext)();if(_ac.state==='suspended')_ac.resume();const t=_ac.currentTime+t0;const o=_ac.createOscillator(),gn=_ac.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);gn.gain.setValueAtTime(0.0001,t);gn.gain.exponentialRampToValueAtTime(Math.max(0.02,(S.set.vol/100)*0.22*(vol||1)),t+0.012);gn.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(gn);gn.connect(_ac.destination);o.start(t);o.stop(t+dur+0.05)}catch(e){}}
 function sfx(kind){
 if(S.set.vol<=0)return;
+const snd=S.fx.snd||{};
+if(kind==='lock'&&snd.lock===false)return;
+if(kind==='send'&&snd.send===false)return;
+if(kind==='click'&&snd.keys===false)return;
 if(kind==='unlock'){tone(587,0,.09,'sine');tone(880,.07,.12,'sine')}
 else if(kind==='lock'){tone(392,0,.1,'sine');tone(262,.06,.12,'sine')}
 else if(kind==='shutter'){tone(1250,0,.035,'square',.7);tone(760,.045,.05,'square',.7)}
@@ -25,7 +31,8 @@ opts=opts||{};
 pushNotif(app,(title&&title!==app?title+' — ':'')+text);
 renderLockX();
 const muted=S.set.dnd&&S.fx.focus.mute.includes(app);
-if(opts.pop===false||muted||S.locked)return;
+const appOff=S.fx.appNotif&&S.fx.appNotif[app]===false;
+if(opts.pop===false||muted||appOff||S.locked)return;
 showBanner(app,(title&&title!==app?title+' — ':'')+text,fn);
 }
 function showBanner(app,text,fn){
@@ -152,6 +159,7 @@ async function airPoll(){
 const pr=await fbGet('/presence');
 if(pr){const seenSid={};S.fx.peers=Object.values(pr).filter(x=>Date.now()-(x.ts||0)<90000&&x.sid!==S.sid&&x.u).filter(x=>!seenSid[x.sid]&&(seenSid[x.sid]=1))}
 const d=await fbGet('/airdrop');if(!d)return;
+if(S.fx.airdrop==='off'){Object.values(d).forEach(x=>{S.fx.airSeen=Math.max(S.fx.airSeen||0,x.ts||0)});saveFx();return}
 Object.values(d).filter(x=>(x.ts||0)>(S.fx.airSeen||0)&&(x.to==='all'||x.to===S.sid)&&x.sid!==S.sid).sort((a,b)=>(a.ts||0)-(b.ts||0)).forEach(x=>{
 S.fx.airSeen=Math.max(S.fx.airSeen||0,x.ts||0);saveFx();
 notify('AirDrop','AirDrop','وصلك '+(x.kind==='img'?'صورة':'نص')+' من '+x.from,()=>acceptAir(x),{pop:true});
@@ -193,6 +201,20 @@ if(lt){lt.style.color=S.fx.lock.wcol;lt.style.fontWeight=S.fx.lock.bold?'700':'3
 if(ld)ld.style.color=S.fx.lock.wcol;
 if(S.fx.lock.shuffle&&S.photos.length){L.style.backgroundImage='linear-gradient(rgba(10,12,18,.45),rgba(10,12,18,.45)),url("'+S.photos[0]+'")';L.style.backgroundSize='cover';L.style.backgroundPosition='center'}else{L.style.backgroundImage=''}
 const pb=x.querySelector('[data-lmus]');if(pb)pb.addEventListener('click',e=>{e.stopPropagation();S.musicPlay=false;renderLockX();updWidgets()});
+const pzOld=x.querySelector('#pinZone');if(pzOld)pzOld.remove();
+if(S.locked&&(S.fx.pass||S.fx.faceid)){
+const pz=document.createElement('div');pz.id='pinZone';pz.style.marginTop='12px';
+pz.innerHTML=(S.fx.faceid?'<button class="btn" id="fidBtn" style="width:100%;padding:12px;margin-bottom:10px">Face ID — افتح بوجهك</button>':'')+
+(S.fx.pass?'<div style="text-align:center;color:#fff"><div style="font-size:13px;margin-bottom:6px">اكتب رمز الدخول</div><div id="pinDots" style="font-size:15px;letter-spacing:7px;margin-bottom:10px">'+'○'.repeat(S.fx.passLen||4)+'</div><div style="display:grid;grid-template-columns:repeat(3,58px);gap:9px;justify-content:center">'+[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(n=>'<button data-pin="'+n+'" style="width:58px;height:58px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;font-size:21px;font-weight:600;cursor:pointer">'+(n===''?'':n)+'</button>').join('')+'</div></div>':'');
+x.appendChild(pz);
+const fb=pz.querySelector('#fidBtn');if(fb)fb.addEventListener('click',e=>{e.stopPropagation();fb.textContent='جاي يتعرف على وجهك…';setTimeout(()=>_unlock0(),750)});
+pz.querySelectorAll('[data-pin]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const v=b.dataset.pin;
+if(v==='\u232b')S._pin=(S._pin||'').slice(0,-1);else if(v!==''&&((S._pin||'').length<(S.fx.passLen||4)))S._pin=(S._pin||'')+v;
+const dots=$('#pinDots');if(dots)dots.textContent='\u25cf'.repeat((S._pin||'').length)+'\u25cb'.repeat(Math.max(0,(S.fx.passLen||4)-(S._pin||'').length));
+sfx('click');
+if((S._pin||'').length===(S.fx.passLen||4)){if(simpHash(S._pin)===S.fx.pass){S._pin='';_unlock0()}else{S._pin='';if(dots)dots.textContent='\u25cb'.repeat(S.fx.passLen||4);toast('رمز غلط — حاول مرة ثانية');sfx('lock')}}
+}));
+}
 }
 new MutationObserver(()=>{if($('#lock').classList.contains('show'))renderLockX()}).observe($('#lock'),{attributes:true,attributeFilter:['class']});
 (function(){
@@ -262,8 +284,10 @@ if(fx.acc.night){if(!ns){ns=document.createElement('div');ns.id='nsLayer';scr.ap
 }
 
 /* ===== settings subpages 3.0 ===== */
+const SET3_PAGES=['bluetooth','cellular','hotspot','vpn','sounds','general','camera','display','search','siri','faceid','sos','privacy','gamecenter','wallet','passwords','appshub','appdetail','gupdate','gstorage','gdatetime','gkeyboard','glang','gairdrop','greset'];
 function setSubPage(el){
 const p=S.setPage,fx=S.fx;
+if(SET3_PAGES.includes(p)){setPageX(el);return}
 const back='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button>';
 const sw=(id,on)=>'<label class="switch"><input type="checkbox" id="'+id+'" '+(on?'checked':'')+'><i></i></label>';
 const sq2=(c,gl)=>'<span class="sq" style="background:'+c+'">'+g(gl,'#fff',16)+'</span>';
@@ -417,7 +441,7 @@ S.fx.autos.push({name,when,val,then:$('#auThen').value,val2:$('#auVal2').value.t
 document.addEventListener('dragstart',e=>e.preventDefault());
 /* ===== wrappers + init ===== */
 const _ors=renderStatus;
-renderStatus=function(){_ors();try{if(S.set.dnd){const si=$('#sbIcons');if(si&&!si.querySelector('[data-moon]'))si.insertAdjacentHTML('afterbegin','<span data-moon="1" style="display:inline-flex">'+g('moon','#cfc9ff',14)+'</span>')}}catch(e){}};
+renderStatus=function(){_ors();try{const si=$('#sbIcons');if(si){if(S.set.dnd&&!si.querySelector('[data-moon]'))si.insertAdjacentHTML('afterbegin','<span data-moon="1" style="display:inline-flex">'+g('moon','#cfc9ff',14)+'</span>');if(S.fx.vpn&&!si.querySelector('[data-vpn]'))si.insertAdjacentHTML('beforeend','<span data-vpn="1" style="font-size:9.5px;font-weight:800;border:1.2px solid #fff;border-radius:4px;padding:0 3px">VPN</span>')}}catch(e){}};
 const _orh=renderHome;
 renderHome=function(){_orh();try{mountWidgets();applyFx()}catch(e){}};
 const _occ=renderCC;
@@ -428,3 +452,371 @@ renderHome();
 renderStatus();
 wxFetch();
 renderLockX();
+
+/* ===== Settings 3.2 pages (iPhone order) ===== */
+function gotoPage(p){S.setPage=p;appSettings($('#appBody'))}
+function playRing(name){
+const pat={'افتتاحية':[523,659,784,1046],'موجات':[392,494,587,784],'حرير':[880,988,1108,1318],'رادار':[1200,1200,1200,900],'إشعاع':[659,659,830,988]}[name]||[523,659,784];
+pat.forEach((f,i)=>tone(f,i*0.14,0.16,'sine'));
+}
+function permDenied(what){
+return '<div class="card" style="text-align:center;padding:28px 16px"><div class="big" style="font-size:17px">«'+what+'» بدون وصول</div><p class="mut" style="margin:8px 0 14px;line-height:1.8">طفّيت إذن '+what+' من الخصوصية — فعّله حتى يشتغل هنا، مثل الآيفون بالضبط.</p><button class="btn" onclick="openApp(\'settings\',null);setTimeout(()=>gotoPage(\'privacy\'),450)">فتح الخصوصية والأمان</button></div>';
+}
+function setPageX(el){
+const p=S.setPage,fx=S.fx,s=S.set;
+const sw=(id,on)=>'<label class="switch"><input type="checkbox" id="'+id+'" '+(on?'checked':'')+'><i></i></label>';
+const sq2=(c,gl)=>'<span class="sq" style="background:'+c+'">'+g(gl,'#fff',16)+'</span>';
+const row2=(label,left,val,go)=>'<div class="setrow" '+(go?'data-go="'+go+'" style="cursor:pointer"':'')+'><span style="display:flex;align-items:center;gap:9px;flex:1">'+left+label+'</span>'+(val||'')+'</div>';
+const grp=h=>'<div class="setgroup">'+h+'</div>';
+const arrow='<span class="mut">‹</span>';
+const bk=(t)=>{const b=$('#setBack');if(b)b.addEventListener('click',()=>gotoPage(t))};
+const head=(t,back)=>'<button class="back" id="setBack" style="margin-bottom:10px">‹ '+(back==='general'?'عام':'الإعدادات')+'</button><div class="app-title" style="font-size:19px;font-weight:700;margin-bottom:10px">'+t+'</div>';
+el.querySelectorAll&&0;
+const bindGo=()=>{el.querySelectorAll('[data-go]').forEach(r=>r.addEventListener('click',()=>gotoPage(r.dataset.go)))};
+if(p==='bluetooth'){
+el.innerHTML=head('Bluetooth')+grp(row2('Bluetooth',sq2('#0a84ff','bluetooth'),sw('pBt',s.bt)))+
+'<div class="rbx-sec">أجهزتي</div>'+grp([['AirPods Pro','headset'],['Apple Watch','watch'],['مكبر Rio','speaker']].map(d=>'<div class="setrow" data-btd="'+d[0]+'" style="cursor:pointer"><span style="display:flex;gap:9px;align-items:center;flex:1">'+g(d[1],'#0a84ff',18)+d[0]+'</span><span class="mut">'+(fx.btdev[d[0]]&&s.bt?'متصل':'غير متصل')+'</span></div>').join(''))+
+'<p class="mut" style="margin:4px 2px">دوس أي جهاز حتى يتصل أو ينفصل — ينحفظ اختياره.</p>';
+bk('main');$('#pBt').addEventListener('change',e=>{s.bt=e.target.checked;store.set('set',s);renderStatus();appSettings(el)});
+el.querySelectorAll('[data-btd]').forEach(r=>r.addEventListener('click',()=>{if(!s.bt)return toast('شغّل Bluetooth أولاً');const n=r.dataset.btd;fx.btdev[n]=!fx.btdev[n];saveFx();appSettings(el);toast(fx.btdev[n]?'اتصل '+n:'انفصل '+n)}));
+return}
+if(p==='cellular'){
+el.innerHTML=head('بيانات الهاتف')+grp(row2('بيانات الهاتف',sq2('#34c759','cellular'),sw('pCell',fx.celldata))+
+row2('المشغل','','<span class="mut">Zain — 4.5G+</span>')+
+row2('تجوال البيانات',sq2('#8e8e93','globe'),sw('pRoam',!!fx.roam)))+
+'<div class="card"><div class="row" style="justify-content:space-between"><b>الاستخدام هالشهر</b><span class="mut">'+String(fx.cellUsed||1.24).slice(0,5)+' GB</span></div><div style="height:7px;background:#e9e9ee;border-radius:4px;margin-top:9px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.min(95,(fx.cellUsed||1.24)/10*100)+'%;background:#34c759"></span></div><button class="btn gray" id="cellReset" style="margin-top:10px">إعادة تعيين الإحصائيات</button></div>'+
+'<p class="mut" style="margin:4px 2px;line-height:1.8">من تطفئ البيانات والواي فاي سوه، تطبيقات التواصل تطلع «لا يوجد اتصال» مثل الآيفون.</p>';
+bk('main');
+$('#pCell').addEventListener('change',e=>{fx.celldata=e.target.checked;saveFx();renderStatus();toast(fx.celldata?'البيانات شغالة':'البيانات مطفية')});
+$('#pRoam').addEventListener('change',e=>{fx.roam=e.target.checked;saveFx()});
+$('#cellReset').addEventListener('click',()=>{fx.cellUsed=0;saveFx();appSettings(el)});
+return}
+if(p==='hotspot'){
+el.innerHTML=head('نقطة اتصال شخصية')+grp(row2('السماح للآخرين بالانضمام',sq2('#34c759','radio-outline'),sw('pHot',fx.hotspot.on))+
+row2('اسم الشبكة','','<span class="mut">iPad — Reda</span>')+
+row2('كلمة سر Wi-Fi','','<input type="text" id="hotPass" value="'+escH(fx.hotspot.pass||'rio2026')+'" style="padding:7px;border:1px solid #d9d9de;border-radius:9px;width:130px;text-align:center">'))+
+'<p class="mut" style="margin:4px 2px">غيّر كلمة السر وانحفظ — أجهزتك القريبة تشوف شبكة «iPad — Reda».</p>';
+bk('main');
+$('#pHot').addEventListener('change',e=>{fx.hotspot.on=e.target.checked;saveFx();toast(fx.hotspot.on?'نقطة الاتصال شغالة':'انطفت نقطة الاتصال')});
+$('#hotPass').addEventListener('change',e=>{fx.hotspot.pass=e.target.value||'rio2026';saveFx();toast('انحفظت كلمة السر')});
+return}
+if(p==='vpn'){
+el.innerHTML=head('VPN')+grp(row2('VPN',sq2('#8e8e93','shield-checkmark'),sw('pVpn',fx.vpn))+
+row2('الخادم','','<span class="mut">'+(fx.vpnSrv||'فرانكفورت — ألمانيا')+'</span>')+
+row2('البروتوكول','','<span class="mut">IKEv2</span>'))+
+'<div class="rbx-sec">خوادم</div>'+grp(['فرانكفورت — ألمانيا','نيويورك — أمريكا','دبي — الإمارات'].map(v=>'<div class="setrow" data-vpns="'+v+'" style="cursor:pointer"><span style="flex:1">'+v+'</span>'+((fx.vpnSrv||'فرانكفورت — ألمانيا')===v?'<span style="color:#0a84ff;font-weight:700">✓</span>':'')+'</div>').join(''))+
+'<p class="mut" style="margin:4px 2px">من يشتغل VPN تطلع علامته بشريط الحالة فوق.</p>';
+bk('main');
+$('#pVpn').addEventListener('change',e=>{fx.vpn=e.target.checked;saveFx();renderStatus();toast(fx.vpn?'VPN متصل':'انفصل VPN')});
+el.querySelectorAll('[data-vpns]').forEach(r=>r.addEventListener('click',()=>{fx.vpnSrv=r.dataset.vpns;saveFx();appSettings(el)}));
+return}
+if(p==='sounds'){
+el.innerHTML=head('الأصوات والحس اللمسي')+
+'<div class="rbx-sec" style="margin-top:0">نغمة الرنين</div>'+grp(['افتتاحية','موجات','حرير','رادار','إشعاع'].map(r=>'<div class="setrow" data-ring="'+r+'" style="cursor:pointer"><span style="flex:1">'+r+'</span>'+(fx.snd.ring===r?'<span style="color:#0a84ff;font-weight:700">✓</span>':'')+'</div>').join(''))+
+'<div class="rbx-sec">مستوى الصوت</div><div class="card"><input type="range" id="sndVol" min="0" max="100" value="'+s.vol+'" style="width:100%"></div>'+
+'<div class="rbx-sec">أصوات النظام</div>'+grp(row2('صوت القفل',sq2('#111','lock-closed'),sw('sndLock',fx.snd.lock!==false))+
+row2('نقرات لوحة المفاتيح',sq2('#8e8e93','text'),sw('sndKeys',fx.snd.keys!==false))+
+row2('صوت الإرسال',sq2('#34c759','send'),sw('sndSend',fx.snd.send!==false)))+
+'<p class="mut" style="margin:4px 2px">كلها تنحكم بأصوات النظام الحقيقية باللعبة — جرّب تقفل وتفتح الآيباد.</p>';
+bk('main');
+el.querySelectorAll('[data-ring]').forEach(r=>r.addEventListener('click',()=>{fx.snd.ring=r.dataset.ring;saveFx();playRing(fx.snd.ring);appSettings(el)}));
+$('#sndVol').addEventListener('input',e=>{s.vol=+e.target.value;store.set('set',s);sfx('click')});
+$('#sndLock').addEventListener('change',e=>{fx.snd.lock=e.target.checked;saveFx()});
+$('#sndKeys').addEventListener('change',e=>{fx.snd.keys=e.target.checked;saveFx()});
+$('#sndSend').addEventListener('change',e=>{fx.snd.send=e.target.checked;saveFx()});
+return}
+if(p==='general'){
+el.innerHTML=head('عام')+grp(
+row2('حول الجهاز',sq2('#8e8e93','information-circle'),arrow,'about')+
+row2('تحديث البرنامج',sq2('#8e8e93','arrow-down-circle'),arrow,'gupdate')+
+row2('سعة التخزين',sq2('#8e8e93','server'),arrow,'gstorage')+
+row2('AirDrop',sq2('#0a84ff','radio-outline'),arrow,'gairdrop')+
+row2('التاريخ والوقت',sq2('#8e8e93','time'),arrow,'gdatetime')+
+row2('اللغة والمنطقة',sq2('#8e8e93','globe'),arrow,'glang')+
+row2('لوحة المفاتيح',sq2('#8e8e93','text'),arrow,'gkeyboard')+
+row2('إعادة تعيين',sq2('#ff3b30','refresh'),arrow,'greset'));
+bk('main');bindGo();return}
+if(p==='gupdate'){
+el.innerHTML=head('تحديث البرنامج','general')+
+'<div class="card" style="text-align:center;padding:22px"><div class="big" style="font-size:18px">RioOS 26.0</div><p class="mut" style="margin:6px 0 14px">إصدار نظام Rio iPad الحالي — ريّو 3.2</p><button class="btn" id="updChk" style="padding:11px 22px">التحقق من تحديث</button><div id="updOut" class="mut" style="margin-top:12px"></div></div>';
+bk('general');
+$('#updChk').addEventListener('click',()=>{const o=$('#updOut');o.textContent='جاي يتحقق من خوادم Rio…';setTimeout(()=>{o.textContent='نظامك محدّث — ماكو تحديث أجدد من RioOS 26.0';notify('الإعدادات','تحديث البرنامج','نظامك محدث بالكامل',null,{pop:false})},1100)});
+return}
+if(p==='gstorage'){
+const used=(12400+S.photos.length*1.3+S.installed.length*86)/1000;
+el.innerHTML=head('سعة تخزين iPad','general')+
+'<div class="card"><div class="row" style="justify-content:space-between"><b>'+used.toFixed(1)+' GB</b><span class="mut">من 64 GB</span></div><div style="height:9px;background:#e9e9ee;border-radius:5px;margin-top:9px;overflow:hidden;display:flex"><span style="height:100%;width:14%;background:#ff9f0a"></span><span style="height:100%;width:'+Math.min(20,used-12)+'%;background:#0a84ff"></span><span style="height:100%;width:8%;background:#34c759"></span></div></div>'+
+grp(row2('النظام RioOS','','<span class="mut">9.2 GB</span>')+
+row2('التطبيقات ('+arabNum(APPS.length+S.installed.length)+')','','<span class="mut">'+(2.1+S.installed.length*0.086).toFixed(1)+' GB</span>')+
+row2('الصور','','<span class="mut">'+(0.4+S.photos.length*0.0013).toFixed(2)+' GB</span>')+
+row2('بيانات Rيو','','<span class="mut">0.8 GB</span>'));
+bk('general');return}
+if(p==='gairdrop'){
+el.innerHTML=head('AirDrop','general')+
+grp(['off','contacts','all'].map((m,i)=>row2(['إيقاف الاستلام','جهات الاتصال فقط','الجميع'][i],'','<span class="'+(fx.airdrop===m?'':'mut')+'" style="'+(fx.airdrop===m?'color:#0a84ff;font-weight:700':'')+'">'+(fx.airdrop===m?'✓':'')+'</span>','__'+m)).join(''))+
+'<p class="mut" style="margin:4px 2px">يتحكم منو يكدر يبعثلك صور ونصوص بـ AirDrop داخل Rio.</p>';
+bk('general');
+el.querySelectorAll('[data-go]').forEach(r=>r.addEventListener('click',()=>{fx.airdrop=r.dataset.go.slice(2);saveFx();appSettings(el);toast('انحفظ استلام AirDrop')}));
+return}
+if(p==='gdatetime'){
+el.innerHTML=head('التاريخ والوقت','general')+grp(
+row2('تعيين تلقائياً',sq2('#8e8e93','time'),sw('dtAuto',true))+
+row2('تنسيق ٢٤ ساعة',sq2('#8e8e93','timer'),sw('dt24',fx.dt24))+
+row2('المنطقة الزمنية','','<span class="mut">بغداد (GMT+3)</span>')+
+row2('الوقت الآن','','<span class="mut">'+fmtTime()+'</span>'))+
+'<p class="mut" style="margin:4px 2px">تنسيق ٢٤ ساعة يغير ساعة شريط الحالة والقفل ومركز الإشعارات فوراً.</p>';
+bk('general');
+const a=$('#dtAuto');if(a)a.addEventListener('change',()=>toast('التوقيت التلقائي من شبكة Zain'));
+$('#dt24').addEventListener('change',e=>{fx.dt24=e.target.checked;saveFx();renderStatus();appSettings(el);toast('انبدل تنسيق الوقت')});
+return}
+if(p==='glang'){
+el.innerHTML=head('اللغة والمنطقة','general')+grp(
+row2('العربي','','<span style="color:#0a84ff;font-weight:700">✓ اللغة الأساسية</span>')+
+row2('English','','<span class="mut">ثانوية</span>')+
+row2('المنطقة','','<span class="mut">العراق</span>')+
+row2('التقويم','','<span class="mut">الميلادي</span>'));
+bk('general');return}
+if(p==='gkeyboard'){
+el.innerHTML=head('لوحة المفاتيح','general')+grp(
+row2('نقرات المفاتيح',sq2('#8e8e93','text'),sw('kbKeys',fx.snd.keys!==false))+
+row2('أحرف كبيرة تلقائياً',sq2('#8e8e93','text'),sw('kbCaps',fx.caps!==false))+
+row2('التصحيح التلقائي',sq2('#8e8e93','text'),sw('kbCorr',true)))+
+'<p class="mut" style="margin:4px 2px">نقرات المفاتيح تنسمع بالنظام من تكتب بالنوتات والدردشات.</p>';
+bk('general');
+$('#kbKeys').addEventListener('change',e=>{fx.snd.keys=e.target.checked;saveFx();sfx('click')});
+$('#kbCaps').addEventListener('change',e=>{fx.caps=e.target.checked;saveFx()});
+$('#kbCorr').addEventListener('change',()=>toast('انسجل التصحيح التلقائي'));
+return}
+if(p==='greset'){
+el.innerHTML=head('إعادة تعيين','general')+
+grp(row2('إعادة تعيين إعدادات Rio','','<span class="mut">ترجع الإعدادات للوضع الافتراضي</span>'))+
+'<button class="btn gray" id="rstSet" style="width:100%;padding:12px;margin-bottom:9px">إعادة تعيين كل الإعدادات</button>'+
+'<button class="btn red" id="rstAll" style="width:100%;padding:12px">مسح كل المحتوى والإعدادات</button>'+
+'<p class="mut" style="margin:8px 2px;line-height:1.8">المسح الكامل يصفي صورك ونوتاتك وتطبيقاتك وحسابك من هذا المتصفح ويرجع الآيباد جديد.</p>';
+bk('general');
+$('#rstSet').addEventListener('click',()=>{if(confirm('متأكد؟ ترجع كل الإعدادات للافتراضي')){localStorage.removeItem('rioipad-fx3');location.reload()}});
+$('#rstAll').addEventListener('click',()=>{if(confirm('تحذير: ينمسح كل شي. متأكد؟')){Object.keys(localStorage).filter(k=>k.startsWith('rioipad-')||k==='rio-phmeta').forEach(k=>localStorage.removeItem(k));location.reload()}});
+return}
+}
+
+function ttApply(){
+let t=$('#ttLayer');
+if(S.fx.truetone){if(!t){t=document.createElement('div');t.id='ttLayer';t.style.cssText='position:absolute;inset:0;z-index:48;pointer-events:none;background:rgba(255,196,110,.07)';$('#screen').appendChild(t)}}else if(t)t.remove();
+}
+function applyText(){const ab=$('#appBody');if(ab)ab.style.fontSize=(S.fx.textscale||100)+'%'}
+function setPageX2(el){
+const p=S.setPage,fx=S.fx,s=S.set;
+const sw=(id,on)=>'<label class="switch"><input type="checkbox" id="'+id+'" '+(on?'checked':'')+'><i></i></label>';
+const sq2=(c,gl)=>'<span class="sq" style="background:'+c+'">'+g(gl,'#fff',16)+'</span>';
+const row2=(label,left,val,go)=>'<div class="setrow" '+(go?'data-go="'+go+'" style="cursor:pointer"':'')+'><span style="display:flex;align-items:center;gap:9px;flex:1">'+left+label+'</span>'+(val||'')+'</div>';
+const grp=h=>'<div class="setgroup">'+h+'</div>';
+const arrow='<span class="mut">‹</span>';
+const bk=(t)=>{const b=$('#setBack');if(b)b.addEventListener('click',()=>gotoPage(t))};
+const head=(t,back)=>'<button class="back" id="setBack" style="margin-bottom:10px">‹ '+(back==='general'?'عام':'الإعدادات')+'</button><div class="app-title" style="font-size:19px;font-weight:700;margin-bottom:10px">'+t+'</div>';
+if(p==='camera'){
+el.innerHTML=head('الكاميرا')+grp(
+row2('شبكة التصوير',sq2('#8e8e93','grid'),sw('camGrid',fx.camgrid))+
+row2('تنسيق الصور','','<span class="segRow" style="width:150px"><button data-camfmt="HEIF" class="'+(fx.camfmt==='HEIF'?'on':'')+'">HEIF</button><button data-camfmt="JPEG" class="'+(fx.camfmt==='JPEG'?'on':'')+'">JPEG</button></span>'))+
+'<p class="mut" style="margin:4px 2px;line-height:1.8">الشبكة تظهر فوق عدسة الكاميرا باللعبة من تفتحها. HEIF يوفر مساحة، JPEG يتوافق أكثر.</p>';
+bk('main');
+$('#camGrid').addEventListener('change',e=>{fx.camgrid=e.target.checked;saveFx();toast('انسجلت شبكة الكاميرا')});
+el.querySelectorAll('[data-camfmt]').forEach(b=>b.addEventListener('click',()=>{fx.camfmt=b.dataset.camfmt;saveFx();appSettings(el)}));
+return}
+if(p==='display'){
+el.innerHTML=head('الشاشة والسطوع')+
+'<div class="rbx-sec" style="margin-top:0">المظهر</div><div class="segRow" style="margin-bottom:12px"><button data-dm="0" class="'+(s.dark?'':'on')+'">فاتح</button><button data-dm="1" class="'+(s.dark?'on':'')+'">داكن</button></div>'+
+'<div class="rbx-sec">السطوع</div><div class="card"><input type="range" id="dpBright" min="10" max="100" value="'+s.bright+'" style="width:100%"></div>'+
+grp(row2('Night Shift',sq2('#ff9f0a','moon'),sw('dpNight',fx.acc.night))+
+row2('True Tone',sq2('#ff9f0a','sunny'),sw('dpTone',fx.truetone))+
+row2('نص عريض',sq2('#111','text'),sw('dpBold',fx.acc.bold)))+
+'<div class="rbx-sec">قفل تلقائي</div><div class="segRow" style="margin-bottom:12px">'+[['0','أبداً'],['1','١ د'],['2','٢ د'],['5','٥ د']].map(o=>'<button data-alock="'+o[0]+'" class="'+(String(fx.autolock)===o[0]?'on':'')+'">'+o[1]+'</button>').join('')+'</div>'+
+'<div class="rbx-sec">حجم النص</div><div class="card"><input type="range" id="dpText" min="85" max="120" value="'+(fx.textscale||100)+'" style="width:100%"><div class="row" style="justify-content:space-between"><span class="mut">أصغر</span><span class="mut" id="dpTextV">'+(fx.textscale||100)+'٪</span><span class="mut">أكبر</span></div></div>';
+bk('main');
+el.querySelectorAll('[data-dm]').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>{if(S.app==='settings')gotoPage('display')},80)));
+$('#dpBright').addEventListener('input',e=>{s.bright=+e.target.value;store.set('set',s);renderStatus()});
+$('#dpNight').addEventListener('change',e=>{fx.acc.night=e.target.checked;saveFx();applyFx();toast('انسجل Night Shift')});
+$('#dpTone').addEventListener('change',e=>{fx.truetone=e.target.checked;saveFx();ttApply();toast('انسجل True Tone')});
+$('#dpBold').addEventListener('change',e=>{fx.acc.bold=e.target.checked;saveFx();applyFx()});
+el.querySelectorAll('[data-alock]').forEach(b=>b.addEventListener('click',()=>{fx.autolock=+b.dataset.alock;saveFx();appSettings(el);toast(fx.autolock?'القفل التلقائي بعد '+fx.autolock+' دقائق':'ما ينقفل تلقائياً')}));
+$('#dpText').addEventListener('input',e=>{fx.textscale=+e.target.value;$('#dpTextV').textContent=fx.textscale+'٪';applyText()});
+$('#dpText').addEventListener('change',()=>saveFx());
+return}
+if(p==='search'){
+el.innerHTML=head('بحث')+grp(
+row2('إظهار بحث الشاشة الرئيسية',sq2('#8e8e93','search'),sw('srOn',fx.searchOn!==false))+
+row2('اقتراحات التطبيقات',sq2('#8e8e93','apps'),sw('srSug',true)))+
+'<div class="rbx-sec">إظهار أو إخفاء تطبيقات من البحث</div>'+
+APPS.map(a=>'<div class="card row" style="padding:9px 12px"><span style="flex:0 0 auto">'+icImg(ICONS[a.ic])+'</span><span style="flex:1"><b style="font-size:13.5px">'+a.n+'</b></span>'+sw('sr-'+a.id,fx.searchApps[a.id]!==false)+'</div>').join('')+
+'<p class="mut" style="margin:4px 2px">المخفي ما يطلع بنتائج بحث Spotlight أبداً.</p>';
+bk('main');
+$('#srOn').addEventListener('change',e=>{fx.searchOn=e.target.checked;saveFx();syncPill();toast('انسجل البحث بالرئيسية')});
+$('#srSug').addEventListener('change',()=>toast('انسجلت الاقتراحات'));
+APPS.forEach(a=>{const c=$('#sr-'+a.id);if(c)c.addEventListener('change',()=>{fx.searchApps[a.id]=c.checked;saveFx()})});
+return}
+if(p==='siri'){
+el.innerHTML=head('Siri')+grp(
+row2('Siri',sq2('#111','mic'),sw('siOn',fx.siri!==false))+
+row2('اللغة','','<span class="mut">العربية (السعودية)</span>')+
+row2('صوت Siri','','<span class="mut">صوت ٢ — طبيعي</span>'))+
+'<button class="btn" id="siTry" style="width:100%;padding:13px;font-size:15px">جرّب Siri — اسألها</button>'+
+'<p class="mut" style="margin:8px 2px;line-height:1.8">جرّب: «افتح يوتيوب»، «شكد الوقت؟»، «البطارية»، «الطقس»، «شغل التركيز»، «اقفل الآيباد».</p>';
+bk('main');
+$('#siOn').addEventListener('change',e=>{fx.siri=e.target.checked;saveFx()});
+$('#siTry').addEventListener('click',()=>openSiri());
+return}
+if(p==='faceid'){
+el.innerHTML=head('Face ID ورمز الدخول')+
+(fx.pass?
+grp(row2('رمز الدخول','','<span class="mut">مفعّل — '+arabNum(fx.passLen)+' أرقام</span>'))+
+'<button class="btn gray" id="fidChange" style="width:100%;padding:11px;margin-bottom:8px">تغيير رمز الدخول</button><button class="btn red" id="fidRemove" style="width:100%;padding:11px">إيقاف رمز الدخول</button>'
+:
+'<div class="card"><div class="big">تعيين رمز دخول</div><p class="mut" style="margin:6px 0 10px;line-height:1.7">٤ إلى ٦ أرقام — ينطلب منك بكل فتح قفل، مثل الآيفون.</p><div class="row"><input type="password" id="fidNew" inputmode="numeric" placeholder="الرمز الجديد" style="flex:1;padding:11px;border:1px solid #d9d9de;border-radius:11px"><button class="btn" id="fidSet">تعيين</button></div></div>')+
+grp(row2('Face ID',sq2('#34c759','scan'),sw('fidOn',fx.faceid)))+
+grp(row2('تخصيص شاشة القفل',sq2('#3a3a3c','lock-closed'),arrow,'lockset'))+
+'<p class="mut" style="margin:4px 2px;line-height:1.8">تنبيه: إذا نسيت الرمز، صفحة الإعدادات ما تنفتح إلا بعد الفتح — بس تكدر تصفي بيانات المتصفح وترجع من الصفر.</p>';
+bk('main');
+el.querySelectorAll('[data-go]').forEach(r=>r.addEventListener('click',()=>gotoPage(r.dataset.go)));
+$('#fidOn').addEventListener('change',e=>{fx.faceid=e.target.checked;saveFx();toast(fx.faceid?'Face ID شغال — يقفل ويفتح بوجهك':'Face ID وقف')});
+const fs=$('#fidSet');if(fs)fs.addEventListener('click',()=>{const v=$('#fidNew').value.trim();if(!/^\d{4,6}$/.test(v))return toast('الرمز لازم ٤-٦ أرقام');fx.pass=simpHash(v);fx.passLen=v.length;saveFx();appSettings(el);toast('انضبط رمز الدخول — اقفل وجرّب')});
+const fr=$('#fidRemove');if(fr)fr.addEventListener('click',()=>{fx.pass='';fx.passLen=0;saveFx();appSettings(el);toast('انشال رمز الدخول')});
+const fc=$('#fidChange');if(fc)fc.addEventListener('click',()=>{fx.pass='';fx.passLen=0;saveFx();appSettings(el);toast('اكتب الرمز الجديد')});
+return}
+if(p==='sos'){
+el.innerHTML=head('طوارئ SOS')+grp(
+row2('زر SOS بالطوارئ',sq2('#ff3b30','call'),sw('sosOn',fx.sosBtn!==false))+
+row2('مشاركة موقعي','','<span class="mut">بغداد — العراق</span>'))+
+'<button class="btn red" id="sosCall" style="width:100%;padding:14px;font-size:15.5px;margin-top:4px">اتصال طارئ SOS</button>'+
+'<div class="rbx-sec">جهات اتصال الطوارئ</div>'+grp(FRIENDS.slice(0,3).map(f=>row2(f[0],'','<span class="mut">FaceTime</span>')).join(''));
+bk('main');
+$('#sosOn').addEventListener('change',e=>{fx.sosBtn=e.target.checked;saveFx()});
+$('#sosCall').addEventListener('click',()=>{if(fx.sosBtn===false)return toast('زر SOS مطفي من الإعدادات');closeApp();setTimeout(()=>startCall(FRIENDS[0],true),420)});
+return}
+if(p==='privacy'){
+el.innerHTML=head('الخصوصية والأمان')+grp(
+row2('خدمات الموقع',sq2('#0a84ff','location'),sw('pvLoc',fx.perms.location))+
+row2('الكاميرا',sq2('#8e8e93','camera'),sw('pvCam',fx.perms.camera))+
+row2('الميكروفون',sq2('#ff9f0a','mic'),sw('pvMic',fx.perms.microphone))+
+row2('الصور',sq2('#34c759','image'),sw('pvPho',fx.perms.photos))+
+row2('التتبع عبر التطبيقات',sq2('#8e8e93','shield-checkmark'),sw('pvTrk',fx.perms.tracking)))+
+'<p class="mut" style="margin:4px 2px;line-height:1.8">هاي مو ديكور: طفّي الكاميرا وافتحها تلگاها مرفوضة فعلاً، وطفّي الصور ينقفل المعرض — مثل الآيفون بالضبط.</p>';
+bk('main');
+const bnd=(id,k)=>{const e2=$(id);if(e2)e2.addEventListener('change',()=>{fx.perms[k]=e2.checked;saveFx();toast('انسجل إذن '+(e2.checked?'مسموح':'مرفوض'))})};
+bnd('#pvLoc','location');bnd('#pvCam','camera');bnd('#pvMic','microphone');bnd('#pvPho','photos');bnd('#pvTrk','tracking');
+return}
+if(p==='gamecenter'){
+const used=Object.values(fx.use.sec||{}).reduce((a,b)=>a+b,0);
+const ach=[['الخطوة الأولى','افتح أي تطبيق',used>0],['مصوّر Rio','التقط صورة بالكاميرا',S.photos.length>0],['اجتماعي','ثبّت ٣ تطبيقات تواصل',S.installed.length>=3],['باني اختصارات','سوّي اختصار أتمتة',(fx.autos||[]).length>=1],['مستخدم نشط','استخدم الآيباد ٥ دقائق',used>=300]];
+el.innerHTML=head('Game Center')+
+'<div class="card" style="display:flex;gap:12px;align-items:center"><span style="width:52px;height:52px;border-radius:50%;background:linear-gradient(150deg,#f92c4c,#ff9f0a);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700">'+(fx.gcname||myName()).slice(0,1).toUpperCase()+'</span><span style="flex:1"><b style="font-size:16px">'+escH(fx.gcname||myName())+'</b><br><span class="mut">معرّف Game Center</span></span></div>'+
+'<div class="card"><label class="mut">الاسم المستعار</label><div class="row" style="margin-top:7px"><input type="text" id="gcName" value="'+escH(fx.gcname||'')+'" placeholder="'+escH(myName())+'" style="flex:1;padding:10px;border:1px solid #d9d9de;border-radius:10px"><button class="btn" id="gcSave">حفظ</button></div></div>'+
+'<div class="rbx-sec">الإنجازات</div>'+ach.map(a=>'<div class="card row"><span style="font-size:19px">'+(a[2]?'🏆':'🔒')+'</span><span style="flex:1"><b style="font-size:13.5px">'+a[0]+'</b><br><span class="mut">'+a[1]+'</span></span><span class="mut">'+(a[2]?'مفتوح':'مقفل')+'</span></div>').join('');
+bk('main');
+$('#gcSave').addEventListener('click',()=>{fx.gcname=$('#gcName').value.trim();saveFx();appSettings(el);toast('انحفظ اسم Game Center')});
+return}
+if(p==='wallet'){
+el.innerHTML=head('المحفظة وApple Pay')+
+(fx.cards.length?fx.cards.map((c,i)=>'<div class="card" style="background:linear-gradient(140deg,#1c1c1e,#3a3a3c);color:#fff;padding:16px"><div style="font-size:12px;opacity:.8">RIO PAY</div><div style="font-size:19px;letter-spacing:2px;margin:10px 0">•••• '+c.last4+'</div><div class="row" style="justify-content:space-between"><span>'+escH(c.name)+'</span><button class="btn red" data-carddel="'+i+'" style="padding:5px 10px">حذف</button></div></div>').join(''):'<div class="mut" style="text-align:center;padding:14px">لا بطاقات بعد</div>')+
+'<div class="card"><div class="big" style="margin-bottom:8px">إضافة بطاقة</div><input type="text" id="cdName" placeholder="الاسم على البطاقة" style="width:100%;padding:10px;border:1px solid #d9d9de;border-radius:10px;margin-bottom:8px"><input type="text" id="cdNum" inputmode="numeric" placeholder="رقم البطاقة" style="width:100%;padding:10px;border:1px solid #d9d9de;border-radius:10px;margin-bottom:8px"><button class="btn" id="cdAdd" style="width:100%;padding:11px">إضافة إلى المحفظة</button><p class="mut" style="margin-top:8px">بطاقة تجريبية داخل اللعبة — ينحفظ بس آخر ٤ أرقام.</p></div>';
+bk('main');
+el.querySelectorAll('[data-carddel]').forEach(b=>b.addEventListener('click',()=>{fx.cards.splice(+b.dataset.carddel,1);saveFx();appSettings(el)}));
+$('#cdAdd').addEventListener('click',()=>{const n=$('#cdNum').value.replace(/\D/g,'');if(n.length<8)return toast('اكتب رقم بطاقة صحيح');fx.cards.push({name:$('#cdName').value.trim()||'Reda',last4:n.slice(-4)});saveFx();appSettings(el);toast('انضافت البطاقة للمحفظة')});
+return}
+if(p==='passwords'){
+el.innerHTML=head('كلمات السر')+
+(fx.vault.length?fx.vault.map((v,i)=>'<div class="card"><div class="row"><span style="flex:1"><b>'+escH(v.site)+'</b><br><span class="mut">'+escH(v.user)+'</span></span><span class="mut" data-vpass="'+i+'">••••••••</span><button class="btn gray" data-vshow="'+i+'" style="padding:6px 10px">إظهار</button><button class="btn red" data-vdel="'+i+'" style="padding:6px 10px">حذف</button></div></div>').join(''):'<div class="mut" style="text-align:center;padding:14px">لا كلمات سر محفوظة</div>')+
+'<div class="card"><div class="big" style="margin-bottom:8px">حفظ كلمة سر جديدة</div><input type="text" id="vwSite" placeholder="الموقع (مثل zain.iq)" style="width:100%;padding:10px;border:1px solid #d9d9de;border-radius:10px;margin-bottom:7px"><input type="text" id="vwUser" placeholder="اسم المستخدم" style="width:100%;padding:10px;border:1px solid #d9d9de;border-radius:10px;margin-bottom:7px"><input type="password" id="vwPass" placeholder="كلمة السر" style="width:100%;padding:10px;border:1px solid #d9d9de;border-radius:10px;margin-bottom:8px"><button class="btn" id="vwAdd" style="width:100%;padding:11px">حفظ</button><p class="mut" style="margin-top:8px">محفوظة على جهازك فقط داخل اللعبة.</p></div>';
+bk('main');
+el.querySelectorAll('[data-vshow]').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.vshow;const sp=el.querySelector('[data-vpass="'+i+'"]');const show=sp.textContent==='••••••••';sp.textContent=show?fx.vault[i].pass:'••••••••';b.textContent=show?'إخفاء':'إظهار'}));
+el.querySelectorAll('[data-vdel]').forEach(b=>b.addEventListener('click',()=>{fx.vault.splice(+b.dataset.vdel,1);saveFx();appSettings(el)}));
+$('#vwAdd').addEventListener('click',()=>{const st=$('#vwSite').value.trim(),us=$('#vwUser').value.trim(),pw=$('#vwPass').value;if(!st||!pw)return toast('اكتب الموقع وكلمة السر');fx.vault.push({site:st,user:us,pass:pw});saveFx();appSettings(el);toast('انحفظت كلمة السر')});
+return}
+if(p==='appshub'){
+const all=APPS.concat(S.installed.filter(id=>EXTRA[id]).map(id=>({id:'x_'+id,n:EXTRA[id].n,ic:id})));
+el.innerHTML=head('التطبيقات')+'<div class="row" style="margin-bottom:10px"><input id="ahQ" type="text" placeholder="بحث بالتطبيقات…" style="flex:1;padding:11px 12px;border:1px solid #d9d9de;border-radius:12px;font-size:14px"></div><div id="ahList">'+
+all.map(a=>'<div class="card row" data-ah="'+a.id+'" style="cursor:pointer;padding:9px 12px"><span style="flex:0 0 auto">'+icImg(ICONS[a.ic])+'</span><span style="flex:1"><b style="font-size:14px">'+a.n+'</b><br><span class="mut">إعدادات التطبيق</span></span><span class="mut">‹</span></div>').join('')+'</div>';
+bk('main');
+el.querySelectorAll('[data-ah]').forEach(r=>r.addEventListener('click',()=>{S.appDetail=r.dataset.ah;gotoPage('appdetail')}));
+const q=$('#ahQ');if(q)q.addEventListener('input',()=>{const v=q.value.trim().toLowerCase();el.querySelectorAll('[data-ah]').forEach(r=>{const a=APPS.find(x=>x.id===r.dataset.ah)||EXTRA[r.dataset.ah.slice(2)];r.style.display=(!v||(a&&a.n.toLowerCase().includes(v)))?'':'none'})});
+return}
+if(p==='appdetail'){
+const id=S.appDetail||'settings';const a=id.startsWith('x_')?{n:EXTRA[id.slice(2)].n,ic:id.slice(2)}:(APPS.find(x=>x.id===id)||{n:id,ic:id});
+el.innerHTML=head(a.n)+
+'<div class="card" style="display:flex;gap:12px;align-items:center"><span>'+icImg(ICONS[a.ic])+'</span><span style="flex:1"><b style="font-size:17px">'+a.n+'</b><br><span class="mut">استخدام اليوم: '+fmtDur(S.fx.use.sec[id]||0)+'</span></span></div>'+
+grp(row2('السماح بالإشعارات',sq2('#ff3b30','notifications'),sw('adNotif',fx.appNotif[a.n]!==false))+
+row2('تحديث التطبيق بالخلفية',sq2('#8e8e93','refresh'),sw('adBg',fx.bgref[id]!==false)))+
+'<button class="btn" id="adOpen" style="width:100%;padding:12px">فتح '+a.n+'</button>';
+bk('appshub');
+$('#adNotif').addEventListener('change',e=>{fx.appNotif[a.n]=e.target.checked;saveFx();toast(e.target.checked?'إشعارات '+a.n+' مسموحة':'انكتمت إشعارات '+a.n)});
+$('#adBg').addEventListener('change',e=>{fx.bgref[id]=e.target.checked;saveFx()});
+$('#adOpen').addEventListener('click',()=>openApp(id,null));
+return}
+}
+/* ===== Siri overlay ===== */
+function openSiri(){
+if(S.fx.siri===false)return toast('Siri مطفية من الإعدادات');
+closeSiri();
+const d=document.createElement('div');d.id='siriOv';
+d.innerHTML='<div class="sheetCard"><div class="sheetGrab"></div><div class="big" style="font-size:17px">Siri</div><div id="siriOut" class="mut" style="margin:8px 0;line-height:1.8">هلا! اسألني: افتح يوتيوب، شكد الوقت؟، البطارية، الطقس، شغل التركيز…</div><div class="row"><input type="text" id="siriIn" placeholder="اكتب طلبك…" style="flex:1;padding:11px 12px;border:1px solid #d9d9de;border-radius:20px;font-size:14px"><button class="btn" id="siriGo">اسأل</button></div><button class="btn gray" id="siriX" style="width:100%;margin-top:9px">إغلاق</button></div>';
+$('#screen').appendChild(d);
+d.addEventListener('click',e=>{if(e.target===d)closeSiri()});
+$('#siriX').addEventListener('click',closeSiri);
+const ask=()=>{const v=$('#siriIn').value.trim();if(v)askSiri(v)};
+$('#siriGo').addEventListener('click',ask);
+$('#siriIn').addEventListener('keydown',e=>{if(e.key==='Enter')ask});
+setTimeout(()=>{const i=$('#siriIn');i&&i.focus()},80);
+}
+function closeSiri(){const d=$('#siriOv');if(d)d.remove()}
+function siriSay(t){const o=$('#siriOut');if(o)o.textContent=t}
+function askSiri(v){
+sfx('click');
+const low=v.toLowerCase();
+const all=APPS.map(a=>({id:a.id,n:a.n})).concat(Object.keys(EXTRA).map(k=>({id:'x_'+k,n:EXTRA[k].n})));
+if(low.includes('افتح')||low.includes('شغل تطبيق')){const hit=all.find(a=>low.includes(a.n.toLowerCase())||low.includes(a.id.replace('x_','')));if(hit){siriSay('حاضر — أفتح '+hit.n+' هسه');setTimeout(()=>{closeSiri();openApp(hit.id,null)},750);return}siriSay('ما لكيت هذا التطبيق عندك');return}
+if(low.includes('وقت')||low.includes('ساعة')){siriSay('الساعة هسه '+fmtTime()+' بتوقيت بغداد');return}
+if(low.includes('بطاري')){siriSay('بطاريتك '+arabNum(Math.round(S.batt.pct))+'٪'+(S.batt.charging?' وجاي تنشحن':'')+' — تكفيك تقريباً '+arabNum(Math.max(1,Math.round(S.batt.pct/9)))+' ساعات لعب');return}
+if(low.includes('طقس')){wxFetch();siriSay(S._wx?'طقس بغداد هسه '+S._wx.t+' درجة — يوم مناسب للعب':'جاي أجيب الطقس، اسألني بعد ثواني');return}
+if(low.includes('تركيز')){S.set.dnd=!S.set.dnd;store.set('set',S.set);renderStatus();siriSay(S.set.dnd?'شغّلت وضع التركيز — ما يزعجك شي':'طفّيت التركيز');return}
+if(low.includes('اقفل')||low.includes('رجع الآيباد')){siriSay('تمام، أرجع الآيباد لجيبك');setTimeout(()=>{closeSiri();setPad(false)},700);return}
+if(low.includes('مرحب')||low.includes('هلا')||low.includes('سلام')){siriSay('هلا بيك! اؤمرني — أفتح تطبيق أو أجاوبك عن الوقت والبطارية والطقس');return}
+if(low.includes('صورة')||low.includes('التقط')){siriSay('أفتح لك الكاميرا');setTimeout(()=>{closeSiri();openApp('camera',null)},700);return}
+siriSay('ما فهمت عليك — جرّب: «افتح يوتيوب»، «شكد الوقت؟»، «البطارية»، «الطقس»، «شغل التركيز»');
+}
+/* ===== Face ID / passcode lock wiring + wrappers ===== */
+const _unlock0=unlock;
+unlock=function(){
+if(!S.locked)return;
+if(S.fx.pass||S.fx.faceid){renderLockX();toast(S.fx.pass?'اكتب رمز الدخول حتى تفتح':'دوس زر Face ID حتى تفتح');return}
+_unlock0();
+};
+const _camApp3=appCamera;
+appCamera=function(el){
+if(!S.fx.perms.camera){el.innerHTML=permDenied('الكاميرا');return}
+const r=_camApp3(el);
+if(S.fx.camgrid)setTimeout(()=>{const c=$('#camView');if(c&&c.parentNode){const wrap=document.createElement('div');wrap.style.position='relative';c.parentNode.insertBefore(wrap,c);wrap.appendChild(c);const o=document.createElement('div');o.style.cssText='position:absolute;inset:0;pointer-events:none;border-radius:12px;background:linear-gradient(rgba(255,255,255,.35) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.35) 1px,transparent 1px);background-size:33.4% 33.4%';wrap.appendChild(o)}},420);
+return r;
+};
+const _phoApp3=appPhotos;
+appPhotos=function(el){
+if(!S.fx.perms.photos){el.innerHTML=permDenied('الصور');return}
+return _phoApp3(el);
+};
+const _oe3=openExtra;
+openExtra=function(k,fromEl){
+_oe3(k,fromEl);
+if((S.set.airplane||(!S.set.wifi&&!S.fx.celldata))&&SOCIAL[k]){clearInterval(S.poll);const el=$('#appBody');if(el){el.innerHTML='<div class="card" style="text-align:center;padding:30px 16px"><div class="big" style="font-size:17px">لا يوجد اتصال بالإنترنت</div><p class="mut" style="margin-top:8px;line-height:1.8">شغّل Wi-Fi أو بيانات الهاتف حتى يشتغل '+SOCIAL[k].n+' — مثل الآيفون بالضبط.</p><button class="btn" id="offSet" style="margin-top:10px">فتح الإعدادات</button></div>';const b=$('#offSet');if(b)b.addEventListener('click',()=>openApp('settings',null))}}
+};
+const _spPill=syncPill;
+syncPill=function(){_spPill();try{if(S.fx.searchOn===false)$('#spotPill').style.display='none'}catch(e){}};
+function fmtTime(){const d=new Date();if(S.fx.dt24)return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');let h=d.getHours()%12;if(h===0)h=12;return h+':'+String(d.getMinutes()).padStart(2,'0')}
+document.addEventListener('touchstart',()=>{S._actT=Date.now()},{passive:true});
+document.addEventListener('click',()=>{S._actT=Date.now()});
+setInterval(()=>{
+try{
+if(S.fx.autolock>0&&S.padOut&&!S.locked&&Date.now()-(S._actT||Date.now())>S.fx.autolock*60000){closeApp();S.locked=true;const L=$('#lock');L.classList.remove('bye');L.classList.add('show');renderStatus();renderLockX();sfx('lock');toast('انقفل الآيباد تلقائياً')}
+}catch(e){}
+},10000);
+if(S.setPage==='x'){}
+setPageX2Router();
+function setPageX2Router(){const _old=setSubPage;setSubPage=function(el){if(['camera','display','search','siri','faceid','sos','privacy','gamecenter','wallet','passwords','appshub','appdetail'].includes(S.setPage)){setPageX2(el);return}_old(el)}}
+ttApply();
+if(S.fx.textscale&&S.fx.textscale!==100)setInterval(()=>{if(S.app==='settings')applyText()},1500);
