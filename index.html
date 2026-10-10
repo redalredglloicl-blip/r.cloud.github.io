@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Rio iPad">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Rio iPad 8.5</title>
+<title>Rio iPad 8.6</title>
 <style>.sq{width:29px;height:29px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overflow:hidden;background:radial-gradient(120% 100% at 50% 0%,#2b3348 0%,#141821 60%,#0b0e14 100%);font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif}
@@ -115,6 +115,24 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 #lock{overflow:hidden}
 #lockX{width:100%;flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;align-items:center}
 #lockX::-webkit-scrollbar{display:none}
+#pinZone{margin-top:14px;animation:pinIn .35s cubic-bezier(.3,.7,.3,1);text-align:center;color:#fff}
+@keyframes pinIn{from{opacity:0;transform:translateY(16px)}}
+.pinFid{display:flex;align-items:center;gap:8px;margin:0 auto 16px;background:rgba(255,255,255,.16);border:none;color:#fff;padding:11px 24px;border-radius:22px;font-size:15px;font-weight:600;cursor:pointer}
+.pinTitle{font-size:18px;font-weight:700;margin-bottom:12px;text-shadow:0 1px 8px rgba(0,0,0,.4)}
+#pinDots{font-size:14px;letter-spacing:11px;margin-bottom:20px;height:22px}
+#pinDots.shake{animation:pinShake .45s}
+@keyframes pinShake{20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.pinGrid{display:grid;grid-template-columns:repeat(3,62px);gap:13px;justify-content:center}
+.pinGrid button{width:62px;height:62px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;font-size:23px;font-weight:500;cursor:pointer;transition:transform .12s,background .12s;font-family:inherit}
+.pinGrid button:active{transform:scale(.9);background:rgba(255,255,255,.3)}
+#pinCancel{background:none;border:none;color:#fff;font-size:15px;margin-top:18px;cursor:pointer;opacity:.92;font-family:inherit}
+.segCtl{position:relative;display:flex;direction:ltr;background:rgba(120,120,128,.22);border-radius:12px;padding:2px;margin:10px 0}
+.segCtl button{flex:1;position:relative;z-index:1;background:none;border:none;padding:9px 4px;font-size:14px;font-weight:600;color:#111;cursor:pointer;font-family:inherit}
+.segInd{position:absolute;top:2px;bottom:2px;left:2px;width:calc(50% - 2px);background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);transition:transform .25s cubic-bezier(.3,.7,.3,1)}
+.segCtl[data-sel="repair"] .segInd{transform:translateX(100%)}
+#ipad.dark .segCtl{background:rgba(120,120,128,.36)}
+#ipad.dark .segInd{background:#636366}
+#ipad.dark .segCtl button{color:#fff}
 #lock.bye{transform:translateY(-102%);opacity:.4}
 #lock .ltime{font-size:64px;font-weight:700;line-height:1;text-shadow:0 2px 14px rgba(0,0,0,.35)}
 #lock .ldate{font-size:15px;font-weight:600;text-shadow:0 1px 8px rgba(0,0,0,.4)}
@@ -350,7 +368,7 @@ img,a{-webkit-user-drag:none!important}
 <body>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 8.5</div>
+  <div id="verTag">Rio iPad 8.6</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -402,7 +420,7 @@ img,a{-webkit-user-drag:none!important}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 8.5</div>
+    <div class="ver">Rio iPad 8.6</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -1078,9 +1096,9 @@ function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.inne
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="pad.js?v=85"></script>
-<script src="social.js?v=85"></script>
-<script src="sys3.js?v=85"></script>
-<script src="repair.js?v=85"></script>
+<script src="pad.js?v=86"></script>
+<script src="social.js?v=86"></script>
+<script src="sys3.js?v=86"></script>
+<script src="repair.js?v=86"></script>
 </body>
 </html>
