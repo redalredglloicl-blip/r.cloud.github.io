@@ -194,8 +194,9 @@ const L=$('#lock');if(!L)return;
 let x=$('#lockX');
 if(!x){x=document.createElement('div');x.id='lockX'}
 const _lt=document.querySelector('#lockTime');if(_lt)_lt.after(x);else L.appendChild(x)
+const pinAsk=S._pinAsk&&S.locked&&(S.fx.pass||S.fx.faceid);
 const nots=(S.notifs||[]).slice(0,(S.fx.pass||S.fx.faceid)?2:3);
-x.innerHTML='<div class="lwidRow">'+lockWidHTML()+'</div>'+liveHTML()+
+x.innerHTML=pinAsk?'':'<div class="lwidRow">'+lockWidHTML()+'</div>'+liveHTML()+
 (nots.length?'<div class="lnots">'+nots.map(n=>'<div class="lnot">'+notifIcon(n.app)+'<span style="flex:1;text-align:right"><b>'+escH(n.app)+'</b><br><span>'+escH(n.text)+'</span></span><span class="mut2">'+relTime(n.t)+'</span></div>').join('')+'</div>':'');
 const lt=$('#lockTime'),ld=$('#lockDate');
 if(lt){lt.style.color=S.fx.lock.wcol;lt.style.fontWeight=S.fx.lock.bold?'700':'300'}
@@ -203,21 +204,23 @@ if(ld)ld.style.color=S.fx.lock.wcol;
 if(S.fx.lock.shuffle&&S.photos.length){L.style.backgroundImage='linear-gradient(rgba(10,12,18,.45),rgba(10,12,18,.45)),url("'+S.photos[0]+'")';L.style.backgroundSize='cover';L.style.backgroundPosition='center'}else{L.style.backgroundImage=''}
 const pb=x.querySelector('[data-lmus]');if(pb)pb.addEventListener('click',e=>{e.stopPropagation();S.musicPlay=false;renderLockX();updWidgets()});
 const pzOld=x.querySelector('#pinZone');if(pzOld)pzOld.remove();
-if(S.locked&&(S.fx.pass||S.fx.faceid)){
+if(pinAsk){
 const pz=document.createElement('div');pz.id='pinZone';pz.style.marginTop='12px';
 pz.innerHTML=(S.fx.faceid?'<button class="btn" id="fidBtn" style="width:100%;padding:12px;margin-bottom:10px">Face ID — افتح بوجهك</button>':'')+
-(S.fx.pass?'<div style="text-align:center;color:#fff"><div style="font-size:13px;margin-bottom:6px">اكتب رمز الدخول</div><div id="pinDots" style="font-size:15px;letter-spacing:7px;margin-bottom:10px">'+'○'.repeat(S.fx.passLen||4)+'</div><div style="display:grid;grid-template-columns:repeat(3,50px);gap:8px;justify-content:center">'+[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(n=>'<button data-pin="'+n+'" style="width:50px;height:50px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;font-size:21px;font-weight:600;cursor:pointer">'+(n===''?'':n)+'</button>').join('')+'</div></div>':'');
+(S.fx.pass?'<div style="text-align:center;color:#fff"><div style="font-size:13px;margin-bottom:6px">اكتب رمز الدخول</div><div id="pinDots" style="font-size:15px;letter-spacing:7px;margin-bottom:10px">'+'○'.repeat(S.fx.passLen||4)+'</div><div style="display:grid;grid-template-columns:repeat(3,50px);gap:8px;justify-content:center">'+[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(n=>'<button data-pin="'+n+'" style="width:50px;height:50px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;font-size:21px;font-weight:600;cursor:pointer">'+(n===''?'':n)+'</button>').join('')+'</div></div>':'')+'<button id="pinCancel" class="btn gray" style="margin-top:12px;padding:9px 28px;font-size:13px">رجوع</button>';
 x.appendChild(pz);x.scrollTop=x.scrollHeight;
-const fb=pz.querySelector('#fidBtn');if(fb)fb.addEventListener('click',e=>{e.stopPropagation();fb.textContent='جاي يتعرف على وجهك…';setTimeout(()=>_unlock0(),750)});
+const pc=pz.querySelector('#pinCancel');if(pc)pc.addEventListener('click',e=>{e.stopPropagation();S._pinAsk=false;sfx('click');renderLockX();});
+const fb=pz.querySelector('#fidBtn');if(fb)fb.addEventListener('click',e=>{e.stopPropagation();fb.textContent='جاي يتعرف على وجهك…';setTimeout(()=>{S._pinAsk=false;_unlock0()},750)});
 pz.querySelectorAll('[data-pin]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const v=b.dataset.pin;
 if(v==='\u232b')S._pin=(S._pin||'').slice(0,-1);else if(v!==''&&((S._pin||'').length<(S.fx.passLen||4)))S._pin=(S._pin||'')+v;
 const dots=$('#pinDots');if(dots)dots.textContent='\u25cf'.repeat((S._pin||'').length)+'\u25cb'.repeat(Math.max(0,(S.fx.passLen||4)-(S._pin||'').length));
 sfx('click');
-if((S._pin||'').length===(S.fx.passLen||4)){if(simpHash(S._pin)===S.fx.pass){S._pin='';_unlock0()}else{S._pin='';if(dots)dots.textContent='\u25cb'.repeat(S.fx.passLen||4);toast('رمز غلط — حاول مرة ثانية');sfx('lock')}}
+if((S._pin||'').length===(S.fx.passLen||4)){if(simpHash(S._pin)===S.fx.pass){S._pin='';S._pinAsk=false;_unlock0()}else{S._pin='';if(dots)dots.textContent='\u25cb'.repeat(S.fx.passLen||4);toast('رمز غلط — حاول مرة ثانية');sfx('lock')}}
 }));
 }
 }
-new MutationObserver(()=>{if($('#lock').classList.contains('show'))renderLockX()}).observe($('#lock'),{attributes:true,attributeFilter:['class']});
+let _lockWasShown=false;
+new MutationObserver(()=>{const _sh=$('#lock').classList.contains('show');if(_sh&&!_lockWasShown)S._pinAsk=false;_lockWasShown=_sh;if(_sh)renderLockX()}).observe($('#lock'),{attributes:true,attributeFilter:['class']});
 (function(){
 const L=$('#lock');let sy=null;
 L.addEventListener('touchstart',e=>{if(e.target.closest('.lbtn')||e.target.closest('button')){sy=null;return}sy=e.touches[0].clientY},{passive:true});
@@ -786,7 +789,7 @@ siriSay('ما فهمت عليك — جرّب: «افتح يوتيوب»، «شك
 const _unlock0=unlock;
 unlock=function(){
 if(!S.locked)return;
-if(S.fx.pass||S.fx.faceid){renderLockX();toast(S.fx.pass?'اكتب رمز الدخول حتى تفتح':'دوس زر Face ID حتى تفتح');return}
+if(S.fx.pass||S.fx.faceid){if(!S._pinAsk)S._pinAsk=true;renderLockX();return}
 _unlock0();
 };
 const _camApp3=appCamera;
