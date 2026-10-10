@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Rio iPad 1.5</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rio iPad">
+<meta name="theme-color" content="#79b5ff">
+<link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
+<title>Rio iPad 1.6</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overflow:hidden;background:#79b5ff;font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif}
@@ -148,7 +154,7 @@ canvas#camView{width:100%;border-radius:12px;background:#000}
 <body>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 1.5</div>
+  <div id="verTag">Rio iPad 1.6</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -189,8 +195,9 @@ canvas#camView{width:100%;border-radius:12px;background:#000}
     <svg width="86" height="64" viewBox="0 0 86 64"><rect x="3" y="3" width="80" height="58" rx="9" fill="#111318"/><rect x="8" y="8" width="70" height="48" rx="5" fill="#3a7bd5"/><rect x="14" y="14" width="12" height="12" rx="3" fill="#191b1e"/><rect x="30" y="14" width="12" height="12" rx="3" fill="#19b845"/><rect x="46" y="14" width="12" height="12" rx="3" fill="#fff"/><rect x="14" y="30" width="12" height="12" rx="3" fill="#0a84ff"/><rect x="30" y="30" width="12" height="12" rx="3" fill="#f92c4c"/><rect x="46" y="30" width="12" height="12" rx="3" fill="#ffd93b"/></svg>
     <h1>Rio iPad</h1>
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
+    <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 1.5</div>
+    <div class="ver">Rio iPad 1.6</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -498,16 +505,42 @@ const APPS=[
  {id:'calc',n:'Calculator',ic:'calc'},
  {id:'settings',n:'Settings',ic:'settings'}
 ];
+/* ===== ORIGINAL app icons, served by Apple CDN (mzstatic) + Wikimedia ===== */
+const ICONS={
+ roblox:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
+ youtube:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/91/e3/6d/91e36d95-56fd-4162-3ab5-1fd5e18db785/logo_youtube_2024_q4_color-0-0-1x_U007emarketing-0-0-0-7-0-0-0-85-220.png/512x512bb.jpg',
+ facetime:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/b1/05/6a/b1056a9b-6401-b268-31db-89e724d65054/facetimeCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
+ camera:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/c3/28/70/c3287077-6963-7a9c-03a0-c76df858ee84/cameraCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
+ photos:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/63/c9/25/63c9256d-90ee-2a63-7c28-80582534e372/photosCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
+ messages:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/6b/cb/54/6bcb5406-4f41-73e9-dd06-37f4f608ed66/messagesCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
+ appstore:'https://commons.wikimedia.org/wiki/Special:FilePath/App%20Store%20(iOS).svg?width=256',
+ safari:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/b6/b9/77/b6b9773e-3262-5f60-0fbb-9bcf5c35d691/safariCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
+ tiktok:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/d8/f0/b2/d8f0b203-3968-dd77-07ff-70134b89f7c1/TikTok_AppIcon26-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
+ maps:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/ca/4d/f5/ca4df539-d60c-6a55-1423-49723876b1b0/mapsCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
+ weather:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/63/13/a6/6313a67c-ab52-71b6-22b4-8f2011471945/weatherCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
+ calendar:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/28/01/e2/2801e2f7-5277-e63b-386d-0378f9c60a14/calendarCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
+ music:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/c2/74/89/c27489c2-2c63-2e32-efee-b0f59b3184ef/musicCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
+ clock:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/59/da/6e/59da6e3b-4be7-ce2c-2987-e551832507c9/clockCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
+ notes:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/bc/b1/1c/bcb11c9d-ea61-089f-3b84-0f8911dd175d/notesCalistoga-0-0-1x_U007epad-0-1-85-220.png/512x512bb.jpg',
+ calc:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/3d/8c/c3/3d8cc3eb-593a-7baa-99ce-45107502ef75/calculatorCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
+ settings:'https://commons.wikimedia.org/wiki/Special:FilePath/Settings%20(iOS).png?width=256',
+ phone:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/b0/0f/2e/b00f2e0d-f556-75b0-1be8-ead76d31245d/phoneCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
+ minecraft:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/3b/b7/24/3bb724be-0244-933a-af48-ad2195689877/AppIcon-0-0-1x_U007emarketing-0-10-0-85-220.png/512x512bb.jpg',
+ subway:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/3b/6f/c0/3b6fc01e-ca3c-8335-fedb-35bc6c01ee18/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/512x512bb.jpg',
+ candy:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/72/83/04/728304ea-32e2-1979-e845-e5f25dd731f6/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/512x512bb.jpg'
+};
+function icImg(url){return '<span class="ic" style="background:none;box-shadow:0 2px 6px rgba(0,0,0,.18)"><img src="'+url+'" alt="" loading="lazy" style="width:100%;height:100%;display:block;border-radius:22.37%"></span>'}
+Object.keys(ICONS).forEach(k=>{IC[k]=()=>icImg(ICONS[k])});
 const EXTRA={
  tiktok:{n:'TikTok',ic:'tiktok'}, minecraft:{n:'Minecraft',ic:'minecraft'},
- subway:{n:'Subway Run',ic:'subway'}, puzzle:{n:'Puzzle Quest',ic:'puzzle'}
+ subway:{n:'Subway Surfers',ic:'subway'}, candy:{n:'Candy Crush',ic:'candy'}
 };
 function appIcon(a){
   const b=a.badge?a.badge():'';
   return '<button class="app" data-app="'+a.id+'">'+IC[a.ic]()+'<span class="nm">'+a.n+'</span>'+(b!==''&&b!==0?'<span style="position:relative"></span>':'')+'</button>'
 }
 function renderHome(){
-  const all=APPS.concat(S.installed.filter(id=>id!=='tiktok').map(id=>({id:'x_'+id,n:EXTRA[id].n,ic:EXTRA[id].ic})));
+  const all=APPS.concat(S.installed.filter(id=>id!=='tiktok'&&EXTRA[id]).map(id=>({id:'x_'+id,n:EXTRA[id].n,ic:EXTRA[id].ic})));
   const d=new Date(),days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],months=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
   const widget='<div class="homeWidget" style="background:rgba(20,24,34,.42);backdrop-filter:blur(8px);border-radius:20px;padding:12px 14px;color:#fff;display:flex;align-items:center;gap:14px">'+
    '<div><div style="font-size:26px;font-weight:700;line-height:1">'+fmtTime()+'</div><div style="font-size:12px;opacity:.9">'+days[d.getDay()]+'، '+d.getDate()+' '+months[d.getMonth()]+'</div></div>'+
@@ -758,8 +791,8 @@ function appSettings(el){
    '<div class="setrow"><span style="flex:1">الصوت</span><input type="range" id="setVol" min="0" max="100" value="'+s.vol+'" style="flex:1"></div></div>'+
    '<div class="setgroup"><div class="setrow"><span style="flex:1">البطارية</span><b>'+Math.round(S.batt.pct)+'%</b></div>'+
    '<div class="setrow"><span style="flex:1">الشحن</span><label class="switch"><input type="checkbox" id="swChg" '+(S.batt.charging?'checked':'')+'><i></i></label></div>'+usageRows+'</div>'+
-   '<div class="setgroup"><div class="setrow"><span style="flex:1">حول الجهاز</span><span class="mut">Rio iPad 1.5</span></div>'+
-   '<div class="setrow"><span style="flex:1">النظام</span><span class="mut">RioOS 1.5</span></div></div>';
+   '<div class="setgroup"><div class="setrow"><span style="flex:1">حول الجهاز</span><span class="mut">Rio iPad 1.6</span></div>'+
+   '<div class="setrow"><span style="flex:1">النظام</span><span class="mut">RioOS 1.6</span></div></div>';
   const bind=(id,key,cb)=>{const n=$(id);if(n)n.addEventListener('change',e=>{S.set[key]=e.target.checked;store.set('set',S.set);renderStatus();if(cb)cb()})};
   bind('#swWifi','wifi');bind('#swBt','bt');bind('#swAir','airplane');
   $('#swChg').addEventListener('change',e=>{S.batt.charging=e.target.checked;store.set('batt',S.batt);renderStatus()});
