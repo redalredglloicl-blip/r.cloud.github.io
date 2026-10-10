@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Rio iPad">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Rio iPad 7.1</title>
+<title>Rio iPad 7.2</title>
 <style>.sq{width:29px;height:29px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overflow:hidden;background:radial-gradient(120% 100% at 50% 0%,#2b3348 0%,#141821 60%,#0b0e14 100%);font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif}
@@ -346,7 +346,7 @@ img,a{-webkit-user-drag:none!important}
 <body>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 7.1</div>
+  <div id="verTag">Rio iPad 7.2</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -397,7 +397,7 @@ img,a{-webkit-user-drag:none!important}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 7.1</div>
+    <div class="ver">Rio iPad 7.2</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -826,7 +826,8 @@ $('#startScreen').style.display='none';S.playing=true;lastT=performance.now();se
 {id:'calc',n:'Calculator',ic:'calc'},
 {id:'files',n:'Files',ic:'files'},
 {id:'shortcuts',n:'Shortcuts',ic:'shortcuts'},
-{id:'settings',n:'Settings',ic:'settings'}
+{id:'settings',n:'Settings',ic:'settings'},
+{id:'applestore',n:'Apple Store',ic:'applestore'}
 ];
 const ICONS={
 roblox:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
@@ -847,6 +848,7 @@ notes:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/bc/b1/1c/bcb11c9d-e
 calc:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/3d/8c/c3/3d8cc3eb-593a-7baa-99ce-45107502ef75/calculatorCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
 settings:'https://commons.wikimedia.org/wiki/Special:FilePath/Settings%20(iOS).png?width=256',
 files:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/d7/c3/64/d7c36451-0d88-fd00-acdd-e4ef56ff3d19/filesCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
+applestore:'https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png',
 shortcuts:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/19/34/94/1934945c-7712-4838-7879-f8c959a0db55/shortcutsCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
 phone:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/b0/0f/2e/b00f2e0d-f556-75b0-1be8-ead76d31245d/phoneCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
 candy:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/72/83/04/728304ea-32e2-1979-e845-e5f25dd731f6/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/512x512bb.jpg'
@@ -1052,7 +1054,8 @@ function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.inne
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="pad.js?v=71"></script>
-<script src="sys3.js?v=71"></script>
+<script src="pad.js?v=72"></script>
+<script src="social.js?v=72"></script>
+<script src="sys3.js?v=72"></script>
 </body>
 </html>
