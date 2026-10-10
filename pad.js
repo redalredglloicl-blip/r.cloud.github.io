@@ -255,7 +255,7 @@ return;
 if(S.setPage==='about'){
 el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button><div class="setgroup">'+
 row('الاسم','',"Rio's iPad")+row('طراز الجهاز','', 'iPad Pro 11')+row('نظام التشغيل','', 'RioOS 26.0')+
-row('إصدار اللعبة','', 'Rio iPad 3.1')+row('السعة','', '64 GB')+row('المساحة المتوفرة','', '51.2 GB')+
+row('إصدار اللعبة','', 'Rio iPad 3.2')+row('السعة','', '64 GB')+row('المساحة المتوفرة','', '51.2 GB')+
 row('الرقم التسلسلي','', 'RGX2IPAD2026')+row('المشغل','', 'Zain — 4.5G+')+'</div>';
 $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});return;
 }
@@ -280,7 +280,7 @@ $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});
 $('#swWifi2').addEventListener('change',e=>{S.set.wifi=e.target.checked;store.set('set',S.set);renderStatus();appSettings(el)});
 el.querySelectorAll('[data-net]').forEach(r=>r.addEventListener('click',()=>{S.set.ssid=r.dataset.net;S.set.wifi=true;store.set('set',S.set);renderStatus();appSettings(el);toast('اتصلت بـ '+r.dataset.net)}));return;
 }
-if(['ncset','focus','screen','acc','home','lockset'].includes(S.setPage)){setSubPage(el);return}
+if(S.setPage&&S.setPage!=='main'){setSubPage(el);return}
 const prof=S.apple.id?
 '<div class="card" style="display:flex;gap:12px;align-items:center;padding:13px;cursor:pointer" id="profCard"><span style="width:52px;height:52px;border-radius:50%;background:linear-gradient(150deg,#8e8e93,#636366);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700">'+(S.apple.name||'R').slice(0,1).toUpperCase()+'</span><span style="flex:1"><b style="font-size:16px">'+S.apple.name+'</b><br><span class="mut">'+S.apple.id+' — iCloud</span></span></div>':
 '<div class="card" style="display:flex;gap:12px;align-items:center;padding:13px;cursor:pointer" id="profCard"><span style="width:52px;height:52px;border-radius:50%;background:#e9e9ee;display:flex;align-items:center;justify-content:center">'+g('person','#8e8e93',26)+'</span><span style="flex:1"><b style="font-size:15px">تسجيل الدخول إلى iPad</b><br><span class="mut">iCloud وApp Store والرسائل</span></span></div>';
@@ -288,30 +288,37 @@ el.innerHTML=prof+
 '<div class="setgroup">'+
 row('وضع الطيران',sq('#ff9f0a','airplane',15),'<label class="switch"><input type="checkbox" id="swAir" '+(s.airplane?'checked':'')+'><i></i></label>')+
 row('Wi-Fi',sq('#0a84ff','wifi',15),'<span class="mut">'+(s.wifi?(s.ssid||'Zain Home 5G'):'مطفأ')+'</span>'+arrow,'wifi')+
-row('Bluetooth',sq('#0a84ff','bluetooth',15),'<label class="switch"><input type="checkbox" id="swBt" '+(s.bt?'checked':'')+'><i></i></label>')+
-row('بيانات الهاتف',sq('#34c759','cellular',15),'<span class="mut">Zain 4.5G+</span>')+
-row('نقطة اتصال شخصية',sq('#34c759','radio-outline',15),arrow)+'</div>'+
-'<div class="setgroup">'+
-row('الإشعارات',sq('#ff3b30','notifications',15),arrow,'nc')+
-row('الأصوات والحس اللمسي',sq('#fc3c44','volume-high',15),arrow)+
-row('التركيز',sq('#5e5ce6','moon',15),'<label class="switch"><input type="checkbox" id="swDnd" '+(s.dnd?'checked':'')+'><i></i></label>','focus')+
-row('مدة استخدام الجهاز',sq('#5e5ce6','timer',15),arrow,'usage')+'</div>'+
-'<div class="setgroup">'+
-row('عام',sq('#8e8e93','settings',16),arrow,'about')+
-row('مركز التحكم',sq('#8e8e93','options',15),arrow,'cc')+
-row('المظهر',sq('#3a3a3c','moon',15),'<span><button class="btn '+(S.set.dark?'gray':'')+'" data-dm="0" style="padding:6px 12px">فاتح</button> <button class="btn '+(S.set.dark?'':'gray')+'" data-dm="1" style="padding:6px 12px">داكن</button></span>'),
-row('خلفية الشاشة',sq('#5e5ce6','image',15),arrow,'wall'),
-row('الشاشة والسطوع',sq('#0a84ff','sunny',15),'<span style="display:flex;align-items:center;gap:6px;width:130px"><input type="range" id="setBright" min="10" max="100" value="'+s.bright+'" style="flex:1"></span>')+
-row('الشاشة الرئيسية',sq('#ff9500','grid',15),arrow,'home')+
-row('شاشة القفل',sq('#3a3a3c','lock-closed',15),arrow,'lockset')+
-row('إمكانية الوصول',sq('#0a84ff','accessibility',16),arrow,'acc')+
-row('الخلفية',sq('#30b0c7','image',15),arrow)+
+row('Bluetooth',sq('#0a84ff','bluetooth',15),'<label class="switch"><input type="checkbox" id="swBt" '+(s.bt?'checked':'')+'><i></i></label>','bluetooth')+
+row('بيانات الهاتف',sq('#34c759','cellular',15),'<span class="mut">Zain</span>'+arrow,'cellular')+
+row('نقطة اتصال شخصية',sq('#34c759','radio-outline',15),arrow,'hotspot')+
 row('البطارية',sq('#34c759','battery-charging',15),'<span class="mut">'+arabNum(Math.round(S.batt.pct))+'٪</span>'+arrow,'battery')+
-row('الخصوصية والأمان',sq('#0a84ff','shield-checkmark',15),arrow)+'</div>'+
+row('VPN',sq('#8e8e93','shield-checkmark',15),'<span class="mut">'+(S.fx.vpn?'متصل':'غير متصل')+'</span>'+arrow,'vpn')+'</div>'+
+'<div class="setgroup">'+
+row('الإشعارات',sq('#ff3b30','notifications',15),arrow,'ncset')+
+row('الأصوات والحس اللمسي',sq('#fc3c44','volume-high',15),arrow,'sounds')+
+row('التركيز',sq('#5e5ce6','moon',15),'<label class="switch"><input type="checkbox" id="swDnd" '+(s.dnd?'checked':'')+'><i></i></label>','focus')+
+row('مدة استخدام الجهاز',sq('#5e5ce6','timer',15),arrow,'screen')+'</div>'+
+'<div class="setgroup">'+
+row('عام',sq('#8e8e93','settings',16),arrow,'general')+
+row('إمكانية الوصول',sq('#0a84ff','accessibility',16),arrow,'acc')+
+row('الكاميرا',sq('#8e8e93','camera',15),arrow,'camera')+
+row('مركز التحكم',sq('#8e8e93','options',15),arrow,'cc')+
+row('الشاشة والسطوع',sq('#0a84ff','sunny',15),arrow,'display')+
+row('الشاشة الرئيسية ومكتبة التطبيقات',sq('#ff9500','grid',15),arrow,'home')+
+row('بحث',sq('#8e8e93','search',15),arrow,'search')+
+row('Siri',sq('#111','mic',15),arrow,'siri')+
+row('خلفية الشاشة',sq('#5e5ce6','image',15),arrow,'wall')+'</div>'+
+'<div class="setgroup">'+
+row('Face ID ورمز الدخول',sq('#34c759','scan',15),arrow,'faceid')+
+row('طوارئ SOS',sq('#ff3b30','call',15),arrow,'sos')+
+row('الخصوصية والأمان',sq('#0a84ff','shield-checkmark',15),arrow,'privacy')+'</div>'+
 '<div class="setgroup">'+
 row('App Store',sq('#0a84ff','bag',15),arrow,'store')+
-row('المحفظة وApple Pay',sq('#111','wallet',15),arrow)+
-row('كلمات السر',sq('#8e8e93','key',15),arrow)+'</div>'+
+row('Game Center',sq('#f92c4c','game-controller',15),arrow,'gamecenter')+
+row('المحفظة وApple Pay',sq('#111','wallet',15),arrow,'wallet')+
+row('كلمات السر',sq('#8e8e93','key',15),arrow,'passwords')+'</div>'+
+'<div class="setgroup">'+
+row('التطبيقات',sq('#8e8e93','apps',15),arrow,'appshub')+'</div>'+
 (S.apple.id?'<button class="btn gray" id="signOutBtn" style="width:100%;margin-top:6px">تسجيل الخروج من Apple ID</button>':'');
 const pg=$('#profCard');if(pg)pg.addEventListener('click',()=>{if(!S.apple.id)appleSignInForm(el,()=>appSettings(el))});
 const so=$('#signOutBtn');if(so)so.addEventListener('click',()=>{signOutApple();appSettings(el)});
@@ -323,7 +330,7 @@ const br=$('#setBright');if(br)br.addEventListener('input',e=>{S.set.bright=+e.t
 el.querySelectorAll('[data-setact]').forEach(r=>r.addEventListener('click',e=>{
 if(e.target.closest('label.switch'))return;
 const a=r.dataset.setact;
-if(['about','battery','wifi','wall','ncset','focus','screen','acc','home','lockset'].includes(a)){S.setPage=a;appSettings(el)}
+if(['about','battery','wifi','wall','ncset','focus','screen','acc','home','lockset','bluetooth','cellular','hotspot','vpn','sounds','general','camera','display','search','siri','faceid','sos','privacy','gamecenter','wallet','passwords','appshub','appdetail','gupdate','gstorage','gdatetime','gkeyboard','glang','gairdrop','greset'].includes(a)){S.setPage=a;appSettings(el)}
 else if(a==='nc'){S.setPage='ncset';appSettings(el)}
 else if(a==='cc'){closeApp();setTimeout(showCC,380)}
 else if(a==='store'){openApp('appstore',null)}
@@ -697,7 +704,7 @@ $('#ipad').classList.toggle('dark',!!S.set.dark);
 }
 const LIBCATS=[['التواصل الاجتماعي',['whatsapp','telegram','messenger','instagram','facebook','snapchat','x','discord','messages','phone','facetime']],['الترفيه',['youtube','tiktok','music','roblox','photos','camera']],['الأدوات والإنتاجية',['settings','appstore','safari','maps','weather','clock','calendar','calc','notes','files','shortcuts']]];
 function spotRender(q){
-const allA=APPS.concat(S.installed.filter(id=>EXTRA[id]).map(id=>({id:'x_'+id,n:EXTRA[id].n,ic:EXTRA[id].ic,extra:id})));
+const allA=APPS.concat(S.installed.filter(id=>EXTRA[id]).map(id=>({id:'x_'+id,n:EXTRA[id].n,ic:EXTRA[id].ic,extra:id}))).filter(a=>!S.fx||!S.fx.searchApps||S.fx.searchApps[a.id]!==false);
 const name=a=>a.extra?EXTRA[a.extra].n:a.n;
 const cell=a=>'<button class="app" data-spotapp="'+a.id+'" style="background:none;border:none;cursor:pointer">'+icImg(ICONS[a.ic])+'<span class="nm">'+name(a)+'</span></button>';
 let h='';
