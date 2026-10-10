@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Rio iPad">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Rio iPad 2.1</title>
+<title>Rio iPad 2.2</title>
 <style>
 .sq{width:29px;height:29px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
@@ -191,6 +191,7 @@ canvas#camView{width:100%;border-radius:12px;background:#000}
 .ccCirc,.ccTile{transition:transform .15s ease}
 .ccCirc:active,.ccTile:active{transform:scale(.92)}
 img{-webkit-user-drag:none}
+#appBody .ic{width:50px;height:50px;border-radius:12px;overflow:hidden;display:inline-flex;flex:0 0 auto}
 body{touch-action:manipulation}
 @keyframes jig{from{transform:rotate(-1.2deg)}to{transform:rotate(1.2deg)}}
 .jiggling .app{animation:jig .26s ease-in-out infinite alternate}
@@ -211,7 +212,7 @@ body{touch-action:manipulation}
 <body>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 2.1</div>
+  <div id="verTag">Rio iPad 2.2</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -262,7 +263,7 @@ body{touch-action:manipulation}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 2.1</div>
+    <div class="ver">Rio iPad 2.2</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -285,7 +286,8 @@ const S={
   installed: store.get('installed',[]),
   notes: store.get('notes',''),
   hidden: store.get('hidden',[]), apple: store.get('apple',{id:'',name:''}),
-  jiggle:false, setPage:'main', storeTab:'today', poll:null, sid:'r'+Math.random().toString(36).slice(2,8),
+  jiggle:false, setPage:'main', storeTab:'today', poll:null,
+  /* games removed 2.2 */ sid:'r'+Math.random().toString(36).slice(2,8),
   warned20:false, warned10:false, callTimer:null, callSec:0, musicPlay:false
 };
 /* ================= world: REAL 3D (WebGL) ================= */
@@ -548,8 +550,7 @@ const ICONS={
 function icImg(url){return '<span class="ic" style="background:none;box-shadow:0 2px 6px rgba(0,0,0,.18)"><img src="'+url+'" alt="" loading="lazy" style="width:100%;height:100%;display:block;border-radius:22.37%"></span>'}
 Object.keys(ICONS).forEach(k=>{IC[k]=()=>icImg(ICONS[k])});
 const EXTRA={
- tiktok:{n:'TikTok',ic:'tiktok'}, minecraft:{n:'Minecraft',ic:'minecraft'},
- subway:{n:'Subway Surfers',ic:'subway'}, candy:{n:'Candy Crush',ic:'candy'},
+ tiktok:{n:'TikTok',ic:'tiktok'},
  whatsapp:{n:'WhatsApp',ic:'whatsapp'}, telegram:{n:'Telegram',ic:'telegram'},
  instagram:{n:'Instagram',ic:'instagram'}, facebook:{n:'Facebook',ic:'facebook'},
  messenger:{n:'Messenger',ic:'messenger'}, snapchat:{n:'Snapchat',ic:'snapchat'},
@@ -913,7 +914,7 @@ function appSettings(el){
   if(S.setPage==='about'){
     el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button><div class="setgroup">'+
      row('الاسم','',"Rio's iPad")+row('طراز الجهاز','', 'iPad Pro 11')+row('نظام التشغيل','', 'RioOS 26.0')+
-     row('إصدار اللعبة','', 'Rio iPad 2.1')+row('السعة','', '64 GB')+row('المساحة المتوفرة','', '51.2 GB')+
+     row('إصدار اللعبة','', 'Rio iPad 2.2')+row('السعة','', '64 GB')+row('المساحة المتوفرة','', '51.2 GB')+
      row('الرقم التسلسلي','', 'RGX2IPAD2026')+row('المشغل','', 'Zain — 4.5G+')+'</div>';
     $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});return;
   }
@@ -993,21 +994,18 @@ const STORE=[
  {k:'snapchat',n:'Snapchat',dev:'Snap Inc.',cat:'تواصل اجتماعي',ver:'13.9',size:'98 MB',desc:'لقطات ورسائل سريعة. غرفة Rio العامة أونلاين.'},
  {k:'x',n:'X',dev:'X Corp.',cat:'أخبار وتواصل',ver:'10.55',size:'120 MB',desc:'منصة التغريدات. غرفة Rio العامة أونلاين.'},
  {k:'discord',n:'Discord',dev:'Discord Inc.',cat:'تواصل اجتماعي',ver:'243.0',size:'132 MB',desc:'قنوات صوت ونص للمجتمعات. غرفة Rio العامة أونلاين.'},
- {k:'minecraft',n:'Minecraft',dev:'Mojang',cat:'ألعاب',ver:'1.21',size:'1.1 GB',desc:'ابنِ عوالم لا نهائية من المكعبات.'},
- {k:'subway',n:'Subway Surfers',dev:'SYBO',cat:'ألعاب',ver:'3.35',size:'190 MB',desc:'اجري واهرب على سكك القطارات.'},
- {k:'candy',n:'Candy Crush Saga',dev:'King',cat:'ألعاب',ver:'1.28',size:'98 MB',desc:'لعبة الحلوى الأشهر عالمياً.'}
 ];
 function storeRow(a){
   const inst=S.installed.includes(a.k),hiddenB=false;
   return '<div class="card row" style="align-items:center"><span style="flex:0 0 auto">'+icImg(ICONS[a.k])+'</span><span style="flex:1;cursor:pointer" data-detail="'+a.k+'"><span class="big" style="font-size:15px">'+a.n+'</span><br><span class="mut">'+a.cat+' — '+a.dev+'</span></span><button class="btn '+(inst?'gray':'')+'" data-get="'+a.k+'" style="border-radius:16px;padding:7px 18px">'+(inst?'فتح':'احصل')+'</button></div>';
 }
 function appStore(el){
+  if(S.storeTab==='games')S.storeTab='apps';
   const tab=S.storeTab;
   if(S.storeDetail){const a=STORE.find(x=>x.k===S.storeDetail);if(a){
     const inst=S.installed.includes(a.k);
     el.innerHTML='<button class="back" id="stBack" style="margin-bottom:8px">‹ رجوع</button>'+
      '<div class="row" style="align-items:center;gap:12px"><span>'+icImg(ICONS[a.k])+'</span><span style="flex:1"><span class="big" style="font-size:18px">'+a.n+'</span><br><span class="mut">'+a.dev+'</span></span><button class="btn" id="stGet" style="border-radius:16px;padding:8px 20px">'+(inst?'فتح':'احصل')+'</button></div>'+
-     '<div style="display:flex;gap:8px;overflow-x:auto;margin:14px 0">'+[1,2,3].map(i=>'<img src="https://picsum.photos/seed/'+a.k+'shot'+i+'/150/270" style="width:110px;height:196px;object-fit:cover;border-radius:12px" alt="">').join('')+'</div>'+
      '<div class="rbx-sec">الوصف</div><p style="line-height:1.8">'+a.desc+'</p>'+
      '<div class="rbx-sec">المعلومات</div><div class="setgroup">'+
      '<div class="setrow"><span style="flex:1">الإصدار</span><span class="mut">'+a.ver+'</span></div>'+
@@ -1024,19 +1022,17 @@ function appStore(el){
   let body='';
   if(tab==='today'){
     const f=STORE[0];
-    body='<div class="card" style="padding:0;overflow:hidden"><img src="https://picsum.photos/seed/riofeature/640/300" style="width:100%;height:150px;object-fit:cover;display:block" alt=""><div style="padding:12px"><span class="mut">تطبيق اليوم</span><div class="big" style="font-size:17px">'+f.n+'</div><p class="mut" style="margin:4px 0 10px">'+f.desc+'</p><button class="btn" data-get="'+f.k+'" style="border-radius:16px;padding:7px 18px">'+(S.installed.includes(f.k)?'فتح':'احصل')+'</button></div></div>'+
+    body='<div class="card" style="padding:0;overflow:hidden"><div style="background:linear-gradient(140deg,'+SOCIAL[f.k].c+',#0c1520);height:150px;display:flex;align-items:center;justify-content:center;gap:12px"><span style="background:#fff;border-radius:24px;padding:8px;display:inline-flex">'+icImg(ICONS[f.k])+'</span></div><div style="padding:12px"><span class="mut">تطبيق اليوم</span><div class="big" style="font-size:17px">'+f.n+'</div><p class="mut" style="margin:4px 0 10px">'+f.desc+'</p><button class="btn" data-get="'+f.k+'" style="border-radius:16px;padding:7px 18px">'+(S.installed.includes(f.k)?'فتح':'احصل')+'</button></div></div>'+
      STORE.slice(1,4).map(storeRow).join('');
   } else if(tab==='apps'){
     body='<div class="rbx-sec" style="margin-top:2px">تواصل اجتماعي — أونلاين</div>'+STORE.filter(a=>SOCIAL[a.k]).map(storeRow).join('')+
      (S.hidden.length?'<div class="rbx-sec">تطبيقات حذفتها — استرجعها</div>'+S.hidden.map(id=>{const pa=APPS.find(x=>x.id===id);return pa?'<div class="card row" style="align-items:center"><span>'+icImg(ICONS[pa.ic])+'</span><span style="flex:1"><span class="big" style="font-size:15px">'+pa.n+'</span><br><span class="mut">تطبيق نظام</span></span><button class="btn" data-unhide="'+id+'" style="border-radius:16px;padding:7px 18px">احصل</button></div>':''}).join(''):'');
-  } else if(tab==='games'){
-    body='<div class="rbx-sec" style="margin-top:2px">ألعاب</div>'+STORE.filter(a=>!SOCIAL[a.k]).map(storeRow).join('');
   } else {
     body='<div class="row" style="margin-bottom:10px"><input id="stQ" type="text" placeholder="ابحث عن تطبيقات وألعاب…" style="flex:1;padding:11px 13px;border:1px solid #d9d9de;border-radius:14px;font-size:14px"></div><div id="stRes">'+STORE.map(storeRow).join('')+'</div>';
   }
   el.innerHTML='<div class="row" style="align-items:center;margin-bottom:12px"><span class="big" style="font-size:21px;flex:1">App Store</span>'+acct+'</div>'+body+
    '<div style="display:flex;gap:6px;margin-top:14px;background:#e9e9ee;border-radius:14px;padding:4px">'+
-   [['today','اليوم'],['apps','التطبيقات'],['games','الألعاب'],['search','بحث']].map(t=>'<button data-tab="'+t[0]+'" style="flex:1;padding:8px;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:12.5px;'+(tab===t[0]?'background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15)':'background:none;color:#555')+'">'+t[1]+'</button>').join('')+'</div>';
+   [['today','اليوم'],['apps','التطبيقات'],['search','بحث']].map(t=>'<button data-tab="'+t[0]+'" style="flex:1;padding:8px;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:12.5px;'+(tab===t[0]?'background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15)':'background:none;color:#555')+'">'+t[1]+'</button>').join('')+'</div>';
   el.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{S.storeTab=b.dataset.tab;S.storeDetail=null;appStore(el)}));
   const sg=$('#stSign');if(sg)sg.addEventListener('click',()=>appleSignInForm(el,()=>appStore(el)));
   const q=$('#stQ');if(q)q.addEventListener('input',()=>{const v=q.value.trim();$('#stRes').innerHTML=STORE.filter(a=>!v||a.n.includes(v)||a.cat.includes(v)).map(storeRow).join('')||'<p class="mut" style="text-align:center;padding:16px">لا نتائج</p>';bindGets(el)});
