@@ -326,3 +326,154 @@ $('#apAdd').addEventListener('click',()=>{S.bag.push({n:p.n,price:p.price,g:p.g,
 };
 render();
 }
+const YT_VIDS=[
+['aqz-KE-bpKQ','Big Buck Bunny — فيلم قصير','Blender Foundation','3.4M','21M'],
+['jfKfPfyJRdk','lofi hip hop radio — beats to relax/study to','Lofi Girl','14.8M','34K'],
+['dQw4w9WgXcQ','Rick Astley — Never Gonna Give You Up (Official Video)','Rick Astley','3.1M','1.6B'],
+['kJQP7kiw5Fk','Luis Fonsi — Despacito ft. Daddy Yankee','Luis Fonsi','42M','8.7B'],
+['JGwWNGJdvx8','Ed Sheeran — Shape of You (Official Music Video)','Ed Sheeran','39M','6.3B'],
+['60ItHLz5WEA','Alan Walker — Faded','Alan Walker','46M','3.8B'],
+['fJ9rUzIMcZQ','Queen — Bohemian Rhapsody (Official Video Remastered)','Queen Official','18M','1.9B'],
+['9bZkp7q19f0','PSY — GANGNAM STYLE (Official M/V)','officialpsy','32M','5.1B'],
+['RgKAFK5djSk','Wiz Khalifa — See You Again ft. Charlie Puth','Wiz Khalifa','36M','6.5B'],
+['hTWKbfoikeg','Nirvana — Smells Like Teen Spirit (Official Music Video)','Nirvana','12M','2.1B'],
+['MmB9b5njVbA','Minecraft: Official Trailer','Minecraft','15M','220M']
+];
+function ytUid(){if(!S.uid){S.uid='u'+Math.random().toString(36).slice(2,9);store.set('uid',S.uid)}return S.uid}
+function ytParseId(u){u=String(u||'').trim();const m=u.match(/(?:youtube\.com\/(?:watch\?[^#]*v=|shorts\/|live\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);return m?m[1]:null}
+function ytNum(s){const m=String(s).match(/([\d.]+)([KMB])?/);if(!m)return 0;const n=parseFloat(m[1]);return Math.round(n*(m[2]==='B'?1e9:m[2]==='M'?1e6:m[2]==='K'?1e3:1))}
+function ytFmt(n){n=+n||0;if(n>=1e9)return (n/1e9).toFixed(1)+'B';if(n>=1e6)return (n/1e6).toFixed(1)+'M';if(n>=1e3)return (n/1e3).toFixed(1)+'K';return ''+n}
+function ytCmd(f,a){const fr=document.querySelector('#ytFrame');if(fr&&fr.contentWindow){try{fr.contentWindow.postMessage(JSON.stringify({event:'command',func:f,args:a||[]}),'*')}catch(e){}}}
+function ytEst(){const p=S.ytPos||{t:0,at:Date.now(),playing:false};return p.playing?p.t+(Date.now()-p.at)/1000:p.t}
+function ytSay(a,pos){fbPut('/rooms/youtube/'+S.ytVid+'/sync',{a:a,pos:Math.round(pos),by:ytUid(),ts:Date.now()})}
+function ytState(info){
+if(S.ytApplying||S.app!=='x_youtube'||!S.ytVid)return;
+if(info===1){S.ytPos={t:ytEst(),at:Date.now(),playing:true};ytSay('play',S.ytPos.t)}
+else if(info===2){S.ytPos={t:ytEst(),at:Date.now(),playing:false};ytSay('pause',S.ytPos.t)}
+}
+if(!window._ytL){window._ytL=true;window.addEventListener('message',e=>{let d;try{d=typeof e.data==='string'?JSON.parse(e.data):e.data}catch(_){return}if(d&&d.event==='onStateChange')ytState(d.info)})}
+function ytCard(v){
+return '<div data-ytv="'+v[0]+'" style="margin-top:14px;cursor:pointer"><div style="position:relative"><img src="https://img.youtube.com/vi/'+v[0]+'/hqdefault.jpg" loading="lazy" style="width:100%;border-radius:12px;aspect-ratio:16/9;object-fit:cover;background:#111"></div>'+
+'<div class="row" style="margin-top:8px;gap:10px;align-items:flex-start"><span style="width:38px;height:38px;border-radius:50%;background:linear-gradient(150deg,#ff0033,#7a0018);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:0 0 auto">'+v[2].slice(0,1)+'</span>'+
+'<span style="flex:1;min-width:0"><b style="font-size:14px;line-height:1.5;display:block">'+v[1]+'</b><span class="mut" style="font-size:12.5px">'+v[2]+' • '+v[4]+' مشاهدة</span></span></div></div>';
+}
+function appYouTubeX(){
+const el=document.querySelector('#appBody');
+S.ytView=S.ytView||'home';
+if(S.ytView==='home')return ytHome(el);
+if(S.ytView==='search')return ytSearchV(el);
+return ytWatch(el,S.ytVidV);
+}
+function ytHome(el){
+let h='<div class="row" style="align-items:center;padding:4px 2px 8px;position:sticky;top:0;background:#fff;z-index:5"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:30px;height:22px;background:#ff0033;border-radius:6px;display:inline-flex;align-items:center;justify-content:center"><span style="width:0;height:0;border-left:9px solid #fff;border-top:6px solid transparent;border-bottom:6px solid transparent;margin-inline-start:2px"></span></span><b style="font-size:19px;letter-spacing:-.5px">YouTube</b></span><span style="margin-inline-start:auto;display:flex;gap:14px;align-items:center"><span data-ytgo="search" style="display:inline-flex;cursor:pointer">'+si('search',21)+'</span><span style="display:inline-flex">'+si('bell',21)+'</span></span></div>';
+h+='<div class="row" style="gap:8px;overflow-x:auto;padding:4px 0">'+['الكل','موسيقى','أفلام','بث مباشر','ألعاب'].map((c,i)=>'<span style="padding:7px 14px;border-radius:9px;font-size:13px;white-space:nowrap;cursor:pointer;'+(i===0?'background:#0f0f0f;color:#fff':'background:#f2f2f2')+'">'+c+'</span>').join('')+'</div>';
+h+=YT_VIDS.map(ytCard).join('');
+el.innerHTML=h;
+el.querySelectorAll('[data-ytgo]').forEach(x=>x.addEventListener('click',()=>{S.ytView=x.dataset.ytgo;appYouTubeX()}));
+el.querySelectorAll('[data-ytv]').forEach(c=>c.addEventListener('click',()=>{const v=YT_VIDS.find(x=>x[0]===c.dataset.ytv);S.ytView='watch';S.ytVidV={id:v[0],title:v[1],ch:v[2],subs:v[3]};appYouTubeX()}));
+}
+function ytSearchV(el){
+el.innerHTML='<div class="row" style="align-items:center;margin-bottom:10px"><span data-ytgo="home" style="color:#0a84ff;cursor:pointer">‹ رجوع</span><b style="flex:1;text-align:center">بحث</b><span style="width:50px"></span></div>'+
+'<div class="card"><b style="font-size:14.5px">الصق رابط أي مقطع يوتيوب</b><p class="mut" style="font-size:12.5px;margin:4px 0 10px;line-height:1.8">انسخ رابط الفيديو من يوتيوب والصقه هنا — يشتغل عندك مباشرة مع التعليقات والمشاهدة المشتركة.</p>'+
+'<input id="ytUrl" placeholder="https://www.youtube.com/watch?v=…" style="width:100%;padding:12px;border:1px solid #d9d9de;border-radius:12px;font-size:14px;font-family:inherit;direction:ltr;text-align:left">'+
+'<button class="btn" id="ytPlayUrl" style="width:100%;margin-top:10px;padding:12px">تشغيل المقطع</button></div>'+
+'<div class="card"><b style="font-size:14px">فيديوات مقترحة</b><div style="margin-top:6px">'+YT_VIDS.slice(0,4).map(ytCard).join('')+'</div></div>';
+el.querySelectorAll('[data-ytgo]').forEach(x=>x.addEventListener('click',()=>{S.ytView=x.dataset.ytgo;appYouTubeX()}));
+el.querySelectorAll('[data-ytv]').forEach(c=>c.addEventListener('click',()=>{const v=YT_VIDS.find(x=>x[0]===c.dataset.ytv);S.ytView='watch';S.ytVidV={id:v[0],title:v[1],ch:v[2],subs:v[3]};appYouTubeX()}));
+document.querySelector('#ytPlayUrl').addEventListener('click',()=>{
+const id=ytParseId(document.querySelector('#ytUrl').value);
+if(!id)return toast('الرابط مو صحيح — الصق رابط يوتيوب كامل');
+S.ytView='watch';S.ytVidV={id:id,title:'فيديو من الرابط',ch:'YouTube',subs:'—'};appYouTubeX();
+});
+}
+function ytWatch(el,v){
+S.ytVid=v.id;S.ytPos={t:0,at:Date.now(),playing:false};S.ytLastSync=0;S.ytApplying=false;
+const chId='ch'+simpHash(v.ch);
+const me=ytUid(),myName=S.apple.name||'Rio';
+let h='<div class="row" style="align-items:center;margin-bottom:8px"><span id="ytBack" style="color:#0a84ff;cursor:pointer;font-size:15px">‹ رجوع</span><span style="flex:1"></span><span id="ytWatchN" class="mut" style="font-size:12px"></span></div>';
+h+='<div style="position:relative;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden"><iframe id="ytFrame" src="https://www.youtube-nocookie.com/embed/'+v.id+'?enablejsapi=1&rel=0&playsinline=1&autoplay=1&origin='+encodeURIComponent(location.origin)+'" style="width:100%;height:100%;border:0" allow="autoplay;encrypted-media;picture-in-picture;fullscreen" allowfullscreen></iframe></div>';
+h+='<b style="font-size:15.5px;margin-top:10px;display:block;line-height:1.6">'+v.title+'</b>';
+h+='<div class="row" style="align-items:center;margin-top:10px;gap:10px"><span style="width:40px;height:40px;border-radius:50%;background:linear-gradient(150deg,#ff0033,#7a0018);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:0 0 auto">'+v.ch.slice(0,1)+'</span><span style="flex:1;min-width:0"><b style="font-size:14px">'+v.ch+'</b><br><span class="mut" style="font-size:12px"><span id="ytSubN">…</span> مشترك</span></span><button class="btn" id="ytSubB" style="border-radius:18px;padding:8px 18px;font-size:13px">اشتراك</button></div>';
+h+='<div class="row" style="gap:8px;margin-top:12px"><button class="btn gray" id="ytLikeB" style="flex:1;border-radius:18px;padding:9px;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:6px">'+si('thumb',15)+' <span id="ytLikeN">…</span></button><button class="btn gray" id="ytShareB" style="flex:1;border-radius:18px;padding:9px;font-size:13px">مشاركة</button></div>';
+h+='<div class="card" id="ytParty" style="margin-top:12px;background:#f6f6fa"><div class="row" style="align-items:center"><b style="font-size:13.5px;flex:1">مشاهدة مشتركة — نفس اللحظة</b><span style="width:9px;height:9px;border-radius:50%;background:#34c759;display:inline-block"></span></div><p class="mut" style="font-size:12px;margin:4px 0 0;line-height:1.8">أي واحد يشغّل أو يوقف أو يقدّم — يصير عند الكل بنفس اللحظة. افتح نفس المقطع بجهاز صديقك.</p><div id="ytWatchers" class="mut" style="font-size:12px;margin-top:6px"></div></div>';
+h+='<div class="rbx-sec" style="margin-top:14px">التعليقات <span class="mut" id="ytCN">…</span></div><div id="ytCList" style="display:flex;flex-direction:column;gap:10px;margin-top:8px"></div>';
+h+='<div class="row" style="position:sticky;bottom:0;background:#fff;padding:10px 0;gap:8px;margin-top:8px"><input id="ytCIn" placeholder="أضف تعليقاً…" style="flex:1;padding:10px 14px;border:1px solid #d9d9de;border-radius:20px;font-size:13.5px;font-family:inherit"><button class="btn" id="ytCSend" style="border-radius:50%;width:38px;height:38px;padding:0;flex:0 0 auto">↑</button></div>';
+el.innerHTML=h;
+document.querySelector('#ytBack').addEventListener('click',()=>{S.ytView='home';S.ytVid=null;appYouTubeX()});
+const fr=document.querySelector('#ytFrame');
+fr.addEventListener('load',()=>{setTimeout(()=>ytCmd('addEventListener',['onStateChange']),700)});
+const room='/rooms/youtube/'+v.id;
+const subKey='/channels/'+chId+'/subs';
+const likeKey=room+'/like';
+const refreshSubs=async()=>{let d=await fbGet(subKey);if(!d){d={c:ytNum(v.subs),u:{}};await fbPut(subKey,d)}const n=document.querySelector('#ytSubN');if(n)n.textContent=ytFmt(d.c);const b=document.querySelector('#ytSubB');if(b){const sub=d.u&&d.u[me];b.textContent=sub?'مشترك ✓':'اشتراك';b.classList.toggle('gray',!!sub)}};
+const refreshLike=async()=>{const d=(await fbGet(likeKey))||{c:0,u:{}};const n=document.querySelector('#ytLikeN');if(n)n.textContent=ytFmt(d.c);const b=document.querySelector('#ytLikeB');if(b)b.style.opacity=(d.u&&d.u[me])?1:.75;return d};
+document.querySelector('#ytSubB').addEventListener('click',async()=>{let d=(await fbGet(subKey))||{c:ytNum(v.subs),u:{}};d.u=d.u||{};if(d.u[me]){d.c=Math.max(0,d.c-1);delete d.u[me];toast('ألغيت الاشتراك')}else{d.c++;d.u[me]=1;toast('اشتركت بالقناة ✓')}await fbPut(subKey,d);refreshSubs()});
+document.querySelector('#ytLikeB').addEventListener('click',async()=>{const d=await refreshLike();d.u=d.u||{};if(d.u[me]){d.c=Math.max(0,d.c-1);delete d.u[me]}else{d.c++;d.u[me]=1;sfx('like')}await fbPut(likeKey,d);refreshLike()});
+document.querySelector('#ytShareB').addEventListener('click',()=>{toast('اننسخ رابط المقطع — الصقه بأي مكان')});
+const sendC=async()=>{const inp=document.querySelector('#ytCIn'),t=inp.value.trim();if(!t)return;inp.value='';await fbPost(room+'/comments',{t:t,by:myName,ts:Date.now()});loadC()};
+document.querySelector('#ytCSend').addEventListener('click',sendC);
+document.querySelector('#ytCIn').addEventListener('keydown',e=>{if(e.key==='Enter')sendC()});
+const loadC=async()=>{const c=await fbGet(room+'/comments');const l=document.querySelector('#ytCList');if(!l)return;const a=c?Object.values(c).sort((x,y)=>(x.ts||0)-(y.ts||0)):[];const cn=document.querySelector('#ytCN');if(cn)cn.textContent='('+a.length+')';l.innerHTML=a.length?a.map(x=>'<div class="row" style="gap:9px;align-items:flex-start"><span style="width:32px;height:32px;border-radius:50%;background:linear-gradient(150deg,#8e8e93,#5a5a5e);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:0 0 auto">'+String(x.by||'?').slice(0,1)+'</span><span style="flex:1;min-width:0"><b style="font-size:12.5px">'+escH(String(x.by||'زائر'))+'</b><br><span style="font-size:13.5px;line-height:1.6;word-break:break-word">'+escH(String(x.t))+'</span></span></div>').join(''):'<div class="mut" style="font-size:13px">كن أول من يعلق</div>'};
+const poll=async()=>{
+if(S.app!=='x_youtube'||!document.querySelector('#ytFrame')){clearInterval(S.poll);return}
+fbPut(room+'/watchers/'+me,{n:myName,ts:Date.now()});
+const w=await fbGet(room+'/watchers');const wl=document.querySelector('#ytWatchers');const wn=document.querySelector('#ytWatchN');
+if(w){const now=Date.now();const act=Object.values(w).filter(x=>now-(x.ts||0)<40000);if(wl)wl.textContent=act.length?'يشاهد الآن ('+act.length+'): '+act.slice(0,5).map(x=>x.n).join('، '):'لا أحد يشاهد الآن';if(wn)wn.textContent=act.length?act.length+' يشاهد':''}
+const s=await fbGet(room+'/sync');
+if(s&&s.ts>(S.ytLastSync||0)&&s.by!==me){
+S.ytLastSync=s.ts;S.ytApplying=true;
+if(s.a==='play'){ytCmd('seekTo',[s.pos||0,true]);ytCmd('playVideo');S.ytPos={t:s.pos||0,at:Date.now(),playing:true};toast('صديقك شغّل المقطع — تتابع وياه')}
+else if(s.a==='pause'){ytCmd('pauseVideo');S.ytPos={t:s.pos||0,at:Date.now(),playing:false}}
+else if(s.a==='seek'){ytCmd('seekTo',[s.pos||0,true]);S.ytPos={t:s.pos||0,at:Date.now(),playing:(S.ytPos||{}).playing}}
+setTimeout(()=>{S.ytApplying=false},1500);
+}
+loadC();
+};
+refreshSubs();refreshLike();loadC();poll();clearInterval(S.poll);S.poll=setInterval(poll,2500);
+}
+
+function gptLogo(sz){sz=sz||30;let p='';for(let k=0;k<6;k++)p+='<path d="M50 14 C56 24 56 34 50 42 C44 34 44 24 50 14 Z" fill="#000" transform="rotate('+(k*60)+' 50 50)"/>';return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 100 100">'+p+'</svg>'}
+function appChatGPT(){
+const el=document.querySelector('#appBody');
+S.gpt=S.gpt||[];
+const render=()=>{
+const msgs=S.gpt;
+let h='<div class="row" style="align-items:center;padding:4px 2px 10px;position:sticky;top:0;background:#fff;z-index:5"><span style="display:inline-flex">'+si('menu',21)+'</span><b style="flex:1;text-align:center;font-size:16.5px">ChatGPT</b><span id="gptNew" style="display:inline-flex;cursor:pointer">'+si('edit',20)+'</span></div>';
+h+='<div style="text-align:center;margin:2px 0 10px"><span style="display:inline-block;background:#f4f4f5;border:1px solid #e4e4e7;border-radius:16px;padding:5px 14px;font-size:12.5px;color:#3f3f46">GPT-4o mini — نموذج مجاني</span></div>';
+h+='<div id="gptList" style="display:flex;flex-direction:column;gap:14px;padding:4px 2px;min-height:280px">';
+if(!msgs.length){
+h+='<div style="text-align:center;padding:26px 6px"><div style="display:flex;justify-content:center;margin-bottom:12px">'+gptLogo(54)+'</div><b style="font-size:19px">كيف أقدر أساعدك اليوم؟</b></div>';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+['اكتبلي نكتة تضحك','شرحلي الذكاء الاصطناعي','نصيحة لتعلم الإنجليزية','اكتبلي قصة قصيرة'].map(s2=>'<div data-gptsug="'+s2+'" class="card" style="margin:0;padding:12px;font-size:13px;cursor:pointer;line-height:1.6">'+s2+'</div>').join('')+'</div>';
+}else{
+h+=msgs.map(m=>m.role==='user'
+?'<div style="align-self:flex-end;max-width:82%;background:#f4f4f5;border-radius:18px;padding:10px 14px;font-size:14.5px;line-height:1.7;word-break:break-word">'+escH(m.t)+'</div>'
+:'<div class="row" style="gap:9px;align-items:flex-start"><span style="flex:0 0 auto;margin-top:2px">'+gptLogo(24)+'</span><div style="flex:1;font-size:14.5px;line-height:1.85;word-break:break-word">'+m.html+'</div></div>'
+).join('');
+if(S.gptBusy)h+='<div class="row" style="gap:9px;align-items:center"><span>'+gptLogo(24)+'</span><span style="display:flex;gap:5px"><span class="tdot"></span><span class="tdot"></span><span class="tdot"></span></span></div>';
+}
+h+='</div>';
+h+='<div class="row" style="position:sticky;bottom:0;background:#fff;padding:10px 0;gap:8px;align-items:center"><span style="width:36px;height:36px;border:1px solid #d9d9de;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto">'+si('plus',18)+'</span><input id="gptIn" placeholder="اسأل أي شيء…" style="flex:1;padding:12px 16px;border:1px solid #d9d9de;border-radius:24px;font-size:14px;font-family:inherit;background:#f7f7f8"><button id="gptSend" style="width:38px;height:38px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto">'+si('upRight',17,'#fff')+'</button></div>';
+h+='<p class="mut" style="text-align:center;font-size:11px;margin-top:2px">مربوط بنموذج ذكاء مجاني حقيقي — بدون حساب</p>';
+el.innerHTML=h;
+const list=document.querySelector('#gptList');if(list)list.scrollTop=1e6;
+const inp=document.querySelector('#gptIn');
+const send=async txt=>{
+const v=(txt||inp.value).trim();if(!v||S.gptBusy)return;
+S.gpt.push({role:'user',t:v});S.gptBusy=true;render();
+try{
+const hist=S.gpt.slice(-8).map(m=>({role:m.role==='ai'?'assistant':'user',content:m.t}));
+const r=await fetch('https://text.pollinations.ai/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:[{role:'system',content:'أنت مساعد ذكي ودود اسمك ChatGPT. أجب باللغة العربية دائماً وبأسلوب واضح ومختصر ومفيد.'}].concat(hist,[{role:'user',content:v}])}),signal:AbortSignal.timeout(60000)});
+let t=await r.text();t=(t||'').trim().slice(0,2500)||'ما وصلني رد — حاول مرة ثانية.';
+S.gpt.push({role:'ai',t:t,html:escH(t).replace(/\n/g,'<br>')});
+}catch(e){S.gpt.push({role:'ai',t:'err',html:'ماكو اتصال بالإنترنت — تأكد من الشبكة وحاول مرة ثانية.'})}
+S.gptBusy=false;render();
+};
+document.querySelector('#gptSend').addEventListener('click',()=>send());
+inp.addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+el.querySelectorAll('[data-gptsug]').forEach(c=>c.addEventListener('click',()=>send(c.dataset.gptsug)));
+const nn=document.querySelector('#gptNew');if(nn)nn.addEventListener('click',()=>{S.gpt=[];S.gptBusy=false;render();toast('محادثة جديدة')});
+setTimeout(()=>{const i2=document.querySelector('#gptIn');if(i2&&!S.gpt.length)i2.focus()},400);
+};
+render();
+}
+
