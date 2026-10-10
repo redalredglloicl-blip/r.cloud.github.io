@@ -192,8 +192,9 @@ return '';
 function renderLockX(){
 const L=$('#lock');if(!L)return;
 let x=$('#lockX');
-if(!x){x=document.createElement('div');x.id='lockX';const hint=L.children[3];if(hint)L.insertBefore(x,hint);else L.appendChild(x)}
-const nots=(S.notifs||[]).slice(0,3);
+if(!x){x=document.createElement('div');x.id='lockX'}
+const _lt=document.querySelector('#lockTime');if(_lt)_lt.after(x);else L.appendChild(x)
+const nots=(S.notifs||[]).slice(0,(S.fx.pass||S.fx.faceid)?2:3);
 x.innerHTML='<div class="lwidRow">'+lockWidHTML()+'</div>'+liveHTML()+
 (nots.length?'<div class="lnots">'+nots.map(n=>'<div class="lnot">'+notifIcon(n.app)+'<span style="flex:1;text-align:right"><b>'+escH(n.app)+'</b><br><span>'+escH(n.text)+'</span></span><span class="mut2">'+relTime(n.t)+'</span></div>').join('')+'</div>':'');
 const lt=$('#lockTime'),ld=$('#lockDate');
@@ -205,8 +206,8 @@ const pzOld=x.querySelector('#pinZone');if(pzOld)pzOld.remove();
 if(S.locked&&(S.fx.pass||S.fx.faceid)){
 const pz=document.createElement('div');pz.id='pinZone';pz.style.marginTop='12px';
 pz.innerHTML=(S.fx.faceid?'<button class="btn" id="fidBtn" style="width:100%;padding:12px;margin-bottom:10px">Face ID — افتح بوجهك</button>':'')+
-(S.fx.pass?'<div style="text-align:center;color:#fff"><div style="font-size:13px;margin-bottom:6px">اكتب رمز الدخول</div><div id="pinDots" style="font-size:15px;letter-spacing:7px;margin-bottom:10px">'+'○'.repeat(S.fx.passLen||4)+'</div><div style="display:grid;grid-template-columns:repeat(3,58px);gap:9px;justify-content:center">'+[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(n=>'<button data-pin="'+n+'" style="width:58px;height:58px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;font-size:21px;font-weight:600;cursor:pointer">'+(n===''?'':n)+'</button>').join('')+'</div></div>':'');
-x.appendChild(pz);
+(S.fx.pass?'<div style="text-align:center;color:#fff"><div style="font-size:13px;margin-bottom:6px">اكتب رمز الدخول</div><div id="pinDots" style="font-size:15px;letter-spacing:7px;margin-bottom:10px">'+'○'.repeat(S.fx.passLen||4)+'</div><div style="display:grid;grid-template-columns:repeat(3,50px);gap:8px;justify-content:center">'+[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(n=>'<button data-pin="'+n+'" style="width:50px;height:50px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;font-size:21px;font-weight:600;cursor:pointer">'+(n===''?'':n)+'</button>').join('')+'</div></div>':'');
+x.appendChild(pz);x.scrollTop=x.scrollHeight;
 const fb=pz.querySelector('#fidBtn');if(fb)fb.addEventListener('click',e=>{e.stopPropagation();fb.textContent='جاي يتعرف على وجهك…';setTimeout(()=>_unlock0(),750)});
 pz.querySelectorAll('[data-pin]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const v=b.dataset.pin;
 if(v==='\u232b')S._pin=(S._pin||'').slice(0,-1);else if(v!==''&&((S._pin||'').length<(S.fx.passLen||4)))S._pin=(S._pin||'')+v;
