@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Rio iPad">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Rio iPad 7.3</title>
+<title>Rio iPad 7.4</title>
 <style>.sq{width:29px;height:29px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overflow:hidden;background:radial-gradient(120% 100% at 50% 0%,#2b3348 0%,#141821 60%,#0b0e14 100%);font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif}
@@ -346,7 +346,7 @@ img,a{-webkit-user-drag:none!important}
 <body>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 7.3</div>
+  <div id="verTag">Rio iPad 7.4</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -377,7 +377,7 @@ img,a{-webkit-user-drag:none!important}
       </div>
       <div id="banner"></div>
       <div id="callUI"></div>
-      <div id="lowBatt"><div class="box"><h3>Low Battery</h3><p id="lowBattTxt">20% of battery is remaining.</p><button id="lowBattOk">Close</button></div></div>
+      <div id="lowBatt"><div class="box"><h3>البطارية منخفضة</h3><p id="lowBattTxt">20% of battery is remaining.</p><button id="lowBattOk">إغلاق</button></div></div>
       <div id="dead"><svg width="70" height="34" viewBox="0 0 70 34"><rect x="2" y="2" width="60" height="30" rx="7" fill="none" stroke="#ff3b30" stroke-width="3"/><rect x="6" y="6" width="7" height="22" rx="3" fill="#ff3b30"/><path d="M65 12v10a5 5 0 0 0 0-10z" fill="#8e8e93"/></svg><div>بطارية الآيباد خلصت</div><button id="btnCharge">اشحنه</button></div>
     </div></div>
   </div>
@@ -397,7 +397,7 @@ img,a{-webkit-user-drag:none!important}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 7.3</div>
+    <div class="ver">Rio iPad 7.4</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -411,7 +411,7 @@ function toast(t,ms){const el=$('#toast');el.textContent=t;el.style.display='blo
 const S={
 playing:false, padOut:false, app:null, missedCall:false,
 cam:{x:0.5,z:4.0}, yaw:-0.55, pitch:0, joy:{x:0,y:0}, jumpY:0, vy:0, jumping:false, deadFall:0,
-batt: store.get('batt',{pct:87,charging:false,usage:{}}),
+batt: store.get('batt',{pct:87,charging:false,usage:{},maxCap:100}),
 set: store.get('set',{wifi:true,bt:true,airplane:false,dnd:false,bright:80,vol:60,flash:false}),
 photos: store.get('photos',[]),
 installed: store.get('installed',[]),
@@ -960,12 +960,15 @@ $('#lockDate').textContent=days[d.getDay()]+'، '+arabNum(d.getDate())+' '+month
 function tickUse(name){const u=S.batt.usage;u[name]=(u[name]||0)+1;store.set('batt',S.batt)}
 setInterval(()=>{
 renderStatus();
-const drainBase=0.0045*(0.5+S.set.bright/100)*(S.app==='camera'||S.app==='roblox'||S.app==='youtube'?2.6:1)*(S.padOut?1.4:0.5);
-if(S.batt.charging){S.batt.pct=Math.min(100,S.batt.pct+0.03)}
-else if(S.playing){S.batt.pct=Math.max(0,S.batt.pct-drainBase)}
+const lowBoost=1+(100-S.batt.pct)/100*1.6;
+const lpmF=S.set.lpm?0.45:1;
+const capF=100/Math.max(72,S.batt.maxCap||100);
+const drainBase=0.028*(0.5+S.set.bright/100)*(S.app==='camera'||S.app==='roblox'||S.app==='youtube'?2.6:1)*(S.padOut?1.4:0.5)*lowBoost*lpmF*capF;
+if(S.batt.charging){S.batt.pct=Math.min(100,S.batt.pct+0.06);S._chgT=(S._chgT||0)+1;if(S._chgT>=30){S._chgT=0;if((S.batt.maxCap||100)>72)S.batt.maxCap=Math.round(((S.batt.maxCap||100)-0.4)*10)/10}}
+else if(S.playing){S.batt.pct=Math.max(0,S.batt.pct-drainBase);S._chgT=0}
 if(S.app)tickUse(S.app);
-if(S.batt.pct<=20&&S.batt.pct>10&&!S.warned20&&S.playing&&!S.batt.charging){S.warned20=true;$('#lowBattTxt').textContent='20% of battery is remaining.';$('#lowBatt').classList.add('show')}
-if(S.batt.pct<=10&&!S.warned10&&S.playing&&!S.batt.charging){S.warned10=true;$('#lowBattTxt').textContent='10% of battery is remaining.';$('#lowBatt').classList.add('show')}
+if(S.batt.pct<=20&&S.batt.pct>10&&!S.warned20&&S.playing&&!S.batt.charging){S.warned20=true;$('#lowBattTxt').textContent='متبقي ٢٠٪ من شحن البطارية.';$('#lowBatt').classList.add('show')}
+if(S.batt.pct<=10&&!S.warned10&&S.playing&&!S.batt.charging){S.warned10=true;$('#lowBattTxt').textContent='متبقي ١٠٪ من شحن البطارية — اشحن الآيباد.';$('#lowBatt').classList.add('show')}
 if(S.batt.pct>25){S.warned20=false} if(S.batt.pct>15){S.warned10=false}
 if(S.batt.pct<=0&&S.playing){$('#dead').classList.add('show');closeApp();hideCC()}
 store.set('batt',S.batt);
@@ -1055,7 +1058,7 @@ b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('sh
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
 <script src="pad.js?v=72"></script>
-<script src="social.js?v=73"></script>
+<script src="social.js?v=74"></script>
 <script src="sys3.js?v=72"></script>
 </body>
 </html>
