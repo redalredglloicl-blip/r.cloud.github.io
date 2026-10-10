@@ -259,6 +259,21 @@ row('إصدار اللعبة','', 'Rio iPad 7.0')+row('السعة','', '64 GB')+
 row('الرقم التسلسلي','', 'RGX2IPAD2026')+row('المشغل','', 'Zain — 4.5G+')+'</div>';
 $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});return;
 }
+if(S.setPage==='batteryhealth'){
+const mc=Math.max(72,Math.round(S.batt.maxCap||100));
+const degraded=mc<80;
+el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ البطارية</button>'+
+'<div class="rbx-sec">صحة البطارية</div><div class="setgroup">'+
+'<div class="setrow"><span style="flex:1"><b>السعة القصوى</b><br><span class="mut" style="font-size:12px">مقياس سعة البطارية مقارنةً بوقت شرائها</span></span><b style="font-size:17px">'+arabNum(mc)+'٪</b></div></div>'+
+'<p class="mut" style="font-size:12.5px;line-height:1.9;margin:4px 2px 12px">هذا مقياس لسعة البطارية نسبةً إلى وقت كانت جديدة. السعة الأقل تعني ساعات استخدام أقل بين عمليات الشحن.</p>'+
+'<div class="rbx-sec">قدرة الأداء القصوى</div><div class="setgroup"><div class="setrow"><span style="flex:1;font-size:13px;line-height:1.8">'+(degraded?'تدهورت صحة البطارية بشكل ملحوظ. قد تحتاج إلى استبدال البطارية لاستعادة الأداء الكامل.':'البطارية تدعم حالياً ذروة الأداء الطبيعي.')+'</span><span style="color:'+(degraded?'#ff9f0a':'#34c759')+';font-size:18px">'+(degraded?'⚠':'✓')+'</span></div></div>'+
+'<div class="rbx-sec">الشحن</div><div class="setgroup">'+
+row('شحن البطارية المحسّن',sq('#34c759','battery-charging',15),'<label class="switch"><input type="checkbox" id="swOptChg" '+(S.set.optChg?'checked':'')+'><i></i></label>')+'</div>'+
+'<p class="mut" style="font-size:12px;line-height:1.8;margin:4px 2px">يقلل تآكل البطارية بتقليل الوقت الذي تكون فيه مشحونة بالكامل.</p>';
+$('#setBack').addEventListener('click',()=>{S.setPage='battery';appSettings(el)});
+const oc=$('#swOptChg');if(oc)oc.addEventListener('change',e=>{S.set.optChg=e.target.checked;store.set('set',S.set);toast(e.target.checked?'انفعل الشحن المحسّن':'انطفأ الشحن المحسّن')});
+return;
+}
 if(S.setPage==='battery'){
 const rows=Object.entries(u).sort((a,b)=>b[1]-a[1]).slice(0,6);
 const mx=Math.max(1,...rows.map(r=>r[1]));
@@ -266,7 +281,7 @@ el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ �
 '<div class="card" style="text-align:center"><div style="font-size:36px;font-weight:700">'+arabNum(Math.round(S.batt.pct))+'٪</div><div class="mut">'+(S.batt.charging?'جاي ينشحن':'غير موصول بالشاحن')+'</div></div>'+
 '<div class="setgroup">'+row('نمط الطاقة المنخفضة',sq('#f5c518','battery-charging',15),'<label class="switch"><input type="checkbox" id="swLpm" '+(s.lpm?'checked':'')+'><i></i></label>')+
 row('الشحن الآن',sq('#34c759','flash',15),'<label class="switch"><input type="checkbox" id="swChg" '+(S.batt.charging?'checked':'')+'><i></i></label>')+'</div>'+
-'<div class="rbx-sec">الاستخدام حسب التطبيق</div><div class="setgroup">'+(rows.length?rows.map(r=>'<div class="setrow"><span style="flex:1">'+r[0]+'</span><span style="width:110px;height:7px;background:#e3e3e8;border-radius:4px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.round(r[1]/mx*100)+'%;background:#34c759"></span></span><span class="mut" style="width:52px;text-align:left">'+Math.max(1,Math.round(r[1]/60))+' د</span></div>').join(''):'<div class="setrow mut">لا يوجد استخدام بعد</div>')+'</div>';
+'<div class="setgroup">'+row('صحة البطارية',sq('#ff9f0a','heart',15),'<span class="mut">'+arabNum(Math.max(72,Math.round(S.batt.maxCap||100)))+'٪</span>'+arrow,'batteryhealth')+'</div>'+'<div class="rbx-sec">الاستخدام حسب التطبيق</div><div class="setgroup">'+(rows.length?rows.map(r=>'<div class="setrow"><span style="flex:1">'+r[0]+'</span><span style="width:110px;height:7px;background:#e3e3e8;border-radius:4px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.round(r[1]/mx*100)+'%;background:#34c759"></span></span><span class="mut" style="width:52px;text-align:left">'+Math.max(1,Math.round(r[1]/60))+' د</span></div>').join(''):'<div class="setrow mut">لا يوجد استخدام بعد</div>')+'</div>';
 $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});
 $('#swLpm').addEventListener('change',e=>{S.set.lpm=e.target.checked;store.set('set',S.set);renderStatus();toast(S.set.lpm?'نمط الطاقة المنخفضة يشتغل':'انطفأ نمط الطاقة')});
 $('#swChg').addEventListener('change',e=>{S.batt.charging=e.target.checked;store.set('batt',S.batt);renderStatus();appSettings(el)});return;
@@ -330,7 +345,7 @@ const br=$('#setBright');if(br)br.addEventListener('input',e=>{S.set.bright=+e.t
 el.querySelectorAll('[data-setact]').forEach(r=>r.addEventListener('click',e=>{
 if(e.target.closest('label.switch'))return;
 const a=r.dataset.setact;
-if(['about','battery','wifi','wall','ncset','focus','screen','acc','home','lockset','bluetooth','cellular','hotspot','vpn','sounds','general','camera','display','search','siri','faceid','sos','privacy','gamecenter','wallet','passwords','appshub','appdetail','gupdate','gstorage','gdatetime','gkeyboard','glang','gairdrop','greset'].includes(a)){S.setPage=a;appSettings(el)}
+if(['about','battery','batteryhealth','wifi','wall','ncset','focus','screen','acc','home','lockset','bluetooth','cellular','hotspot','vpn','sounds','general','camera','display','search','siri','faceid','sos','privacy','gamecenter','wallet','passwords','appshub','appdetail','gupdate','gstorage','gdatetime','gkeyboard','glang','gairdrop','greset'].includes(a)){S.setPage=a;appSettings(el)}
 else if(a==='nc'){S.setPage='ncset';appSettings(el)}
 else if(a==='cc'){closeApp();setTimeout(showCC,380)}
 else if(a==='store'){openApp('appstore',null)}
@@ -577,22 +592,78 @@ document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault
 document.addEventListener('contextmenu',e=>{const t=e.target.tagName;if(t!=='INPUT'&&t!=='TEXTAREA')e.preventDefault()});
 function signOutApple(){S.apple={id:'',name:''};store.set('apple',S.apple);toast('انسجل خروجك من Apple ID')}
 function appleSignInForm(el,done){
-el.innerHTML='<div class="card" style="max-width:340px;margin:16px auto;padding:22px 18px;text-align:center">'+
-'<div style="font-size:34px">●</div><div class="big" style="font-size:19px">تسجيل الدخول بـ Apple ID</div>'+
-'<p class="mut" style="margin:6px 0 14px">حسابك يربط iCloud وApp Store بهذا الآيباد</p>'+
-'<input id="appleEmail" type="email" placeholder="Apple ID (إيميل)" style="width:100%;padding:12px;border:1px solid #d9d9de;border-radius:12px;font-size:14px;margin-bottom:9px">'+
-'<input id="applePass" type="password" placeholder="كلمة السر" style="width:100%;padding:12px;border:1px solid #d9d9de;border-radius:12px;font-size:14px">'+
-'<button class="btn" id="appleGo" style="width:100%;margin-top:12px;padding:12px">تسجيل الدخول</button>'+
-'<p class="mut" style="margin-top:10px;font-size:11.5px">حساب تجريبي داخل اللعبة — لا تستخدم كلمة سرك الحقيقية</p></div>';
-$('#appleGo').addEventListener('click',async()=>{
-const em=$('#appleEmail').value.trim(),pw=$('#applePass').value;
-if(!em||!pw)return toast('اكتب الإيميل وكلمة السر');
-const nm=em.split('@')[0]||'Reda';
-S.apple={id:em,name:nm};store.set('apple',S.apple);
-fbPut('/accounts/'+simpHash(em),{name:nm,email:em,pw:simpHash(pw),ts:Date.now()});
-toast('أهلاً '+nm+' — انسجل دخولك');
-if(done)done();
+const ALOGO='<img src="https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png" style="width:44px;height:44px" onerror="this.outerHTML=\'<div style=\\\'font-size:40px\\\'>\uF8FF</div>\'">';
+const ALOG0=ALOGO;
+const sheet=(inner)=>'<div class="card" style="max-width:340px;margin:14px auto;padding:26px 20px;text-align:center">'+ALOG0+inner+'</div>';
+let mode='email',em='',code='';
+const render=()=>{
+if(mode==='email'){
+el.innerHTML=sheet('<div class="big" style="font-size:20px;margin:10px 0 4px">تسجيل الدخول بـ<br>Apple ID</div>'+
+'<p class="mut" style="margin:0 0 16px;font-size:13px;line-height:1.8">سيتم تسجيل دخولك إلى iCloud وApp Store<br>وخدمات Apple على هذا الآيباد</p>'+
+'<input id="aEmail" type="email" placeholder="البريد الإلكتروني" style="width:100%;padding:12px;border:1px solid #d9d9de;border-radius:12px;font-size:15px;font-family:inherit;text-align:center" value="'+escH(em)+'">'+
+'<button class="btn" id="aNext" style="width:100%;margin-top:12px;padding:12px">متابعة ←</button>'+
+'<p style="margin-top:14px;font-size:13px"><span class="mut">ليس لديك Apple ID؟</span> <a href="#" id="aCreate" style="color:#0a84ff">أنشئ حسابك الآن</a></p>'+
+'<p class="mut" style="margin-top:10px;font-size:11px;line-height:1.7">🔒 حساب تجريبي — كلمة السر تُحفظ على جهازك فقط<br>ولا تُرسل إلى أي خادم</p>');
+$('#aNext').addEventListener('click',()=>{const v=$('#aEmail').value.trim();if(!v||!v.includes('@'))return toast('اكتب بريداً إلكترونياً صحيحاً');em=v;mode='pass';render()});
+$('#aCreate').addEventListener('click',e=>{e.preventDefault();mode='create';render()});
+}else if(mode==='pass'){
+el.innerHTML=sheet('<div style="font-size:13px" class="mut">'+escH(em)+'</div>'+
+'<div class="big" style="font-size:19px;margin:8px 0 4px">أدخل كلمة السر</div>'+
+'<p class="mut" style="font-size:12.5px;margin-bottom:14px">للمتابعة إلى Apple ID</p>'+
+'<div style="position:relative"><input id="aPass" type="password" placeholder="كلمة السر" style="width:100%;padding:12px;border:1px solid #d9d9de;border-radius:12px;font-size:15px;font-family:inherit;text-align:center">'+
+'<span id="aEye" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:17px;opacity:.6">👁</span></div>'+
+'<button class="btn" id="aGo" style="width:100%;margin-top:12px;padding:12px">تسجيل الدخول</button>'+
+'<p style="margin-top:12px;font-size:13px"><a href="#" id="aBackE" style="color:#0a84ff">← بريد مختلف</a> · <a href="#" id="aForgot" style="color:#0a84ff">نسيت كلمة السر؟</a></p>');
+$('#aEye').addEventListener('click',()=>{const i=$('#aPass');i.type=i.type==='password'?'text':'password'});
+$('#aBackE').addEventListener('click',e=>{e.preventDefault();mode='email';render()});
+$('#aForgot').addEventListener('click',e=>{e.preventDefault();toast('أُرسل رابط الاستعادة إلى '+em)});
+$('#aGo').addEventListener('click',()=>{
+const pw=$('#aPass').value;
+if(pw.length<4)return toast('كلمة السر قصيرة جداً');
+S._applePw=pw;mode='2fa';code=String(Math.floor(100000+Math.random()*900000));render();
 });
+}else if(mode==='2fa'){
+el.innerHTML=sheet('<div class="big" style="font-size:19px;margin:10px 0 4px">المصادقة بخطوتين</div>'+
+'<p class="mut" style="font-size:13px;line-height:1.9;margin-bottom:14px">أدخل رمز التحقق المكوّن من ٦ أرقام<br>الذي أُرسل إلى أجهزتك الموثوقة</p>'+
+'<input id="aCode" type="text" inputmode="numeric" maxlength="6" placeholder="– – – – – –" style="width:100%;padding:12px;border:1.5px solid #0a84ff;border-radius:12px;font-size:22px;letter-spacing:8px;text-align:center;font-family:inherit">'+
+'<button class="btn" id="aVerify" style="width:100%;margin-top:12px;padding:12px">تحقق</button>'+
+'<div class="card" style="margin-top:12px;background:#f2f2f7"><span class="mut" style="font-size:12px">رمز تجريبي (في الحقيقة يصلك على جهازك):</span><br><b style="font-size:22px;letter-spacing:6px">'+code+'</b></div>');
+setTimeout(()=>{const i=$('#aCode');if(i)i.focus()},300);
+$('#aVerify').addEventListener('click',()=>{
+if($('#aCode').value.trim()!==code)return toast('الرمز غير صحيح — حاول مجدداً');
+finishSignIn();
+});
+}else if(mode==='create'){
+el.innerHTML=sheet('<div class="big" style="font-size:19px;margin:10px 0 4px">إنشاء Apple ID</div>'+
+'<input id="cName" type="text" placeholder="الاسم الكامل" style="width:100%;padding:11px;border:1px solid #d9d9de;border-radius:12px;font-size:14px;font-family:inherit;margin-bottom:8px;text-align:center">'+
+'<input id="cEmail" type="email" placeholder="البريد الإلكتروني" style="width:100%;padding:11px;border:1px solid #d9d9de;border-radius:12px;font-size:14px;font-family:inherit;margin-bottom:8px;text-align:center">'+
+'<input id="cPass" type="password" placeholder="كلمة سر جديدة" style="width:100%;padding:11px;border:1px solid #d9d9de;border-radius:12px;font-size:14px;font-family:inherit;text-align:center">'+
+'<div id="pwReq" class="mut" style="font-size:11.5px;text-align:right;margin:8px 4px;line-height:1.9"></div>'+
+'<label class="row" style="font-size:12px;gap:8px;margin:6px 0"><input type="checkbox" id="cTerms"> <span>أوافق على <a href="#" style="color:#0a84ff">الشروط والأحكام</a> وسياسة الخصوصية</span></label>'+
+'<button class="btn" id="cGo" style="width:100%;margin-top:8px;padding:12px">إنشاء الحساب</button>'+
+'<p style="margin-top:10px;font-size:13px"><a href="#" id="cBack" style="color:#0a84ff">لدي حساب — تسجيل الدخول</a></p>');
+const chk=()=>{const v=$('#cPass').value;const req=[['٨ أحرف على الأقل',v.length>=8],['حرف كبير وصغير',/[a-z]/.test(v)&&/[A-Z]/.test(v)],['رقم واحد على الأقل',/\d/.test(v)]];$('#pwReq').innerHTML=req.map(r=>'<div>'+(r[1]?'<span style="color:#34c759">✓</span>':'<span style="color:#c7c7cc">○</span>')+' '+r[0]+'</div>').join('');return req.every(r=>r[1])};
+$('#cPass').addEventListener('input',chk);chk();
+$('#cBack').addEventListener('click',e=>{e.preventDefault();mode='email';render()});
+$('#cGo').addEventListener('click',()=>{
+const nm=$('#cName').value.trim(),ce=$('#cEmail').value.trim();
+if(!nm)return toast('اكتب اسمك');
+if(!ce.includes('@'))return toast('بريد إلكتروني غير صحيح');
+if(!chk())return toast('كلمة السر لا تطابق الشروط');
+if(!$('#cTerms').checked)return toast('وافق على الشروط أولاً');
+em=ce;S._appleName=nm;S._applePw=$('#cPass').value;mode='2fa';code=String(Math.floor(100000+Math.random()*900000));render();
+});
+}
+};
+const finishSignIn=()=>{
+const nm=S._appleName||em.split('@')[0]||'Reda';
+S.apple={id:em,name:nm,created:Date.now()};store.set('apple',S.apple);
+S._applePw=null;S._appleName=null;
+toast('أهلاً '+nm+' — تم تسجيل الدخول ✓');
+notify('settings','Apple ID','تم تسجيل الدخول بنجاح على هذا الآيباد',null,{pop:false});
+if(done)done();
+};
+render();
 }
 function escH(v){return String(v||'').replace(/</g,'&lt;')}
 function chatInputHTML(){return ''+chatInputHTML()+''}
