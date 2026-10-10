@@ -80,10 +80,10 @@ runAutos('appopen',id);
 if(id==='phone'){toast('المكالمات داخل FaceTime هنا');id='facetime'}
 if(id&&id.startsWith('x_')){const k=id.slice(2);return openExtra(k,fromEl)}
 snapCur();S.app=id; tickUse(id);noteRunning(id,(APPS.find(a=>a.id===id)||{}).n||id,(APPS.find(a=>a.id===id)||{}).ic||id);
-const names={roblox:'Roblox',youtube:'YouTube',facetime:'FaceTime',camera:'Camera',photos:'Photos',messages:'Messages',appstore:'App Store',safari:'Safari',tiktok:'TikTok',maps:'Maps',weather:'Weather',calendar:'Calendar',music:'Music',clock:'Clock',notes:'Notes',calc:'Calculator',settings:'Settings',files:'Files',shortcuts:'Shortcuts',applestore:'Apple Store'};
+const names={roblox:'Roblox',facetime:'FaceTime',camera:'Camera',photos:'Photos',messages:'Messages',appstore:'App Store',safari:'Safari',tiktok:'TikTok',maps:'Maps',weather:'Weather',calendar:'Calendar',music:'Music',clock:'Clock',notes:'Notes',calc:'Calculator',battery:'البطارية',voicememos:'Voice Memos',settings:'Settings',files:'Files',shortcuts:'Shortcuts',applestore:'Apple Store'};
 $('#appTitle').textContent=names[id]||id;
 showAppWin(fromEl);
-({roblox:appRoblox,youtube:appYouTube,facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,tiktok:appTikTok,maps:appMaps,weather:appWeather,calendar:appCalendar,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,settings:appSettings,files:appFiles,shortcuts:appShortcuts,applestore:appAppleStore}[id]||(()=>{}))($('#appBody'));
+({roblox:appRoblox,facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,tiktok:appTikTok,maps:appMaps,weather:appWeather,calendar:appCalendar,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,battery:appBattery,voicememos:appVoiceMemos,settings:appSettings,files:appFiles,shortcuts:appShortcuts,applestore:appAppleStore}[id]||(()=>{}))($('#appBody'));
 }
 const _ab=$('#appBack');if(_ab)_ab.addEventListener('click',e=>{e.stopPropagation();closeApp()});
 function syncPill(){const pill=$('#spotPill');if(!pill)return;const lockOn=$('#lock').classList.contains('show');const tr=$('#pagesTrack');let onLib=false;if(tr&&tr.children.length>1){onLib=Math.round(tr.scrollLeft/tr.clientWidth)>=tr.children.length-1}pill.style.display=($('#appWin').classList.contains('open')||lockOn||onLib)?'none':'flex'}
@@ -130,6 +130,8 @@ if(k==='discord')return appDiscord();
 if(k==='facebook'||k==='x')return appFeedNet(k);
 if(k==='snapchat')return appSnapchat();
 if(k==='instagram')return appInsta();
+if(k==='youtube'){S.ytView='home';return appYouTubeX()}
+if(k==='chatgpt')return appChatGPT();
 $('#appBody').innerHTML='<div class="card" style="text-align:center;padding:28px 14px"><div style="display:flex;justify-content:center;margin-bottom:10px">'+IC[EXTRA[k].ic]()+'</div><div class="big">'+EXTRA[k].n+'</div><p class="mut" style="margin-top:6px">انثبت على الآيباد ويشتغل من الشاشة الرئيسية.</p><button class="btn" style="margin-top:12px" onclick="closeApp()">تمام</button></div>';
 }
 const FRIENDS=[['Eno','#e74c3c'],['Ahmad','#3498db'],['Sara','#e84393'],['Omar','#2ecc71'],['Lina','#f39c12'],['Yusuf','#9b59b6'],['Nora','#1abc9c'],['Khalid','#e67e22']];
@@ -229,16 +231,31 @@ ui.querySelector('.callBtns').innerHTML='<button class="callBtn" style="backgrou
 $('#callEnd').addEventListener('click',()=>{clearInterval(S.callTimer);ui.classList.remove('show');toast('انتهت المكالمة')});
 });
 }
+const IM_THREADS=[['أحمد','i1'],['سارة','i2'],['عائلة Rio','i3']];
 function appMessages(el){
-el.innerHTML='<div id="msgList">'+(S.msgs.length?S.msgs.map(m=>'<div class="msg '+(m.me?'me':'them')+'">'+m.t.replace(/</g,'&lt;')+'</div>').join(''):'<div class="mut" style="text-align:center;padding:30px 12px;line-height:1.9">لا توجد رسائل<br>اكتب من جوّه وابعث أول رسالة</div>')+'</div>'+
-'<div class="row" style="position:sticky;bottom:0;background:#f2f2f7;padding-top:8px"><input type="text" id="msgIn" placeholder="iMessage" style="flex:1;padding:10px 12px;border:1px solid #d9d9de;border-radius:20px;font-size:14px"><button class="btn" id="msgSend">إرسال</button></div>';
-const list=$('#msgList');list.scrollTop=1e6;
-const send=()=>{const inp=$('#msgIn'),v=inp.value.trim();if(!v)return;
-sfx('send');S.msgs.push({me:true,t:v});store.set('msgs',S.msgs);appMessages(el);
-};
-$('#msgSend').addEventListener('click',send);
-$('#msgIn').addEventListener('keydown',e=>{if(e.key==='Enter')send});
+if(S.imT==null)S.imT=-1;
+if(S.imT<0){
+let h='<div class="row" style="align-items:center;margin-bottom:8px"><b style="font-size:22px;flex:1">رسائل</b><span id="imNew" style="font-size:20px;color:#0a84ff;cursor:pointer;display:inline-flex">'+si('edit',20,'#0a84ff')+'</span></div>';
+h+='<div id="imThreads">'+IM_THREADS.map((t,i)=>'<div class="card row" data-imth="'+i+'" style="align-items:center;cursor:pointer"><span style="width:46px;height:46px;border-radius:50%;background:linear-gradient(150deg,#aeb3ba,#7c828a);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex:0 0 auto">'+t[0].slice(0,1)+'</span><span style="flex:1;margin-inline-start:10px;min-width:0"><b>'+t[0]+'</b><br><span class="mut" id="imPrev'+i+'" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">…</span></span><span class="mut">‹</span></div>').join('')+'</div>';
+h+='<p class="mut" style="text-align:center;font-size:11.5px;margin-top:10px;line-height:1.8">رسائل حقيقية — أي جهاز يفتح نفس المحادثة<br>يقدر يراسلك هسه</p>';
+el.innerHTML=h;
+IM_THREADS.forEach((t,i)=>{fbGet('/rooms/imessage/'+t[1]+'/msgs').then(m=>{const a=m?Object.values(m).sort((x,y)=>(x.ts||0)-(y.ts||0)):[];const p=document.querySelector('#imPrev'+i);if(p)p.textContent=a.length?String(a[a.length-1].t).slice(0,36):'لا رسائل بعد'})});
+el.querySelectorAll('[data-imth]').forEach(c=>c.addEventListener('click',()=>{S.imT=+c.dataset.imth;appMessages(el)}));
+const nn=document.querySelector('#imNew');if(nn)nn.addEventListener('click',()=>toast('اختر محادثة حتى تبدأ'));
+}else{
+const t=IM_THREADS[S.imT];
+el.innerHTML='<div class="row" style="align-items:center;margin-bottom:8px"><span id="imBack" style="color:#0a84ff;font-size:16px;cursor:pointer">‹ رجوع</span><b style="flex:1;text-align:center;font-size:16px">'+t[0]+'</b><span style="width:52px"></span></div>'+
+'<div id="imList" style="display:flex;flex-direction:column;gap:6px;padding:6px 2px;min-height:220px"></div>'+
+'<div class="row" style="position:sticky;bottom:0;background:#fff;padding:8px 0;gap:8px"><input id="imIn" placeholder="iMessage" style="flex:1;padding:10px 14px;border:1px solid #d9d9de;border-radius:20px;font-size:14px;font-family:inherit"><button class="btn" id="imSend" style="border-radius:50%;width:38px;height:38px;padding:0;font-size:16px;flex:0 0 auto">↑</button></div>';
+const load=async()=>{const m=await fbGet('/rooms/imessage/'+t[1]+'/msgs');const l=document.querySelector('#imList');if(!l){clearInterval(S.poll);return}const a=m?Object.values(m).sort((x,y)=>(x.ts||0)-(y.ts||0)):[];l.innerHTML=a.length?a.map(x=>'<div style="max-width:78%;padding:9px 13px;border-radius:18px;font-size:14.5px;line-height:1.6;word-break:break-word;'+(x.me?'align-self:flex-start;background:#0a84ff;color:#fff;border-bottom-right-radius:6px':'align-self:flex-end;background:#e9e9eb;color:#111;border-bottom-left-radius:6px')+'">'+escH(String(x.t))+'</div>').join(''):'<div class="mut" style="text-align:center;padding:30px">لا رسائل بعد — ابعث أول وحدة</div>';l.scrollTop=1e6};
+load();clearInterval(S.poll);S.poll=setInterval(load,3500);
+document.querySelector('#imBack').addEventListener('click',()=>{S.imT=-1;appMessages(el)});
+const send=async()=>{const inp=document.querySelector('#imIn'),v=inp.value.trim();if(!v)return;inp.value='';sfx('send');await fbPost('/rooms/imessage/'+t[1]+'/msgs',{t:v,me:true,by:S.apple.name||'Rio',ts:Date.now()});load()};
+document.querySelector('#imSend').addEventListener('click',send);
+document.querySelector('#imIn').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
 }
+}
+
 function appSettings(el){
 const s=S.set,u=S.batt.usage;
 const sq=(color,glyph,size)=>'<span class="sq" style="background:'+color+'">'+g(glyph,'#fff',size||16)+'</span>';
@@ -250,6 +267,17 @@ WPS.map((w,i)=>'<img src="'+w+'" data-wp="'+i+'" style="width:100%;height:150px;
 '<p class="mut" style="text-align:center;margin-top:12px">تنطبق على الشاشة الرئيسية وقفل الشاشة وتنحفظ</p>';
 $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});
 el.querySelectorAll('[data-wp]').forEach(im=>im.addEventListener('click',()=>{S.set.wp=+im.dataset.wp;saveSet();applyTheme();appSettings(el);toast('اتبدلت الخلفية')}));
+return;
+}
+if(S.setPage==='lockcustom'){
+const lwp=(S.set.lockWp==null?-1:S.set.lockWp),lck=(S.set.lockClock==null?0:S.set.lockClock);
+el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button>'+
+'<div class="rbx-sec">خلفية شاشة القفل</div><div class="setgroup"><div class="setrow" data-lockwp="-1" style="cursor:pointer"><span style="flex:1">مثل الشاشة الرئيسية</span>'+(lwp===-1?'<span style="color:#0a84ff">✓</span>':'')+'</div></div>'+
+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0">'+WPS.map((w,i)=>'<img src="'+w+'" data-lockwp="'+i+'" style="width:100%;height:140px;object-fit:cover;border-radius:16px;cursor:pointer;'+(lwp===i?'outline:3.5px solid #0a84ff':'')+'">').join('')+'</div>'+
+'<div class="rbx-sec">شكل الساعة</div><div class="setgroup">'+['كلاسيكية','عريضة وثقيلة','رفيعة وأنيقة'].map((c,i)=>'<div class="setrow" data-lockck="'+i+'" style="cursor:pointer"><span style="flex:1">'+c+'</span>'+(lck===i?'<span style="color:#0a84ff">✓</span>':'')+'</div>').join('')+'</div>';
+$('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});
+el.querySelectorAll('[data-lockwp]').forEach(x=>x.addEventListener('click',()=>{S.set.lockWp=+x.dataset.lockwp;saveSet();applyTheme();appSettings(el);toast('اتبدلت خلفية القفل')}));
+el.querySelectorAll('[data-lockck]').forEach(x=>x.addEventListener('click',()=>{S.set.lockClock=+x.dataset.lockck;saveSet();applyTheme();appSettings(el)}));
 return;
 }
 if(S.setPage==='about'){
@@ -264,7 +292,7 @@ const mc=Math.max(72,Math.round(S.batt.maxCap||100));
 const degraded=mc<80;
 el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ البطارية</button>'+
 '<div class="rbx-sec">صحة البطارية</div><div class="setgroup">'+
-'<div class="setrow"><span style="flex:1"><b>السعة القصوى</b><br><span class="mut" style="font-size:12px">مقياس سعة البطارية مقارنةً بوقت شرائها</span></span><b style="font-size:17px">'+arabNum(mc)+'٪</b></div></div>'+
+'<div class="setrow"><span style="flex:1"><b>الحد الأقصى للقدرة</b><br><span class="mut" style="font-size:12px">مقياس سعة البطارية مقارنةً بوقت شرائها</span></span><b style="font-size:17px">'+arabNum(mc)+'٪</b></div></div>'+
 '<p class="mut" style="font-size:12.5px;line-height:1.9;margin:4px 2px 12px">هذا مقياس لسعة البطارية نسبةً إلى وقت كانت جديدة. السعة الأقل تعني ساعات استخدام أقل بين عمليات الشحن.</p>'+
 '<div class="rbx-sec">قدرة الأداء القصوى</div><div class="setgroup"><div class="setrow"><span style="flex:1;font-size:13px;line-height:1.8">'+(degraded?'تدهورت صحة البطارية بشكل ملحوظ. قد تحتاج إلى استبدال البطارية لاستعادة الأداء الكامل.':'البطارية تدعم حالياً ذروة الأداء الطبيعي.')+'</span><span style="color:'+(degraded?'#ff9f0a':'#34c759')+';font-size:18px">'+(degraded?'⚠':'✓')+'</span></div></div>'+
 '<div class="rbx-sec">الشحن</div><div class="setgroup">'+
@@ -322,7 +350,7 @@ row('الشاشة والسطوع',sq('#0a84ff','sunny',15),arrow,'display')+
 row('الشاشة الرئيسية ومكتبة التطبيقات',sq('#ff9500','grid',15),arrow,'home')+
 row('بحث',sq('#8e8e93','search',15),arrow,'search')+
 row('Siri',sq('#111','mic',15),arrow,'siri')+
-row('خلفية الشاشة',sq('#5e5ce6','image',15),arrow,'wall')+'</div>'+
+row('خلفية الشاشة',sq('#5e5ce6','image',15),arrow,'wall')+row('تخصيص شاشة القفل',sq('#ff2d55','lock-closed',15),arrow,'lockcustom')+'</div>'+
 '<div class="setgroup">'+
 row('Face ID ورمز الدخول',sq('#34c759','scan',15),arrow,'faceid')+
 row('طوارئ SOS',sq('#ff3b30','call',15),arrow,'sos')+
@@ -345,7 +373,7 @@ const br=$('#setBright');if(br)br.addEventListener('input',e=>{S.set.bright=+e.t
 el.querySelectorAll('[data-setact]').forEach(r=>r.addEventListener('click',e=>{
 if(e.target.closest('label.switch'))return;
 const a=r.dataset.setact;
-if(['about','battery','batteryhealth','wifi','wall','ncset','focus','screen','acc','home','lockset','bluetooth','cellular','hotspot','vpn','sounds','general','camera','display','search','siri','faceid','sos','privacy','gamecenter','wallet','passwords','appshub','appdetail','gupdate','gstorage','gdatetime','gkeyboard','glang','gairdrop','greset'].includes(a)){S.setPage=a;appSettings(el)}
+if(['about','battery','batteryhealth','lockcustom','wifi','wall','ncset','focus','screen','acc','home','lockset','bluetooth','cellular','hotspot','vpn','sounds','general','camera','display','search','siri','faceid','sos','privacy','gamecenter','wallet','passwords','appshub','appdetail','gupdate','gstorage','gdatetime','gkeyboard','glang','gairdrop','greset'].includes(a)){S.setPage=a;appSettings(el)}
 else if(a==='nc'){S.setPage='ncset';appSettings(el)}
 else if(a==='cc'){closeApp();setTimeout(showCC,380)}
 else if(a==='store'){openApp('appstore',null)}
@@ -361,6 +389,8 @@ const STORE=[
 {k:'snapchat',n:'Snapchat',dev:'Snap Inc.',cat:'تواصل اجتماعي',ver:'13.9',size:'98 MB',desc:'لقطات ورسائل سري'},
 {k:'x',n:'X',dev:'X Corp.',cat:'أخبار وتواصل',ver:'10.55',size:'120 MB',desc:'منصة التغريدات. '},
 {k:'discord',n:'Discord',dev:'Discord Inc.',cat:'تواصل اجتماعي',ver:'243.0',size:'132 MB',desc:'قنوات صوت ونص لل'},
+{k:'chatgpt',n:'ChatGPT',dev:'OpenAI',cat:'إنتاجية',ver:'1.2026.1',size:'48 MB',desc:'مساعد ذكي حقيقي يجاوبك فوراً — مربوط بنموذج مجاني بدون حساب.'},
+{k:'youtube',n:'YouTube',dev:'Google LLC',cat:'فيديو وموسيقى',ver:'20.11.3',size:'156 MB',desc:'شاهد الفيديوات، علق مباشرة، وشاهد مع أصدقائك بنفس اللحظة.'},
 ];
 function storeRow(a){
 const inst=S.installed.includes(a.k),hiddenB=false;
@@ -392,7 +422,7 @@ const f=STORE[0];
 body='<div class="card" style="padding:0;overflow:hidden"><div style="background:linear-gradient(140deg,'+SOCIAL[f.k].c+',#0c1520);height:150px;display:flex;align-items:center;justify-content:center;gap:12px"><span style="background:#fff;border-radius:24px;padding:8px;display:inline-flex">'+icImg(ICONS[f.k])+'</span></div><div style="padding:12px"><span class="mut">تطبيق اليوم</span><div class="big" style="font-size:17px">'+f.n+'</div><p class="mut" style="margin:4px 0 10px">'+f.desc+'</p><button class="btn" data-get="'+f.k+'" style="border-radius:16px;padding:7px 18px">'+(S.installed.includes(f.k)?'فتح':'احصل')+'</button></div></div>'+
 STORE.slice(1,4).map(storeRow).join('');
 } else if(tab==='apps'){
-body='<div class="rbx-sec" style="margin-top:2px">تواصل اجتماعي — أونلاين</div>'+STORE.filter(a=>SOCIAL[a.k]).map(storeRow).join('')+
+body='<div class="rbx-sec" style="margin-top:2px">تواصل اجتماعي — أونلاين</div>'+STORE.filter(a=>SOCIAL[a.k]).map(storeRow).join('')+'<div class="rbx-sec">تطبيقات جديدة</div>'+STORE.filter(a=>!SOCIAL[a.k]).map(storeRow).join('')+
 (S.hidden.length?'<div class="rbx-sec">تطبيقات حذفتها — استرجعها</div>'+S.hidden.map(id=>{const pa=APPS.find(x=>x.id===id);return pa?'<div class="card row" style="align-items:center"><span>'+icImg(ICONS[pa.ic])+'</span><span style="flex:1"><span class="big" style="font-size:15px">'+pa.n+'</span><br><span class="mut">تطبيق نظام</span></span><button class="btn" data-unhide="'+id+'" style="border-radius:16px;padding:7px 18px">احصل</button></div>':''}).join(''):'');
 } else {
 body='<div class="row" style="margin-bottom:10px"><input id="stQ" type="text" placeholder="ابحث عن تطبيقات وألعاب…" style="flex:1;padding:11px 13px;border:1px solid #d9d9de;border-radius:14px;font-size:14px"></div><div id="stRes">'+STORE.map(storeRow).join('')+'</div>';
@@ -497,29 +527,7 @@ else if(k==='='){try{expr=String(eval(expr.replace(/×/g,'*').replace(/÷/g,'/')
 else expr+=k;
 $('#calcOut').textContent=expr||'0'}));
 }
-const REAL_VIDEOS=[
-['kJQP7kiw5Fk','Luis Fonsi — Despacito ft. Daddy Yankee','Luis Fonsi'],
-['JGwWNGJdvx8','Ed Sheeran — Shape of You','Ed Sheeran'],
-['RgKAFK5djSk','Wiz Khalifa — See You Again ft. Charlie Puth','Wiz Khalifa'],
-['60ItHLz5WEA','Alan Walker — Faded','Alan Walker'],
-['fJ9rUzIMcZQ','Queen — Bohemian Rhapsody','Queen Official'],
-['hTWKbfoikeg','Nirvana — Smells Like Teen Spirit','Nirvana'],
-['MmB9b5njVbA','Minecraft: Official Trailer','Minecraft'],
-['aqz-KE-bpKQ','Big Buck Bunny — فيلم قصير','Blender Studio']
-];
-function appYouTube(el){
-el.innerHTML='<div class="rbx-sec" style="margin-top:2px">فيديوات حقيقية من يوتيوب — دوس أي فيديو يشتغل هنا</div>'+
-REAL_VIDEOS.map((v,i)=>'<div style="margin-top:13px;cursor:pointer" data-vid="'+i+'"><img src="https://img.youtube.com/vi/'+v[0]+'/hqdefault.jpg" style="width:100%;border-radius:12px;aspect-ratio:16/9;object-fit:cover;background:#111"><div style="margin-top:7px"><span class="big" style="font-size:14px">'+v[1]+'</span><br><span class="mut">'+v[2]+' • YouTube</span></div></div>').join('')+
-'<a href="https://www.youtube.com" target="_blank" rel="noopener" class="btn" style="display:block;text-align:center;text-decoration:none;margin-top:16px;padding:12px">افتح يوتيوب الحقيقي كامل بجهازك</a>';
-el.querySelectorAll('[data-vid]').forEach(c=>c.addEventListener('click',()=>playVideo(REAL_VIDEOS[+c.dataset.vid])));
-}
-function playVideo(v){
-const el=$('#appBody');
-el.innerHTML='<div style="position:relative;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden"><iframe src="https://www.youtube-nocookie.com/embed/'+v[0]+'?autoplay=1&playsinline=1&rel=0" style="width:100%;height:100%;border:0" allow="autoplay;encrypted-media;picture-in-picture;fullscreen" allowfullscreen></iframe></div>'+
-'<div class="big" style="margin-top:12px;font-size:15.5px">'+v[1]+'</div><p class="mut" style="margin-top:4px">'+v[2]+' • يعرض هسه من يوتيوب الحقيقي</p>'+
-'<div class="row" style="margin-top:12px"><button class="btn gray" id="ytBack" style="flex:1">رجوع للفيديوات</button><a class="btn" href="https://www.youtube.com/watch?v='+v[0]+'" target="_blank" rel="noopener" style="flex:1;text-align:center;text-decoration:none">افتحه بيوتيوب</a></div>';
-$('#ytBack').addEventListener('click',()=>appYouTube(el));
-}
+
 function appTikTok(el){
 el.innerHTML='<div style="text-align:center;padding:30px 18px"><div style="display:flex;justify-content:center">'+IC.tiktok()+'</div>'+
 '<div class="big" style="margin-top:12px;font-size:19px">TikTok الحقيقي</div>'+
@@ -572,11 +580,11 @@ function hideCtx(){$('#ctxMenu').style.display='none'}
 function showCtx(el){
 const m=$('#ctxMenu'),name=navigator,appId=el.dataset.app;
 const scr=$('#screen').getBoundingClientRect(),r=el.getBoundingClientRect();
-m.innerHTML='<button class="danger" id="ctxDel">حذف التطبيق</button><button id="ctxMove">إعادة ترتيب التطبيقات</button><button id="ctxCancel">إلغاء</button>';
+m.innerHTML=(appId.startsWith('x_')?'<button class="danger" id="ctxDel">حذف التطبيق</button>':'')+'<button id="ctxMove">إعادة ترتيب التطبيقات</button><button id="ctxCancel">إلغاء</button>';
 m.style.display='block';
 m.style.left=Math.max(8,Math.min(scr.width-190,r.left-scr.left-40))+'px';
 m.style.top=Math.max(30,r.bottom-scr.top+6)+'px';
-$('#ctxDel').addEventListener('click',()=>{hideCtx();deleteApp(appId)});
+const cd=$('#ctxDel');if(cd)cd.addEventListener('click',()=>{hideCtx();deleteApp(appId)});
 $('#ctxMove').addEventListener('click',()=>{hideCtx();toast('اسحب الأيقونات حتى تعيد ترتيبها — قيد التطوير')});
 $('#ctxCancel').addEventListener('click',hideCtx);
 }
@@ -771,9 +779,11 @@ function saveSet(){store.set('set',S.set)}
 const WPS=['https://picsum.photos/seed/riowall/700/900','https://picsum.photos/seed/rioSkyline/700/900','https://picsum.photos/seed/rioPalms/700/900','https://picsum.photos/seed/rioDunes/700/900'];
 function applyTheme(){
 const wi=$('#wallImg');if(wi&&WPS[S.set.wp||0])wi.src=WPS[S.set.wp||0];
+const lw=$('#lockWall');if(lw){const li=(S.set.lockWp==null?-1:S.set.lockWp);lw.src=(li>=0&&WPS[li])?WPS[li]:(WPS[S.set.wp||0]||'')}
+const ltm=$('#lockTime');if(ltm){const lc=(S.set.lockClock==null?0:S.set.lockClock);ltm.style.fontWeight=lc===1?'800':(lc===2?'200':'700');ltm.style.fontSize=lc===1?'80px':(lc===2?'64px':'72px')}
 $('#ipad').classList.toggle('dark',!!S.set.dark);
 }
-const LIBCATS=[['التواصل الاجتماعي',['whatsapp','telegram','messenger','instagram','facebook','snapchat','x','discord','messages','phone','facetime']],['الترفيه',['youtube','tiktok','music','roblox','photos','camera']],['الأدوات والإنتاجية',['settings','appstore','applestore','safari','maps','weather','clock','calendar','calc','notes','files','shortcuts']]];
+const LIBCATS=[['التواصل الاجتماعي',['whatsapp','telegram','messenger','instagram','facebook','snapchat','x','discord','messages','phone','facetime']],['الترفيه',['x_youtube','tiktok','music','roblox','photos','camera']],['الأدوات والإنتاجية',['settings','appstore','applestore','safari','maps','weather','clock','calendar','calc','notes','files','shortcuts','battery','voicememos','chatgpt']]];
 function spotRender(q){
 const allA=APPS.concat(S.installed.filter(id=>EXTRA[id]).map(id=>({id:'x_'+id,n:EXTRA[id].n,ic:EXTRA[id].ic,extra:id}))).filter(a=>!S.fx||!S.fx.searchApps||S.fx.searchApps[a.id]!==false);
 const name=a=>a.extra?EXTRA[a.extra].n:a.n;
@@ -801,3 +811,37 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-dm]');if(!
 applyTheme();
 renderHome();renderStatus();
 setInterval(renderStatus,20000);
+const BATT_PRODS=[
+{id:'orig',n:'بطارية أصلية',co:'Apple',img:'https://www.picclickimg.com/pgwAAOSww~BmGjFc/Battery-for-iphone-12-iphone-12-Pro.webp',d:'بطارية أصلية من آبل — نفس اللي تجي ويا الجهاز. تدوم أطول وتدعم الشحن السريع والأداء الكامل.'},
+{id:'gen',n:'بطارية عادية',co:'RioCell',img:'https://cdn.shopk.it/usercontent/spotmobile/media/images/bf56721-173714-12-mini.jpg',d:'بطارية بديلة بجودة ممتازة من شركة RioCell — تشتغل طبيعي وتعطيك قدرة ١٠٠٪ من جديد.'}
+];
+function appBattery(el){
+const mc=Math.max(72,Math.round(S.batt.maxCap||100));
+el.innerHTML='<b style="font-size:20px">البطارية</b>'+
+'<div class="card" style="margin-top:10px;text-align:center;padding:18px"><div class="mut" style="font-size:13px">الحد الأقصى للقدرة الحالي</div><div style="font-size:44px;font-weight:800;color:'+(mc<80?'#ff9f0a':'#34c759')+'">'+arabNum(mc)+'٪</div><div class="mut" style="font-size:12px;margin-top:4px;line-height:1.7">كل ما تنزل القدرة يصير صرف الشحن أكثر<br>اشترِ بطارية جديدة ورجعها ١٠٠٪</div></div>'+
+'<div class="rbx-sec">اشترِ بطارية جديدة — مجاناً</div>'+
+BATT_PRODS.map(p=>'<div class="card"><img src="'+p.img+'" loading="lazy" style="width:100%;height:150px;object-fit:cover;border-radius:12px;background:#f2f2f7"><div class="row" style="align-items:center;margin-top:10px"><span style="flex:1"><b style="font-size:15px">'+p.n+'</b><br><span class="mut" style="font-size:12px">الشركة: '+p.co+'</span></span><b style="color:#34c759">مجاني</b></div><p class="mut" style="font-size:12.5px;line-height:1.8;margin-top:6px">'+p.d+'</p><button class="btn" data-battbuy="'+p.id+'" style="width:100%;margin-top:8px;padding:11px">تركيب البطارية</button></div>').join('');
+el.querySelectorAll('[data-battbuy]').forEach(b=>b.addEventListener('click',()=>{S.batt.maxCap=100;S.batt.pct=Math.max(S.batt.pct,60);store.set('batt',S.batt);sfx('send');toast('انتركبت البطارية الجديدة — القدرة رجعت ١٠٠٪');appBattery(el)}));
+}
+function appVoiceMemos(el){
+S.memos=S.memos||store.get('memos',[]);
+const render=()=>{
+el.innerHTML='<b style="font-size:20px">المذكرات الصوتية</b><div id="vmList" style="margin-top:10px">'+(S.memos.length?S.memos.map((m,i)=>'<div class="card"><b style="font-size:14px">'+escH(m.n)+'</b><br><span class="mut" style="font-size:12px">'+escH(m.d)+'</span><audio controls src="'+m.u+'" style="width:100%;margin-top:8px"></audio><button class="btn gray" data-vmdel="'+i+'" style="margin-top:6px;padding:6px 14px;font-size:12px">حذف</button></div>').join(''):'<div class="mut" style="text-align:center;padding:30px;line-height:1.9">لا تسجيلات بعد<br>دوس تسجيل واحجي</div>')+'</div>'+
+'<button class="btn" id="vmRec" style="width:100%;margin-top:10px;padding:14px;font-size:16px">● تسجيل</button><p class="mut" style="text-align:center;font-size:11.5px;margin-top:8px">التسجيل حقيقي من مايكروفون جهازك</p>';
+let mr=null;const chunks=[];
+const rb=document.querySelector('#vmRec');
+rb.addEventListener('click',async()=>{
+if(mr&&mr.state==='recording'){mr.stop();return}
+try{
+const st=await navigator.mediaDevices.getUserMedia({audio:true});
+mr=new MediaRecorder(st);
+mr.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+mr.onstop=()=>{const blob=new Blob(chunks,{type:mr.mimeType||'audio/webm'});const rd=new FileReader();rd.onload=()=>{S.memos.unshift({n:'تسجيل '+(S.memos.length+1),d:new Date().toLocaleDateString('en-GB'),u:rd.result});store.set('memos',S.memos);st.getTracks().forEach(t=>t.stop());mr=null;render();toast('انحفظ التسجيل')};rd.readAsDataURL(blob);chunks.length=0};
+mr.start();rb.innerHTML='■ إيقاف التسجيل';rb.style.background='#ff3b30';
+}catch(e){toast('المايكروفون محظور — فعّله من الإعدادات')}
+});
+el.querySelectorAll('[data-vmdel]').forEach(b=>b.addEventListener('click',()=>{S.memos.splice(+b.dataset.vmdel,1);store.set('memos',S.memos);render()}));
+};
+render();
+}
+
