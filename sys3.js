@@ -230,8 +230,8 @@ function mountWidgets(){
 const w=document.querySelector('.homeWidget');if(!w||w.dataset.live)return;
 w.dataset.live='1';
 w.innerHTML=
-'<div id="wCal" style="flex:1;background:#fff;border-radius:14px;padding:6px 9px;color:#111;box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer"><div style="color:#ff3b30;font-weight:700;font-size:10.5px" id="wCalD"></div><div style="font-size:18px;font-weight:700;line-height:1.02" id="wCalN"></div><div style="font-size:10px;color:#8e8e93;margin-top:1px" id="wCalS">لا توجد أحداث اليوم</div></div>'+
-'<div id="wWx" style="flex:1;background:linear-gradient(160deg,#4aa8ff,#1668dc);border-radius:14px;padding:6px 9px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer"><div style="font-size:11px;font-weight:600">بغداد</div><div style="font-size:19px;font-weight:700;line-height:1.05" id="wWxT">…°</div><div style="font-size:10px;opacity:.92">الطقس الحقيقي — البطارية <b id="wBatt"></b></div></div>';
+'<div id="wCal" style="flex:1;background:#fff;border-radius:20px;padding:10px 12px;color:#111;box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer"><div style="color:#ff3b30;font-weight:700;font-size:12px" id="wCalD"></div><div style="font-size:30px;font-weight:700;line-height:1.02" id="wCalN"></div><div style="font-size:11.5px;color:#8e8e93;margin-top:2px" id="wCalS">لا توجد أحداث اليوم</div></div>'+
+'<div id="wWx" style="flex:1;background:linear-gradient(160deg,#4aa8ff,#1668dc);border-radius:20px;padding:10px 12px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer"><div style="font-size:12.5px;font-weight:600">بغداد</div><div style="font-size:28px;font-weight:700;line-height:1.05" id="wWxT">…°</div><div style="font-size:11.5px;opacity:.92">الطقس الحقيقي — البطارية <b id="wBatt"></b></div></div>';
 $('#wCal').addEventListener('click',e=>{e.stopPropagation();openApp('calendar',null)});
 $('#wWx').addEventListener('click',e=>{e.stopPropagation();openApp('weather',null)});
 updWidgets();
