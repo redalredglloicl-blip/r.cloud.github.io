@@ -86,7 +86,7 @@ showAppWin(fromEl);
 ({roblox:appRoblox,youtube:appYouTube,facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,tiktok:appTikTok,maps:appMaps,weather:appWeather,calendar:appCalendar,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,settings:appSettings,files:appFiles,shortcuts:appShortcuts}[id]||(()=>{}))($('#appBody'));
 }
 const _ab=$('#appBack');if(_ab)_ab.addEventListener('click',e=>{e.stopPropagation();closeApp()});
-function syncPill(){const pill=$('#spotPill');if(!pill)return;const lockOn=$('#lock').classList.contains('show');pill.style.display=($('#appWin').classList.contains('open')||lockOn)?'none':'flex'}
+function syncPill(){const pill=$('#spotPill');if(!pill)return;const lockOn=$('#lock').classList.contains('show');const tr=$('#pagesTrack');let onLib=false;if(tr&&tr.children.length>1){onLib=Math.round(tr.scrollLeft/tr.clientWidth)>=tr.children.length-1}pill.style.display=($('#appWin').classList.contains('open')||lockOn||onLib)?'none':'flex'}
 new MutationObserver(syncPill).observe($('#lock'),{attributes:true,attributeFilter:['class']});
 $('#homeBar').addEventListener('click',()=>{
 if($('#switcher').classList.contains('open')){dismissSw();if($('#appWin').classList.contains('open'))closeApp();return}
