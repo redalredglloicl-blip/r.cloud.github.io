@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Rio iPad">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Rio iPad 2.6</title>
+<title>Rio iPad 2.7</title>
 <style>.sq{width:29px;height:29px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overflow:hidden;background:#79b5ff;font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif}
@@ -189,6 +189,7 @@ img{-webkit-user-drag:none}
 .swBig{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#33415c}
 .swBig .ic{width:74px;height:74px;border-radius:18px}
 body.appopen #homeBar{display:block}
+body.swopen #homeBar{display:block;opacity:.95}
 body.appopen #spotPill{display:none}
 #appBody .ic{width:50px;height:50px;border-radius:12px;overflow:hidden;display:inline-flex;flex:0 0 auto}
 body{touch-action:manipulation}
@@ -226,7 +227,7 @@ body{touch-action:manipulation}
 <body>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 2.6</div>
+  <div id="verTag">Rio iPad 2.7</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -277,7 +278,7 @@ body{touch-action:manipulation}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 2.6</div>
+    <div class="ver">Rio iPad 2.7</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -488,7 +489,6 @@ if(out){tickUse('تصفح الآيباد');if(S.locked){const L=$('#lock');L.cla
 else {closeApp();hideCC();hideNC();S.locked=true;const L=$('#lock');L.classList.remove('show','bye')}
 $('#hint').textContent=out?'دوس زر إغلاق حتى تشيل الآيباد من إيدك وتمشي براحتك':'امشِ بالعصا، ودوس زر الآيباد حتى تطلعه'}
 $('#btnPad').addEventListener('click',()=>setPad(!S.padOut));
-$('#homeBar').addEventListener('click',e=>{e.stopPropagation();closeApp();hideCC()});
 $('#btnMenu').addEventListener('click',()=>$('#menuOverlay').classList.add('show'));
 $('#mResume').addEventListener('click',()=>$('#menuOverlay').classList.remove('show'));
 $('#mReset').addEventListener('click',()=>{
@@ -711,6 +711,6 @@ function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.inne
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="pad.js?v=26"></script>
+<script src="pad.js?v=27"></script>
 </body>
 </html>
