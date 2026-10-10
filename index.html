@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Rio iPad">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Rio iPad 7.0</title>
+<title>Rio iPad 7.1</title>
 <style>.sq{width:29px;height:29px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overflow:hidden;background:radial-gradient(120% 100% at 50% 0%,#2b3348 0%,#141821 60%,#0b0e14 100%);font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif}
@@ -56,6 +56,24 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 #pageDots{position:absolute;left:0;right:0;bottom:64px;display:flex;justify-content:center;gap:7px;z-index:11}
 #pageDots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.45)}
 #pageDots i.on{background:#fff}
+.libPage{display:block!important;padding-top:22px}
+.libSearch{width:100%;border:none;border-radius:14px;background:rgba(255,255,255,.28);color:#fff;font-size:14px;padding:11px 14px;margin-bottom:14px;font-family:inherit;outline:none}
+.libSearch::placeholder{color:rgba(255,255,255,.8)}
+.libGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.libFolder{border:none;cursor:pointer;border-radius:22px;background:rgba(255,255,255,.32);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:12px 10px 9px;display:flex;flex-direction:column;gap:7px}
+.libIcons{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;min-height:20px}
+.libIcons .ic{width:100%;aspect-ratio:1/1}
+.libName{font-size:12.5px;font-weight:600;color:#fff;text-align:center}
+.libCount{font-size:11px;color:rgba(255,255,255,.78);text-align:center}
+#libExpand{position:absolute;inset:0;z-index:70;display:none;flex-direction:column;background:rgba(18,18,20,.62);backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);padding:60px 18px 20px;color:#fff;overflow-y:auto}
+#libExpand.open{display:flex}
+.lxHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.lxHead span{font-size:19px;font-weight:700}
+#libExpClose{border:none;background:rgba(255,255,255,.22);color:#fff;border-radius:14px;padding:8px 20px;font-size:14px;font-weight:600;font-family:inherit}
+.lxGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 8px}
+.lapp{background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;color:#fff;font-size:11px;font-family:inherit}
+.lapp .ic{width:52px;height:52px}
+#ipad.dark .libFolder{background:rgba(44,44,46,.6)}
 #homeApps::-webkit-scrollbar{display:none}
 .app{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;background:none;border:none}
 .app img,#dock img{-webkit-touch-callout:none;-webkit-user-drag:none;user-select:none}
@@ -328,7 +346,7 @@ img,a{-webkit-user-drag:none!important}
 <body>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 7.0</div>
+  <div id="verTag">Rio iPad 7.1</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -344,7 +362,7 @@ img,a{-webkit-user-drag:none!important}
       <div id="wall"><img id="wallImg" src="https://picsum.photos/seed/riowall/700/900" onerror="this.remove()"></div>
       <div id="homeApps"></div><div id="editBar"><button id="editDone">تم</button></div><div id="ctxMenu"></div>
       <button id="spotPill">بحث</button><div id="dock"></div>
-<div id="spot"><input id="spotInp" type="text" placeholder="بحث في التطبيقات…"><div id="spotBody"></div><button id="spotClose" style="margin-top:14px;background:rgba(255,255,255,.18);color:#fff;border:none;border-radius:14px;padding:11px;font-size:14px">إغلاق</button></div>
+<div id="spot"><input id="spotInp" type="text" placeholder="بحث في التطبيقات…"><div id="spotBody"></div><button id="spotClose" style="margin-top:14px;background:rgba(255,255,255,.18);color:#fff;border:none;border-radius:14px;padding:11px;font-size:14px">إغلاق</button></div><div id="libExpand"><div class="lxHead"><span id="libExpTitle"></span><button id="libExpClose">تم</button></div><div class="lxGrid" id="libExpGrid"></div></div>
       <div id="dim"></div>
       <div id="statusbar"><span id="sbTime">9:41</span><span class="sicons" id="sbIcons"></span></div>
       <div id="appWin"><div id="appHead"><span id="appTitle">App</span></div><div id="appBody"></div></div><div id="homeBar"></div><div id="switcher"><div id="swTrack"></div><div style="text-align:center;font-size:12.5px;color:rgba(255,255,255,.85);padding:10px">اسحب البطاقة لفوك حتى تقتل التطبيق · دوس البطاقة حتى ترجع إلها</div></div>
@@ -379,7 +397,7 @@ img,a{-webkit-user-drag:none!important}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 7.0</div>
+    <div class="ver">Rio iPad 7.1</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -870,12 +888,15 @@ return '<button class="app" data-app="'+a.id+'" style="position:relative">'+(a.i
 const all=APPS.filter(a=>!S.hidden.includes(a.id)).concat(S.installed.filter(id=>id!=='tiktok'&&EXTRA[id]).map(id=>({id:'x_'+id,n:EXTRA[id].n,ic:EXTRA[id].ic})));
 const pages=[];pages.push([widget,...all.slice(0,12).map(cell)]);
 for(let i=12;i<all.length;i+=18)pages.push(all.slice(i,i+18).map(cell));
-$('#homeApps').innerHTML='<div id="pagesTrack">'+pages.map(pg=>'<div class="hpage">'+pg.join('')+'</div>').join('')+'</div><div id="pageDots">'+pages.map((_,i)=>'<i class="'+(i===0?'on':'')+'"></i>').join('')+'</div>';
+pages.push(['__LIB__']);
+$('#homeApps').innerHTML='<div id="pagesTrack">'+pages.map(pg=>pg[0]==='__LIB__'?renderLibPage():'<div class="hpage">'+pg.join('')+'</div>').join('')+'</div><div id="pageDots">'+pages.map((_,i)=>'<i class="'+(i===0?'on':'')+'"></i>').join('')+'</div>';
 $('#dock').innerHTML=['phone','safari','messages','music'].map(id=>{const a=APPS.find(x=>x.id===id)||{ic:id};return '<span data-app="'+id+'">'+icImg(ICONS[a.ic||id])+'</span>'}).join('');
 const track=$('#pagesTrack');
-track.addEventListener('scroll',()=>{const i=Math.round(track.scrollLeft/track.clientWidth);document.querySelectorAll('#pageDots i').forEach((dt,j)=>dt.classList.toggle('on',j===i))},{passive:true});
+track.addEventListener('scroll',()=>{const i=Math.round(track.scrollLeft/track.clientWidth);document.querySelectorAll('#pageDots i').forEach((dt,j)=>dt.classList.toggle('on',j===i));if(typeof syncPill==='function')syncPill()},{passive:true});
 document.querySelectorAll('#homeApps .app, #dock [data-app]').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();if(S.jiggle&&el.classList.contains('app')){showCtx(el);return}openApp(el.dataset.app,el.querySelector('.ic')||el)}));
 document.querySelectorAll('#homeApps,#dock').forEach(w=>w.oncontextmenu=e=>e.preventDefault());
+bindLib();
+$('#libExpClose').addEventListener('click',()=>$('#libExpand').classList.remove('open'));
 document.querySelectorAll('#homeApps .app').forEach(el=>{
 let tm=null,sx=0,sy=0;
 el.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;tm=setTimeout(()=>enterJiggle(),500)});
@@ -884,6 +905,35 @@ el.addEventListener('pointerup',kill);el.addEventListener('pointercancel',kill);
 el.addEventListener('pointermove',e=>{if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>12)kill()});
 });
 }
+function libCats(){
+const all=APPS.concat(S.installed.filter(id=>id!=='tiktok'&&EXTRA[id]).map(id=>({id:'x_'+id,n:EXTRA[id].n,ic:EXTRA[id].ic})));
+const cats=(typeof LIBCATS!=='undefined'?LIBCATS:[]).map(c=>({n:c[0],items:all.filter(a=>c[1].some(id=>a.id===id||a.id==='x_'+id))})).filter(c=>c.items.length);
+const used=new Set();cats.forEach(c=>c.items.forEach(a=>used.add(a.id)));
+const rest=all.filter(a=>!used.has(a.id));
+if(rest.length)cats.push({n:'أخرى',items:rest});
+return cats}
+function renderLibPage(){
+const cats=libCats();
+const folders=cats.map((c,i)=>'<button class="libFolder" data-libcat="'+i+'"><span class="libIcons">'+c.items.slice(0,4).map(a=>icImg(ICONS[a.ic])).join('')+'</span><span class="libName">'+c.n+'</span><span class="libCount">'+arabNum(c.items.length)+' من التطبيقات</span></button>').join('');
+return '<div class="hpage libPage"><input class="libSearch" id="libSearch" placeholder="مكتبة التطبيقات"><div class="libGrid" id="libGrid">'+folders+'</div><div class="lxGrid" id="libSearchRes" style="display:none;margin-top:4px"></div></div>'}
+function libLaunch(id){id.startsWith('x_')?openExtra(id.slice(2)):openApp(id)}
+function openLibCat(i){
+const c=libCats()[i];if(!c)return;
+$('#libExpTitle').textContent=c.n;
+$('#libExpGrid').innerHTML=c.items.map(a=>'<button class="lapp" data-libapp="'+a.id+'">'+icImg(ICONS[a.ic])+'<span>'+a.n+'</span></button>').join('');
+$('#libExpand').classList.add('open');
+$('#libExpand').querySelectorAll('[data-libapp]').forEach(b=>b.addEventListener('click',()=>{$('#libExpand').classList.remove('open');libLaunch(b.dataset.libapp)}))}
+function libSearch(q){
+const g=$('#libGrid'),r=$('#libSearchRes');if(!g||!r)return;
+if(!q){g.style.display='';r.style.display='none';return}
+const all=[];libCats().forEach(c=>all.push(...c.items));
+const list=all.filter(a=>a.n.includes(q)||a.id.toLowerCase().includes(q.toLowerCase()));
+g.style.display='none';r.style.display='';
+r.innerHTML=list.length?list.map(a=>'<button class="lapp" data-libapp="'+a.id+'">'+icImg(ICONS[a.ic])+'<span>'+a.n+'</span></button>').join(''):'<div style="grid-column:1/-1;text-align:center;opacity:.8;padding:20px">لا نتائج</div>';
+r.querySelectorAll('[data-libapp]').forEach(b=>b.addEventListener('click',()=>libLaunch(b.dataset.libapp)))}
+function bindLib(){
+document.querySelectorAll('.libFolder').forEach(b=>b.addEventListener('click',()=>openLibCat(+b.dataset.libcat)));
+const ls=$('#libSearch');if(ls)ls.addEventListener('input',()=>libSearch(ls.value.trim()))}
 function raisePad(){if(!S.padOut)setPad(true)}
 function fmtTime(){const d=new Date();let h=d.getHours()%12;if(h===0)h=12;return h+':'+String(d.getMinutes()).padStart(2,'0')}
 function g(name,color,size){return '<img src="https://api.iconify.design/ion/'+name+'.svg?color='+encodeURIComponent(color||'#fff')+'" style="width:'+(size||22)+'px;height:'+(size||22)+'px">'}
