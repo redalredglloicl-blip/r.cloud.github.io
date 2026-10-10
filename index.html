@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Rio iPad">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Rio iPad 1.8</title>
+<title>Rio iPad 1.9</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overflow:hidden;background:#79b5ff;font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif}
@@ -60,7 +60,7 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 #pageDots i.on{background:#fff}
 #homeApps::-webkit-scrollbar{display:none}
 .app{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;background:none;border:none}
-.app:active .ic{transform:scale(.88)}
+.app img,#dock img{-webkit-touch-callout:none;-webkit-user-drag:none;user-select:none}
 .app .ic{width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;transition:transform .12s;box-shadow:0 3px 8px rgba(0,0,0,.25);position:relative}
 .app .nm{color:#fff;font-size:10.5px;font-weight:500;text-shadow:0 1px 3px rgba(0,0,0,.5);max-width:64px;text-align:center;line-height:1.1}
 .badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;border-radius:9px;background:#ff3b30;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;border:1.5px solid #fff}
@@ -82,14 +82,14 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 .ncCard img.appic{width:36px;height:36px;border-radius:9px;flex:0 0 auto}
 .ccTop{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 12px;font-weight:700;font-size:14px}
 .ccTop .net{display:flex;align-items:center;gap:6px}
-.ccCluster{background:rgba(255,255,255,.21);border:1px solid rgba(255,255,255,.22);border-radius:30px;padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.ccCirc{aspect-ratio:1;border-radius:50%;background:rgba(255,255,255,.21);border:1px solid rgba(255,255,255,.20);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ccCluster{grid-column:span 2;grid-row:span 2;background:rgba(255,255,255,.21);border:1px solid rgba(255,255,255,.22);border-radius:30px;padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:space-between}
+.ccCirc{width:min(100%,92px);aspect-ratio:1;border-radius:50%;background:rgba(255,255,255,.21);border:1px solid rgba(255,255,255,.20);display:flex;align-items:center;justify-content:center;cursor:pointer;justify-self:center;align-self:start}
 .ccCirc.on{background:#0a84ff}
 .ccCirc.big{grid-row:span 1}
 .ccTile{background:rgba(255,255,255,.21);border:1px solid rgba(255,255,255,.20);border-radius:27px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#fff;cursor:pointer;padding:10px 6px;font-size:11px;min-height:72px}
 .ccTile.on{background:#0a84ff}
 .ccTile.white{background:#fff;color:#111}
-.ccVert{position:relative;background:rgba(255,255,255,.21);border:1px solid rgba(255,255,255,.20);border-radius:27px;height:128px;overflow:hidden}
+.ccVert{position:relative;background:rgba(255,255,255,.21);border:1px solid rgba(255,255,255,.20);border-radius:27px;grid-row:span 2;min-height:150px;overflow:hidden}
 .ccVert .fill{position:absolute;left:0;right:0;bottom:0;background:#fff}
 .ccVert .gl{position:absolute;left:0;right:0;bottom:8px;display:flex;justify-content:center;z-index:2}
 .ccVert input{position:absolute;left:50%;top:50%;width:120px;height:36px;transform:translate(-50%,-50%) rotate(-90deg);opacity:0;z-index:3;cursor:pointer}
@@ -103,7 +103,8 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 #lock .lrow{margin-top:auto;display:flex;justify-content:space-between;width:100%;padding:0 14px}
 #lock .lbtn{width:46px;height:46px;border-radius:50%;background:rgba(30,32,38,.55);display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;backdrop-filter:blur(6px)}
 #cc.open{display:block}
-.ccgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.ccgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;grid-auto-rows:min-content}
+.ccgrid>*{min-width:0}
 .ccbtn{aspect-ratio:1;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
 .ccbtn.on{background:#0a84ff}
 .ccbtn svg{width:26px;height:26px}
@@ -192,7 +193,7 @@ canvas#camView{width:100%;border-radius:12px;background:#000}
 <body>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 1.8</div>
+  <div id="verTag">Rio iPad 1.9</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -243,7 +244,7 @@ canvas#camView{width:100%;border-radius:12px;background:#000}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 1.8</div>
+    <div class="ver">Rio iPad 1.9</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -584,6 +585,7 @@ function renderHome(){
   const track=$('#pagesTrack');
   track.addEventListener('scroll',()=>{const i=Math.round(track.scrollLeft/track.clientWidth);document.querySelectorAll('#pageDots i').forEach((dt,j)=>dt.classList.toggle('on',j===i))},{passive:true});
   document.querySelectorAll('#homeApps .app, #dock [data-app]').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();openApp(el.dataset.app,el.querySelector('.ic')||el)}));
+  document.querySelectorAll('#homeApps,#dock').forEach(w=>w.oncontextmenu=e=>e.preventDefault());
 }
 function raisePad(){if(!S.padOut)setPad(true)}
 /* status bar + battery */
@@ -666,7 +668,7 @@ function renderCC(){
    circ('shazam','musical-notes',false)+
    '<button class="ccCirc" data-cc="brightC" style="background:#fff">'+g('sunny','#0a84ff',26)+'</button>'+
    circ('mirror','copy-outline',false)+
-   '<div class="ccPill"><span>'+g('musical-notes','#fff',20)+'</span><button class="ccCirc" data-cc="music" style="width:38px;height:38px;flex:0 0 auto">'+g(S.musicPlay?'pause':'play','#fff',20)+'</button><span style="flex:1;font-weight:700">'+(S.musicPlay?'Shape of You — Ed Sheeran':'متوقف')+'</span>'+g('play-forward','rgba(255,255,255,.55)',20)+'</div>'+
+   '<div class="ccPill"><span>'+g('musical-notes','#fff',20)+'</span><button class="ccCirc" data-cc="music" style="width:38px;height:38px;flex:0 0 auto">'+g(S.musicPlay?'pause':'play','#fff',20)+'</button><span style="flex:1;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(S.musicPlay?'Shape of You — Ed Sheeran':'متوقف')+'</span>'+g('play-forward','rgba(255,255,255,.55)',20)+'</div>'+
    '<button class="ccTile" data-cc="rotlock">'+g('lock-closed','#fff',24)+'<span>قفل الدوران</span></button>'+
    '<button class="ccTile" data-cc="flash">'+g('flashlight','#fff',24)+'<span>الفلاش</span></button>'+
    '<button class="ccTile white" data-cc="battTile">'+g('battery-charging','#f5a623',26)+'<span>'+arabNum(p)+'٪ — '+(S.batt.charging?'يشحن':'البطارية')+'</span></button>'+
@@ -725,14 +727,46 @@ function zoomFrom(fromEl){
   return 'translate('+dx.toFixed(1)+'px,'+dy.toFixed(1)+'px) scale('+s.toFixed(3)+')';
 }
 const IOS_EASE='cubic-bezier(.32,.72,.24,1)';
+function iconImgOf(el){if(!el)return null;const im=el.tagName==='IMG'?el:el.querySelector&&el.querySelector('img');if(!im)return null;return im.currentSrc||im.src}
 function showAppWin(fromEl){
   const win=$('#appWin');S._from=fromEl||null;const tok=(S._anim=(S._anim||0)+1);
   win.classList.add('open');
-  win.style.transition='none';win.style.transform=zoomFrom(fromEl);win.style.opacity='0';win.style.borderRadius='30px';
+  win.style.transition='none';win.style.opacity='0';win.style.transform='scale(.965)';
+  const src=iconImgOf(fromEl);let clone=null;
+  if(src&&fromEl.getBoundingClientRect){
+    const scr=$('#screen').getBoundingClientRect(),r=fromEl.getBoundingClientRect();
+    clone=document.createElement('img');clone.src=src;clone.alt='';
+    clone.style.cssText='position:absolute;z-index:45;pointer-events:none;left:'+(r.left-scr.left)+'px;top:'+(r.top-scr.top)+'px;width:'+r.width+'px;height:'+r.height+'px;border-radius:24%;object-fit:cover;box-shadow:0 10px 30px rgba(0,0,0,.35)';
+    $('#screen').appendChild(clone);
+    clone.getBoundingClientRect();
+    clone.style.transition='all .40s '+IOS_EASE+',opacity .16s ease .26s';
+    clone.style.left='0px';clone.style.top='0px';clone.style.width=scr.width+'px';clone.style.height=scr.height+'px';clone.style.borderRadius='0px';clone.style.opacity='0';
+  }
   win.getBoundingClientRect();
-  win.style.transition='transform .42s '+IOS_EASE+',opacity .28s ease .05s,border-radius .42s '+IOS_EASE;
-  win.style.transform='none';win.style.opacity='1';win.style.borderRadius='0px';
-  setTimeout(()=>{if(S._anim===tok){win.style.transition='';win.style.transform='';win.style.opacity='';win.style.borderRadius=''}},450);
+  win.style.transition='opacity .30s ease .10s,transform .40s '+IOS_EASE;
+  win.style.opacity='1';win.style.transform='none';
+  setTimeout(()=>{if(clone)clone.remove();if(S._anim===tok){win.style.transition='';win.style.transform='';win.style.opacity=''}},470);
+}
+function closeApp(){
+  const win=$('#appWin');if(!win.classList.contains('open')){S.app=null;return}
+  const tok=(S._anim=(S._anim||0)+1);
+  S.app=null;stopCam();
+  const back=(S._from&&document.body.contains(S._from))?S._from:null;
+  let clone=null;const src=iconImgOf(back);
+  if(src&&back.getBoundingClientRect){
+    const scr=$('#screen').getBoundingClientRect(),r=back.getBoundingClientRect();
+    clone=document.createElement('img');clone.src=src;clone.alt='';
+    clone.style.cssText='position:absolute;z-index:45;pointer-events:none;left:0px;top:0px;width:'+scr.width+'px;height:'+scr.height+'px;border-radius:0px;object-fit:cover;opacity:0';
+    $('#screen').appendChild(clone);
+    clone.getBoundingClientRect();
+    clone.style.transition='all .36s '+IOS_EASE+',opacity .14s ease 0s';
+    clone.style.opacity='1';
+    requestAnimationFrame(()=>{clone.style.left=(r.left-scr.left)+'px';clone.style.top=(r.top-scr.top)+'px';clone.style.width=r.width+'px';clone.style.height=r.height+'px';clone.style.borderRadius='24%';clone.style.opacity='0'});
+  }
+  win.style.transition='opacity .30s ease,transform .36s '+IOS_EASE;
+  win.style.opacity='0';win.style.transform='scale(.965)';
+  setTimeout(()=>{if(S._anim!==tok)return;if(clone)clone.remove();
+    win.classList.remove('open');win.style.transition='';win.style.transform='';win.style.opacity='';S._from=null},380);
 }
 function openApp(id,fromEl){
   hideCC();
@@ -899,7 +933,7 @@ function appSettings(el){
    '<div class="setrow"><span style="flex:1">الصوت</span><input type="range" id="setVol" min="0" max="100" value="'+s.vol+'" style="flex:1"></div></div>'+
    '<div class="setgroup"><div class="setrow"><span style="flex:1">البطارية</span><b>'+Math.round(S.batt.pct)+'%</b></div>'+
    '<div class="setrow"><span style="flex:1">الشحن</span><label class="switch"><input type="checkbox" id="swChg" '+(S.batt.charging?'checked':'')+'><i></i></label></div>'+usageRows+'</div>'+
-   '<div class="setgroup"><div class="setrow"><span style="flex:1">حول الجهاز</span><span class="mut">Rio iPad 1.8</span></div>'+
+   '<div class="setgroup"><div class="setrow"><span style="flex:1">حول الجهاز</span><span class="mut">Rio iPad 1.9</span></div>'+
    '<div class="setrow"><span style="flex:1">النظام</span><span class="mut">RioOS 1.6</span></div></div>';
   const bind=(id,key,cb)=>{const n=$(id);if(n)n.addEventListener('change',e=>{S.set[key]=e.target.checked;store.set('set',S.set);renderStatus();if(cb)cb()})};
   bind('#swWifi','wifi');bind('#swBt','bt');bind('#swAir','airplane');
