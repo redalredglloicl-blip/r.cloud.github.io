@@ -208,16 +208,10 @@ function mountWidgets(){
 const w=document.querySelector('.homeWidget');if(!w||w.dataset.live)return;
 w.dataset.live='1';
 w.innerHTML=
-'<div class="wcard" id="wCal"><div style="color:#ff3b30;font-weight:700;font-size:12px" id="wCalD"></div><div style="font-size:30px;font-weight:700;line-height:1.02" id="wCalN"></div><div class="wsub" id="wCalS">لا توجد أحداث اليوم</div></div>'+
-'<div class="wcard wblue" id="wWx"><div style="font-size:12.5px;font-weight:600">بغداد</div><div style="font-size:28px;font-weight:700;line-height:1.05" id="wWxT">…°</div><div class="wsub">الطقس الحقيقي — البطارية <b id="wBatt"></b></div></div>'+
-'<div class="wcard wmus" id="wMus"><img id="wMusImg" alt=""><span style="flex:1;min-width:0"><b data-must id="wMusT" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px">Music</b><span class="lbar"><i data-musbar></i></span></span><button id="wMusBtn" class="wplay"></button></div>'+
-'<div class="wcard wphoto" id="wPho"><img id="wPhoImg" alt=""><span>الصور</span></div>'+
-'<button class="wtoday" id="wToday">'+g('calendar-outline','#fff',16)+' شاشة اليوم ›</button>';
-$('#wToday').addEventListener('click',e=>{e.stopPropagation();openToday()});
-$('#wWx').addEventListener('click',()=>openToday());
+'<div id="wCal" style="flex:1;background:#fff;border-radius:20px;padding:10px 12px;color:#111;box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer"><div style="color:#ff3b30;font-weight:700;font-size:12px" id="wCalD"></div><div style="font-size:30px;font-weight:700;line-height:1.02" id="wCalN"></div><div style="font-size:11.5px;color:#8e8e93;margin-top:2px" id="wCalS">لا توجد أحداث اليوم</div></div>'+
+'<div id="wWx" style="flex:1;background:linear-gradient(160deg,#4aa8ff,#1668dc);border-radius:20px;padding:10px 12px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer"><div style="font-size:12.5px;font-weight:600">بغداد</div><div style="font-size:28px;font-weight:700;line-height:1.05" id="wWxT">…°</div><div style="font-size:11.5px;opacity:.92">الطقس الحقيقي — البطارية <b id="wBatt"></b></div></div>';
 $('#wCal').addEventListener('click',e=>{e.stopPropagation();openApp('calendar',null)});
-$('#wPho').addEventListener('click',e=>{e.stopPropagation();openApp('photos',null)});
-$('#wMusBtn').addEventListener('click',e=>{e.stopPropagation();S.musicPlay=!S.musicPlay;sfx('click');updWidgets();renderLockX()});
+$('#wWx').addEventListener('click',e=>{e.stopPropagation();openApp('weather',null)});
 updWidgets();
 }
 function updWidgets(){
@@ -228,28 +222,6 @@ if(cd){cd.textContent=daysAr()[d.getDay()];cn.textContent=arabNum(d.getDate());
 const na=(S.alarms||[]).filter(a=>a.on).sort((a,b)=>a.t<b.t?-1:1)[0];
 cs.textContent=S.timerEnd?'المؤقت شغال':(na?'منبه '+arabNum(na.t):'لا توجد أحداث اليوم')}
 const wt=$('#wWxT'),wb=$('#wBatt');if(wt)wt.textContent=S._wx?S._wx.t+'°':'…°';if(wb)wb.textContent=arabNum(Math.round(S.batt.pct))+'٪';
-const mi=$('#wMusImg'),mt=$('#wMusT'),mb=$('#wMusBtn');
-if(mi){const a=ALBUMS[S.album||0];if(mi.getAttribute('src')!==a[2])mi.src=a[2];if(mt)mt.textContent=a[0]+' — '+a[1];if(mb)mb.innerHTML=g(S.musicPlay?'pause':'play','#fff',18)}
-const pi=$('#wPhoImg');
-if(pi){const pool=S.photos.length?S.photos:['https://picsum.photos/seed/riophoto1/400/400','https://picsum.photos/seed/riophoto3/400/400','https://picsum.photos/seed/riophoto5/400/400'];
-if(!pi._rot||Date.now()-pi._rot>20000){pi._rot=Date.now();const src=pool[Math.floor(Date.now()/20000)%pool.length];if(pi.getAttribute('src')!==src)pi.src=src}}
-wxFetch();
-}
-function openToday(){
-let t=$('#todayV');if(!t){t=document.createElement('div');t.id='todayV';$('#screen').appendChild(t)}
-const d=new Date();
-const top=Object.entries(S.fx.use.sec||{}).sort((a,b)=>b[1]-a[1]).slice(0,3);
-const mx=Math.max(1,...top.map(r=>r[1]));
-t.innerHTML='<div class="todayHead"><b>اليوم</b><span>'+daysAr()[d.getDay()]+'، '+arabNum(d.getDate())+' '+monthsAr()[d.getMonth()]+'</span><button id="todayX">✕</button></div>'+
-'<div class="todayCard wblueB"><div style="font-size:13px;opacity:.9">بغداد — طقس حقيقي</div><div style="font-size:44px;font-weight:200">'+(S._wx?S._wx.t+'°':'…°')+'</div><div style="font-size:13px;opacity:.9">البطارية '+arabNum(Math.round(S.batt.pct))+'٪'+(S.batt.charging?' — جاي ينشحن':'')+'</div></div>'+
-'<div class="todayCard"><div class="th">وقت الشاشة اليوم</div>'+(top.length?top.map(r=>'<div class="trow"><span style="flex:0 0 92px">'+appName(r[0])+'</span><span class="tbar"><i style="width:'+Math.round(r[1]/mx*100)+'%"></i></span><span class="mut2" style="color:#fff">'+fmtDur(r[1])+'</span></div>').join(''):'<div style="opacity:.85;font-size:13px">ما استخدمت شي بعد اليوم</div>')+'</div>'+
-'<div class="todayCard"><div class="th">الموسيقى</div><div class="row" style="gap:10px"><img src="'+ALBUMS[S.album||0][2]+'" style="width:44px;height:44px;border-radius:9px" alt=""><span style="flex:1;min-width:0"><b data-must style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+ALBUMS[S.album||0][0]+' — '+ALBUMS[S.album||0][1]+'</b><span class="lbar"><i data-musbar></i></span></span><button class="btn" id="tvMus">'+(S.musicPlay?'إيقاف':'تشغيل')+'</button></div></div>'+
-'<div class="todayCard"><div class="th">آخر الصور</div><div class="pgrid">'+(S.photos.length?S.photos.slice(0,3):['https://picsum.photos/seed/riophoto1/400/400','https://picsum.photos/seed/riophoto3/400/400','https://picsum.photos/seed/riophoto5/400/400']).map(p=>'<img src="'+p+'" alt="">').join('')+'</div></div>'+
-'<button class="btn gray" id="todayClose" style="width:100%;margin-top:4px">إغلاق</button>';
-t.classList.add('open');
-$('#todayX').addEventListener('click',()=>t.classList.remove('open'));
-$('#todayClose').addEventListener('click',()=>t.classList.remove('open'));
-const mv=$('#tvMus');if(mv)mv.addEventListener('click',()=>{S.musicPlay=!S.musicPlay;openToday();updWidgets()});
 wxFetch();
 }
 /* ===== share sheet + AirDrop ===== */
@@ -442,6 +414,7 @@ if(when==='appopen'){const hit=APPS.find(a=>a.n.toLowerCase()===val.toLowerCase(
 S.fx.autos.push({name,when,val,then:$('#auThen').value,val2:$('#auVal2').value.trim(),on:true});saveFx();appShortcuts(el);toast('انضاف الاختصار');
 });
 }
+document.addEventListener('dragstart',e=>e.preventDefault());
 /* ===== wrappers + init ===== */
 const _ors=renderStatus;
 renderStatus=function(){_ors();try{if(S.set.dnd){const si=$('#sbIcons');if(si&&!si.querySelector('[data-moon]'))si.insertAdjacentHTML('afterbegin','<span data-moon="1" style="display:inline-flex">'+g('moon','#cfc9ff',14)+'</span>')}}catch(e){}};
@@ -450,6 +423,7 @@ renderHome=function(){_orh();try{mountWidgets();applyFx()}catch(e){}};
 const _occ=renderCC;
 renderCC=function(){_occ();try{const sp=document.querySelector('.ccPill span:nth-of-type(2)');if(sp)sp.textContent=S.musicPlay?(ALBUMS[S.album||0][0]+' — '+ALBUMS[S.album||0][1]):'متوقف'}catch(e){}};
 applyFx();
+const _tv=$('#todayV');if(_tv)_tv.remove();
 renderHome();
 renderStatus();
 wxFetch();
