@@ -75,13 +75,15 @@ $('#switcher').addEventListener('touchend',e=>{if(_swY===null)return;const dy=e.
 function killApp(id){S.running=(S.running||[]).filter(r=>r.id!==id);if(S.snaps)delete S.snaps[id];if(S.app===id){dismissSw();closeApp()}else renderSwitcher();toast('انقتل التطبيق من الخلفية')}
 function openApp(id,fromEl){
 hideCC();clearInterval(S.poll);
+if(gateBlock(id))return;
+runAutos('appopen',id);
 if(id==='phone'){toast('المكالمات داخل FaceTime هنا');id='facetime'}
 if(id&&id.startsWith('x_')){const k=id.slice(2);return openExtra(k,fromEl)}
 snapCur();S.app=id; tickUse(id);noteRunning(id,(APPS.find(a=>a.id===id)||{}).n||id,(APPS.find(a=>a.id===id)||{}).ic||id);
-const names={roblox:'Roblox',youtube:'YouTube',facetime:'FaceTime',camera:'Camera',photos:'Photos',messages:'Messages',appstore:'App Store',safari:'Safari',tiktok:'TikTok',maps:'Maps',weather:'Weather',calendar:'Calendar',music:'Music',clock:'Clock',notes:'Notes',calc:'Calculator',settings:'Settings'};
+const names={roblox:'Roblox',youtube:'YouTube',facetime:'FaceTime',camera:'Camera',photos:'Photos',messages:'Messages',appstore:'App Store',safari:'Safari',tiktok:'TikTok',maps:'Maps',weather:'Weather',calendar:'Calendar',music:'Music',clock:'Clock',notes:'Notes',calc:'Calculator',settings:'Settings',files:'Files',shortcuts:'Shortcuts'};
 $('#appTitle').textContent=names[id]||id;
 showAppWin(fromEl);
-({roblox:appRoblox,youtube:appYouTube,facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,tiktok:appTikTok,maps:appMaps,weather:appWeather,calendar:appCalendar,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,settings:appSettings}[id]||(()=>{}))($('#appBody'));
+({roblox:appRoblox,youtube:appYouTube,facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,tiktok:appTikTok,maps:appMaps,weather:appWeather,calendar:appCalendar,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,settings:appSettings,files:appFiles,shortcuts:appShortcuts}[id]||(()=>{}))($('#appBody'));
 }
 const _ab=$('#appBack');if(_ab)_ab.addEventListener('click',e=>{e.stopPropagation();closeApp()});
 function syncPill(){const pill=$('#spotPill');if(!pill)return;const lockOn=$('#lock').classList.contains('show');pill.style.display=($('#appWin').classList.contains('open')||lockOn)?'none':'flex'}
@@ -170,7 +172,7 @@ $('#camFlip').addEventListener('click',()=>{selfieMode=!selfieMode});
 $('#camShoot').addEventListener('click',()=>{
 const out=document.createElement('canvas');out.width=320;out.height=235;
 const oc=out.getContext('2d');oc.filter=S.camFilter;oc.drawImage(cvs,0,0,320,235);
-S.photos.unshift(out.toDataURL('image/jpeg',0.72));
+sfx('shutter');S.photos.unshift(out.toDataURL('image/jpeg',0.72));
 if(S.photos.length>12)S.photos.pop();
 store.set('photos',S.photos);renderHome();
 toast('انحفظت الصورة بالمعرض');
@@ -194,7 +196,7 @@ el.innerHTML='<img src="'+p.src+'" style="width:100%;border-radius:12px">'+
 '<div class="row" style="margin-top:12px;flex-wrap:wrap;gap:8px"><button class="btn gray" id="phBack">رجوع</button>'+(p.own?'<button class="btn '+(p.fav?'red':'gray')+'" id="phFav">'+(p.fav?'إزالة من المفضلة':'أضف للمفضلة ♥')+'</button><button class="btn gray" id="phShare">مشاركة</button><button class="btn red" id="phDel">حذف</button>':'')+'</div>';
 $('#phBack').addEventListener('click',()=>appPhotos(el));
 const fb=$('#phFav');if(fb)fb.addEventListener('click',()=>{const m=phMeta();m[key]={fav:!p.fav};localStorage.setItem('rio-phmeta',JSON.stringify(m));appPhotos(el);toast(p.fav?'انشالت من المفضلة':'انضافت للمفضلة')});
-const sh=$('#phShare');if(sh)sh.addEventListener('click',async()=>{try{if(navigator.share){await navigator.share({title:'صورة من Rio iPad'})}else toast('اضغط مطوّلاً على الصورة لحفظها')}catch(e){}});
+const sh=$('#phShare');if(sh)sh.addEventListener('click',()=>showShare({img:p.src,title:'صورة من Rio iPad'}));
 const del=$('#phDel');if(del)del.addEventListener('click',()=>{S.photos=S.photos.filter(x=>x!==p.src);store.set('photos',S.photos);renderHome();appPhotos(el);toast('انحذفت الصورة')});
 }));
 };
@@ -232,7 +234,7 @@ el.innerHTML='<div id="msgList">'+(S.msgs.length?S.msgs.map(m=>'<div class="msg 
 '<div class="row" style="position:sticky;bottom:0;background:#f2f2f7;padding-top:8px"><input type="text" id="msgIn" placeholder="iMessage" style="flex:1;padding:10px 12px;border:1px solid #d9d9de;border-radius:20px;font-size:14px"><button class="btn" id="msgSend">إرسال</button></div>';
 const list=$('#msgList');list.scrollTop=1e6;
 const send=()=>{const inp=$('#msgIn'),v=inp.value.trim();if(!v)return;
-S.msgs.push({me:true,t:v});store.set('msgs',S.msgs);appMessages(el);
+sfx('send');S.msgs.push({me:true,t:v});store.set('msgs',S.msgs);appMessages(el);
 };
 $('#msgSend').addEventListener('click',send);
 $('#msgIn').addEventListener('keydown',e=>{if(e.key==='Enter')send});
@@ -253,7 +255,7 @@ return;
 if(S.setPage==='about'){
 el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button><div class="setgroup">'+
 row('الاسم','',"Rio's iPad")+row('طراز الجهاز','', 'iPad Pro 11')+row('نظام التشغيل','', 'RioOS 26.0')+
-row('إصدار اللعبة','', 'Rio iPad 2.9')+row('السعة','', '64 GB')+row('المساحة المتوفرة','', '51.2 GB')+
+row('إصدار اللعبة','', 'Rio iPad 3.0')+row('السعة','', '64 GB')+row('المساحة المتوفرة','', '51.2 GB')+
 row('الرقم التسلسلي','', 'RGX2IPAD2026')+row('المشغل','', 'Zain — 4.5G+')+'</div>';
 $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});return;
 }
@@ -278,6 +280,7 @@ $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});
 $('#swWifi2').addEventListener('change',e=>{S.set.wifi=e.target.checked;store.set('set',S.set);renderStatus();appSettings(el)});
 el.querySelectorAll('[data-net]').forEach(r=>r.addEventListener('click',()=>{S.set.ssid=r.dataset.net;S.set.wifi=true;store.set('set',S.set);renderStatus();appSettings(el);toast('اتصلت بـ '+r.dataset.net)}));return;
 }
+if(['ncset','focus','screen','acc','home','lockset'].includes(S.setPage)){setSubPage(el);return}
 const prof=S.apple.id?
 '<div class="card" style="display:flex;gap:12px;align-items:center;padding:13px;cursor:pointer" id="profCard"><span style="width:52px;height:52px;border-radius:50%;background:linear-gradient(150deg,#8e8e93,#636366);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700">'+(S.apple.name||'R').slice(0,1).toUpperCase()+'</span><span style="flex:1"><b style="font-size:16px">'+S.apple.name+'</b><br><span class="mut">'+S.apple.id+' — iCloud</span></span></div>':
 '<div class="card" style="display:flex;gap:12px;align-items:center;padding:13px;cursor:pointer" id="profCard"><span style="width:52px;height:52px;border-radius:50%;background:#e9e9ee;display:flex;align-items:center;justify-content:center">'+g('person','#8e8e93',26)+'</span><span style="flex:1"><b style="font-size:15px">تسجيل الدخول إلى iPad</b><br><span class="mut">iCloud وApp Store والرسائل</span></span></div>';
@@ -291,7 +294,7 @@ row('نقطة اتصال شخصية',sq('#34c759','radio-outline',15),arrow)+'</
 '<div class="setgroup">'+
 row('الإشعارات',sq('#ff3b30','notifications',15),arrow,'nc')+
 row('الأصوات والحس اللمسي',sq('#fc3c44','volume-high',15),arrow)+
-row('التركيز',sq('#5e5ce6','moon',15),'<label class="switch"><input type="checkbox" id="swDnd" '+(s.dnd?'checked':'')+'><i></i></label>')+
+row('التركيز',sq('#5e5ce6','moon',15),'<label class="switch"><input type="checkbox" id="swDnd" '+(s.dnd?'checked':'')+'><i></i></label>','focus')+
 row('مدة استخدام الجهاز',sq('#5e5ce6','timer',15),arrow,'usage')+'</div>'+
 '<div class="setgroup">'+
 row('عام',sq('#8e8e93','settings',16),arrow,'about')+
@@ -299,8 +302,9 @@ row('مركز التحكم',sq('#8e8e93','options',15),arrow,'cc')+
 row('المظهر',sq('#3a3a3c','moon',15),'<span><button class="btn '+(S.set.dark?'gray':'')+'" data-dm="0" style="padding:6px 12px">فاتح</button> <button class="btn '+(S.set.dark?'':'gray')+'" data-dm="1" style="padding:6px 12px">داكن</button></span>'),
 row('خلفية الشاشة',sq('#5e5ce6','image',15),arrow,'wall'),
 row('الشاشة والسطوع',sq('#0a84ff','sunny',15),'<span style="display:flex;align-items:center;gap:6px;width:130px"><input type="range" id="setBright" min="10" max="100" value="'+s.bright+'" style="flex:1"></span>')+
-row('الشاشة الرئيسية',sq('#ff9500','grid',15),arrow)+
-row('إمكانية الوصول',sq('#0a84ff','accessibility',16),arrow)+
+row('الشاشة الرئيسية',sq('#ff9500','grid',15),arrow,'home')+
+row('شاشة القفل',sq('#3a3a3c','lock-closed',15),arrow,'lockset')+
+row('إمكانية الوصول',sq('#0a84ff','accessibility',16),arrow,'acc')+
 row('الخلفية',sq('#30b0c7','image',15),arrow)+
 row('البطارية',sq('#34c759','battery-charging',15),'<span class="mut">'+arabNum(Math.round(S.batt.pct))+'٪</span>'+arrow,'battery')+
 row('الخصوصية والأمان',sq('#0a84ff','shield-checkmark',15),arrow)+'</div>'+
@@ -316,13 +320,14 @@ bind('#swAir',e=>{S.set.airplane=e.target.checked;store.set('set',S.set);renderS
 bind('#swBt',e=>{S.set.bt=e.target.checked;store.set('set',S.set);renderStatus()});
 bind('#swDnd',e=>{S.set.dnd=e.target.checked;store.set('set',S.set);renderCC&&null});
 const br=$('#setBright');if(br)br.addEventListener('input',e=>{S.set.bright=+e.target.value;store.set('set',S.set);renderStatus()});
-el.querySelectorAll('[data-setact]').forEach(r=>r.addEventListener('click',()=>{
+el.querySelectorAll('[data-setact]').forEach(r=>r.addEventListener('click',e=>{
+if(e.target.closest('label.switch'))return;
 const a=r.dataset.setact;
-if(a==='about'||a==='battery'||a==='wifi'||a==='wall'){S.setPage=a;appSettings(el)}
-else if(a==='nc')showNC();
+if(['about','battery','wifi','wall','ncset','focus','screen','acc','home','lockset'].includes(a)){S.setPage=a;appSettings(el)}
+else if(a==='nc'){S.setPage='ncset';appSettings(el)}
 else if(a==='cc'){closeApp();setTimeout(showCC,380)}
 else if(a==='store'){openApp('appstore',null)}
-else if(a==='usage'){S.setPage='battery';appSettings(el)}
+else if(a==='usage'){S.setPage='screen';appSettings(el)}
 }));
 }
 const STORE=[
@@ -387,7 +392,7 @@ function doGet(k,btn,el){
 if(!S.apple.id){toast('سجل دخولك بـ Apple ID حتى تنزل — روح للإعدادات أو اضغط تسجيل الدخول');appleSignInForm(el,()=>appStore(el));return}
 if(S.installed.includes(k)){S.storeDetail=null;openApp('x_'+k,null);return}
 btn.textContent='...';
-setTimeout(()=>{S.installed.push(k);store.set('installed',S.installed);renderHome();S.storeDetail=null;appStore(el);toast('انثبت '+STORE.find(a=>a.k===k).n+' على الشاشة الرئيسية')},750);
+setTimeout(()=>{S.installed.push(k);store.set('installed',S.installed);renderHome();S.storeDetail=null;appStore(el);toast('انثبت '+STORE.find(a=>a.k===k).n+' على الشاشة الرئيسية');notify('appstore','App Store','اكتمل تثبيت '+STORE.find(a=>a.k===k).n,null,{pop:false})},750);
 }
 const SITES=[
 ['Apple','#111','apple','موقع آبل الحقيقي','https://picsum.photos/seed/riosf1/640/340','يفتح موقع آبل الرسمي على جهازك.','https://www.apple.com'],
@@ -426,7 +431,10 @@ el.querySelectorAll('[data-alb]').forEach(r=>r.addEventListener('click',()=>{S.a
 if(S.musicPlay){const iv=setInterval(()=>{if(S.app!=='music'){clearInterval(iv);return}const b=$('#musBar');if(b){let w=parseFloat(b.style.width)||0;w+=2;if(w>100)w=0;b.style.width=w+'%'}},300)}
 }
 function appClock(el){
-el.innerHTML='<div class="card" style="text-align:center;padding:24px"><canvas id="clk" width="180" height="180"></canvas><div class="big" id="clkT" style="margin-top:8px"></div></div>';
+el.innerHTML='<div class="card" style="text-align:center;padding:20px"><canvas id="clk" width="180" height="180"></canvas><div class="big" id="clkT" style="margin-top:6px"></div></div>'+
+'<div class="card"><b>المنبه</b><div id="alList" style="margin-top:6px"></div><div class="row" style="margin-top:8px"><input type="time" id="alTime" style="flex:1;padding:9px;border:1px solid #d9d9de;border-radius:10px"><button class="btn" id="alAdd">إضافة</button></div></div>'+
+'<div class="card"><b>المؤقت</b><div id="tmState" class="mut" style="margin:6px 0">ما مشغل مؤقت</div><div class="row"><input type="number" id="tmMin" placeholder="دقائق" style="flex:1;padding:9px;border:1px solid #d9d9de;border-radius:10px"><button class="btn" id="tmStart">ابدأ</button><button class="btn gray" id="tmStop">إيقاف</button></div></div>'+
+'<div class="card"><b>ساعة إيقاف</b><div id="swState" style="font-size:22px;font-weight:700;margin:6px 0">0.0</div><div class="row"><button class="btn" id="swStart">ابدأ</button><button class="btn gray" id="swLap">لفة</button><button class="btn gray" id="swReset">تصفير</button></div><div id="swLaps" class="mut" style="margin-top:6px"></div></div>';
 const draw=()=>{const c=$('#clk');if(!c||S.app!=='clock')return;const x=c.getContext('2d'),d=new Date();
 x.clearRect(0,0,180,180);x.fillStyle='#111';x.beginPath();x.arc(90,90,84,0,7);x.fill();
 x.fillStyle='#fff';for(let i=0;i<12;i++){const a=i*Math.PI/6;x.fillRect(90+Math.sin(a)*72-1.5,90-Math.cos(a)*72-5,3,10)}
@@ -436,10 +444,26 @@ x.lineWidth=4;x.beginPath();x.moveTo(90,90);x.lineTo(90+Math.sin(ma)*64,90-Math.
 x.strokeStyle='#ff9f0a';x.lineWidth=2;x.beginPath();x.moveTo(90,90);x.lineTo(90+Math.sin(sa)*70,90-Math.cos(sa)*70);x.stroke();
 $('#clkT').textContent=fmtTime();setTimeout(draw,500)};
 draw();
+const drawA=()=>{const l=$('#alList');if(!l)return;
+l.innerHTML=(S.alarms||[]).length?S.alarms.map((a,i)=>'<div class="row" style="justify-content:space-between;padding:5px 0"><span style="font-size:19px;font-weight:600">'+arabNum(a.t)+'</span><label class="switch"><input type="checkbox" data-alon="'+i+'" '+(a.on?'checked':'')+'><i></i></label><button class="btn red" data-aldel="'+i+'" style="padding:5px 9px">حذف</button></div>').join(''):'<div class="mut">لا منبهات — ضيف واحد من جوّه</div>';
+l.querySelectorAll('[data-alon]').forEach(c=>c.addEventListener('change',()=>{S.alarms[+c.dataset.alon].on=c.checked;store.set('alarms',S.alarms)}));
+l.querySelectorAll('[data-aldel]').forEach(b=>b.addEventListener('click',()=>{S.alarms.splice(+b.dataset.aldel,1);store.set('alarms',S.alarms);drawA()}))};
+drawA();
+$('#alAdd').addEventListener('click',()=>{const v=$('#alTime').value;if(!v)return toast('اختر وقت للمنبه');S.alarms.push({t:v,on:1});store.set('alarms',S.alarms);drawA();updWidgets();toast('انضبط منبه '+v)});
+const updTm=()=>{const s2=$('#tmState');if(!s2)return;if(S.timerEnd){const left=Math.max(0,Math.round((S.timerEnd-Date.now())/1000));s2.textContent='باقي '+Math.floor(left/60)+':'+String(left%60).padStart(2,'0')}else s2.textContent='ما مشغل مؤقت'};
+updTm();const tmIv=setInterval(()=>{if(S.app!=='clock'){clearInterval(tmIv);return}updTm()},500);
+$('#tmStart').addEventListener('click',()=>{const m=+$('#tmMin').value;if(!m)return toast('اكتب الدقائق');S.timerEnd=Date.now()+m*60000;S.timerKind='المؤقت';updTm();renderLockX();toast('اشتغل المؤقت')});
+$('#tmStop').addEventListener('click',()=>{S.timerEnd=0;updTm();renderLockX();toast('وقف المؤقت')});
+let swOn=false,swT0=0,swAcc=0,swIv=null;
+const swDraw=()=>{const e2=$('#swState');if(e2)e2.textContent=((swAcc+(swOn?Date.now()-swT0:0))/1000).toFixed(1)};
+$('#swStart').addEventListener('click',e=>{if(swOn){swOn=false;swAcc+=Date.now()-swT0;clearInterval(swIv);e.target.textContent='ابدأ'}else{swOn=true;swT0=Date.now();swIv=setInterval(()=>{if(S.app!=='clock'){clearInterval(swIv);return}swDraw()},100);e.target.textContent='وقف'}swDraw()});
+$('#swLap').addEventListener('click',()=>{const l=$('#swLaps');if(l)l.innerHTML='لفة: '+((swAcc+(swOn?Date.now()-swT0:0))/1000).toFixed(1)+' ثا<br>'+l.innerHTML});
+$('#swReset').addEventListener('click',()=>{swOn=false;swAcc=0;clearInterval(swIv);const b=$('#swStart');if(b)b.textContent='ابدأ';const l=$('#swLaps');if(l)l.innerHTML='';swDraw()});
 }
 function appNotes(el){
-el.innerHTML='<textarea id="noteTxt" placeholder="اكتب ملاحظة…" style="width:100%;height:260px;border:none;border-radius:12px;padding:12px;font-size:15px;background:#fff">'+S.notes.replace(/</g,'&lt;')+'</textarea><p class="mut" style="margin-top:8px">تنحفظ الملاحظة بالآيباد.</p>';
+el.innerHTML='<textarea id="noteTxt" placeholder="اكتب ملاحظة…" style="width:100%;height:230px;border:none;border-radius:12px;padding:12px;font-size:15px;background:#fff">'+S.notes.replace(/</g,'&lt;')+'</textarea><p class="mut" style="margin-top:8px">تنحفظ الملاحظة بالآيباد.</p><button class="btn gray" id="noteShare" style="margin-top:6px">مشاركة الملاحظة</button>';
 $('#noteTxt').addEventListener('input',e=>{S.notes=e.target.value;store.set('notes',S.notes)});
+$('#noteShare').addEventListener('click',()=>showShare({text:S.notes||'ملاحظة فارغة',title:'ملاحظة من Rio iPad'}));
 }
 function appCalc(el){
 let expr='';
@@ -510,7 +534,7 @@ el.innerHTML='<div class="card"><div class="big" style="font-size:18px;color:#ff
 $('#lockGlyph').innerHTML=g('lock-closed','#fff',30);
 $('#lockTorch').innerHTML=g('flashlight','#fff',21);
 $('#lockCam').innerHTML=g('camera','#fff',21);
-function unlock(){if(!S.locked)return;S.locked=false;const L=$('#lock');L.classList.add('bye');setTimeout(()=>{L.classList.remove('show','bye');syncPill()},470)}
+function unlock(){if(!S.locked)return;S.locked=false;sfx('unlock');const L=$('#lock');L.classList.add('bye');setTimeout(()=>{L.classList.remove('show','bye');syncPill()},470)}
 $('#lock').addEventListener('click',()=>unlock());
 $('#lockTorch').addEventListener('click',e=>{e.stopPropagation();unlock();S.set.flash=!S.set.flash;store.set('set',S.set);toast(S.set.flash?'المصباح يعمل':'المصباح انطفأ')});
 $('#lockCam').addEventListener('click',e=>{e.stopPropagation();unlock();setTimeout(()=>openApp('camera'),480)});
@@ -671,20 +695,26 @@ function applyTheme(){
 const wi=$('#wallImg');if(wi&&WPS[S.set.wp||0])wi.src=WPS[S.set.wp||0];
 $('#ipad').classList.toggle('dark',!!S.set.dark);
 }
-const LIBCATS=[['التواصل الاجتماعي',['whatsapp','telegram','messenger','instagram','facebook','snapchat','x','discord','messages','phone','facetime']],['الترفيه',['youtube','tiktok','music','roblox','photos','camera']],['الأدوات والإنتاجية',['settings','appstore','safari','maps','weather','clock','calendar','calc','notes']]];
+const LIBCATS=[['التواصل الاجتماعي',['whatsapp','telegram','messenger','instagram','facebook','snapchat','x','discord','messages','phone','facetime']],['الترفيه',['youtube','tiktok','music','roblox','photos','camera']],['الأدوات والإنتاجية',['settings','appstore','safari','maps','weather','clock','calendar','calc','notes','files','shortcuts']]];
 function spotRender(q){
 const allA=APPS.concat(S.installed.filter(id=>EXTRA[id]).map(id=>({id:'x_'+id,n:EXTRA[id].n,ic:EXTRA[id].ic,extra:id})));
 const name=a=>a.extra?EXTRA[a.extra].n:a.n;
 const cell=a=>'<button class="app" data-spotapp="'+a.id+'" style="background:none;border:none;cursor:pointer">'+icImg(ICONS[a.ic])+'<span class="nm">'+name(a)+'</span></button>';
 let h='';
 if(q){const list=allA.filter(a=>name(a).toLowerCase().includes(q.toLowerCase())||a.id.includes(q.toLowerCase()));
-h=list.length?'<div class="spotGrid">'+list.map(cell).join('')+'</div>':'<div style="text-align:center;padding:22px;opacity:.8">لا نتائج</div>';}
+h=list.length?'<div class="spotGrid">'+list.map(cell).join('')+'</div>':'';
+let ex='';
+if(S.notes&&S.notes.includes(q))ex+='<div class="spotRes" data-spotopen="notes"><b>ملاحظة</b><span>'+escH(S.notes.slice(0,60))+'…</span></div>';
+if(q.includes('صور')||q.toLowerCase().includes('photo'))ex+='<div class="spotRes" data-spotopen="photos"><b>الصور</b><span>'+arabNum(S.photos.length+8)+' صورة بالمعرض</span></div>';
+if((S.alarms||[]).length&&(q.includes('منبه')||q.toLowerCase().includes('alarm')))ex+='<div class="spotRes" data-spotopen="clock"><b>المنبه</b><span>'+S.alarms.filter(a=>a.on).map(a=>arabNum(a.t)).join('، ')+'</span></div>';
+h+=ex;if(!h)h='<div style="text-align:center;padding:22px;opacity:.8">لا نتائج</div>';}
 else h='<div style="font-weight:700;margin-top:16px;font-size:15px">مكتبة التطبيقات</div>'+LIBCATS.map(c=>{
 const items=allA.filter(a=>c[1].includes(a.extra||a.id));
 return items.length?'<div style="margin-top:14px"><div style="font-size:13px;opacity:.85;font-weight:600">'+c[0]+'</div><div class="spotGrid">'+items.map(cell).join('')+'</div></div>':''}).join('');
 $('#spotBody').innerHTML=h;
 $('#spotBody').querySelectorAll('[data-spotapp]').forEach(b=>b.addEventListener('click',()=>{$('#spot').classList.remove('open');
 const id=b.dataset.spotapp;id.startsWith('x_')?openExtra(id.slice(2)):openApp(id);}));
+$('#spotBody').querySelectorAll('[data-spotopen]').forEach(b=>b.addEventListener('click',()=>{$('#spot').classList.remove('open');openApp(b.dataset.spotopen,null)}));
 }
 $('#spotPill').addEventListener('click',()=>{$('#spot').classList.add('open');spotRender('');setTimeout(()=>{const i=$('#spotInp');i&&i.focus()},60)});
 $('#spotClose').addEventListener('click',()=>$('#spot').classList.remove('open'));
