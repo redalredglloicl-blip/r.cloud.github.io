@@ -2,78 +2,616 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>عالم ريو 🌍</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Rio iPad 1.0</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{width:100%;height:100%;overflow:hidden;background:#0b0f1a;font-family:'Segoe UI',Tahoma,Arial,sans-serif;touch-action:none;user-select:none}
-#game{position:fixed;inset:0}
-/* ===== شاشة التحميل الاحترافية ===== */
-#load{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 25%,#1a2b4d 0%,#0b0f1a 65%);color:#fff;padding:24px;text-align:center}
-#load .logo{font-size:64px;margin-bottom:8px;animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-#load h1{font-size:32px;margin-bottom:4px;background:linear-gradient(90deg,#4fc3f7,#a5ff8a);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-#dlTitle{font-size:16px;color:#cfe3ff;margin:14px 0 6px;font-weight:bold}
-#pct{font-size:52px;font-weight:800;color:#fff;margin-bottom:10px;text-shadow:0 0 24px rgba(79,195,247,.5)}
-#barWrap{width:min(400px,86vw);height:14px;background:#1a2540;border:1px solid #2a3a55;border-radius:10px;overflow:hidden;margin-bottom:10px;box-shadow:inset 0 2px 6px rgba(0,0,0,.5)}
-#bar{height:100%;width:0%;border-radius:10px;background:linear-gradient(90deg,#2e9bd6,#4fc3f7,#a5ff8a);background-size:200% 100%;animation:shimmer 1.6s linear infinite;transition:width .25s}
-@keyframes shimmer{to{background-position:-200% 0}}
-#dlInfo{font-size:13px;color:#8fa8c8;margin-bottom:6px;direction:ltr}
-#dlInfo b{color:#4fc3f7}
-#loadMsg{font-size:13px;color:#9fd8ff;line-height:1.8;max-width:430px;min-height:24px}
-#loadCtl{margin-top:16px;font-size:12px;color:#5a6f8f;line-height:2}
-#ver{position:absolute;bottom:12px;color:#3a4a63;font-size:12px;direction:ltr}
-/* ===== HUD ===== */
-#hud{position:fixed;inset:0;z-index:20;pointer-events:none;display:none}
-#title{position:absolute;top:10px;right:50%;transform:translateX(50%);background:rgba(0,0,0,.5);color:#fff;border-radius:20px;padding:7px 20px;font-size:14px;font-weight:bold}
-#credit{position:absolute;bottom:12px;left:10px;color:#ffffff88;font-size:10px;background:rgba(0,0,0,.35);padding:4px 10px;border-radius:10px}
-#hver{position:absolute;bottom:12px;right:10px;color:#ffffff66;font-size:10px;direction:ltr}
-#mmap{position:absolute;top:10px;left:10px;width:132px;height:132px;border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(5,10,20,.72);box-shadow:0 4px 16px rgba(0,0,0,.4)}
-/* ===== الجويستك الجديد ===== */
-#touch{position:fixed;inset:0;z-index:25;pointer-events:none;display:none}
-#joy{position:absolute;bottom:64px;left:24px;width:128px;height:128px;border-radius:50%;pointer-events:auto;
-  background:radial-gradient(circle,rgba(79,195,247,.10) 0%,rgba(79,195,247,.03) 70%);
-  border:2px solid rgba(79,195,247,.45);
-  box-shadow:0 0 22px rgba(79,195,247,.22),inset 0 0 28px rgba(79,195,247,.10)}
-#joy::before{content:'';position:absolute;inset:26px;border-radius:50%;border:1px dashed rgba(79,195,247,.25)}
-#knob{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;
-  background:radial-gradient(circle at 35% 30%,#d6f1ff,#4fc3f7 65%,#2e9bd6);
-  border:2px solid rgba(255,255,255,.55);
-  box-shadow:0 6px 18px rgba(79,195,247,.55)}
-#jumpBtn{position:absolute;bottom:74px;right:28px;width:76px;height:76px;border-radius:50%;color:#fff;font-size:15px;font-weight:bold;pointer-events:auto;display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(circle at 35% 30%,rgba(165,255,138,.85),rgba(102,187,106,.85));
-  border:2px solid rgba(255,255,255,.5);box-shadow:0 6px 18px rgba(102,187,106,.4)}
-#jumpBtn:active{transform:scale(.93)}
-#msg{position:fixed;top:60px;right:50%;transform:translateX(50%);z-index:30;background:rgba(0,0,0,.75);color:#ffe082;border-radius:12px;padding:10px 20px;font-size:14px;display:none;max-width:90vw;text-align:center}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{height:100%;overflow:hidden;background:#79b5ff;font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif}
+#game{position:fixed;inset:0;overflow:hidden}
+#world{position:absolute;inset:0;width:100%;height:100%;display:block}
+/* ===== game chrome ===== */
+#verTag{position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;z-index:40;background:rgba(10,20,40,.55);color:#fff;font-size:12px;font-weight:700;padding:5px 10px;border-radius:20px;backdrop-filter:blur(4px)}
+#btnMenu{position:absolute;top:calc(env(safe-area-inset-top,0px) + 8px);left:12px;z-index:40;width:44px;height:44px;border:none;border-radius:12px;background:rgba(10,20,40,.55);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer}
+#btnMenu span{display:block;width:20px;height:3px;border-radius:2px;background:#fff}
+#joy{position:absolute;left:22px;bottom:calc(env(safe-area-inset-bottom,0px) + 96px);z-index:40;width:118px;height:118px;border-radius:50%;background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.35);backdrop-filter:blur(2px);touch-action:none}
+#joyKnob{position:absolute;left:50%;top:50%;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.55);border:2px solid rgba(255,255,255,.8);transform:translate(-50%,-50%);pointer-events:none}
+#sideBtns{position:absolute;right:18px;bottom:calc(env(safe-area-inset-bottom,0px) + 110px);z-index:40;display:flex;flex-direction:column;gap:12px}
+.gbtn{width:58px;height:58px;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:rgba(10,20,40,.5);color:#fff;font-size:11px;font-weight:700;cursor:pointer;backdrop-filter:blur(3px)}
+.gbtn:active{transform:scale(.93)}
+#hint{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 8px);z-index:39;background:rgba(10,20,40,.55);color:#fff;font-size:12px;padding:6px 14px;border-radius:16px;white-space:nowrap}
+/* ===== iPad (small, in hands) ===== */
+#padWrap{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 34px);transform:translateX(-50%);z-index:30;width:250px;height:172px;transition:all .45s cubic-bezier(.2,.9,.25,1);cursor:pointer;filter:drop-shadow(0 18px 22px rgba(0,20,50,.45))}
+#padWrap.up{width:min(94vw,430px);height:min(72vh,620px);bottom:calc(env(safe-area-inset-bottom,0px) + 86px);cursor:default;z-index:35}
+#ipad{position:absolute;inset:0;background:#111318;border-radius:26px;padding:11px;box-shadow:inset 0 0 0 2px #2c2f36}
+#screen{position:relative;width:100%;height:100%;border-radius:17px;overflow:hidden;background:#000;direction:ltr}
+#wall{position:absolute;inset:0;background:linear-gradient(160deg,#3a7bd5 0%,#7d5fd0 45%,#e2698a 100%)}
+#dim{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:5}
+#statusbar{position:absolute;top:0;left:0;right:0;height:26px;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:2px 14px 0;color:#fff;font-size:12.5px;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#statusbar .sicons{display:flex;align-items:center;gap:5px}
+#homeApps{position:absolute;inset:0;padding:40px 16px 64px;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:min-content;gap:15px 8px;align-content:start;z-index:10}
+.app{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;background:none;border:none}
+.app:active .ic{transform:scale(.88)}
+.app .ic{width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;transition:transform .12s;box-shadow:0 3px 8px rgba(0,0,0,.25);position:relative}
+.app .nm{color:#fff;font-size:10.5px;font-weight:500;text-shadow:0 1px 3px rgba(0,0,0,.5);max-width:64px;text-align:center;line-height:1.1}
+.badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;border-radius:9px;background:#ff3b30;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;border:1.5px solid #fff}
+#dock{position:absolute;left:10px;right:10px;bottom:8px;z-index:10;background:rgba(255,255,255,.22);backdrop-filter:blur(10px);border-radius:22px;padding:7px 10px;display:flex;justify-content:space-around}
+#dock .ic{width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,.25)}
+#homeBar{position:absolute;left:50%;transform:translateX(-50%);bottom:3px;width:120px;height:4px;border-radius:2px;background:rgba(255,255,255,.85);z-index:60;cursor:pointer}
+/* ===== app window ===== */
+#appWin{position:absolute;inset:0;z-index:30;background:#f2f2f7;display:none;flex-direction:column}
+#appWin.open{display:flex}
+#appHead{height:46px;flex:0 0 46px;display:flex;align-items:center;gap:8px;padding:26px 12px 6px;background:rgba(249,249,252,.92);border-bottom:1px solid #d9d9de;font-weight:700;font-size:16px;color:#111}
+#appHead .back{margin-left:auto;background:none;border:none;color:#007aff;font-size:14px;cursor:pointer;font-weight:600}
+#appBody{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+/* ===== control center ===== */
+#cc{position:absolute;inset:0;z-index:50;background:rgba(30,32,38,.45);backdrop-filter:blur(16px);display:none;padding:44px 18px 18px;color:#fff}
+#cc.open{display:block}
+.ccgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.ccbtn{aspect-ratio:1;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
+.ccbtn.on{background:#0a84ff}
+.ccbtn svg{width:26px;height:26px}
+.ccslider{grid-column:span 2;background:rgba(255,255,255,.2);border-radius:18px;padding:10px 12px}
+.ccslider label{font-size:11px;opacity:.9}
+.ccslider input{width:100%;accent-color:#fff}
+.ccwide{grid-column:span 4;background:rgba(255,255,255,.2);border-radius:18px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;font-size:13px}
+.ccwide button{background:#fff;border:none;border-radius:12px;padding:6px 12px;font-weight:700;cursor:pointer}
+/* ===== banner / call / modal ===== */
+#banner{position:absolute;top:34px;left:10px;right:10px;z-index:55;background:rgba(250,250,252,.94);border-radius:18px;padding:10px 12px;display:none;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.3);cursor:pointer;color:#111}
+#banner.show{display:flex}
+#banner .bt{font-size:12.5px}
+#banner .bt b{display:block;font-size:13px}
+#callUI{position:absolute;inset:0;z-index:56;background:linear-gradient(180deg,#2b3a55,#101623);display:none;flex-direction:column;align-items:center;padding:70px 20px 30px;color:#fff;text-align:center}
+#callUI.show{display:flex}
+#callUI .avatarFace{width:96px;height:96px;border-radius:50%;margin-bottom:12px}
+.callBtns{margin-top:auto;display:flex;gap:44px}
+.callBtn{width:64px;height:64px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#lowBatt{position:absolute;inset:0;z-index:57;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center}
+#lowBatt.show{display:flex}
+#lowBatt .box{background:#f7f7fa;border-radius:16px;width:78%;padding:18px 16px 10px;text-align:center;color:#111}
+#lowBatt .box h3{font-size:16px;margin-bottom:6px}
+#lowBatt .box p{font-size:13px;color:#333;margin-bottom:12px}
+#lowBatt .box button{width:100%;background:none;border:none;border-top:1px solid #ddd;padding:11px;color:#007aff;font-size:15px;font-weight:600;cursor:pointer}
+#dead{position:absolute;inset:0;z-index:58;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;color:#fff;gap:14px;text-align:center;padding:20px}
+#dead.show{display:flex}
+#dead button{background:#1c1c1e;color:#fff;border:1px solid #3a3a3c;border-radius:12px;padding:10px 18px;font-size:14px;cursor:pointer}
+/* ===== generic app UI ===== */
+.card{background:#fff;border-radius:14px;padding:12px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.row{display:flex;align-items:center;gap:10px}
+.mut{color:#8e8e93;font-size:12px}
+.big{font-size:15px;font-weight:600;color:#111}
+input[type=text],textarea{font-family:inherit}
+.btn{background:#007aff;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-weight:600;cursor:pointer;font-size:13px}
+.btn.gray{background:#e9e9ee;color:#111}
+.btn.red{background:#ff3b30}
+.switch{margin-right:auto;position:relative;width:46px;height:28px;flex:0 0 46px}
+.switch input{opacity:0;width:100%;height:100%;position:absolute;margin:0;cursor:pointer;z-index:2}
+.switch i{position:absolute;inset:0;background:#e3e3e8;border-radius:20px;transition:.2s}
+.switch i:after{content:'';position:absolute;left:2px;top:2px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:.2s}
+.switch input:checked + i{background:#34c759}
+.switch input:checked + i:after{left:20px}
+.setrow{display:flex;align-items:center;gap:10px;background:#fff;padding:11px 12px;border-bottom:1px solid #eee;font-size:14px;color:#111}
+.setrow:first-child{border-radius:14px 14px 0 0}.setrow:last-child{border-radius:0 0 14px 14px;border-bottom:none}
+.setgroup{border-radius:14px;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+/* roblox app */
+.rbx-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.rbx-head .logo{width:38px;height:38px;border-radius:9px;background:#191b1e;display:flex;align-items:center;justify-content:center}
+.rbx-sec{font-size:16px;font-weight:700;color:#111;margin:14px 0 8px}
+.friends{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px}
+.friend{flex:0 0 auto;text-align:center;width:60px}
+.friend .fa{width:52px;height:52px;border-radius:50%;margin:0 auto 4px;border:2px solid #e3e3e8}
+.friend .fn{font-size:10.5px;color:#333;line-height:1.1}
+.gcard{display:flex;gap:10px;background:#fff;border-radius:14px;padding:9px;margin-bottom:9px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06);align-items:center}
+.gcard .thumb{width:74px;height:56px;border-radius:9px;flex:0 0 74px;position:relative;overflow:hidden}
+.gcard .thumb:after{content:'▶';position:absolute;right:6px;bottom:4px;color:#fff;font-size:11px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+/* photos */
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.pgrid img,.pgrid .ph{width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px;cursor:pointer}
+/* messages */
+.msg{max-width:75%;padding:8px 12px;border-radius:18px;margin-bottom:7px;font-size:14px;line-height:1.35;width:fit-content}
+.msg.me{background:#0a84ff;color:#fff;margin-right:auto;border-bottom-right-radius:4px;direction:rtl}
+.msg.them{background:#e9e9eb;color:#111;border-bottom-left-radius:4px;direction:rtl}
+/* start + menu overlays */
+#startScreen{position:absolute;inset:0;z-index:80;background:linear-gradient(180deg,#6fb1ff 0%,#a8d4ff 45%,#e8f4ff 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px}
+#startScreen h1{font-size:40px;color:#0b2a5b;letter-spacing:.5px}
+#startScreen .sub{color:#274b7a;font-size:15px;max-width:320px;line-height:1.6}
+#btnPlay{background:#0a84ff;color:#fff;border:none;font-size:19px;font-weight:800;padding:14px 58px;border-radius:16px;cursor:pointer;box-shadow:0 10px 24px rgba(10,132,255,.4)}
+#btnPlay:active{transform:scale(.96)}
+#startScreen .ver{background:rgba(11,42,91,.75);color:#fff;padding:5px 14px;border-radius:14px;font-size:13px;font-weight:700}
+#menuOverlay{position:absolute;inset:0;z-index:70;background:rgba(8,12,22,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center}
+#menuOverlay.show{display:flex}
+#menuOverlay .mbox{background:#17191d;border-radius:18px;padding:20px;width:78%;max-width:300px;text-align:center;color:#fff}
+#menuOverlay .mbox h3{margin-bottom:14px;font-size:17px}
+#menuOverlay .mbox button{width:100%;padding:12px;margin-bottom:9px;border:none;border-radius:12px;background:#2c2f36;color:#fff;font-size:15px;font-weight:600;cursor:pointer}
+#menuOverlay .mbox button.leave{background:#3a2226;color:#ff6b62}
+#toast{position:absolute;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 62px);z-index:90;background:rgba(10,20,40,.85);color:#fff;font-size:13px;padding:8px 16px;border-radius:16px;display:none;max-width:86%;text-align:center}
+canvas#camView{width:100%;border-radius:12px;background:#000}
+.hidden{display:none!important}
 </style>
 </head>
 <body>
-<div id="game"></div>
-<div id="load">
-  <div class="logo">🌍</div>
-  <h1>عالم ريو</h1>
-  <div id="dlTitle">جاري تنزيل الموارد...</div>
-  <div id="pct">0%</div>
-  <div id="barWrap"><div id="bar"></div></div>
-  <div id="dlInfo"><b id="dlDone">0.0</b> / <span id="dlTotal">15.2</span> MB &nbsp;•&nbsp; المتبقي <b id="dlLeft">15.2</b> MB</div>
-  <div id="loadMsg"></div>
-  <button id="retryBtn" style="display:none;margin-top:14px;padding:12px 30px;border-radius:12px;border:none;background:linear-gradient(135deg,#4fc3f7,#2e9bd6);color:#fff;font-size:15px;font-weight:bold;cursor:pointer">🔄 إعادة المحاولة</button>
-  <div id="loadCtl">🕹️ WASD / الأسهم للمشي &nbsp;•&nbsp; Shift للركض &nbsp;•&nbsp; مسافة للقفز &nbsp;•&nbsp; اسحب لتدوير الكاميرا</div>
-  <div id="ver">v2.0</div>
+<div id="game">
+  <canvas id="world"></canvas>
+  <div id="verTag">Rio iPad 1.0</div>
+  <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
+  <div id="joy"><div id="joyKnob"></div></div>
+  <div id="sideBtns">
+    <button class="gbtn" id="btnPad">الآيباد</button>
+    <button class="gbtn" id="btnJump">اقفز</button>
+  </div>
+  <div id="hint">اسحب العصا للمشي، ودوس على الآيباد حتى تستعمله</div>
+
+  <!-- iPad -->
+  <div id="padWrap">
+    <div id="ipad"><div id="screen">
+      <div id="wall"></div>
+      <div id="homeApps"></div>
+      <div id="dock"></div>
+      <div id="dim"></div>
+      <div id="statusbar"><span id="sbTime">9:41</span><span class="sicons" id="sbIcons"></span></div>
+      <div id="appWin"><div id="appHead"><span id="appTitle">App</span><button class="back" id="appBack">إغلاق ✕</button></div><div id="appBody"></div></div>
+      <div id="cc"></div>
+      <div id="banner"></div>
+      <div id="callUI"></div>
+      <div id="lowBatt"><div class="box"><h3>Low Battery</h3><p id="lowBattTxt">20% of battery is remaining.</p><button id="lowBattOk">Close</button></div></div>
+      <div id="dead"><svg width="70" height="34" viewBox="0 0 70 34"><rect x="2" y="2" width="60" height="30" rx="7" fill="none" stroke="#ff3b30" stroke-width="3"/><rect x="6" y="6" width="7" height="22" rx="3" fill="#ff3b30"/><path d="M65 12v10a5 5 0 0 0 0-10z" fill="#8e8e93"/></svg><div>بطارية الآيباد خلصت</div><button id="btnCharge">اشحنه</button></div>
+      <div id="homeBar"></div>
+    </div></div>
+  </div>
+
+  <!-- Roblox-style menu -->
+  <div id="menuOverlay"><div class="mbox">
+    <h3>Rio iPad</h3>
+    <button id="mResume">متابعة اللعب</button>
+    <button id="mReset">إعادة الشخصية</button>
+    <button class="leave" id="mLeave">مغادرة اللعبة</button>
+  </div></div>
+
+  <!-- Start -->
+  <div id="startScreen">
+    <svg width="86" height="64" viewBox="0 0 86 64"><rect x="3" y="3" width="80" height="58" rx="9" fill="#111318"/><rect x="8" y="8" width="70" height="48" rx="5" fill="#3a7bd5"/><rect x="14" y="14" width="12" height="12" rx="3" fill="#191b1e"/><rect x="30" y="14" width="12" height="12" rx="3" fill="#19b845"/><rect x="46" y="14" width="12" height="12" rx="3" fill="#fff"/><rect x="14" y="30" width="12" height="12" rx="3" fill="#0a84ff"/><rect x="30" y="30" width="12" height="12" rx="3" fill="#f92c4c"/><rect x="46" y="30" width="12" height="12" rx="3" fill="#ffd93b"/></svg>
+    <h1>Rio iPad</h1>
+    <div class="sub">لعبة آيباد كاملة داخل عالم مفتوح: امشِ بالعصا، ارفع الآيباد واستعمله مثل الحقيقي، العب روبلوكس داخله، واستقبل مكالمات وصوّر واحفظ بالمعرض.</div>
+    <button id="btnPlay">▶ العب</button>
+    <div class="ver">Rio iPad 1.0</div>
+  </div>
+  <div id="toast"></div>
 </div>
-<div id="hud">
-  <div id="title">🌍 عالم ريو</div>
-  <canvas id="mmap" width="132" height="132"></canvas>
-  <div id="credit"></div>
-  <div id="hver">v2.0</div>
-</div>
-<div id="msg"></div>
-<div id="touch">
-  <div id="joy"><div id="knob"></div></div>
-  <div id="jumpBtn">قفز</div>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-<script src="game.js?v=2.0"></script>
+<script>
+'use strict';
+/* ================= helpers / storage ================= */
+const $=s=>document.querySelector(s);
+const store={
+  get(k,d){try{const v=localStorage.getItem('rioipad-'+k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem('rioipad-'+k,JSON.stringify(v))}catch(e){}}
+};
+function toast(t,ms){const el=$('#toast');el.textContent=t;el.style.display='block';clearTimeout(el._h);el._h=setTimeout(()=>el.style.display='none',ms||2400)}
+/* ================= state ================= */
+const S={
+  playing:false, padUp:false, app:null,
+  cam:{x:0,z:0}, joy:{x:0,y:0}, jumpY:0, vy:0, jumping:false, deadFall:0,
+  batt: store.get('batt',{pct:87,charging:false,usage:{}}),
+  set: store.get('set',{wifi:true,bt:true,airplane:false,dnd:false,bright:80,vol:60,flash:false}),
+  photos: store.get('photos',[]),
+  installed: store.get('installed',[]),
+  notes: store.get('notes',''),
+  warned20:false, warned10:false, callTimer:null, callSec:0, musicPlay:false
+};
+/* ================= world ================= */
+const cv=$('#world'), ctx=cv.getContext('2d');
+let W=0,H=0;
+function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+addEventListener('resize',resize);resize();
+const avatars=[];
+for(let i=0;i<7;i++)avatars.push({x:(Math.random()*40-20),z:12+Math.random()*46,sp:.008+Math.random()*.02,dir:Math.random()<.5?1:-1,skin:['#f2c89b','#c68863','#8d5524','#ffd7b3'][i%4],shirt:['#e74c3c','#2ecc71','#3498db','#f39c12','#9b59b6','#1abc9c','#e67e22'][i%7],phase:Math.random()*6});
+const blocks=[];
+for(let i=0;i<14;i++)blocks.push({x:(Math.random()*56-28),z:8+Math.random()*55,h:.8+Math.random()*2.2,c:['#8ec9ff','#ffd28e','#b5e7a0','#ffb3c1','#c5b3ff'][i%5]});
+function drawFigure(x,y,s,skin,shirt,walk){
+  ctx.fillStyle=skin;ctx.fillRect(x-0.16*s,y-1.62*s,0.32*s,0.32*s); // head
+  ctx.fillStyle='#20242a';ctx.fillRect(x-0.16*s,y-1.62*s,0.32*s,0.07*s); // hair
+  ctx.fillStyle=shirt;ctx.fillRect(x-0.19*s,y-1.3*s,0.38*s,0.55*s); // torso
+  ctx.fillStyle='#2f4a7a';
+  const off=walk?Math.sin(walk)*0.08*s:0;
+  ctx.fillRect(x-0.17*s,y-0.75*s,0.14*s,0.75*s);ctx.fillRect(x+0.03*s,y-0.75*s+ (walk? -Math.abs(off)*0.4:0),0.14*s,0.75*s);
+  ctx.fillStyle=shirt;ctx.fillRect(x-0.3*s,y-1.28*s,0.1*s,0.5*s);ctx.fillRect(x+0.2*s,y-1.28*s,0.1*s,0.5*s);
+}
+function drawWorld(t){
+  // sky
+  const sky=ctx.createLinearGradient(0,0,0,H*0.6);
+  sky.addColorStop(0,'#5ea9ff');sky.addColorStop(1,'#cfeaff');
+  ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#fff7ae';ctx.beginPath();ctx.arc(W*0.82,H*0.13,30,0,7);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.9)';
+  for(let i=0;i<4;i++){const cx=((i*331+t*0.006)%(W+220))-110,cy=H*0.08+i*26;
+    ctx.beginPath();ctx.ellipse(cx,cy,44,13,0,0,7);ctx.ellipse(cx+26,cy+3,30,10,0,0,7);ctx.fill()}
+  const hz=H*0.56 + S.jumpY*0.4 + S.deadFall*H*0.2;
+  // floor
+  ctx.fillStyle='#e8edf5';ctx.fillRect(0,hz,W,H-hz);
+  const vx=W/2, span=64;
+  ctx.strokeStyle='#9db6d9';ctx.lineWidth=1.4;
+  // vertical rays
+  for(let i=-14;i<=14;i++){
+    const gx=((i*span - (S.cam.x*22 % span)) );
+    ctx.beginPath();ctx.moveTo(vx+gx*0.12,hz);ctx.lineTo(vx+gx*3.4,H);ctx.stroke();
+  }
+  // horizontal lines moving
+  const off=(S.cam.z*30)%46;
+  for(let r=0;r<11;r++){
+    const p=(r+off/46)/11, y=hz+Math.pow(p,1.7)*(H-hz);
+    ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();
+  }
+  // objects + avatars projected
+  const items=[];
+  blocks.forEach(b=>{const dz=b.z-S.cam.z;if(dz>2&&dz<70)items.push({dz,k:'b',o:b})});
+  avatars.forEach(a=>{const dz=a.z-S.cam.z;if(dz>2&&dz<70)items.push({dz,k:'a',o:a})});
+  items.sort((p,q)=>q.dz-p.dz);
+  items.forEach(it=>{
+    const s=(H*0.62)/it.dz, x=vx+(it.o.x-S.cam.x)*s*0.9, base=hz+(Math.pow(1/it.dz,0.4))*(H-hz)*0.92 + S.jumpY*0.2;
+    if(it.k==='b'){const bw=s*0.9,bh=s*it.o.h;ctx.fillStyle=it.o.c;ctx.fillRect(x-bw/2,base-bh,bw,bh);ctx.fillStyle='rgba(255,255,255,.35)';ctx.fillRect(x-bw/2,base-bh,bw,5)}
+    else drawFigure(x,base,s*0.9,it.o.skin,it.o.shirt,t*0.006*it.o.dir*8+it.o.phase);
+  });
+  if(S.deadFall>0){ctx.fillStyle='rgba(0,0,0,'+(S.deadFall*0.5)+')';ctx.fillRect(0,0,W,H)}
+}
+let lastT=0;
+function loop(t){
+  requestAnimationFrame(loop);
+  if(!S.playing)return;
+  const dt=Math.min(50,t-lastT);lastT=t;
+  // move
+  S.cam.x+=S.joy.x*dt*0.006; S.cam.z-=S.joy.y*dt*0.006;
+  if(S.cam.z<0)S.cam.z=0;
+  avatars.forEach(a=>{a.z-=a.sp*dt*0.06*a.dir;if(a.z<S.cam.z+4)a.z=S.cam.z+40+Math.random()*20;if(a.z>S.cam.z+70)a.z=S.cam.z+5});
+  // jump physics (visual: iPad + world bob)
+  if(S.jumping){S.vy-=0.0016*dt;S.jumpY+=S.vy*dt*0.06;if(S.jumpY<=0){S.jumpY=0;S.jumping=false}}
+  const bob=(Math.abs(S.joy.x)+Math.abs(S.joy.y))>0.1?Math.sin(t*0.012)*4:0;
+  $('#padWrap').style.marginBottom=(S.jumpY*46+bob)+'px';
+  $('#padWrap').style.transform='translateX(-50%) rotate('+(S.deadFall*38)+'deg)';
+  drawWorld(t);
+}
+requestAnimationFrame(loop);
+/* ================= game controls ================= */
+const joy=$('#joy'),knob=$('#joyKnob');let joyId=null;
+function joyMove(e){const r=joy.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+  let dx=e.clientX-cx,dy=e.clientY-cy;const m=Math.hypot(dx,dy),max=r.width/2-8;
+  if(m>max){dx*=max/m;dy*=max/m}
+  knob.style.transform='translate(calc(-50% + '+dx+'px),calc(-50% + '+dy+'px))';
+  S.joy.x=dx/max;S.joy.y=-dy/max}
+joy.addEventListener('pointerdown',e=>{joyId=e.pointerId;joy.setPointerCapture(e.pointerId);joyMove(e)});
+joy.addEventListener('pointermove',e=>{if(e.pointerId===joyId)joyMove(e)});
+['pointerup','pointercancel'].forEach(ev=>joy.addEventListener(ev,e=>{if(e.pointerId===joyId){joyId=null;S.joy.x=0;S.joy.y=0;knob.style.transform='translate(-50%,-50%)'}}));
+$('#btnJump').addEventListener('click',()=>{if(!S.jumping){S.jumping=true;S.vy=0.55}});
+$('#padWrap').addEventListener('click',e=>{if(!S.padUp){S.padUp=true;$('#padWrap').classList.add('up');tickUse('تصفح الآيباد')}});
+$('#btnPad').addEventListener('click',()=>{S.padUp=!S.padUp;$('#padWrap').classList.toggle('up',S.padUp)});
+$('#homeBar').addEventListener('click',e=>{e.stopPropagation();closeApp();hideCC()});
+$('#btnMenu').addEventListener('click',()=>$('#menuOverlay').classList.add('show'));
+$('#mResume').addEventListener('click',()=>$('#menuOverlay').classList.remove('show'));
+$('#mReset').addEventListener('click',()=>{
+  $('#menuOverlay').classList.remove('show');
+  let p=0;const iv=setInterval(()=>{p+=0.08;S.deadFall=Math.min(1,p);
+    if(p>=1){clearInterval(iv);S.cam.x=0;S.cam.z=0;setTimeout(()=>{S.deadFall=0;toast('رجعت من جديد')},350)}},40);
+});
+$('#mLeave').addEventListener('click',()=>{$('#menuOverlay').classList.remove('show');S.playing=false;$('#startScreen').style.display='flex'});
+$('#btnPlay').addEventListener('click',()=>{
+  $('#startScreen').style.display='none';S.playing=true;lastT=performance.now();
+  toast('امشِ بالعصا ودوس على الآيباد حتى يكبر');
+  scheduleCall(); scheduleMsg();
+});
+function scheduleCall(){setTimeout(()=>{if(S.playing)incomingCall()},26000)}
+function scheduleMsg(){setTimeout(()=>{if(S.playing){showBanner('Messages','أحمد: وينك؟ تعال نلعب 😄',()=>{raisePad();openApp('messages')});
+  S.msgs.push({me:false,t:'وينك؟ تعال نلعب 😄'});store.set('msgs',S.msgs);updBadges()}},45000)}
+</script>
+<script>
+/* ================= iPad OS ================= */
+function svg(p,bg){return '<span class="ic" style="background:'+bg+'"><svg width="30" height="30" viewBox="0 0 24 24" fill="none">'+p+'</svg></span>'}
+const IC={
+ roblox:()=>svg('<rect x="5" y="5" width="14" height="14" rx="2" transform="rotate(12 12 12)" fill="#fff"/><rect x="10" y="10" width="4.4" height="4.4" transform="rotate(12 12 12)" fill="#191b1e"/>','#191b1e'),
+ facetime:()=>svg('<rect x="3" y="7" width="12" height="10" rx="2.5" fill="#fff"/><path d="M15 10.5l6-3.5v10l-6-3.5z" fill="#fff"/>','linear-gradient(160deg,#5be584,#19b845)'),
+ camera:()=>svg('<rect x="3" y="7" width="18" height="13" rx="2.5" fill="#e8e8ec"/><rect x="9" y="4.5" width="6" height="3.4" rx="1.2" fill="#e8e8ec"/><circle cx="12" cy="13.4" r="3.6" fill="#3a3f47"/><circle cx="12" cy="13.4" r="1.7" fill="#7fb2ff"/>','linear-gradient(160deg,#f4f4f6,#c9ccd4)'),
+ photos:()=>{let p='';const cols=['#f7b733','#e74c3c','#9b59b6','#3498db','#2ecc71','#f39c12','#e84393','#00b8a9'];for(let i=0;i<8;i++)p+='<ellipse cx="12" cy="7.4" rx="2.1" ry="4" fill="'+cols[i]+'" opacity=".75" transform="rotate('+(i*45)+' 12 12)"/>';return svg(p,'#fff')},
+ messages:()=>svg('<path d="M12 4c5 0 9 3.2 9 7.2 0 4-4 7.3-9 7.3-1 0-2-.14-2.9-.4L4 20l1.2-3.4C3.8 15.2 3 13.3 3 11.2 3 7.2 7 4 12 4z" fill="#fff"/>','linear-gradient(160deg,#63e57c,#12b76a)'),
+ settings:()=>{let p='<circle cx="12" cy="12" r="3.2" fill="#8e8e93"/>';for(let i=0;i<8;i++)p+='<rect x="11" y="3" width="2" height="4.4" rx="1" fill="#8e8e93" transform="rotate('+(i*45)+' 12 12)"/>';return svg(p+'<circle cx="12" cy="12" r="1.3" fill="#f2f2f7"/>','linear-gradient(160deg,#e8e8ec,#b9bcc4)')},
+ appstore:()=>svg('<path d="M12 4.6L8 14.2h2.5l1.5-3.7 1.5 3.7H16z" fill="#fff"/><path d="M6.4 16.8l2.6-5.4 1.8 1.5-2.2 4.6zM17.6 16.8l-2.6-5.4-1.8 1.5 2.2 4.6z" fill="#fff"/><rect x="8.2" y="15.2" width="7.6" height="1.7" fill="#fff"/>','linear-gradient(160deg,#1ec3f7,#0a6cff)'),
+ safari:()=>svg('<circle cx="12" cy="12" r="8.6" fill="#fff"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="#e74c3c"/><path d="M15.5 8.5l-2 5-3.5-3.5z" fill="#0a84ff"/>','linear-gradient(160deg,#37b6ff,#0a5cff)'),
+ music:()=>svg('<path d="M9 18V6l10-2v11.5" stroke="#fff" stroke-width="2" fill="none"/><circle cx="6.8" cy="18" r="2.4" fill="#fff"/><circle cx="16.8" cy="15.5" r="2.4" fill="#fff"/>','linear-gradient(160deg,#fc6a85,#f92c4c)'),
+ clock:()=>{let p='<circle cx="12" cy="12" r="8.6" fill="#111"/>';for(let i=0;i<12;i++)p+='<rect x="11.7" y="4.4" width=".6" height="1.6" fill="#fff" transform="rotate('+(i*30)+' 12 12)"/>';return svg(p+'<path d="M12 12V8" stroke="#fff" stroke-width="1.6"/><path d="M12 12l3.2 2" stroke="#ff9f0a" stroke-width="1.4"/>','#111')},
+ notes:()=>svg('<rect x="4" y="3.4" width="16" height="17" rx="2" fill="#fff"/><rect x="4" y="3.4" width="16" height="4.6" rx="2" fill="#ffd93b"/><path d="M7 11h10M7 14h10M7 17h6" stroke="#c9c9ce" stroke-width="1.4"/>','linear-gradient(160deg,#ffffff,#e9e9ee)'),
+ calc:()=>svg('<rect x="5" y="3.4" width="14" height="17" rx="2" fill="#1c1c1e"/><rect x="7.4" y="5.6" width="9.2" height="3.4" rx="1" fill="#a5e8a1"/><g fill="#ff9f0a"><circle cx="8.6" cy="12" r="1.15"/><circle cx="12" cy="12" r="1.15"/><circle cx="15.4" cy="12" r="1.15"/><circle cx="8.6" cy="15.6" r="1.15"/><circle cx="12" cy="15.6" r="1.15"/><circle cx="15.4" cy="15.6" r="1.15"/></g>','#333'),
+ phone:()=>svg('<path d="M6.6 3.8c.6-.6 1.6-.5 2.1.2l1.6 2c.5.6.4 1.5-.1 2.1L9 9.3c.9 1.9 2.8 3.8 4.7 4.7l1.2-1.2c.6-.5 1.5-.6 2.1-.1l2 1.6c.7.5.8 1.5.2 2.1l-1.1 1.2c-.6.6-1.4.9-2.2.7C10.6 17.2 6.8 13.4 5.7 8.1c-.2-.8.1-1.6.7-2.2z" fill="#fff"/>','linear-gradient(160deg,#63e57c,#12b76a)'),
+ tiktok:()=>svg('<path d="M14 4v10.5a3.9 3.9 0 1 1-3.2-3.8" stroke="#fff" stroke-width="2.2" fill="none"/><path d="M14 4c.4 2.3 2 3.9 4.2 4.2" stroke="#25f4ee" stroke-width="2.2" fill="none"/>','#000'),
+ minecraft:()=>svg('<rect x="4" y="8" width="16" height="12" fill="#6abe30"/><rect x="4" y="8" width="16" height="4" fill="#8a5a2b"/><rect x="7" y="13" width="3" height="3" fill="#20242a"/><rect x="14" y="13" width="3" height="3" fill="#20242a"/><rect x="10.5" y="16.4" width="3" height="2.4" fill="#20242a"/>','linear-gradient(180deg,#79c94f,#4e9b2a)'),
+ subway:()=>svg('<rect x="5" y="6" width="14" height="11" rx="2" fill="#ffd93b"/><rect x="7.4" y="9" width="9.2" height="4" rx="1" fill="#37b6ff"/><circle cx="8.6" cy="15.4" r="1.1" fill="#e74c3c"/><circle cx="15.4" cy="15.4" r="1.1" fill="#fff"/>','linear-gradient(160deg,#ff9f0a,#ff6a00)'),
+ puzzle:()=>svg('<path d="M9 4h6v4a2.4 2.4 0 1 0 0 4v8H7v-6a2.4 2.4 0 1 0 0-4.8V4h2z" fill="#fff"/>','linear-gradient(160deg,#b06ee8,#7d3ff2)')
+};
+const APPS=[
+ {id:'roblox',n:'Roblox',ic:'roblox'},
+ {id:'facetime',n:'FaceTime',ic:'facetime'},
+ {id:'camera',n:'Camera',ic:'camera'},
+ {id:'photos',n:'Photos',ic:'photos',badge:()=>S.photos.length||''},
+ {id:'messages',n:'Messages',ic:'messages'},
+ {id:'appstore',n:'App Store',ic:'appstore'},
+ {id:'safari',n:'Safari',ic:'safari'},
+ {id:'music',n:'Music',ic:'music'},
+ {id:'clock',n:'Clock',ic:'clock'},
+ {id:'notes',n:'Notes',ic:'notes'},
+ {id:'calc',n:'Calculator',ic:'calc'},
+ {id:'settings',n:'Settings',ic:'settings'}
+];
+const EXTRA={
+ tiktok:{n:'TikTok',ic:'tiktok'}, minecraft:{n:'Minecraft',ic:'minecraft'},
+ subway:{n:'Subway Run',ic:'subway'}, puzzle:{n:'Puzzle Quest',ic:'puzzle'}
+};
+function appIcon(a){
+  const b=a.badge?a.badge():'';
+  return '<button class="app" data-app="'+a.id+'">'+IC[a.ic]()+'<span class="nm">'+a.n+'</span>'+(b!==''&&b!==0?'<span style="position:relative"></span>':'')+'</button>'
+}
+function renderHome(){
+  const all=APPS.concat(S.installed.map(id=>({id:'x_'+id,n:EXTRA[id].n,ic:EXTRA[id].ic})));
+  $('#homeApps').innerHTML=all.map(a=>{
+    const b=(a.id==='photos'&&S.photos.length)?'<span class="badge">'+S.photos.length+'</span>':'';
+    return '<button class="app" data-app="'+a.id+'"><span style="position:relative;display:block">'+IC[a.ic]().replace('class="ic"','class="ic"')+b+'</span><span class="nm">'+a.n+'</span></button>'
+  }).join('');
+  $('#dock').innerHTML=['phone','safari','messages','music'].map(id=>{
+    const a=APPS.find(x=>x.id===id)||{n:id,ic:id};
+    return '<span data-app="'+id+'">'+IC[a.ic||id]()+'</span>'
+  }).join('');
+  document.querySelectorAll('[data-app]').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();raisePad();openApp(el.dataset.app)}));
+}
+function raisePad(){if(!S.padUp){S.padUp=true;$('#padWrap').classList.add('up')}}
+/* status bar + battery */
+function fmtTime(){const d=new Date();let h=d.getHours()%12;if(h===0)h=12;return h+':'+String(d.getMinutes()).padStart(2,'0')}
+function renderStatus(){
+  $('#sbTime').textContent=fmtTime();
+  const p=Math.round(S.batt.pct);
+  const bars=S.set.airplane?'✈':(S.set.wifi?'<svg width="16" height="11" viewBox="0 0 16 12"><path d="M8 10.6a1.4 1.4 0 1 1 0 .01zM5.2 8.2a4.2 4.2 0 0 1 5.6 0l-1.4 1.5a2.4 2.4 0 0 0-2.8 0zM2.6 5.4a8 8 0 0 1 10.8 0L12 7a6.2 6.2 0 0 0-8 0z" fill="#fff"/></svg>':'<span style="font-size:10px">5G</span>');
+  const fillW=Math.max(4,20*p/100);
+  $('#sbIcons').innerHTML='<span style="font-size:11px">'+(S.set.airplane?'':p+'%')+'</span>'+bars+
+   '<svg width="27" height="12" viewBox="0 0 27 12"><rect x="0.5" y="0.5" width="22" height="11" rx="3.5" fill="none" stroke="rgba(255,255,255,.6)"/><rect x="2" y="2" width="'+fillW+'" height="8" rx="2" fill="'+(S.batt.charging?'#34c759':(p<=20?'#ff3b30':'#fff'))+'"/><path d="M24.5 4v4a2.2 2.2 0 0 0 0-4z" fill="rgba(255,255,255,.6)"/>'+(S.batt.charging?'<path d="M13.4 2.6L9.8 6.6h2.4l-.8 2.8 3.6-4h-2.4z" fill="#111"/>':'')+'</svg>';
+  $('#dim').style.opacity=String((80-S.set.bright)/100*0.55);
+}
+function tickUse(name){const u=S.batt.usage;u[name]=(u[name]||0)+1;store.set('batt',S.batt)}
+setInterval(()=>{
+  renderStatus();
+  const drainBase=0.0016*(0.5+S.set.bright/100)*(S.app==='camera'||S.app==='roblox'?2.6:1)*(S.padUp?1.4:0.5);
+  if(S.batt.charging){S.batt.pct=Math.min(100,S.batt.pct+0.03)}
+  else if(S.playing){S.batt.pct=Math.max(0,S.batt.pct-drainBase)}
+  if(S.app)tickUse(S.app);
+  if(S.batt.pct<=20&&S.batt.pct>10&&!S.warned20&&S.playing&&!S.batt.charging){S.warned20=true;$('#lowBattTxt').textContent='20% of battery is remaining.';$('#lowBatt').classList.add('show')}
+  if(S.batt.pct<=10&&!S.warned10&&S.playing&&!S.batt.charging){S.warned10=true;$('#lowBattTxt').textContent='10% of battery is remaining.';$('#lowBatt').classList.add('show')}
+  if(S.batt.pct>25){S.warned20=false} if(S.batt.pct>15){S.warned10=false}
+  if(S.batt.pct<=0&&S.playing){$('#dead').classList.add('show');closeApp();hideCC()}
+  store.set('batt',S.batt);
+},1000);
+$('#lowBattOk').addEventListener('click',()=>$('#lowBatt').classList.remove('show'));
+$('#btnCharge').addEventListener('click',()=>{S.batt.charging=true;S.batt.pct=Math.max(S.batt.pct,6);$('#dead').classList.remove('show');toast('الآيباد جاي ينشحن ⚡');renderStatus()});
+/* control center */
+function ccSVG(p){return '<svg viewBox="0 0 24 24" fill="none">'+p+'</svg>'}
+function renderCC(){
+  const s=S.set;
+  const btn=(k,p,on)=>'<button class="ccbtn '+(on?'on':'')+'" data-cc="'+k+'">'+ccSVG(p)+'</button>';
+  $('#cc').innerHTML='<div class="ccgrid">'+
+   btn('airplane','<path d="M3 11l18-7-6 16-3.5-6.5L3 11z" fill="#fff"/>',s.airplane)+
+   btn('wifi','<path d="M12 17.6a1.6 1.6 0 1 1 0 .01zM7.8 13.8a6.4 6.4 0 0 1 8.4 0M5 10.4a10.4 10.4 0 0 1 14 0" stroke="#fff" stroke-width="1.8"/>',s.wifi&&!s.airplane)+
+   btn('bt','<path d="M7 8l10 8-5 4V4l5 4L7 16" stroke="#fff" stroke-width="1.8" fill="none"/>',s.bt)+
+   btn('dnd','<path d="M19 14.5A7.5 7.5 0 1 1 9.5 5 6 6 0 0 0 19 14.5z" fill="#fff"/>',s.dnd)+
+   '<div class="ccslider"><label>السطوع</label><input type="range" id="ccBright" min="10" max="100" value="'+s.bright+'"></div>'+
+   '<div class="ccslider"><label>الصوت</label><input type="range" id="ccVol" min="0" max="100" value="'+s.vol+'"></div>'+
+   '<div class="ccwide"><span>البطارية '+Math.round(S.batt.pct)+'٪'+(S.batt.charging?' — جاي ينشحن':'')+'</span><button id="ccCharge">'+(S.batt.charging?'إيقاف الشحن':'اشحن')+'</button></div>'+
+   '<div class="ccwide"><span>اضغط بره حتى تسد مركز التحكم</span></div></div>';
+  document.querySelectorAll('[data-cc]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const k=b.dataset.cc;S.set[k]=!S.set[k];store.set('set',S.set);renderCC();renderStatus()}));
+  $('#ccBright').addEventListener('input',e=>{S.set.bright=+e.target.value;store.set('set',S.set);renderStatus()});
+  $('#ccVol').addEventListener('input',e=>{S.set.vol=+e.target.value;store.set('set',S.set)});
+  $('#ccCharge').addEventListener('click',e=>{e.stopPropagation();S.batt.charging=!S.batt.charging;store.set('batt',S.batt);renderCC();renderStatus()});
+}
+function showCC(){renderCC();$('#cc').classList.add('open')}
+function hideCC(){$('#cc').classList.remove('open')}
+$('#cc').addEventListener('click',e=>{if(e.target.id==='cc')hideCC()});
+$('#statusbar').addEventListener('click',e=>{e.stopPropagation();raisePad();if(S.padUp)showCC()});
+/* banner */
+function showBanner(app,text,fn){const b=$('#banner');b.innerHTML='<span style="flex:0 0 auto">'+IC[app==='Messages'?'messages':'facetime']().replace('30','24').replace('30','24')+'</span><span class="bt"><b>'+app+'</b>'+text+'</span>';
+  b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
+  setTimeout(()=>b.classList.remove('show'),6000)}
+function updBadges(){renderHome()}
+</script>
+<script>
+/* ================= app framework ================= */
+S.msgs=store.get('msgs',[{me:false,t:'هلا! شفت الآيباد الجديد؟'}]);
+function openApp(id){
+  hideCC();
+  if(id==='phone'){toast('المكالمات داخل FaceTime هنا');id='facetime'}
+  if(id&&id.startsWith('x_')){const k=id.slice(2);return openExtra(k)}
+  S.app=id; tickUse(id);
+  const names={roblox:'Roblox',facetime:'FaceTime',camera:'Camera',photos:'Photos',messages:'Messages',appstore:'App Store',safari:'Safari',music:'Music',clock:'Clock',notes:'Notes',calc:'Calculator',settings:'Settings'};
+  $('#appTitle').textContent=names[id]||id;
+  $('#appWin').classList.add('open');
+  ({roblox:appRoblox,facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,settings:appSettings}[id]||(()=>{}))($('#appBody'));
+}
+function closeApp(){S.app=null;$('#appWin').classList.remove('open');stopCam()}
+$('#appBack').addEventListener('click',e=>{e.stopPropagation();closeApp()});
+function openExtra(k){
+  S.app='x_'+k;$('#appTitle').textContent=EXTRA[k].n;$('#appWin').classList.add('open');
+  $('#appBody').innerHTML='<div class="card" style="text-align:center;padding:28px 14px"><div style="display:flex;justify-content:center;margin-bottom:10px">'+IC[EXTRA[k].ic]()+'</div><div class="big">'+EXTRA[k].n+'</div><p class="mut" style="margin-top:6px">انثبت على الآيباد ويشتغل من الشاشة الرئيسية.</p><button class="btn" style="margin-top:12px" onclick="closeApp()">تمام</button></div>';
+}
+/* ================= Roblox ================= */
+const FRIENDS=[['Eno','#e74c3c'],['Ahmad','#3498db'],['Sara','#e84393'],['Omar','#2ecc71'],['Lina','#f39c12'],['Yusuf','#9b59b6'],['Nora','#1abc9c'],['Khalid','#e67e22']];
+const GAMES=[['Adopt Me!','2.1M','#ff9ff3'],['Escape Obby!','845K','#54a0ff'],['Tower of Fun','1.3M','#5f27cd'],['Pet Simulator','976K','#ff9f43'],['Brook Village RP','3.4M','#1dd1a1'],['Hide and Seek','512K','#ee5253'],['Speed Run 4','689K','#48dbfb'],['Natural Disaster','1.1M','#fca311']];
+function faceSVG(c,s){return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 48 48"><circle cx="24" cy="24" r="24" fill="'+c+'"/><rect x="16" y="14" width="16" height="14" rx="3" fill="#f2c89b"/><rect x="16" y="11" width="16" height="6" rx="3" fill="#20242a"/><circle cx="20.5" cy="21" r="1.6" fill="#20242a"/><circle cx="27.5" cy="21" r="1.6" fill="#20242a"/><path d="M20 25q4 3 8 0" stroke="#20242a" stroke-width="1.6" fill="none"/><rect x="17" y="29" width="14" height="9" rx="2" fill="#fff" opacity=".85"/></svg>'}
+function appRoblox(el){
+  el.innerHTML=
+  '<div class="rbx-head"><span class="logo"><svg width="22" height="22" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2" transform="rotate(12 12 12)" fill="#fff"/><rect x="10" y="10" width="4.4" height="4.4" transform="rotate(12 12 12)" fill="#191b1e"/></svg></span><div><div class="big">Home</div><div class="mut">@rio_player</div></div></div>'+
+  '<input type="text" placeholder="Search" style="width:100%;padding:10px 12px;border:none;border-radius:10px;background:#e9e9ee;font-size:14px" readonly>'+
+  '<div class="rbx-sec">Connections</div><div class="friends">'+FRIENDS.map(f=>'<div class="friend"><div class="fa" style="background:none;border:none">'+faceSVG(f[1],52)+'</div><div class="fn">'+f[0]+'</div></div>').join('')+'</div>'+
+  '<div class="rbx-sec">Continue</div>'+
+  GAMES.map((g,i)=>'<div class="gcard" data-game="'+i+'"><span class="thumb" style="background:linear-gradient(140deg,'+g[2]+',#222f3e)"></span><span><span class="big">'+g[0]+'</span><br><span class="mut">▶ '+g[1]+' يلعبون هسه</span></span></div>').join('')+
+  '<p class="mut" style="text-align:center;margin-top:8px">هذا روبلوكس محاكاة داخل اللعبة، مو حسابك الحقيقي.</p>';
+  el.querySelectorAll('[data-game]').forEach(c=>c.addEventListener('click',()=>playFakeGame(GAMES[+c.dataset.game][0])));
+}
+function playFakeGame(name){
+  const el=$('#appBody');
+  el.innerHTML='<div class="card" style="text-align:center;padding:22px 14px"><div class="big" style="font-size:19px">'+name+'</div><p class="mut" style="margin:8px 0 14px">جاي تحمل اللعبة…</p><div style="height:8px;background:#e9e9ee;border-radius:5px;overflow:hidden"><div id="loadBar" style="height:100%;width:5%;background:#0a84ff;transition:width .3s"></div></div></div>';
+  let p=5;const iv=setInterval(()=>{p+=16;const b=$('#loadBar');if(b)b.style.width=Math.min(100,p)+'%';
+    if(p>=100){clearInterval(iv);
+      el.innerHTML='<div class="card" style="text-align:center;padding:18px 12px"><canvas id="miniGame" width="320" height="190" style="width:100%;border-radius:12px;background:linear-gradient(180deg,#5ea9ff,#e8f4ff)"></canvas><p class="mut" style="margin:10px 0">أنت داخل «'+name+'» — لعبة مصغرة داخل روبلوكس داخل الآيباد 😄</p><button class="btn red" id="leaveGame">Leave — اطلع من اللعبة</button></div>';
+      const mc=$('#miniGame'),mg=mc.getContext('2d');let fx=20;
+      const miv=setInterval(()=>{if(!document.body.contains(mc)){clearInterval(miv);return}
+        mg.clearRect(0,0,320,190);mg.fillStyle='#e8edf5';mg.fillRect(0,140,320,50);
+        mg.strokeStyle='#9db6d9';for(let i=0;i<9;i++){mg.beginPath();mg.moveTo(i*40,140);mg.lineTo(i*40-14,190);mg.stroke()}
+        for(let i=0;i<4;i++){mg.fillStyle=['#e74c3c','#2ecc71','#3498db','#f39c12'][i];mg.fillRect(40+i*70,96,26,44)}
+        mg.fillStyle='#f2c89b';mg.fillRect(fx,84,20,18);mg.fillStyle='#e74c3c';mg.fillRect(fx-2,102,24,26);mg.fillStyle='#2f4a7a';mg.fillRect(fx-2,128,10,20);mg.fillRect(fx+12,128,10,20);
+        fx+=3;if(fx>300)fx=10},60);
+      $('#leaveGame').addEventListener('click',()=>appRoblox(el));
+    }},220);
+}
+/* ================= FaceTime ================= */
+function appFaceTime(el){
+  el.innerHTML='<div class="rbx-sec" style="margin-top:2px">جهات الاتصال</div>'+
+   FRIENDS.map((f,i)=>'<div class="card row"><span>'+faceSVG(f[1],42)+'</span><span style="flex:1"><span class="big">'+f[0]+'</span><br><span class="mut">FaceTime</span></span><button class="btn" data-call="'+i+'">اتصال</button></div>').join('');
+  el.querySelectorAll('[data-call]').forEach(b=>b.addEventListener('click',()=>startCall(FRIENDS[+b.dataset.call],false)));
+}
+function incomingCall(){
+  const f=FRIENDS[0];
+  if(!S.padUp){showBanner('FaceTime','مكالمة واردة من '+f[0],()=>{raisePad();startCall(f,true)});return}
+  startCall(f,true);
+}
+function startCall(f,incoming){
+  const ui=$('#callUI');
+  ui.innerHTML='<div>'+faceSVG(f[1],96).replace('class','x')+'</div><div style="font-size:22px;font-weight:700">'+f[0]+'</div><div id="callState" style="opacity:.85;margin-top:4px">'+(incoming?'FaceTime واردة…':'جاي يتصل…')+'</div>'+
+   '<div class="callBtns">'+(incoming?'<button class="callBtn" style="background:#ff3b30" id="callDecline"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M4 9c5-3.4 11-3.4 16 0l-2 3c-.4.6-1.2.8-1.9.5l-2.4-1a13 13 0 0 1-3.4 0l-2.4 1c-.7.3-1.5.1-1.9-.5z" fill="#fff"/></svg></button>':'')+
+   '<button class="callBtn" style="background:#34c759" id="callAccept"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M6.6 3.8c.6-.6 1.6-.5 2.1.2l1.6 2c.5.6.4 1.5-.1 2.1L9 9.3c.9 1.9 2.8 3.8 4.7 4.7l1.2-1.2c.6-.5 1.5-.6 2.1-.1l2 1.6c.7.5.8 1.5.2 2.1l-1.1 1.2c-.6.6-1.4.9-2.2.7C10.6 17.2 6.8 13.4 5.7 8.1c-.2-.8.1-1.6.7-2.2z" fill="#fff"/></svg></button></div>';
+  ui.classList.add('show');
+  const dec=$('#callDecline');if(dec)dec.addEventListener('click',()=>{ui.classList.remove('show');showBanner('FaceTime','مكالمة فائتة من '+f[0],null);scheduleCallLater()});
+  $('#callAccept').addEventListener('click',()=>{
+    $('#callState').textContent='00:00';
+    S.callSec=0;clearInterval(S.callTimer);
+    S.callTimer=setInterval(()=>{S.callSec++;const m=String(Math.floor(S.callSec/60)).padStart(2,'0'),ss=String(S.callSec%60).padStart(2,'0');const st=$('#callState');if(st)st.textContent=m+':'+ss},1000);
+    ui.querySelector('.callBtns').innerHTML='<button class="callBtn" style="background:#ff3b30" id="callEnd"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M4 9c5-3.4 11-3.4 16 0l-2 3c-.4.6-1.2.8-1.9.5l-2.4-1a13 13 0 0 1-3.4 0l-2.4 1c-.7.3-1.5.1-1.9-.5z" fill="#fff"/></svg></button>';
+    $('#callEnd').addEventListener('click',()=>{clearInterval(S.callTimer);ui.classList.remove('show');toast('انتهت المكالمة')});
+  });
+}
+function scheduleCallLater(){setTimeout(()=>{if(S.playing)incomingCall()},50000)}
+/* ================= Camera & Photos ================= */
+let camStream=null, selfieMode=true;
+async function appCamera(el){
+  el.innerHTML='<canvas id="camView" width="340" height="250"></canvas>'+
+   '<div class="row" style="margin-top:10px;justify-content:center;gap:10px"><button class="btn gray" id="camFlip">سيلفي / عالم</button><button class="btn" id="camShoot" style="border-radius:50%;width:58px;height:58px;font-size:12px">صوّر</button></div><p class="mut" style="text-align:center;margin-top:8px">إذا سمحت للكاميرا تنفتح كامرتك الحقيقية، وإذا لا يتصور عالم اللعبة.</p>';
+  const cvs=$('#camView'),cx=cvs.getContext('2d');
+  let video=null;
+  try{camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});
+    video=document.createElement('video');video.srcObject=camStream;video.setAttribute('playsinline','');await video.play();
+  }catch(e){camStream=null}
+  let alive=true;
+  const draw=()=>{if(!document.body.contains(cvs)){alive=false;return}
+    if(video){cx.save();cx.scale(-1,1);cx.drawImage(video,-340,0,340,250);cx.restore()}
+    else{cx.drawImage(cv,0,0,340,250);
+      if(selfieMode){cx.fillStyle='rgba(0,0,0,.12)';cx.fillRect(0,0,340,250);
+        cx.fillStyle='#f2c89b';cx.fillRect(140,80,60,55);cx.fillStyle='#20242a';cx.fillRect(140,72,60,16);
+        cx.fillStyle='#e74c3c';cx.fillRect(134,135,72,60)}}
+    if(alive)requestAnimationFrame(draw)};
+  draw();
+  $('#camFlip').addEventListener('click',()=>{selfieMode=!selfieMode});
+  $('#camShoot').addEventListener('click',()=>{
+    const out=document.createElement('canvas');out.width=320;out.height=235;
+    out.getContext('2d').drawImage(cvs,0,0,320,235);
+    S.photos.unshift(out.toDataURL('image/jpeg',0.72));
+    if(S.photos.length>12)S.photos.pop();
+    store.set('photos',S.photos);renderHome();
+    toast('انحفظت الصورة بالمعرض');
+  });
+}
+function stopCam(){if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null}}
+const SAMPLE_PHOTOS=[];
+(function(){const cols=[['#ff9a9e','#fecfef'],['#a1c4fd','#c2e9fb'],['#84fab0','#8fd3f4'],['#fbc2eb','#a6c1ee']];
+ cols.forEach((c,i)=>{SAMPLE_PHOTOS.push({sample:i,cols:c})})})();
+function appPhotos(el){
+  const items=S.photos.map(p=>({src:p})).concat(S.photos.length?[]:SAMPLE_PHOTOS);
+  el.innerHTML='<div class="rbx-sec" style="margin-top:2px">المعرض — '+S.photos.length+' صورة منك</div><div class="pgrid">'+
+   items.map((p,i)=>p.src?'<img src="'+p.src+'" data-ph="'+i+'">':'<div class="ph" data-ph="'+i+'" style="background:linear-gradient(140deg,'+p.cols[0]+','+p.cols[1]+');display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">Rio</div>').join('')+'</div>'+
+   (S.photos.length?'':'<p class="mut" style="margin-top:10px">بعدك ما مصور شي — افتح الكاميرا وصوّر أول صورة.</p>');
+  el.querySelectorAll('[data-ph]').forEach(im=>im.addEventListener('click',()=>{
+    const p=items[+im.dataset.ph];
+    el.innerHTML=(p.src?'<img src="'+p.src+'" style="width:100%;border-radius:12px">':'<div style="height:220px;border-radius:12px;background:linear-gradient(140deg,'+p.cols[0]+','+p.cols[1]+')"></div>')+
+     '<div class="row" style="margin-top:12px"><button class="btn gray" id="phBack">رجوع</button>'+(p.src?'<button class="btn red" id="phDel">حذف الصورة</button>':'')+'</div>';
+    $('#phBack').addEventListener('click',()=>appPhotos(el));
+    const del=$('#phDel');if(del)del.addEventListener('click',()=>{S.photos=S.photos.filter(x=>x!==p.src);store.set('photos',S.photos);renderHome();appPhotos(el);toast('انحذفت الصورة')});
+  }));
+}
+/* ================= Messages ================= */
+function appMessages(el){
+  el.innerHTML='<div id="msgList">'+S.msgs.map(m=>'<div class="msg '+(m.me?'me':'them')+'">'+m.t.replace(/</g,'&lt;')+'</div>').join('')+'</div>'+
+   '<div class="row" style="position:sticky;bottom:0;background:#f2f2f7;padding-top:8px"><input type="text" id="msgIn" placeholder="iMessage" style="flex:1;padding:10px 12px;border:1px solid #d9d9de;border-radius:20px;font-size:14px"><button class="btn" id="msgSend">إرسال</button></div>';
+  const list=$('#msgList');list.scrollTop=1e6;
+  const send=()=>{const inp=$('#msgIn'),v=inp.value.trim();if(!v)return;
+    S.msgs.push({me:true,t:v});store.set('msgs',S.msgs);appMessages(el);
+    setTimeout(()=>{const replies=['ههههه تمام 😄','وصلت! تجي نلعب بالآيباد؟','صورلي شسويت باللعبة','زين، اني بالطريق'];S.msgs.push({me:false,t:replies[Math.floor(Math.random()*replies.length)]});store.set('msgs',S.msgs);if(S.app==='messages')appMessages($('#appBody'))},1400)};
+  $('#msgSend').addEventListener('click',send);
+  $('#msgIn').addEventListener('keydown',e=>{if(e.key==='Enter')send});
+}
+/* ================= Settings ================= */
+function appSettings(el){
+  const s=S.set,u=S.batt.usage;
+  const usageRows=Object.keys(u).length?Object.entries(u).sort((a,b)=>b[1]-a[1]).slice(0,5).map(e=>'<div class="setrow"><span style="flex:1">'+e[0]+'</span><span class="mut">'+Math.max(1,Math.round(e[1]/60))+' دقيقة</span></div>').join(''):'<div class="setrow mut">بعد ما مستعمل تطبيقات وايدة</div>';
+  el.innerHTML=
+   '<div class="setgroup"><div class="setrow"><span style="flex:1">Wi-Fi</span><label class="switch"><input type="checkbox" id="swWifi" '+(s.wifi?'checked':'')+'><i></i></label></div>'+
+   '<div class="setrow"><span style="flex:1">Bluetooth</span><label class="switch"><input type="checkbox" id="swBt" '+(s.bt?'checked':'')+'><i></i></label></div>'+
+   '<div class="setrow"><span style="flex:1">وضع الطيران</span><label class="switch"><input type="checkbox" id="swAir" '+(s.airplane?'checked':'')+'><i></i></label></div></div>'+
+   '<div class="setgroup"><div class="setrow"><span style="flex:1">السطوع</span><input type="range" id="setBright" min="10" max="100" value="'+s.bright+'" style="flex:1"></div>'+
+   '<div class="setrow"><span style="flex:1">الصوت</span><input type="range" id="setVol" min="0" max="100" value="'+s.vol+'" style="flex:1"></div></div>'+
+   '<div class="setgroup"><div class="setrow"><span style="flex:1">البطارية</span><b>'+Math.round(S.batt.pct)+'%</b></div>'+
+   '<div class="setrow"><span style="flex:1">الشحن</span><label class="switch"><input type="checkbox" id="swChg" '+(S.batt.charging?'checked':'')+'><i></i></label></div>'+usageRows+'</div>'+
+   '<div class="setgroup"><div class="setrow"><span style="flex:1">حول الجهاز</span><span class="mut">Rio iPad 1.0</span></div>'+
+   '<div class="setrow"><span style="flex:1">النظام</span><span class="mut">RioOS 1.0</span></div></div>';
+  const bind=(id,key,cb)=>{const n=$(id);if(n)n.addEventListener('change',e=>{S.set[key]=e.target.checked;store.set('set',S.set);renderStatus();if(cb)cb()})};
+  bind('#swWifi','wifi');bind('#swBt','bt');bind('#swAir','airplane');
+  $('#swChg').addEventListener('change',e=>{S.batt.charging=e.target.checked;store.set('batt',S.batt);renderStatus()});
+  $('#setBright').addEventListener('input',e=>{S.set.bright=+e.target.value;store.set('set',S.set);renderStatus()});
+  $('#setVol').addEventListener('input',e=>{S.set.vol=+e.target.value;store.set('set',S.set)});
+}
+/* ================= App Store / Safari / Music / Clock / Notes / Calc ================= */
+function appStore(el){
+  el.innerHTML='<div class="rbx-sec" style="margin-top:2px">Today</div>'+
+   Object.entries(EXTRA).map(([k,v])=>{const got=S.installed.includes(k);
+    return '<div class="card row"><span>'+IC[v.ic]()+'</span><span style="flex:1"><span class="big">'+v.n+'</span><br><span class="mut">ألعاب</span></span><button class="btn '+(got?'gray':'')+'" data-inst="'+k+'">'+(got?'مثبتة':'GET')+'</button></div>'}).join('');
+  el.querySelectorAll('[data-inst]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.inst;
+    if(S.installed.includes(k))return;
+    b.textContent='...';setTimeout(()=>{S.installed.push(k);store.set('installed',S.installed);renderHome();appStore(el);toast('انثبت '+EXTRA[k].n)},700)}));
+}
+function appSafari(el){
+  el.innerHTML='<input type="text" id="sfIn" placeholder="Search or enter website" style="width:100%;padding:11px 12px;border:none;border-radius:10px;background:#e9e9ee;font-size:14px"><div id="sfOut"><div class="rbx-sec">المفضلة</div><div class="pgrid" style="grid-template-columns:repeat(4,1fr)">'+['Apple','Roblox','YouTube','ريو'].map(x=>'<div class="ph" style="background:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;color:#333;aspect-ratio:1;border-radius:10px">'+x+'</div>').join('')+'</div></div>';
+  $('#sfIn').addEventListener('keydown',e=>{if(e.key==='Enter'){const v=e.target.value.trim();
+    $('#sfOut').innerHTML='<div class="card" style="margin-top:12px"><div class="big">نتائج عن: '+v.replace(/</g,'&lt;')+'</div><p class="mut" style="margin-top:6px">هاي نسخة محاكاة من سفاري داخل اللعبة — التصفح الحقيقي من متصفح آيفونك نفسه.</p></div>'}});
+}
+function appMusic(el){
+  el.innerHTML='<div class="card" style="text-align:center;padding:22px 14px"><div style="display:flex;justify-content:center;margin-bottom:8px">'+IC.music()+'</div><div class="big" style="font-size:18px">Rio Beats — أغنية اللعبة</div><p class="mut">DJ Rio</p><div style="height:6px;background:#e9e9ee;border-radius:4px;margin:16px 0;overflow:hidden"><div id="musBar" style="height:100%;width:'+(S.musicPlay?40:5)+'%;background:#f92c4c"></div></div><button class="btn" id="musBtn">'+(S.musicPlay?'إيقاف مؤقت':'تشغيل')+'</button></div>';
+  $('#musBtn').addEventListener('click',()=>{S.musicPlay=!S.musicPlay;appMusic(el)});
+  if(S.musicPlay){const iv=setInterval(()=>{if(S.app!=='music'){clearInterval(iv);return}const b=$('#musBar');if(b){let w=parseFloat(b.style.width)||0;w+=2;if(w>100)w=0;b.style.width=w+'%'}},300)}
+}
+function appClock(el){
+  el.innerHTML='<div class="card" style="text-align:center;padding:24px"><canvas id="clk" width="180" height="180"></canvas><div class="big" id="clkT" style="margin-top:8px"></div></div>';
+  const draw=()=>{const c=$('#clk');if(!c||S.app!=='clock')return;const x=c.getContext('2d'),d=new Date();
+    x.clearRect(0,0,180,180);x.fillStyle='#111';x.beginPath();x.arc(90,90,84,0,7);x.fill();
+    x.fillStyle='#fff';for(let i=0;i<12;i++){const a=i*Math.PI/6;x.fillRect(90+Math.sin(a)*72-1.5,90-Math.cos(a)*72-5,3,10)}
+    const ha=(d.getHours()%12+d.getMinutes()/60)*Math.PI/6,ma=(d.getMinutes()+d.getSeconds()/60)*Math.PI/30,sa=d.getSeconds()*Math.PI/30;
+    x.strokeStyle='#fff';x.lineWidth=6;x.beginPath();x.moveTo(90,90);x.lineTo(90+Math.sin(ha)*44,90-Math.cos(ha)*44);x.stroke();
+    x.lineWidth=4;x.beginPath();x.moveTo(90,90);x.lineTo(90+Math.sin(ma)*64,90-Math.cos(ma)*64);x.stroke();
+    x.strokeStyle='#ff9f0a';x.lineWidth=2;x.beginPath();x.moveTo(90,90);x.lineTo(90+Math.sin(sa)*70,90-Math.cos(sa)*70);x.stroke();
+    $('#clkT').textContent=fmtTime();setTimeout(draw,500)};
+  draw();
+}
+function appNotes(el){
+  el.innerHTML='<textarea id="noteTxt" placeholder="اكتب ملاحظة…" style="width:100%;height:260px;border:none;border-radius:12px;padding:12px;font-size:15px;background:#fff">'+S.notes.replace(/</g,'&lt;')+'</textarea><p class="mut" style="margin-top:8px">تنحفظ الملاحظة بالآيباد.</p>';
+  $('#noteTxt').addEventListener('input',e=>{S.notes=e.target.value;store.set('notes',S.notes)});
+}
+function appCalc(el){
+  let expr='';
+  el.innerHTML='<div class="card"><div id="calcOut" style="text-align:left;font-size:30px;font-weight:700;padding:8px;min-height:44px">0</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">'+
+   ['C','⌫','%','÷','7','8','9','×','4','5','6','-','1','2','3','+','0','.','='].map(k=>'<button class="btn '+(k==='='?'':'gray')+'" data-ck="'+k+'" style="padding:13px 0;font-size:16px">'+k+'</button>').join('')+'</div></div>';
+  el.querySelectorAll('[data-ck]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.ck;
+    if(k==='C')expr='';else if(k==='⌫')expr=expr.slice(0,-1);
+    else if(k==='='){try{expr=String(eval(expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/%/g,'/100'))||'0')}catch(e){expr='Error'}}
+    else expr+=k;
+    $('#calcOut').textContent=expr||'0'}));
+}
+/* ================= init ================= */
+renderHome();renderStatus();
+setInterval(renderStatus,20000);
+</script>
 </body>
 </html>
