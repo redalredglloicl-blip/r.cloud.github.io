@@ -230,7 +230,7 @@ function mountWidgets(){
 const w=document.querySelector('.homeWidget');if(!w||w.dataset.live)return;
 w.dataset.live='1';
 w.innerHTML=
-'<div id="wCal" style="flex:1;background:#fff;border-radius:14px;padding:6px 9px;color:#111;box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer"><div style="color:#ff3b30;font-weight:700;font-size:10.5px" id="wCalD"></div><div style="font-size:20px;font-weight:700;line-height:1.02" id="wCalN"></div><div style="font-size:10px;color:#8e8e93;margin-top:1px" id="wCalS">لا توجد أحداث اليوم</div></div>'+
+'<div id="wCal" style="flex:1;background:#fff;border-radius:14px;padding:6px 9px;color:#111;box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer"><div style="color:#ff3b30;font-weight:700;font-size:10.5px" id="wCalD"></div><div style="font-size:18px;font-weight:700;line-height:1.02" id="wCalN"></div><div style="font-size:10px;color:#8e8e93;margin-top:1px" id="wCalS">لا توجد أحداث اليوم</div></div>'+
 '<div id="wWx" style="flex:1;background:linear-gradient(160deg,#4aa8ff,#1668dc);border-radius:14px;padding:6px 9px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer"><div style="font-size:11px;font-weight:600">بغداد</div><div style="font-size:19px;font-weight:700;line-height:1.05" id="wWxT">…°</div><div style="font-size:10px;opacity:.92">الطقس الحقيقي — البطارية <b id="wBatt"></b></div></div>';
 $('#wCal').addEventListener('click',e=>{e.stopPropagation();openApp('calendar',null)});
 $('#wWx').addEventListener('click',e=>{e.stopPropagation();openApp('weather',null)});
@@ -643,7 +643,7 @@ $('#dpText').addEventListener('change',()=>saveFx());
 return}
 if(p==='search'){
 el.innerHTML=head('بحث')+grp(
-row2('إظهار بحث الشاشة الرئيسية',sq2('#8e8e93','search'),sw('srOn',fx.searchOn!==false))+
+row2('بحث Spotlight — اسحب لتحت بالشاشة الرئيسية',sq2('#8e8e93','search'),sw('srOn',fx.searchOn!==false))+
 row2('اقتراحات التطبيقات',sq2('#8e8e93','apps'),sw('srSug',true)))+
 '<div class="rbx-sec">إظهار أو إخفاء تطبيقات من البحث</div>'+
 APPS.map(a=>'<div class="card row" style="padding:9px 12px"><span style="flex:0 0 auto">'+icImg(ICONS[a.ic])+'</span><span style="flex:1"><b style="font-size:13.5px">'+a.n+'</b></span>'+sw('sr-'+a.id,fx.searchApps[a.id]!==false)+'</div>').join('')+
@@ -820,3 +820,21 @@ setPageX2Router();
 function setPageX2Router(){const _old=setSubPage;setSubPage=function(el){if(['camera','display','search','siri','faceid','sos','privacy','gamecenter','wallet','passwords','appshub','appdetail'].includes(S.setPage)){setPageX2(el);return}_old(el)}}
 ttApply();
 if(S.fx.textscale&&S.fx.textscale!==100)setInterval(()=>{if(S.app==='settings')applyText()},1500);
+
+/* ===== Spotlight by swiping down on Home (like real iPadOS — no floating pill) ===== */
+(function(){
+let sy=null,sx=null;
+const scr=$('#screen');
+scr.addEventListener('touchstart',e=>{
+if(S.app||S.locked||!S.padOut){sy=null;return}
+const t=e.touches[0],r=scr.getBoundingClientRect();
+sy=t.clientY;sx=t.clientX;
+if(sy-r.top<46)sy=null;
+},{passive:true});
+scr.addEventListener('touchend',e=>{
+if(sy===null||sy===undefined)return;
+const t=e.changedTouches[0],dy=t.clientY-sy,dx=Math.abs(t.clientX-sx);
+sy=null;
+if(dy>52&&dx<42&&!S.app&&!S.locked&&S.fx.searchOn!==false){const sp=$('#spot');if(sp&&typeof spotRender==='function'){sp.classList.add('open');spotRender('')}}
+},{passive:true});
+})();
