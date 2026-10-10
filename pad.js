@@ -255,7 +255,7 @@ return;
 if(S.setPage==='about'){
 el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button><div class="setgroup">'+
 row('الاسم','',"Rio's iPad")+row('طراز الجهاز','', 'iPad Pro 11')+row('نظام التشغيل','', 'RioOS 26.0')+
-row('إصدار اللعبة','', 'Rio iPad 3.4')+row('السعة','', '64 GB')+row('المساحة المتوفرة','', '51.2 GB')+
+row('إصدار اللعبة','', 'Rio iPad 3.5')+row('السعة','', '64 GB')+row('المساحة المتوفرة','', '51.2 GB')+
 row('الرقم التسلسلي','', 'RGX2IPAD2026')+row('المشغل','', 'Zain — 4.5G+')+'</div>';
 $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});return;
 }
