@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Rio iPad">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Rio iPad 2.9</title>
+<title>Rio iPad 3.0</title>
 <style>.sq{width:29px;height:29px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overflow:hidden;background:#79b5ff;font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif}
@@ -224,12 +224,77 @@ body{touch-action:manipulation}
 #spotInp::placeholder{color:rgba(255,255,255,.6)}
 .spotGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 6px;margin-top:12px}
 #spot .nm{color:#fff}
+.lwid{display:inline-flex;align-items:center;gap:5px;background:rgba(25,27,34,.55);color:#fff;border-radius:20px;padding:5px 11px;font-size:12px;font-weight:600;backdrop-filter:blur(6px)}
+.lwidRow{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+#lockX{width:100%;max-width:350px;margin-top:2px}
+.liveCard{display:flex;gap:10px;align-items:center;background:rgba(25,27,34,.62);border-radius:20px;padding:10px 12px;color:#fff;margin-top:10px;text-align:right;backdrop-filter:blur(8px)}
+.liveCard img{width:42px;height:42px;border-radius:10px;flex:0 0 auto}
+.liveCard b{font-size:13.5px}
+.mut2{color:rgba(255,255,255,.75);font-size:11.5px}
+.lbar{display:block;height:4px;background:rgba(255,255,255,.25);border-radius:3px;margin-top:6px;overflow:hidden}
+.lbar i{display:block;height:100%;background:#f92c4c;border-radius:3px;width:0}
+.lplay{background:rgba(255,255,255,.18);border:none;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
+.lnots{margin-top:10px;display:flex;flex-direction:column;gap:7px}
+.lnot{display:flex;gap:9px;align-items:flex-start;background:rgba(25,27,34,.55);border-radius:18px;padding:9px 11px;color:#fff;font-size:12.5px;backdrop-filter:blur(8px);text-align:right}
+.lnot img.appic{width:30px;height:30px;border-radius:8px;flex:0 0 auto}
+.lnot b{font-size:12.5px}
+#alarmCard{position:absolute;top:70px;left:16px;right:16px;z-index:80;background:#fff;color:#111;border-radius:20px;padding:16px;box-shadow:0 18px 44px rgba(0,0,0,.4);text-align:center;animation:ccIn .3s ease}
+.wcard{flex:1 1 42%;background:#fff;border-radius:20px;padding:10px 12px;color:#111;box-shadow:0 2px 8px rgba(0,0,0,.12);min-width:118px}
+.wcard.wblue{background:linear-gradient(160deg,#4aa8ff,#1668dc);color:#fff}
+.wcard.wmus{display:flex;gap:9px;align-items:center;background:#1c1c1e;color:#fff}
+.wcard.wmus img{width:40px;height:40px;border-radius:9px;flex:0 0 auto}
+.wcard.wmus .lbar{background:rgba(255,255,255,.22)}
+.wcard.wphoto{position:relative;overflow:hidden;padding:0;min-height:76px;background:#222;flex:1 1 42%}
+.wcard.wphoto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.wcard.wphoto span{position:absolute;bottom:7px;right:10px;color:#fff;font-size:12px;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.7);left:auto}
+.wsub{font-size:11.5px;color:#8e8e93;margin-top:2px}
+.wcard.wblue .wsub{color:rgba(255,255,255,.88)}
+.wplay{background:#f92c4c;border:none;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
+.wtoday{background:rgba(30,30,32,.5);color:#fff;border:none;border-radius:14px;padding:8px;font-size:12.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;backdrop-filter:blur(8px);flex:1 1 100%}
+.homeWidget{flex-wrap:wrap}
+#todayV{position:absolute;inset:0;z-index:62;background:rgba(16,17,20,.55);backdrop-filter:blur(24px) saturate(1.4);display:none;flex-direction:column;padding:52px 16px 16px;color:#fff;overflow-y:auto}
+#todayV.open{display:flex}
+.todayHead{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
+.todayHead b{font-size:26px}
+.todayHead span{opacity:.85;font-size:14px;flex:1}
+.todayHead button{background:rgba(255,255,255,.18);color:#fff;border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;flex:0 0 auto}
+.todayCard{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.16);border-radius:22px;padding:13px;margin-bottom:11px}
+.todayCard .th{font-weight:700;font-size:14px;margin-bottom:8px}
+.todayCard.wblueB{background:linear-gradient(160deg,rgba(74,168,255,.85),rgba(22,104,220,.85))}
+.trow{display:flex;align-items:center;gap:9px;padding:4px 0;font-size:13px}
+.tbar{flex:1;height:6px;background:rgba(255,255,255,.22);border-radius:3px;overflow:hidden}
+.tbar i{display:block;height:100%;background:#34c759}
+#nsLayer{position:absolute;inset:0;z-index:49;pointer-events:none;background:rgba(255,166,0,.10);backdrop-filter:sepia(.45) brightness(.96)}
+#screen.acc-bold #appBody,#screen.acc-bold .nm{font-weight:700}
+#screen.acc-dzoom .app .ic{width:62px;height:62px}
+#screen.acc-dzoom .app .nm{font-size:12px}
+#screen.icons-big .app .ic{width:64px;height:64px;border-radius:16px}
+#screen.icons-nolabel .app .nm{display:none}
+#screen.icons-dark .app .ic img,#screen.icons-dark #dock img{filter:brightness(.68) contrast(1.05)}
+#screen.icons-tinted .app .ic img,#screen.icons-tinted #dock img{filter:sepia(.55) hue-rotate(185deg) saturate(2.2) brightness(.92)}
+#screen.acc-rm *{animation-duration:.01s!important}
+#shareSheet{position:absolute;inset:0;z-index:75;background:rgba(10,10,12,.4);display:flex;align-items:flex-end;justify-content:center}
+.sheetCard{background:#f7f7fa;color:#111;border-radius:22px 22px 0 0;width:100%;padding:12px 16px 20px;animation:ccIn .28s ease;max-height:78%;overflow-y:auto}
+.sheetGrab{width:38px;height:5px;border-radius:3px;background:#c7c7cc;margin:0 auto 12px}
+.airRow{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 10px}
+.airP{background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:#111;flex:0 0 auto}
+.airP span{width:52px;height:52px;border-radius:50%;background:#e3f0ff;color:#0a84ff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700}
+.sheetActs{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.sheetActs button{background:#fff;border:1px solid #e3e3e8;border-radius:13px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;color:#111}
+.spotRes{background:rgba(255,255,255,.14);border-radius:14px;padding:10px 12px;margin-top:9px;cursor:pointer;display:flex;flex-direction:column;gap:2px;font-size:13px;text-align:right}
+.spotRes span{opacity:.8;font-size:12px}
+.segRow{display:flex;gap:6px;background:#e9e9ee;border-radius:12px;padding:3px}
+.segRow button{flex:1;padding:8px;border:none;border-radius:9px;background:none;font-weight:700;font-size:12.5px;cursor:pointer;color:#333}
+.segRow button.on{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.18);color:#111}
+.chip{padding:7px 12px;border-radius:16px;border:1px solid #d9d9de;background:#fff;font-size:12.5px;cursor:pointer;color:#111}
+.chip.on{background:#0a84ff;color:#fff;border-color:#0a84ff}
+select,input[type=time],input[type=number]{font-family:inherit}
 </style>
 </head>
 <body>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 2.9</div>
+  <div id="verTag">Rio iPad 3.0</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -280,7 +345,7 @@ body{touch-action:manipulation}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 2.9</div>
+    <div class="ver">Rio iPad 3.0</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -521,6 +586,8 @@ toast('امشِ بالعصا، واسحب يمين ويسار حتى تلف ٣٦
 {id:'clock',n:'Clock',ic:'clock'},
 {id:'notes',n:'Notes',ic:'notes'},
 {id:'calc',n:'Calculator',ic:'calc'},
+{id:'files',n:'Files',ic:'files'},
+{id:'shortcuts',n:'Shortcuts',ic:'shortcuts'},
 {id:'settings',n:'Settings',ic:'settings'}
 ];
 const ICONS={
@@ -541,6 +608,8 @@ clock:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/59/da/6e/59da6e3b-4
 notes:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/bc/b1/1c/bcb11c9d-ea61-089f-3b84-0f8911dd175d/notesCalistoga-0-0-1x_U007epad-0-1-85-220.png/512x512bb.jpg',
 calc:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/3d/8c/c3/3d8cc3eb-593a-7baa-99ce-45107502ef75/calculatorCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
 settings:'https://commons.wikimedia.org/wiki/Special:FilePath/Settings%20(iOS).png?width=256',
+files:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/d7/c3/64/d7c36451-0d88-fd00-acdd-e4ef56ff3d19/filesCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
+shortcuts:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/19/34/94/1934945c-7712-4838-7879-f8c959a0db55/shortcutsCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
 phone:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/b0/0f/2e/b00f2e0d-f556-75b0-1be8-ead76d31245d/phoneCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
 candy:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/72/83/04/728304ea-32e2-1979-e845-e5f25dd731f6/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/512x512bb.jpg'
 };
@@ -713,6 +782,7 @@ function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.inne
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="pad.js?v=29"></script>
+<script src="pad.js?v=30"></script>
+<script src="sys3.js?v=30"></script>
 </body>
 </html>
