@@ -80,10 +80,10 @@ runAutos('appopen',id);
 if(id==='phone'){toast('المكالمات داخل FaceTime هنا');id='facetime'}
 if(id&&id.startsWith('x_')){const k=id.slice(2);return openExtra(k,fromEl)}
 snapCur();S.app=id; tickUse(id);noteRunning(id,(APPS.find(a=>a.id===id)||{}).n||id,(APPS.find(a=>a.id===id)||{}).ic||id);
-const names={roblox:'Roblox',facetime:'FaceTime',camera:'Camera',photos:'Photos',messages:'Messages',appstore:'App Store',safari:'Safari',tiktok:'TikTok',maps:'Maps',weather:'Weather',calendar:'Calendar',music:'Music',clock:'Clock',notes:'Notes',calc:'Calculator',battery:'البطارية',voicememos:'Voice Memos',settings:'Settings',files:'Files',shortcuts:'Shortcuts',applestore:'Apple Store'};
+const names={roblox:'Roblox',facetime:'FaceTime',camera:'Camera',photos:'Photos',messages:'Messages',appstore:'App Store',safari:'Safari',tiktok:'TikTok',maps:'Maps',weather:'Weather',calendar:'Calendar',music:'Music',clock:'Clock',notes:'Notes',calc:'Calculator',battery:'البطارية',voicememos:'Voice Memos',repair:'تصليح الآيباد',settings:'Settings',files:'Files',shortcuts:'Shortcuts',applestore:'Apple Store'};
 $('#appTitle').textContent=names[id]||id;
 showAppWin(fromEl);
-({roblox:appRoblox,facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,tiktok:appTikTok,maps:appMaps,weather:appWeather,calendar:appCalendar,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,battery:appBattery,voicememos:appVoiceMemos,settings:appSettings,files:appFiles,shortcuts:appShortcuts,applestore:appAppleStore}[id]||(()=>{}))($('#appBody'));
+({roblox:appRoblox,facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,tiktok:appTikTok,maps:appMaps,weather:appWeather,calendar:appCalendar,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,battery:appBattery,voicememos:appVoiceMemos,repair:appRepair,settings:appSettings,files:appFiles,shortcuts:appShortcuts,applestore:appAppleStore}[id]||(()=>{}))($('#appBody'));
 }
 const _ab=$('#appBack');if(_ab)_ab.addEventListener('click',e=>{e.stopPropagation();closeApp()});
 function syncPill(){const pill=$('#spotPill');if(!pill)return;const lockOn=$('#lock').classList.contains('show');const tr=$('#pagesTrack');let onLib=false;if(tr&&tr.children.length>1){onLib=Math.round(tr.scrollLeft/tr.clientWidth)>=tr.children.length-1}pill.style.display=($('#appWin').classList.contains('open')||lockOn||onLib)?'none':'flex'}
@@ -783,7 +783,7 @@ const lw=$('#lockWall');if(lw){const li=(S.set.lockWp==null?-1:S.set.lockWp);lw.
 const ltm=$('#lockTime');if(ltm){const lc=(S.set.lockClock==null?0:S.set.lockClock);ltm.style.fontWeight=lc===1?'800':(lc===2?'200':'700');ltm.style.fontSize=lc===1?'80px':(lc===2?'64px':'72px')}
 $('#ipad').classList.toggle('dark',!!S.set.dark);
 }
-const LIBCATS=[['التواصل الاجتماعي',['whatsapp','telegram','messenger','instagram','facebook','snapchat','x','discord','messages','phone','facetime']],['الترفيه',['x_youtube','tiktok','music','roblox','photos','camera']],['الأدوات والإنتاجية',['settings','appstore','applestore','safari','maps','weather','clock','calendar','calc','notes','files','shortcuts','battery','voicememos','chatgpt']]];
+const LIBCATS=[['التواصل الاجتماعي',['whatsapp','telegram','messenger','instagram','facebook','snapchat','x','discord','messages','phone','facetime']],['الترفيه',['x_youtube','tiktok','music','roblox','photos','camera']],['الأدوات والإنتاجية',['settings','appstore','applestore','safari','maps','weather','clock','calendar','calc','notes','files','shortcuts','battery','voicememos','repair','chatgpt']]];
 function spotRender(q){
 const allA=APPS.concat(S.installed.filter(id=>EXTRA[id]).map(id=>({id:'x_'+id,n:EXTRA[id].n,ic:EXTRA[id].ic,extra:id}))).filter(a=>!S.fx||!S.fx.searchApps||S.fx.searchApps[a.id]!==false);
 const name=a=>a.extra?EXTRA[a.extra].n:a.n;
@@ -821,6 +821,7 @@ el.innerHTML='<b style="font-size:20px">البطارية</b>'+
 '<div class="card" style="margin-top:10px;text-align:center;padding:18px"><div class="mut" style="font-size:13px">الحد الأقصى للقدرة الحالي</div><div style="font-size:44px;font-weight:800;color:'+(mc<80?'#ff9f0a':'#34c759')+'">'+arabNum(mc)+'٪</div><div class="mut" style="font-size:12px;margin-top:4px;line-height:1.7">كل ما تنزل القدرة يصير صرف الشحن أكثر<br>اشترِ بطارية جديدة ورجعها ١٠٠٪</div></div>'+
 '<div class="rbx-sec">اشترِ بطارية جديدة — مجاناً</div>'+
 BATT_PRODS.map(p=>'<div class="card"><img src="'+p.img+'" loading="lazy" style="width:100%;height:150px;object-fit:cover;border-radius:12px;background:#f2f2f7"><div class="row" style="align-items:center;margin-top:10px"><span style="flex:1"><b style="font-size:15px">'+p.n+'</b><br><span class="mut" style="font-size:12px">الشركة: '+p.co+'</span></span><b style="color:#34c759">مجاني</b></div><p class="mut" style="font-size:12.5px;line-height:1.8;margin-top:6px">'+p.d+'</p><button class="btn" data-battbuy="'+p.id+'" style="width:100%;margin-top:8px;padding:11px">تركيب البطارية</button></div>').join('');
+const _br=document.createElement('button');_br.className='btn gray';_br.style.cssText='width:100%;margin-top:8px;padding:11px';_br.textContent='وضع التصليح — فك وركّب بنفسك';_br.addEventListener('click',()=>openApp('repair'));el.appendChild(_br);
 el.querySelectorAll('[data-battbuy]').forEach(b=>b.addEventListener('click',()=>{S.batt.maxCap=100;S.batt.pct=Math.max(S.batt.pct,60);store.set('batt',S.batt);sfx('send');toast('انتركبت البطارية الجديدة — القدرة رجعت ١٠٠٪');appBattery(el)}));
 }
 function appVoiceMemos(el){
