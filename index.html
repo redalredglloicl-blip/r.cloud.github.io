@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Rio iPad 1.2</title>
+<title>Rio iPad 1.3</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overflow:hidden;background:#79b5ff;font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif}
@@ -21,15 +21,29 @@ html,body{height:100%;overflow:hidden;background:#79b5ff;font-family:-apple-syst
 #hint{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 8px);z-index:39;background:rgba(10,20,40,.55);color:#fff;font-size:12px;padding:6px 14px;border-radius:16px;white-space:nowrap}
 /* ===== iPad (small, in hands) ===== */
 #padWrap{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 86px);transform:translateX(-50%);z-index:35;width:min(94vw,430px);height:min(72vh,620px);transition:all .45s cubic-bezier(.2,.9,.25,1);filter:drop-shadow(0 18px 22px rgba(0,20,50,.45))}
+.homeWidget{grid-column:span 4}
+@media (orientation:landscape){
+ #padWrap{width:min(86vw,740px);height:min(84vh,540px);bottom:calc(env(safe-area-inset-bottom,0px) + 10px)}
+ #hint{display:none}
+ #homeApps{grid-template-columns:repeat(6,1fr);padding:34px 14px 60px;gap:10px 6px}
+ .homeWidget{grid-column:span 6}
+ #homeApps .app .ic{width:46px;height:46px}
+ #dock .ic{width:46px;height:46px}
+}
+#rotateHint{position:absolute;top:calc(env(safe-area-inset-top,0px) + 58px);left:50%;transform:translateX(-50%);z-index:38;background:rgba(15,20,30,.72);color:#fff;padding:7px 14px;border-radius:16px;font-size:12.5px;display:none;pointer-events:none}
+@media (orientation:portrait){#rotateHint.on{display:block}}
 #padWrap.away{opacity:0;pointer-events:none;transform:translateX(-50%) translateY(60px)}
 #ipad{position:absolute;inset:0;background:#111318;border-radius:26px;padding:11px;box-shadow:inset 0 0 0 2px #2c2f36}
 #screen{position:relative;width:100%;height:100%;border-radius:17px;overflow:hidden;background:#000;direction:ltr}
+#padCam{position:absolute;top:5px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#5b7ea6,#10151d 70%);z-index:60;pointer-events:none}
+#sheen{position:absolute;inset:0;border-radius:17px;background:linear-gradient(115deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,0) 32%);z-index:55;pointer-events:none}
 #wall{position:absolute;inset:0;background:linear-gradient(160deg,#3a7bd5 0%,#7d5fd0 45%,#e2698a 100%)}
 #wallImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 #dim{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:5}
 #statusbar{position:absolute;top:0;left:0;right:0;height:26px;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:2px 14px 0;color:#fff;font-size:12.5px;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.35)}
 #statusbar .sicons{display:flex;align-items:center;gap:5px}
-#homeApps{position:absolute;inset:0;padding:40px 16px 64px;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:min-content;gap:15px 8px;align-content:start;z-index:10}
+#homeApps{position:absolute;inset:0;padding:40px 16px 64px;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:min-content;gap:15px 8px;align-content:start;z-index:10;overflow-y:auto;scrollbar-width:none}
+#homeApps::-webkit-scrollbar{display:none}
 .app{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;background:none;border:none}
 .app:active .ic{transform:scale(.88)}
 .app .ic{width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;transition:transform .12s;box-shadow:0 3px 8px rgba(0,0,0,.25);position:relative}
@@ -132,7 +146,7 @@ canvas#camView{width:100%;border-radius:12px;background:#000}
 <body>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 1.2</div>
+  <div id="verTag">Rio iPad 1.3</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -142,8 +156,9 @@ canvas#camView{width:100%;border-radius:12px;background:#000}
   <div id="hint">امشِ بالعصا، ودوس زر الآيباد حتى تطلعه</div>
 
   <!-- iPad -->
+  <div id="rotateHint">لفّ جهازك بالعرض — اللعبة تنلعب أفضل أفقياً</div>
   <div id="padWrap" class="away">
-    <div id="ipad"><div id="screen">
+    <div id="ipad"><div id="padCam"></div><div id="screen"><div id="sheen"></div>
       <div id="wall"><img id="wallImg" src="https://picsum.photos/seed/riowall/700/900" alt="" onerror="this.remove()"></div>
       <div id="homeApps"></div>
       <div id="dock"></div>
@@ -173,7 +188,7 @@ canvas#camView{width:100%;border-radius:12px;background:#000}
     <h1>Rio iPad</h1>
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 1.2</div>
+    <div class="ver">Rio iPad 1.3</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -199,9 +214,9 @@ const S={
 };
 /* ================= world: REAL 3D (WebGL) ================= */
 const cv=$('#world');
-const gl=cv.getContext('webgl',{antialias:true,alpha:false});
+const gl=cv.getContext('webgl',{antialias:true,alpha:false,preserveDrawingBuffer:true});
 let W=0,H=0;
-function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;if(gl)gl.viewport(0,0,W,H)}
+function resize(){const dpr=Math.min(2,window.devicePixelRatio||1);W=cv.width=Math.round(innerWidth*dpr);H=cv.height=Math.round(innerHeight*dpr);if(gl)gl.viewport(0,0,W,H)}
 addEventListener('resize',resize);
 /* ---- tiny mat4 lib ---- */
 function mMul(a,b){const o=new Float32Array(16);for(let c=0;c<4;c++)for(let r=0;r<4;r++){let s=0;for(let k=0;k<4;k++)s+=a[k*4+r]*b[c*4+k];o[c*4+r]=s}return o}
@@ -216,17 +231,19 @@ const VS=`attribute vec3 aPos;attribute vec3 aNorm;attribute vec3 aCol;attribute
 uniform mat4 uMvp;uniform mat4 uModel;varying vec3 vCol;varying vec3 vNorm;varying vec2 vUv;varying float vDepth;
 void main(){vec4 wp=uModel*vec4(aPos,1.0);vec4 vp=uMvp*vec4(aPos,1.0);gl_Position=vp;vCol=aCol;vNorm=normalize(mat3(uModel)*aNorm);vUv=aUv;vDepth=-vp.z;}`;
 const FS=`precision mediump float;varying vec3 vCol;varying vec3 vNorm;varying vec2 vUv;varying float vDepth;
-uniform sampler2D uTex;uniform float uTexOn;uniform float uAlpha;
-void main(){vec3 n=normalize(vNorm);float li=0.62+0.38*max(dot(n,normalize(vec3(0.45,0.8,0.35))),0.0);
+uniform sampler2D uTex;uniform float uTexOn;uniform float uAlpha;uniform float uNoLight;uniform float uNoFog;
+void main(){vec3 n=normalize(vNorm);float li=0.55+0.45*max(dot(n,normalize(vec3(0.45,0.8,0.35))),0.0);
+if(uNoLight>0.5)li=1.0;
 vec4 base=vec4(vCol*li,1.0);if(uTexOn>0.5)base*=texture2D(uTex,vUv);
-float f=smoothstep(55.0,150.0,vDepth);gl_FragColor=vec4(mix(base.rgb,vec3(0.78,0.88,1.0),f),base.a*uAlpha);}`;
-let prog=null,aPos,aNorm,aCol,aUv,uMvp,uModel,uTexOn,uAlpha;
+float f=uNoFog>0.5?0.0:smoothstep(48.0,135.0,vDepth);gl_FragColor=vec4(mix(base.rgb,vec3(0.80,0.89,1.0),f),base.a*uAlpha);}`;
+let prog=null,aPos,aNorm,aCol,aUv,uMvp,uModel,uTexOn,uAlpha,uNoLight,uNoFog;
 function glInit(){
   const vs=gl.createShader(gl.VERTEX_SHADER);gl.shaderSource(vs,VS);gl.compileShader(vs);
   const fs=gl.createShader(gl.FRAGMENT_SHADER);gl.shaderSource(fs,FS);gl.compileShader(fs);
   prog=gl.createProgram();gl.attachShader(prog,vs);gl.attachShader(prog,fs);gl.linkProgram(prog);gl.useProgram(prog);
   aPos=gl.getAttribLocation(prog,'aPos');aNorm=gl.getAttribLocation(prog,'aNorm');aCol=gl.getAttribLocation(prog,'aCol');aUv=gl.getAttribLocation(prog,'aUv');
   uMvp=gl.getUniformLocation(prog,'uMvp');uModel=gl.getUniformLocation(prog,'uModel');uTexOn=gl.getUniformLocation(prog,'uTexOn');uAlpha=gl.getUniformLocation(prog,'uAlpha');
+  uNoLight=gl.getUniformLocation(prog,'uNoLight');uNoFog=gl.getUniformLocation(prog,'uNoFog');
   gl.enable(gl.DEPTH_TEST);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
 }
 /* ---- procedural textures ---- */
@@ -237,9 +254,12 @@ function makeTex(draw){const c=document.createElement('canvas');c.width=c.height
   gl.generateMipmap(gl.TEXTURE_2D);return t}
 let grassTex,roadTex;
 function buildTextures(){
-  grassTex=makeTex((x,s)=>{x.fillStyle='#6fae52';x.fillRect(0,0,s,s);
-    for(let i=0;i<5200;i++){x.fillStyle=['#5d9c44','#7fbc60','#679f4b','#83c168'][i%4];x.fillRect(Math.random()*s,Math.random()*s,2.2,2.2)}
-    for(let i=0;i<260;i++){x.strokeStyle='rgba(46,94,32,.5)';x.beginPath();const px=Math.random()*s,py=Math.random()*s;x.moveTo(px,py);x.lineTo(px+2,py-4);x.stroke()}});
+  grassTex=makeTex((x,s)=>{x.fillStyle='#dbe7f4';x.fillRect(0,0,s,s);
+    for(let i=0;i<1500;i++){x.fillStyle=['#d2e0f0','#e2ecf8','#cfdff2'][i%3];x.fillRect(Math.random()*s,Math.random()*s,2.4,2.4)}
+    x.strokeStyle='rgba(110,145,190,.65)';x.lineWidth=2;
+    for(let i=0;i<=4;i++){x.beginPath();x.moveTo(i*64,0);x.lineTo(i*64,s);x.stroke();x.beginPath();x.moveTo(0,i*64);x.lineTo(s,i*64);x.stroke()}
+    x.strokeStyle='rgba(110,145,190,.28)';x.lineWidth=1;
+    for(let i=0;i<=8;i++){x.beginPath();x.moveTo(i*32,0);x.lineTo(i*32,s);x.stroke();x.beginPath();x.moveTo(0,i*32);x.lineTo(s,i*32);x.stroke()}});
   roadTex=makeTex((x,s)=>{x.fillStyle='#3d4149';x.fillRect(0,0,s,s);
     for(let i=0;i<2600;i++){x.fillStyle=['#33373e','#474c55','#31353c'][i%3];x.fillRect(Math.random()*s,Math.random()*s,2,2)}
     x.fillStyle='#f7d54a';x.fillRect(s/2-3,14,6,86);x.fillRect(s/2-3,156,6,86);
@@ -293,61 +313,48 @@ function planeGeo(w,l,ru,rv){const a=[],c=[1,1,1],uv=[0,0,ru,rv];
   quad(a,[-w/2,0,-l/2],[w/2,0,-l/2],[w/2,0,l/2],[-w/2,0,l/2],[0,1,0],c,uv);return mesh(a)}
 /* ---- scene ---- */
 const drawList=[],colliders=[];
-function add(geo,x,y,z,ry,tex,alpha,sx,sy,sz){drawList.push({g:geo,x,y,z,ry:ry||0,tex:tex||null,alpha:alpha==null?1:alpha,sx:sx||1,sy:sy||1,sz:sz||1})}
-let geoHouse=[],geoRoof,geoTrunk,geoLeaf,geoLeaf2,geoLamp,geoLampTop,geoShadow,geoPlaza,geoGround,geoRoadZ,geoRoadX,geoCloud,geoSun,geoHedge,geoDoor,geoWin;
+function add(geo,x,y,z,ry,tex,alpha,sx,sy,sz,flat){drawList.push({g:geo,x,y,z,ry:ry||0,tex:tex||null,alpha:alpha==null?1:alpha,sx:sx||1,sy:sy||1,sz:sz||1,flat:flat?1:0})}
+function skyGeo(r){const a=[],ws=18,hs=10,top=hex('#3f8fe0'),bot=hex('#e6f2ff');
+  for(let i=0;i<ws;i++)for(let j=0;j<hs;j++){
+    const t1=i/ws*Math.PI*2,t2=(i+1)/ws*Math.PI*2,p1=j/hs*Math.PI,p2=(j+1)/hs*Math.PI;
+    const P=(t,p)=>{const y=Math.cos(p);const c=y>0?top.map((v,k)=>v+(bot[k]-v)*(1-Math.pow(y,0.6))):bot;
+      return [Math.sin(p)*Math.cos(t)*r,Math.cos(p)*r,Math.sin(p)*Math.sin(t)*r,0,0,0,c[0],c[1],c[2],0,0]};
+    const A=P(t1,p1),B=P(t2,p1),C=P(t2,p2),D=P(t1,p2);
+    a.push(...A,...C,...B, ...A,...D,...C)}
+  return mesh(a)}
+let geoSky,geoBlock=[],geoBall,geoTrunk,geoLeaf,geoLeaf2,geoShadow,geoGround,geoCloud,geoSun;
 function buildWorld(){
-  geoHouse=['#f6e7c8','#dfeaf7','#f7dcd4','#e6f0da','#f3e6f7','#ffe9bf'].map(c=>boxGeo(1,1,1,c));
-  geoRoof=prismGeo(1,1,1,'#b5523f');
-  geoDoor=boxGeo(1,1,1,'#6b4a2f');geoWin=boxGeo(1,1,1,'#9fc6ff');
-  geoTrunk=cylGeo(0.16,1.6,'#7a4a26');
+  geoSky=skyGeo(280);
+  geoBlock=['#8ec9ff','#ffd28e','#b5e7a0','#ffb3c1','#c5b3ff','#fff3a0'].map(c=>boxGeo(1,1,1,c));
+  geoBall=sphGeo(1,'#ff8fa3');
+  geoTrunk=cylGeo(0.16,1.6,'#8a5a2b');
   geoLeaf=sphGeo(1.35,'#3e9e4f');geoLeaf2=sphGeo(1.0,'#57b96a');
-  geoLamp=cylGeo(0.07,3.4,'#39424e');geoLampTop=sphGeo(0.24,'#fff3b0');
-  geoShadow=discGeo(1,'#1c2b1a');geoPlaza=discGeo(11,'#cfd9e6');
-  geoGround=groundGeo(240,60);
-  geoRoadZ=planeGeo(8,240,1,24);geoRoadX=planeGeo(8,240,1,24);
-  geoCloud=sphGeo(1,'#f4f8ff');geoSun=sphGeo(4,'#fff3a0');geoHedge=boxGeo(1,1,1,'#3d7a35');
+  geoShadow=discGeo(1,'#5a7396');
+  geoGround=groundGeo(300,75);
+  geoCloud=sphGeo(1,'#ffffff');geoSun=sphGeo(5,'#fff6bf');
+  colliders.length=0;
+  add(geoSky,0,0,0,0,null,1,1,1,1,true);
   add(geoGround,0,0,0,0,grassTex);
-  add(geoRoadZ,0,0.02,0,0,roadTex); // road along z
-  add(geoRoadX,0,0.021,0,Math.PI/2,roadTex); // crossing road
-  add(geoPlaza,0,0.035,0);
-  add(geoSun,-70,52,-140);
-  // hedges boundary
-  add(geoHedge,0,0.7,-116,0,null,1,232,1.4,2);add(geoHedge,0,0.7,116,0,null,1,232,1.4,2);
-  add(geoHedge,-116,0.7,0,0,null,1,2,1.4,232);add(geoHedge,116,0.7,0,0,null,1,2,1.4,232);
-  // houses both sides of main road
-  const housePos=[];
-  for(let i=0;i<7;i++){housePos.push([-16,-18-i*14,(i%3)*0.4]);housePos.push([16,-24-i*14,((i+1)%3)*0.4])}
-  housePos.push([-30,16,0.8],[30,20,0.8],[-16,34,0.5],[16,40,0.5],[-44,-30,1.2],[44,-52,1.2]);
-  housePos.forEach((hp,idx)=>{
-    const w=6+((idx*7)%3),h=4+((idx*5)%3),d=6+((idx*3)%3),x=hp[0],z=hp[1];
-    add(geoHouse[idx%geoHouse.length],x,0,z,hp[2],null,1,w,h,d);
-    add(geoRoof,x,h,z,hp[2],null,1,w+1.2,1.9,d+1.2);
-    // door + windows on the front face
-    const rot=(ox,oz)=>[x+Math.cos(hp[2])*ox+Math.sin(hp[2])*oz, z-Math.sin(hp[2])*ox+Math.cos(hp[2])*oz];
-    let dp=rot(0,d/2+0.05);add(geoDoor,dp[0],0,dp[1],hp[2],null,1,1,1.8,0.1);
-    let w1=rot(-w/4,d/2+0.05);add(geoWin,w1[0],1.6,w1[1],hp[2],null,1,1.1,0.95,0.08);
-    let w2=rot(w/4,d/2+0.05);add(geoWin,w2[0],1.6,w2[1],hp[2],null,1,1.1,0.95,0.08);
-    let w3=rot(0,-d/2-0.05);add(geoWin,w3[0],1.6,w3[1],hp[2],null,1,1.1,0.95,0.08);
-    add(geoShadow,x,0.045,z,0,null,0.22,Math.max(w,d)*0.75,1,Math.max(w,d)*0.75);
-    colliders.push({x,z,hw:w/2+0.4,hd:d/2+0.4});
+  add(geoSun,-90,58,-190,0,null,1,1,1,1,true);
+  // scattered obby-style blocks + balls, like an open Roblox map (no houses, no streets)
+  const spots=[[-8,-14,2.2,1.6],[-13,-30,3,2.4],[7,-22,2.6,1.8],[14,-40,3.4,2.8],[-20,-52,2.4,2], [18,-64,3,2.2],[-6,-70,2.2,1.4],[24,-18,2.4,1.6],[-26,-24,3,2.6],[5,-88,3.6,3],[ -14,-96,2.6,2],[28,-92,2.8,2.0],[0,-40,1.8,1.2],[11,-56,1.6,1]];
+  spots.forEach((sp,i)=>{
+    add(geoBlock[i%geoBlock.length],sp[0],0,sp[1],(i%5)*0.35,null,1,sp[2],sp[3],sp[2]);
+    add(geoShadow,sp[0],0.03,sp[1],0,null,0.20,sp[2]*0.72,1,sp[2]*0.72);
+    colliders.push({x:sp[0],z:sp[1],hw:sp[2]/2+0.35,hd:sp[2]/2+0.35});
   });
-  // trees scattered, keep roads clear
-  for(let i=0;i<36;i++){
-    let x=(Math.sin(i*37.7)*0.5+ (i%2?1:-1))* (8+((i*13)%88));
-    let z=-((i*17)%190)+70;
-    if(Math.abs(x)<7.5||Math.abs(z)<7.5)continue;
-    const s=0.85+((i*7)%10)/22;
-    add(geoTrunk,x,0,z,0,null,1,s,s,s);
-    add(geoLeaf,x,1.6*s+1.05*s,z,0,null,1,s,s*0.92,s);
-    add(geoLeaf2,x+0.75*s,1.6*s+0.6*s,z+0.3,0,null,1,s,s,s);
-    add(geoShadow,x,0.045,z,0,null,0.25,1.5*s,1,1.5*s);
-    colliders.push({x,z,hw:0.5,hd:0.5});
-  }
-  // lamps along roads
-  for(let i=0;i<8;i++){add(geoLamp,-5.4,0,-12-i*22);add(geoLampTop,-5.4,3.5,-12-i*22);
-    add(geoLamp,5.4,0,-23-i*22);add(geoLampTop,5.4,3.5,-23-i*22)}
+  add(geoBall,-4,1,-34);add(geoBall,16,1.3,-78,0,null,1,1.3,1.3,1.3);add(geoBall,-18,0.9,-64,0,null,1,0.9,0.9,0.9);
+  // a few trees at the edges for depth
+  [[-34,-40],[36,-30],[-40,-84],[40,-96],[-30,10],[34,14],[-52,-58],[54,-70]].forEach((tp,i)=>{
+    const s=1+((i*3)%10)/16;
+    add(geoTrunk,tp[0],0,tp[1],0,null,1,s,s,s);
+    add(geoLeaf,tp[0],2.7*s,tp[1],0,null,1,s,s,s);
+    add(geoLeaf2,tp[0]+0.8*s,2.1*s,tp[1]+0.3,0,null,1,s,s,s);
+    add(geoShadow,tp[0],0.03,tp[1],0,null,0.18,1.6*s,1,1.6*s);
+    colliders.push({x:tp[0],z:tp[1],hw:0.55,hd:0.55});
+  });
   // clouds
-  for(let i=0;i<6;i++)add(geoCloud,-80+i*32,30+((i*9)%10),-60-((i*23)%70),0,null,0.95,7,1.6,3.4);
+  for(let i=0;i<7;i++)add(geoCloud,-90+i*30,30+((i*9)%12),-50-((i*23)%80),0,null,0.96,7,1.5,3.2,true);
 }
 function drawMesh(m,viewProj){
   gl.bindBuffer(gl.ARRAY_BUFFER,m.g.b);
@@ -358,7 +365,7 @@ function drawMesh(m,viewProj){
   gl.uniformMatrix4fv(uModel,false,model);
   gl.uniformMatrix4fv(uMvp,false,mMul(viewProj,model));
   if(m.tex){gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,m.tex);gl.uniform1f(uTexOn,1)}else gl.uniform1f(uTexOn,0);
-  gl.uniform1f(uAlpha,m.alpha);
+  gl.uniform1f(uAlpha,m.alpha);gl.uniform1f(uNoLight,m.flat);gl.uniform1f(uNoFog,m.flat);
   gl.drawArrays(gl.TRIANGLES,0,m.g.n);
 }
 let worldReady=false;
@@ -385,7 +392,7 @@ function loop(t){
   const dt=Math.min(50,t-lastT||16);lastT=t;
   // real movement: joystick relative to where you look
   const yaw=S.yaw||0,sp=0.0105*dt;
-  const fx=Math.sin(yaw),fz=-Math.cos(yaw),rx=Math.cos(yaw),rz=Math.sin(yaw);
+  const fx=-Math.sin(yaw),fz=-Math.cos(yaw),rx=Math.cos(yaw),rz=-Math.sin(yaw);
   let mx=(fx*S.joy.y+rx*S.joy.x)*sp, mz=(fz*S.joy.y+rz*S.joy.x)*sp;
   S.cam.x+=mx;S.cam.z+=mz;
   // collisions with houses/trees + world bounds
@@ -431,9 +438,10 @@ $('#mReset').addEventListener('click',()=>{
   let p=0;const iv=setInterval(()=>{p+=0.08;S.deadFall=Math.min(1,p);
     if(p>=1){clearInterval(iv);S.cam.x=0;S.cam.z=16;S.yaw=0;S.pitch=0;setTimeout(()=>{S.deadFall=0;toast('رجعت من جديد')},350)}},40);
 });
-$('#mLeave').addEventListener('click',()=>{$('#menuOverlay').classList.remove('show');S.playing=false;$('#startScreen').style.display='flex'});
+$('#mLeave').addEventListener('click',()=>{$('#menuOverlay').classList.remove('show');S.playing=false;$('#rotateHint').classList.remove('on');$('#startScreen').style.display='flex'});
 $('#btnPlay').addEventListener('click',()=>{
   $('#startScreen').style.display='none';S.playing=true;lastT=performance.now();
+  $('#rotateHint').classList.add('on');setTimeout(()=>$('#rotateHint').classList.remove('on'),6000);
   toast('امشِ بالعصا — ودوس «الآيباد» من تريد تطلعه');
   scheduleCall(); scheduleMsg();
 });
@@ -497,7 +505,7 @@ function appIcon(a){
 function renderHome(){
   const all=APPS.concat(S.installed.filter(id=>id!=='tiktok').map(id=>({id:'x_'+id,n:EXTRA[id].n,ic:EXTRA[id].ic})));
   const d=new Date(),days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],months=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-  const widget='<div style="grid-column:span 4;background:rgba(20,24,34,.42);backdrop-filter:blur(8px);border-radius:20px;padding:12px 14px;color:#fff;display:flex;align-items:center;gap:14px">'+
+  const widget='<div class="homeWidget" style="background:rgba(20,24,34,.42);backdrop-filter:blur(8px);border-radius:20px;padding:12px 14px;color:#fff;display:flex;align-items:center;gap:14px">'+
    '<div><div style="font-size:26px;font-weight:700;line-height:1">'+fmtTime()+'</div><div style="font-size:12px;opacity:.9">'+days[d.getDay()]+'، '+d.getDate()+' '+months[d.getMonth()]+'</div></div>'+
    '<div style="margin-right:auto;text-align:left"><div style="font-size:20px;font-weight:700">بغداد ٣٨°</div><div style="font-size:11.5px;opacity:.9">مشمس — العظمى ٤١°</div><div style="font-size:11.5px;opacity:.9">بطارية الآيباد '+Math.round(S.batt.pct)+'٪</div></div></div>';
   $('#homeApps').innerHTML=widget+all.map(a=>{
@@ -577,7 +585,7 @@ function openApp(id){
   const names={roblox:'Roblox',youtube:'YouTube',facetime:'FaceTime',camera:'Camera',photos:'Photos',messages:'Messages',appstore:'App Store',safari:'Safari',tiktok:'TikTok',maps:'Maps',weather:'Weather',calendar:'Calendar',music:'Music',clock:'Clock',notes:'Notes',calc:'Calculator',settings:'Settings'};
   $('#appTitle').textContent=names[id]||id;
   $('#appWin').classList.add('open');
-  ({roblox:appRoblox,youtube:appYouTube,facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,tiktok:()=>openExtra('tiktok'),maps:appMaps,weather:appWeather,calendar:appCalendar,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,settings:appSettings}[id]||(()=>{}))($('#appBody'));
+  ({roblox:appRoblox,youtube:appYouTube,facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,tiktok:appTikTok,maps:appMaps,weather:appWeather,calendar:appCalendar,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,settings:appSettings}[id]||(()=>{}))($('#appBody'));
 }
 function closeApp(){S.app=null;$('#appWin').classList.remove('open');stopCam()}
 $('#appBack').addEventListener('click',e=>{e.stopPropagation();closeApp()});
@@ -717,8 +725,8 @@ function appSettings(el){
    '<div class="setrow"><span style="flex:1">الصوت</span><input type="range" id="setVol" min="0" max="100" value="'+s.vol+'" style="flex:1"></div></div>'+
    '<div class="setgroup"><div class="setrow"><span style="flex:1">البطارية</span><b>'+Math.round(S.batt.pct)+'%</b></div>'+
    '<div class="setrow"><span style="flex:1">الشحن</span><label class="switch"><input type="checkbox" id="swChg" '+(S.batt.charging?'checked':'')+'><i></i></label></div>'+usageRows+'</div>'+
-   '<div class="setgroup"><div class="setrow"><span style="flex:1">حول الجهاز</span><span class="mut">Rio iPad 1.2</span></div>'+
-   '<div class="setrow"><span style="flex:1">النظام</span><span class="mut">RioOS 1.2</span></div></div>';
+   '<div class="setgroup"><div class="setrow"><span style="flex:1">حول الجهاز</span><span class="mut">Rio iPad 1.3</span></div>'+
+   '<div class="setrow"><span style="flex:1">النظام</span><span class="mut">RioOS 1.3</span></div></div>';
   const bind=(id,key,cb)=>{const n=$(id);if(n)n.addEventListener('change',e=>{S.set[key]=e.target.checked;store.set('set',S.set);renderStatus();if(cb)cb()})};
   bind('#swWifi','wifi');bind('#swBt','bt');bind('#swAir','airplane');
   $('#swChg').addEventListener('change',e=>{S.batt.charging=e.target.checked;store.set('batt',S.batt);renderStatus()});
@@ -815,6 +823,31 @@ function playVideo(v){
   $('#ytToggle').addEventListener('click',e=>{playing=!playing;e.target.textContent=playing?'❚❚':'▶'});
   $('#ytLike').addEventListener('click',e=>{e.target.textContent='👍 24K+1'});
   $('#ytBack').addEventListener('click',()=>appYouTube(el));
+}
+const CLIPS=[
+ ['بغداد من فوك — تصوير جوي','@baghdad.views','842K','riotk1','18.2K'],
+ ['أحلى لقطة باللعبة الجديدة','@gamers.iq','2.1M','riotk2','96K'],
+ ['دولمة عراقية على أصولها','@matbakhna','567K','riotk3','12.4K'],
+ ['غروب الشمس من الكورنيش','@travel.iraq','1.4M','riotk4','45K'],
+ ['تحدي رقص مع الأصدقاء','@dance.iq','3.3M','riotk5','210K']
+];
+function appTikTok(el){
+  let i=0,liked={};
+  const render=()=>{
+    const c=CLIPS[i];
+    el.innerHTML='<div style="position:relative;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:3/4.1;max-height:520px;margin:0 auto">'+
+     '<img src="https://picsum.photos/seed/'+c[3]+'/450/620" style="width:100%;height:100%;object-fit:cover">'+
+     '<div style="position:absolute;right:8px;bottom:70px;display:flex;flex-direction:column;gap:14px;align-items:center;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.6)">'+
+     '<span style="text-align:center;cursor:pointer" id="tkLike"><span style="font-size:26px;color:'+(liked[i]?'#fe2c55':'#fff')+'">♥</span><br><span style="font-size:11px">'+(liked[i]?c[4]+'+1':c[4])+'</span></span>'+
+     '<span style="text-align:center"><span style="font-size:24px">💬</span><br><span style="font-size:11px">1,204</span></span>'+
+     '<span style="text-align:center"><span style="font-size:24px">↗</span><br><span style="font-size:11px">مشاركة</span></span></div>'+
+     '<div style="position:absolute;left:10px;right:64px;bottom:12px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7)"><b style="font-size:13.5px">'+c[1]+'</b><div style="font-size:13px;margin-top:3px">'+c[0]+'</div><div style="font-size:11.5px;opacity:.9;margin-top:3px">♫ الصوت الأصلي — '+c[1]+'</div></div></div>'+
+     '<div class="row" style="margin-top:10px;justify-content:space-between"><button class="btn gray" id="tkPrev">▲ السابق</button><span class="mut">'+(i+1)+' / '+CLIPS.length+'</span><button class="btn" id="tkNext">التالي ▼</button></div>';
+    $('#tkNext').addEventListener('click',()=>{i=(i+1)%CLIPS.length;render()});
+    $('#tkPrev').addEventListener('click',()=>{i=(i-1+CLIPS.length)%CLIPS.length;render()});
+    $('#tkLike').addEventListener('click',()=>{liked[i]=!liked[i];render()});
+  };
+  render();
 }
 function appMaps(el){
   el.innerHTML='<input type="text" id="mapIn" placeholder="ابحث عن مكان…" style="width:100%;padding:11px 12px;border:none;border-radius:10px;background:#e9e9ee;font-size:14px"><canvas id="mapCv" width="340" height="300" style="width:100%;border-radius:12px;margin-top:10px;background:#e8f3e2"></canvas><div class="card row" style="margin-top:10px"><span style="font-size:20px">📍</span><span style="flex:1"><span class="big" id="mapName">بغداد — المنصور</span><br><span class="mut">العراق • 12 دقيقة بالسيارة</span></span><button class="btn">اتجاهات</button></div>';
