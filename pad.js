@@ -29,7 +29,7 @@ function armHome(){S._armUntil=Date.now()+4000;const hb=$('#homeBar');hb.classLi
 function disarmHome(){S._armUntil=0;$('#homeBar').classList.remove('armed')}
 function closeApp(){
 clearInterval(S.poll);
-const sw=$('#switcher');if(sw.classList.contains('open'))sw.classList.remove('open');
+const sw=$('#switcher');if(sw.classList.contains('open'))dismissSw();
 const win=$('#appWin');if(!win.classList.contains('open')){S.app=null;return}
 snapCur();
 const tok=(S._anim=(S._anim||0)+1);
@@ -55,11 +55,16 @@ track.querySelectorAll('[data-sw]').forEach(c=>{
 let cy=null;
 c.addEventListener('touchstart',e=>{cy=e.touches[0].clientY},{passive:true});
 c.addEventListener('touchmove',e=>{if(cy===null)return;const dy=cy-e.touches[0].clientY;if(dy>55){cy=null;killApp(c.dataset.sw)}},{passive:true});
-c.addEventListener('click',()=>{const id=c.dataset.sw;$('#switcher').classList.remove('open');if(id===S.app)return;id.startsWith('x_')?openExtra(id.slice(2),c.querySelector('.swHead .ic')):openApp(id,c.querySelector('.swHead .ic'))});
+c.addEventListener('click',()=>{const id=c.dataset.sw;dismissSw();if(id===S.app)return;id.startsWith('x_')?openExtra(id.slice(2),c.querySelector('.swHead .ic')):openApp(id,c.querySelector('.swHead .ic'))});
 });
 }
-function openSwitcher(){snapCur();renderSwitcher();$('#switcher').classList.add('open')}
-function killApp(id){S.running=(S.running||[]).filter(r=>r.id!==id);if(S.snaps)delete S.snaps[id];if(S.app===id){$('#switcher').classList.remove('open');closeApp()}else renderSwitcher();toast('انقتل التطبيق من الخلفية')}
+function dismissSw(){$('#switcher').classList.remove('open');document.body.classList.remove('swopen')}
+function openSwitcher(){snapCur();renderSwitcher();$('#switcher').classList.add('open');document.body.classList.add('swopen')}
+$('#switcher').addEventListener('click',e=>{if(!e.target.closest('.swCard'))dismissSw()});
+let _swY=null;
+$('#switcher').addEventListener('touchstart',e=>{_swY=e.touches[0].clientY},{passive:true});
+$('#switcher').addEventListener('touchend',e=>{if(_swY===null)return;const dy=e.changedTouches[0].clientY-_swY;_swY=null;if(dy>45)dismissSw()});
+function killApp(id){S.running=(S.running||[]).filter(r=>r.id!==id);if(S.snaps)delete S.snaps[id];if(S.app===id){dismissSw();closeApp()}else renderSwitcher();toast('انقتل التطبيق من الخلفية')}
 function openApp(id,fromEl){
 hideCC();clearInterval(S.poll);
 if(id==='phone'){toast('المكالمات داخل FaceTime هنا');id='facetime'}
@@ -74,7 +79,7 @@ const _ab=$('#appBack');if(_ab)_ab.addEventListener('click',e=>{e.stopPropagatio
 function syncPill(){const pill=$('#spotPill');if(!pill)return;const lockOn=$('#lock').classList.contains('show');pill.style.display=($('#appWin').classList.contains('open')||lockOn)?'none':'flex'}
 new MutationObserver(syncPill).observe($('#lock'),{attributes:true,attributeFilter:['class']});
 $('#homeBar').addEventListener('click',()=>{
-if($('#switcher').classList.contains('open')){$('#switcher').classList.remove('open');if($('#appWin').classList.contains('open'))closeApp();return}
+if($('#switcher').classList.contains('open')){dismissSw();if($('#appWin').classList.contains('open'))closeApp();return}
 if(!$('#appWin').classList.contains('open')){openSwitcher();return}
 if(Date.now()<(S._armUntil||0))closeApp();else armHome();
 });
@@ -238,7 +243,7 @@ return;
 if(S.setPage==='about'){
 el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button><div class="setgroup">'+
 row('الاسم','',"Rio's iPad")+row('طراز الجهاز','', 'iPad Pro 11')+row('نظام التشغيل','', 'RioOS 26.0')+
-row('إصدار اللعبة','', 'Rio iPad 2.6')+row('السعة','', '64 GB')+row('المساحة المتوفرة','', '51.2 GB')+
+row('إصدار اللعبة','', 'Rio iPad 2.7')+row('السعة','', '64 GB')+row('المساحة المتوفرة','', '51.2 GB')+
 row('الرقم التسلسلي','', 'RGX2IPAD2026')+row('المشغل','', 'Zain — 4.5G+')+'</div>';
 $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});return;
 }
