@@ -9,8 +9,9 @@
 <meta name="apple-mobile-web-app-title" content="Rio iPad">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Rio iPad 2.0</title>
+<title>Rio iPad 2.1</title>
 <style>
+.sq{width:29px;height:29px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overflow:hidden;background:#79b5ff;font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif}
 #game{position:fixed;inset:0;overflow:hidden}
@@ -185,17 +186,32 @@ input[type=text],textarea{font-family:inherit}
 canvas#camView{width:100%;border-radius:12px;background:#000}
 .app{transition:transform .16s ease}
 .calD{position:absolute;top:3px;left:50%;transform:translateX(-50%);width:min(42px,80%);text-align:center;font-size:9px;font-weight:700;color:#ff3b30;background:#fff;border-radius:3px;line-height:1.45;z-index:2}
-.calN{position:absolute;top:15px;left:50%;transform:translateX(-50%);width:min(42px,80%);text-align:center;font-size:20px;font-weight:600;color:#111;background:#fff;border-radius:3px;line-height:1.25;z-index:2}
+.calN{position:absolute;top:15px;bottom:3px;left:50%;transform:translateX(-50%);width:min(42px,80%);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;color:#111;background:#fff;border-radius:4px;z-index:2}
 .app:active{transform:scale(.85)}
 .ccCirc,.ccTile{transition:transform .15s ease}
 .ccCirc:active,.ccTile:active{transform:scale(.92)}
+img{-webkit-user-drag:none}
+body{touch-action:manipulation}
+@keyframes jig{from{transform:rotate(-1.2deg)}to{transform:rotate(1.2deg)}}
+.jiggling .app{animation:jig .26s ease-in-out infinite alternate}
+.jiggling .app:nth-child(2n){animation-delay:.08s}.jiggling .app:nth-child(3n){animation-delay:.15s}
+.app .delX{position:absolute;top:-7px;left:-7px;width:19px;height:19px;border-radius:50%;background:#e8e8ed;color:#3a3a3c;font-size:12px;font-weight:700;display:none;align-items:center;justify-content:center;z-index:3;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.jiggling .app .delX{display:flex}
+#editBar{position:absolute;top:30px;left:10px;z-index:26;display:none}
+#editBar button{background:rgba(245,245,247,.92);border:none;padding:6px 16px;border-radius:15px;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+#ctxMenu{position:absolute;z-index:60;display:none;background:rgba(250,250,252,.94);backdrop-filter:blur(14px);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);min-width:178px;overflow:hidden;color:#111}
+#ctxMenu button{display:block;width:100%;text-align:right;padding:11px 14px;background:none;border:none;border-bottom:1px solid rgba(0,0,0,.06);font-size:13.5px;cursor:pointer}
+#ctxMenu button.danger{color:#ff3b30;font-weight:700}
+#ipad{background:linear-gradient(150deg,#3b3e45,#14161a 42%,#1d1f24);box-shadow:inset 0 0 0 2px #43464e,inset 0 1px 0 rgba(255,255,255,.28),0 24px 44px rgba(0,15,40,.45)}
+#padCam{width:9px;height:9px;background:radial-gradient(circle at 38% 35%,#7fa8d8 0 18%,#24344d 42%,#05070c 78%);box-shadow:inset 0 0 2px #000,0 0 0 2.5px rgba(20,22,28,.9)}
+.hwBtn{position:absolute;background:linear-gradient(90deg,#565a63,#2b2e34);border-radius:3px;z-index:2}
 .hidden{display:none!important}
 </style>
 </head>
 <body>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 2.0</div>
+  <div id="verTag">Rio iPad 2.1</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -206,10 +222,10 @@ canvas#camView{width:100%;border-radius:12px;background:#000}
 
   <!-- iPad -->
   <div id="rotateHint">لفّ جهازك بالعرض — اللعبة تنلعب أفضل أفقياً</div>
-  <div id="padWrap" class="away">
+  <div id="padWrap" class="away"><span class="hwBtn" style="right:-3px;top:88px;width:4px;height:58px"></span><span class="hwBtn" style="left:-3px;top:110px;width:4px;height:38px"></span><span class="hwBtn" style="left:-3px;top:154px;width:4px;height:38px"></span>
     <div id="ipad"><div id="padCam"></div><div id="screen"><div id="sheen"></div>
       <div id="wall"><img id="wallImg" src="https://picsum.photos/seed/riowall/700/900" alt="" onerror="this.remove()"></div>
-      <div id="homeApps"></div>
+      <div id="homeApps"></div><div id="editBar"><button id="editDone">تم</button></div><div id="ctxMenu"></div>
       <div id="dock"></div>
       <div id="dim"></div>
       <div id="statusbar"><span id="sbTime">9:41</span><span class="sicons" id="sbIcons"></span></div>
@@ -246,7 +262,7 @@ canvas#camView{width:100%;border-radius:12px;background:#000}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 2.0</div>
+    <div class="ver">Rio iPad 2.1</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -268,6 +284,8 @@ const S={
   photos: store.get('photos',[]),
   installed: store.get('installed',[]),
   notes: store.get('notes',''),
+  hidden: store.get('hidden',[]), apple: store.get('apple',{id:'',name:''}),
+  jiggle:false, setPage:'main', storeTab:'today', poll:null, sid:'r'+Math.random().toString(36).slice(2,8),
   warned20:false, warned10:false, callTimer:null, callSec:0, musicPlay:false
 };
 /* ================= world: REAL 3D (WebGL) ================= */
@@ -382,11 +400,6 @@ function skyGeo(r){const a=[],ws=18,hs=10,top=hex('#2b7de1'),bot=hex('#dff1ff');
 let geoSky,geoBlock=[],geoBall,geoTrunk,geoLeaf,geoLeaf2,geoShadow,geoGround,geoCloud,geoSun;
 function buildWorld(){
   geoSky=skyGeo(280);
-  geoBlock=['#8ec9ff','#ffd28e','#b5e7a0','#ffb3c1','#c5b3ff','#fff3a0'].map(c=>boxGeo(1,1,1,c));
-  geoBall=sphGeo(1,'#ff8fa3');
-  geoTrunk=cylGeo(0.16,1.6,'#8a5a2b');
-  geoLeaf=sphGeo(1.35,'#3e9e4f');geoLeaf2=sphGeo(1.0,'#57b96a');
-  geoShadow=discGeo(1,'#5a7396');
   geoGround=groundGeo(430,108);
   geoCloud=sphGeo(1,'#ffffff');geoSun=sphGeo(5,'#fff6bf');
   colliders.length=0;
@@ -484,36 +497,11 @@ $('#btnPlay').addEventListener('click',()=>{
   $('#rotateHint').classList.add('on');setTimeout(()=>$('#rotateHint').classList.remove('on'),6000);
   toast('امشِ بالعصا، واسحب يمين ويسار حتى تلف ٣٦٠');
 });
-function scheduleCall(){setTimeout(()=>{if(S.playing)incomingCall()},40000)}
-function scheduleMsg(){setTimeout(()=>{if(S.playing){const tx='وينك؟ تعال نلعب';showBanner('Messages','أحمد: '+tx,()=>{raisePad();openApp('messages')});
-  const last=S.msgs[S.msgs.length-1];if(!last||last.me||last.t!==tx)S.msgs.push({me:false,t:tx});store.set('msgs',S.msgs);updBadges()}},45000)}
 </script>
 <script>
 /* ================= iPad OS ================= */
 function svg(p,bg){return '<span class="ic" style="background:'+bg+'"><svg width="30" height="30" viewBox="0 0 24 24" fill="none">'+p+'</svg></span>'}
-const IC={
- roblox:()=>svg('<rect x="5" y="5" width="14" height="14" rx="2" transform="rotate(12 12 12)" fill="#fff"/><rect x="10" y="10" width="4.4" height="4.4" transform="rotate(12 12 12)" fill="#191b1e"/>','#191b1e'),
- facetime:()=>svg('<rect x="3" y="7" width="12" height="10" rx="2.5" fill="#fff"/><path d="M15 10.5l6-3.5v10l-6-3.5z" fill="#fff"/>','linear-gradient(160deg,#5be584,#19b845)'),
- camera:()=>svg('<rect x="3" y="7" width="18" height="13" rx="2.5" fill="#e8e8ec"/><rect x="9" y="4.5" width="6" height="3.4" rx="1.2" fill="#e8e8ec"/><circle cx="12" cy="13.4" r="3.6" fill="#3a3f47"/><circle cx="12" cy="13.4" r="1.7" fill="#7fb2ff"/>','linear-gradient(160deg,#f4f4f6,#c9ccd4)'),
- photos:()=>{let p='';const cols=['#f7b733','#e74c3c','#9b59b6','#3498db','#2ecc71','#f39c12','#e84393','#00b8a9'];for(let i=0;i<8;i++)p+='<ellipse cx="12" cy="7.4" rx="2.1" ry="4" fill="'+cols[i]+'" opacity=".75" transform="rotate('+(i*45)+' 12 12)"/>';return svg(p,'#fff')},
- messages:()=>svg('<path d="M12 4c5 0 9 3.2 9 7.2 0 4-4 7.3-9 7.3-1 0-2-.14-2.9-.4L4 20l1.2-3.4C3.8 15.2 3 13.3 3 11.2 3 7.2 7 4 12 4z" fill="#fff"/>','linear-gradient(160deg,#63e57c,#12b76a)'),
- settings:()=>{let p='<circle cx="12" cy="12" r="3.2" fill="#8e8e93"/>';for(let i=0;i<8;i++)p+='<rect x="11" y="3" width="2" height="4.4" rx="1" fill="#8e8e93" transform="rotate('+(i*45)+' 12 12)"/>';return svg(p+'<circle cx="12" cy="12" r="1.3" fill="#f2f2f7"/>','linear-gradient(160deg,#e8e8ec,#b9bcc4)')},
- appstore:()=>svg('<path d="M12 4.6L8 14.2h2.5l1.5-3.7 1.5 3.7H16z" fill="#fff"/><path d="M6.4 16.8l2.6-5.4 1.8 1.5-2.2 4.6zM17.6 16.8l-2.6-5.4-1.8 1.5 2.2 4.6z" fill="#fff"/><rect x="8.2" y="15.2" width="7.6" height="1.7" fill="#fff"/>','linear-gradient(160deg,#1ec3f7,#0a6cff)'),
- safari:()=>svg('<circle cx="12" cy="12" r="8.6" fill="#fff"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="#e74c3c"/><path d="M15.5 8.5l-2 5-3.5-3.5z" fill="#0a84ff"/>','linear-gradient(160deg,#37b6ff,#0a5cff)'),
- music:()=>svg('<path d="M9 18V6l10-2v11.5" stroke="#fff" stroke-width="2" fill="none"/><circle cx="6.8" cy="18" r="2.4" fill="#fff"/><circle cx="16.8" cy="15.5" r="2.4" fill="#fff"/>','linear-gradient(160deg,#fc6a85,#f92c4c)'),
- clock:()=>{let p='<circle cx="12" cy="12" r="8.6" fill="#111"/>';for(let i=0;i<12;i++)p+='<rect x="11.7" y="4.4" width=".6" height="1.6" fill="#fff" transform="rotate('+(i*30)+' 12 12)"/>';return svg(p+'<path d="M12 12V8" stroke="#fff" stroke-width="1.6"/><path d="M12 12l3.2 2" stroke="#ff9f0a" stroke-width="1.4"/>','#111')},
- notes:()=>svg('<rect x="4" y="3.4" width="16" height="17" rx="2" fill="#fff"/><rect x="4" y="3.4" width="16" height="4.6" rx="2" fill="#ffd93b"/><path d="M7 11h10M7 14h10M7 17h6" stroke="#c9c9ce" stroke-width="1.4"/>','linear-gradient(160deg,#ffffff,#e9e9ee)'),
- calc:()=>svg('<rect x="5" y="3.4" width="14" height="17" rx="2" fill="#1c1c1e"/><rect x="7.4" y="5.6" width="9.2" height="3.4" rx="1" fill="#a5e8a1"/><g fill="#ff9f0a"><circle cx="8.6" cy="12" r="1.15"/><circle cx="12" cy="12" r="1.15"/><circle cx="15.4" cy="12" r="1.15"/><circle cx="8.6" cy="15.6" r="1.15"/><circle cx="12" cy="15.6" r="1.15"/><circle cx="15.4" cy="15.6" r="1.15"/></g>','#333'),
- phone:()=>svg('<path d="M6.6 3.8c.6-.6 1.6-.5 2.1.2l1.6 2c.5.6.4 1.5-.1 2.1L9 9.3c.9 1.9 2.8 3.8 4.7 4.7l1.2-1.2c.6-.5 1.5-.6 2.1-.1l2 1.6c.7.5.8 1.5.2 2.1l-1.1 1.2c-.6.6-1.4.9-2.2.7C10.6 17.2 6.8 13.4 5.7 8.1c-.2-.8.1-1.6.7-2.2z" fill="#fff"/>','linear-gradient(160deg,#63e57c,#12b76a)'),
- youtube:()=>svg('<rect x="2.6" y="5.4" width="18.8" height="13.2" rx="3.4" fill="#fff"/><path d="M10.2 9.2l5 2.8-5 2.8z" fill="#ff0033"/>','linear-gradient(160deg,#ff3b30,#e60023)'),
- maps:()=>svg('<rect x="3" y="4" width="18" height="16" rx="2.5" fill="#b8e6a0"/><path d="M9 4v16M15 4v16M3 12h18" stroke="#fff" stroke-width="1.6"/><path d="M12 6.4c1.9 0 3.2 1.4 3.2 3.1 0 2.2-3.2 5-3.2 5s-3.2-2.8-3.2-5c0-1.7 1.3-3.1 3.2-3.1z" fill="#ff3b30"/><circle cx="12" cy="9.4" r="1.15" fill="#fff"/>','linear-gradient(160deg,#d7f0c2,#a8dc8f)'),
- weather:()=>svg('<circle cx="9" cy="9" r="3.6" fill="#ffd93b"/><path d="M7.5 16.5h9.5a3.4 3.4 0 0 0 .6-6.7 5 5 0 0 0-9.7 1.2A3 3 0 0 0 7.5 16.5z" fill="#fff"/>','linear-gradient(160deg,#4aa8ff,#1668dc)'),
- calendar:()=>{const d=new Date(),days=['SUN','MON','TUE','WED','THU','FRI','SAT'];return svg('<rect x="4" y="3.6" width="16" height="17" rx="2.4" fill="#fff"/><text x="12" y="9.6" font-size="4.6" font-weight="700" fill="#ff3b30" text-anchor="middle" font-family="Arial">'+days[d.getDay()]+'</text><text x="12" y="18.6" font-size="9" font-weight="700" fill="#111" text-anchor="middle" font-family="Arial">'+d.getDate()+'</text>','#fff')},
- tiktok:()=>svg('<path d="M14 4v10.5a3.9 3.9 0 1 1-3.2-3.8" stroke="#fff" stroke-width="2.2" fill="none"/><path d="M14 4c.4 2.3 2 3.9 4.2 4.2" stroke="#25f4ee" stroke-width="2.2" fill="none"/>','#000'),
- minecraft:()=>svg('<rect x="4" y="8" width="16" height="12" fill="#6abe30"/><rect x="4" y="8" width="16" height="4" fill="#8a5a2b"/><rect x="7" y="13" width="3" height="3" fill="#20242a"/><rect x="14" y="13" width="3" height="3" fill="#20242a"/><rect x="10.5" y="16.4" width="3" height="2.4" fill="#20242a"/>','linear-gradient(180deg,#79c94f,#4e9b2a)'),
- subway:()=>svg('<rect x="5" y="6" width="14" height="11" rx="2" fill="#ffd93b"/><rect x="7.4" y="9" width="9.2" height="4" rx="1" fill="#37b6ff"/><circle cx="8.6" cy="15.4" r="1.1" fill="#e74c3c"/><circle cx="15.4" cy="15.4" r="1.1" fill="#fff"/>','linear-gradient(160deg,#ff9f0a,#ff6a00)'),
- puzzle:()=>svg('<path d="M9 4h6v4a2.4 2.4 0 1 0 0 4v8H7v-6a2.4 2.4 0 1 0 0-4.8V4h2z" fill="#fff"/>','linear-gradient(160deg,#b06ee8,#7d3ff2)')
-};
+const IC={};
 const APPS=[
  {id:'roblox',n:'Roblox',ic:'roblox'},
  {id:'youtube',n:'YouTube',ic:'youtube'},
@@ -561,8 +549,22 @@ function icImg(url){return '<span class="ic" style="background:none;box-shadow:0
 Object.keys(ICONS).forEach(k=>{IC[k]=()=>icImg(ICONS[k])});
 const EXTRA={
  tiktok:{n:'TikTok',ic:'tiktok'}, minecraft:{n:'Minecraft',ic:'minecraft'},
- subway:{n:'Subway Surfers',ic:'subway'}, candy:{n:'Candy Crush',ic:'candy'}
+ subway:{n:'Subway Surfers',ic:'subway'}, candy:{n:'Candy Crush',ic:'candy'},
+ whatsapp:{n:'WhatsApp',ic:'whatsapp'}, telegram:{n:'Telegram',ic:'telegram'},
+ instagram:{n:'Instagram',ic:'instagram'}, facebook:{n:'Facebook',ic:'facebook'},
+ messenger:{n:'Messenger',ic:'messenger'}, snapchat:{n:'Snapchat',ic:'snapchat'},
+ x:{n:'X',ic:'x'}, discord:{n:'Discord',ic:'discord'}
 };
+const SOCIAL={whatsapp:{n:'WhatsApp',c:'#25D366'},telegram:{n:'Telegram',c:'#229ED9'},instagram:{n:'Instagram',c:'#E1306C'},facebook:{n:'Facebook',c:'#1877F2'},messenger:{n:'Messenger',c:'#0084FF'},snapchat:{n:'Snapchat',c:'#c9a800'},x:{n:'X',c:'#111'},discord:{n:'Discord',c:'#5865F2'}};
+Object.assign(ICONS,{
+ whatsapp:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/3c/dc/2a/3cdc2a16-402f-151e-0126-99c912c92a42/AppIcon-0-0-1x_U007epad-0-0-0-1-0-0-sRGB-0-85-220.png/100x100bb.jpg',
+ telegram:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/52/47/26/5247269d-36db-c530-6d22-1918a5d6e357/Telegram-0-0-1x_U007epad-0-1-0-sRGB-85-220.png/100x100bb.jpg',
+ instagram:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/30/17/93/30179310-7a32-f8b3-5b31-a01addf6c367/Prod-0-0-1x_U007epad-0-1-0-sRGB-85-220.png/100x100bb.jpg',
+ facebook:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/8a/a0/a8/8aa0a82f-fcd1-b9b4-f664-28b5389f2886/Icon-Production-0-0-1x_U007epad-0-1-0-sRGB-85-220.png/100x100bb.jpg',
+ messenger:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/86/e4/23/86e423d8-1d2d-737d-d1c3-e6a79bb137c2/AppIcon-0-0-1x_U007epad-0-1-0-sRGB-85-220.png/100x100bb.jpg',
+ snapchat:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/cc/aa/03/ccaa03e2-6d86-915d-bdd9-1b052354a544/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/100x100bb.jpg',
+ x:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/51/9b/81/519b818f-5d32-ac14-e4b5-7a9f889b9bd4/ProductionAppIcon-0-0-1x_U007emarketing-0-8-0-0-0-85-220.png/100x100bb.jpg',
+ discord:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/37/35/3a/37353aac-9951-768d-48bc-5097346a0cb5/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/100x100bb.jpg'});
 function appIcon(a){
   const b=a.badge?a.badge():'';
   return '<button class="app" data-app="'+a.id+'">'+IC[a.ic]()+'<span class="nm">'+a.n+'</span>'+(b!==''&&b!==0?'<span style="position:relative"></span>':'')+'</button>'
@@ -576,17 +578,24 @@ function renderHome(){
     let ov='';
     if(a.id==='calendar')ov='<span class="calD">'+days[d.getDay()]+'</span><span class="calN">'+arabNum(d.getDate())+'</span>';
     const bv=a.badge?(typeof a.badge==='function'?a.badge():a.badge):'';
-    return '<button class="app" data-app="'+a.id+'" style="position:relative">'+icImg(ICONS[a.ic])+ov+'<span class="nm">'+a.n+'</span>'+(bv!==''&&bv!==0?'<span class="badge">'+bv+'</span>':'')+'</button>';
+    return '<button class="app" data-app="'+a.id+'" style="position:relative">'+icImg(ICONS[a.ic])+ov+'<span class="delX">✕</span><span class="nm">'+a.n+'</span>'+(bv!==''&&bv!==0?'<span class="badge">'+bv+'</span>':'')+'</button>';
   };
-  const all=APPS.concat(S.installed.filter(id=>id!=='tiktok'&&EXTRA[id]).map(id=>({id:'x_'+id,n:EXTRA[id].n,ic:EXTRA[id].ic})));
+  const all=APPS.filter(a=>!S.hidden.includes(a.id)).concat(S.installed.filter(id=>id!=='tiktok'&&EXTRA[id]).map(id=>({id:'x_'+id,n:EXTRA[id].n,ic:EXTRA[id].ic})));
   const pages=[];pages.push([widget,...all.slice(0,12).map(cell)]);
   for(let i=12;i<all.length;i+=18)pages.push(all.slice(i,i+18).map(cell));
   $('#homeApps').innerHTML='<div id="pagesTrack">'+pages.map(pg=>'<div class="hpage">'+pg.join('')+'</div>').join('')+'</div><div id="pageDots">'+pages.map((_,i)=>'<i class="'+(i===0?'on':'')+'"></i>').join('')+'</div>';
   $('#dock').innerHTML=['phone','safari','messages','music'].map(id=>{const a=APPS.find(x=>x.id===id)||{ic:id};return '<span data-app="'+id+'">'+icImg(ICONS[a.ic||id])+'</span>'}).join('');
   const track=$('#pagesTrack');
   track.addEventListener('scroll',()=>{const i=Math.round(track.scrollLeft/track.clientWidth);document.querySelectorAll('#pageDots i').forEach((dt,j)=>dt.classList.toggle('on',j===i))},{passive:true});
-  document.querySelectorAll('#homeApps .app, #dock [data-app]').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();openApp(el.dataset.app,el.querySelector('.ic')||el)}));
+  document.querySelectorAll('#homeApps .app, #dock [data-app]').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();if(S.jiggle&&el.classList.contains('app')){showCtx(el);return}openApp(el.dataset.app,el.querySelector('.ic')||el)}));
   document.querySelectorAll('#homeApps,#dock').forEach(w=>w.oncontextmenu=e=>e.preventDefault());
+  document.querySelectorAll('#homeApps .app').forEach(el=>{
+    let tm=null,sx=0,sy=0;
+    el.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;tm=setTimeout(()=>enterJiggle(),500)});
+    const kill=()=>{if(tm)clearTimeout(tm);tm=null};
+    el.addEventListener('pointerup',kill);el.addEventListener('pointercancel',kill);
+    el.addEventListener('pointermove',e=>{if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>12)kill()});
+  });
 }
 function raisePad(){if(!S.padOut)setPad(true)}
 /* status bar + battery */
@@ -614,7 +623,7 @@ function renderStatus(){
 function tickUse(name){const u=S.batt.usage;u[name]=(u[name]||0)+1;store.set('batt',S.batt)}
 setInterval(()=>{
   renderStatus();
-  const drainBase=0.0016*(0.5+S.set.bright/100)*(S.app==='camera'||S.app==='roblox'||S.app==='youtube'?2.6:1)*(S.padOut?1.4:0.5);
+  const drainBase=0.0045*(0.5+S.set.bright/100)*(S.app==='camera'||S.app==='roblox'||S.app==='youtube'?2.6:1)*(S.padOut?1.4:0.5);
   if(S.batt.charging){S.batt.pct=Math.min(100,S.batt.pct+0.03)}
   else if(S.playing){S.batt.pct=Math.max(0,S.batt.pct-drainBase)}
   if(S.app)tickUse(S.app);
@@ -719,13 +728,6 @@ function updBadges(){renderHome()}
 S.msgs=[];store.set('msgs',[]);
 S.notifs=store.get('notifs',[]);
 S.locked=true;
-function zoomFrom(fromEl){
-  if(!fromEl||!fromEl.getBoundingClientRect)return 'scale(.88)';
-  const scr=$('#screen').getBoundingClientRect(),r=fromEl.getBoundingClientRect();
-  const dx=(r.left+r.width/2)-(scr.left+scr.width/2),dy=(r.top+r.height/2)-(scr.top+scr.height/2);
-  const s=Math.max(0.05,Math.min(r.width/Math.max(1,scr.width),r.height/Math.max(1,scr.height)));
-  return 'translate('+dx.toFixed(1)+'px,'+dy.toFixed(1)+'px) scale('+s.toFixed(3)+')';
-}
 const IOS_EASE='cubic-bezier(.32,.72,.24,1)';
 function iconImgOf(el){if(!el)return null;const im=el.tagName==='IMG'?el:el.querySelector&&el.querySelector('img');if(!im)return null;return im.currentSrc||im.src}
 function showAppWin(fromEl){
@@ -749,6 +751,7 @@ function showAppWin(fromEl){
   setTimeout(()=>{if(clone)clone.remove();if(S._anim===tok){win.style.transition='';win.style.transform='';win.style.opacity=''}},470);
 }
 function closeApp(){
+  clearInterval(S.poll);
   const win=$('#appWin');if(!win.classList.contains('open')){S.app=null;return}
   const tok=(S._anim=(S._anim||0)+1);
   S.app=null;stopCam();
@@ -770,7 +773,7 @@ function closeApp(){
     win.classList.remove('open');win.style.transition='';win.style.transform='';win.style.opacity='';S._from=null},380);
 }
 function openApp(id,fromEl){
-  hideCC();
+  hideCC();clearInterval(S.poll);
   if(id==='phone'){toast('المكالمات داخل FaceTime هنا');id='facetime'}
   if(id&&id.startsWith('x_')){const k=id.slice(2);return openExtra(k,fromEl)}
   S.app=id; tickUse(id);
@@ -779,31 +782,22 @@ function openApp(id,fromEl){
   showAppWin(fromEl);
   ({roblox:appRoblox,youtube:appYouTube,facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,tiktok:appTikTok,maps:appMaps,weather:appWeather,calendar:appCalendar,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,settings:appSettings}[id]||(()=>{}))($('#appBody'));
 }
-function closeApp(){
-  const win=$('#appWin');if(!win.classList.contains('open')){S.app=null;return}
-  const tok=(S._anim=(S._anim||0)+1);
-  S.app=null;stopCam();
-  win.style.transition='transform .36s '+IOS_EASE+',opacity .26s ease,border-radius .36s '+IOS_EASE;
-  win.style.transform=zoomFrom(S._from&&document.body.contains(S._from)?S._from:null);
-  win.style.opacity='0';win.style.borderRadius='30px';
-  setTimeout(()=>{if(S._anim!==tok)return;
-    win.classList.remove('open');win.style.transition='';win.style.transform='';win.style.opacity='';win.style.borderRadius='';S._from=null},345);
-}
 $('#appBack').addEventListener('click',e=>{e.stopPropagation();closeApp()});
 function openExtra(k,fromEl){
   S.app='x_'+k;$('#appTitle').textContent=EXTRA[k].n;showAppWin(fromEl);
+  if(SOCIAL[k]&&k!=='instagram')return appChatRoom(k);
+  if(k==='instagram')return appInsta();
   $('#appBody').innerHTML='<div class="card" style="text-align:center;padding:28px 14px"><div style="display:flex;justify-content:center;margin-bottom:10px">'+IC[EXTRA[k].ic]()+'</div><div class="big">'+EXTRA[k].n+'</div><p class="mut" style="margin-top:6px">انثبت على الآيباد ويشتغل من الشاشة الرئيسية.</p><button class="btn" style="margin-top:12px" onclick="closeApp()">تمام</button></div>';
 }
 /* ================= Roblox ================= */
 const FRIENDS=[['Eno','#e74c3c'],['Ahmad','#3498db'],['Sara','#e84393'],['Omar','#2ecc71'],['Lina','#f39c12'],['Yusuf','#9b59b6'],['Nora','#1abc9c'],['Khalid','#e67e22']];
 const GAMES=[['Adopt Me!','2.1M','#ff9ff3'],['Escape Obby!','845K','#54a0ff'],['Tower of Fun','1.3M','#5f27cd'],['Pet Simulator','976K','#ff9f43'],['Brook Village RP','3.4M','#1dd1a1'],['Hide and Seek','512K','#ee5253'],['Speed Run 4','689K','#48dbfb'],['Natural Disaster','1.1M','#fca311']];
-function faceSVG(c,s){return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 48 48"><circle cx="24" cy="24" r="24" fill="'+c+'"/><rect x="16" y="14" width="16" height="14" rx="3" fill="#f2c89b"/><rect x="16" y="11" width="16" height="6" rx="3" fill="#20242a"/><circle cx="20.5" cy="21" r="1.6" fill="#20242a"/><circle cx="27.5" cy="21" r="1.6" fill="#20242a"/><path d="M20 25q4 3 8 0" stroke="#20242a" stroke-width="1.6" fill="none"/><rect x="17" y="29" width="14" height="9" rx="2" fill="#fff" opacity=".85"/></svg>'}
 function appRoblox(el){
   el.innerHTML=
   '<div class="rbx-head"><span class="logo"><svg width="22" height="22" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2" transform="rotate(12 12 12)" fill="#fff"/><rect x="10" y="10" width="4.4" height="4.4" transform="rotate(12 12 12)" fill="#191b1e"/></svg></span><div><div class="big">Home</div><div class="mut">@rio_player</div></div></div>'+
   '<a href="https://www.roblox.com/games/128248561501148/Apple-IPad-Origional" target="_blank" rel="noopener" class="btn" style="display:block;text-align:center;text-decoration:none;padding:12px;margin-bottom:6px">العب الماب الحقيقي بروبلوكس نفسه</a>'+
   '<input type="text" placeholder="Search" style="width:100%;padding:10px 12px;border:none;border-radius:10px;background:#e9e9ee;font-size:14px" readonly>'+
-  '<div class="rbx-sec">Connections</div><div class="friends">'+FRIENDS.map(f=>'<div class="friend"><div class="fa" style="background:none;border:none">'+faceSVG(f[1],52)+'</div><div class="fn">'+f[0]+'</div></div>').join('')+'</div>'+
+  '<div class="rbx-sec">Connections</div><div class="friends">'+FRIENDS.map((f,fi)=>'<div class="friend"><div class="fa" style="background:none;border:none"><img src="https://i.pravatar.cc/104?img='+(12+fi*9)+'" style="width:52px;height:52px;border-radius:50%" alt=""></div><div class="fn">'+f[0]+'</div></div>').join('')+'</div>'+
   '<div class="rbx-sec">Continue</div>'+
   GAMES.map((g,i)=>'<div class="gcard" data-game="'+i+'"><img class="thumb" src="https://picsum.photos/seed/riogame'+i+'/220/160" style="object-fit:cover;background:linear-gradient(140deg,'+g[2]+',#222f3e)"><span><span class="big">'+g[0]+'</span><br><span class="mut">▶ '+g[1]+' يلعبون هسه</span></span></div>').join('')+
   '<p class="mut" style="text-align:center;margin-top:8px">هذا روبلوكس محاكاة داخل اللعبة، مو حسابك الحقيقي.</p>';
@@ -834,15 +828,8 @@ function appFaceTime(el){
     $('#ftDecline').addEventListener('click',()=>{S.missedCall=false;appFaceTime(el);toast('رفضت المكالمة')});
   }
   el.innerHTML+=
-   FRIENDS.map((f,i)=>'<div class="card row"><span>'+faceSVG(f[1],42)+'</span><span style="flex:1"><span class="big">'+f[0]+'</span><br><span class="mut">FaceTime</span></span><button class="btn" data-call="'+i+'">اتصال</button></div>').join('');
+   FRIENDS.map((f,i)=>'<div class="card row"><span><img src="https://i.pravatar.cc/84?img='+(12+i*9)+'" style="width:42px;height:42px;border-radius:50%" alt=""></span><span style="flex:1"><span class="big">'+f[0]+'</span><br><span class="mut">FaceTime</span></span><button class="btn" data-call="'+i+'">اتصال</button></div>').join('');
   el.querySelectorAll('[data-call]').forEach(b=>b.addEventListener('click',()=>startCall(FRIENDS[+b.dataset.call],false)));
-}
-function incomingCall(){
-  if(S.calledOnce)return; // Eno calls once per session, never nags again
-  S.calledOnce=true;
-  const f=FRIENDS[0];
-  if(!S.padOut){S.missedCall=true;toast('مكالمة FaceTime واردة من '+f[0]+' — طلّع الآيباد وادخل FaceTime حتى ترد',5000);return}
-  startCall(f,true);
 }
 function startCall(f,incoming){
   const ui=$('#callUI');
@@ -920,35 +907,151 @@ function appMessages(el){
 /* ================= Settings ================= */
 function appSettings(el){
   const s=S.set,u=S.batt.usage;
-  const usageRows=Object.keys(u).length?Object.entries(u).sort((a,b)=>b[1]-a[1]).slice(0,5).map(e=>'<div class="setrow"><span style="flex:1">'+e[0]+'</span><span class="mut">'+Math.max(1,Math.round(e[1]/60))+' دقيقة</span></div>').join(''):'<div class="setrow mut">بعد ما مستعمل تطبيقات وايدة</div>';
-  el.innerHTML=
-   '<div class="card" style="display:flex;gap:12px;align-items:center;padding:13px"><span style="width:52px;height:52px;border-radius:50%;background:linear-gradient(150deg,#8e8e93,#636366);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700">R</span><span style="flex:1"><b style="font-size:16px">Reda</b><br><span class="mut">حساب Apple والوسائط والمشتريات</span></span></div>'+
-   '<div class="setgroup"><div class="setrow"><span style="flex:1">المشغل</span><span class="mut" style="display:flex;align-items:center;gap:5px">Zain '+g('cellular','#333',15)+'</span></div>'+
-   '<div class="setrow"><span style="flex:1">بيانات الهاتف</span><span class="mut">4.5G+</span></div>'+
-   '<div class="setrow"><span style="flex:1">الشحن</span><span class="mut">'+(S.batt.charging?'جاي ينشحن':'غير موصول')+' — '+arabNum(Math.round(S.batt.pct))+'٪</span></div></div>'+
-   '<div class="setgroup"><div class="setrow"><span style="flex:1">Wi-Fi</span><label class="switch"><input type="checkbox" id="swWifi" '+(s.wifi?'checked':'')+'><i></i></label></div>'+
-   '<div class="setrow"><span style="flex:1">Bluetooth</span><label class="switch"><input type="checkbox" id="swBt" '+(s.bt?'checked':'')+'><i></i></label></div>'+
-   '<div class="setrow"><span style="flex:1">وضع الطيران</span><label class="switch"><input type="checkbox" id="swAir" '+(s.airplane?'checked':'')+'><i></i></label></div></div>'+
-   '<div class="setgroup"><div class="setrow"><span style="flex:1">السطوع</span><input type="range" id="setBright" min="10" max="100" value="'+s.bright+'" style="flex:1"></div>'+
-   '<div class="setrow"><span style="flex:1">الصوت</span><input type="range" id="setVol" min="0" max="100" value="'+s.vol+'" style="flex:1"></div></div>'+
-   '<div class="setgroup"><div class="setrow"><span style="flex:1">البطارية</span><b>'+Math.round(S.batt.pct)+'%</b></div>'+
-   '<div class="setrow"><span style="flex:1">الشحن</span><label class="switch"><input type="checkbox" id="swChg" '+(S.batt.charging?'checked':'')+'><i></i></label></div>'+usageRows+'</div>'+
-   '<div class="setgroup"><div class="setrow"><span style="flex:1">حول الجهاز</span><span class="mut">Rio iPad 2.0</span></div>'+
-   '<div class="setrow"><span style="flex:1">النظام</span><span class="mut">RioOS 1.6</span></div></div>';
-  const bind=(id,key,cb)=>{const n=$(id);if(n)n.addEventListener('change',e=>{S.set[key]=e.target.checked;store.set('set',S.set);renderStatus();if(cb)cb()})};
-  bind('#swWifi','wifi');bind('#swBt','bt');bind('#swAir','airplane');
-  $('#swChg').addEventListener('change',e=>{S.batt.charging=e.target.checked;store.set('batt',S.batt);renderStatus()});
-  $('#setBright').addEventListener('input',e=>{S.set.bright=+e.target.value;store.set('set',S.set);renderStatus()});
-  $('#setVol').addEventListener('input',e=>{S.set.vol=+e.target.value;store.set('set',S.set)});
+  const sq=(color,glyph,size)=>'<span class="sq" style="background:'+color+'">'+g(glyph,'#fff',size||16)+'</span>';
+  const row=(label,left,val,act)=>'<div class="setrow" '+(act?'data-setact="'+act+'" style="cursor:pointer"':'')+'><span style="display:flex;align-items:center;gap:9px;flex:1">'+left+label+'</span>'+(val||'')+'</div>';
+  const arrow='<span class="mut">‹</span>';
+  if(S.setPage==='about'){
+    el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button><div class="setgroup">'+
+     row('الاسم','',"Rio's iPad")+row('طراز الجهاز','', 'iPad Pro 11')+row('نظام التشغيل','', 'RioOS 26.0')+
+     row('إصدار اللعبة','', 'Rio iPad 2.1')+row('السعة','', '64 GB')+row('المساحة المتوفرة','', '51.2 GB')+
+     row('الرقم التسلسلي','', 'RGX2IPAD2026')+row('المشغل','', 'Zain — 4.5G+')+'</div>';
+    $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});return;
+  }
+  if(S.setPage==='battery'){
+    const rows=Object.entries(u).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    const mx=Math.max(1,...rows.map(r=>r[1]));
+    el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button>'+
+     '<div class="card" style="text-align:center"><div style="font-size:36px;font-weight:700">'+arabNum(Math.round(S.batt.pct))+'٪</div><div class="mut">'+(S.batt.charging?'جاي ينشحن':'غير موصول بالشاحن')+'</div></div>'+
+     '<div class="setgroup">'+row('نمط الطاقة المنخفضة',sq('#f5c518','battery-charging',15),'<label class="switch"><input type="checkbox" id="swLpm" '+(s.lpm?'checked':'')+'><i></i></label>')+
+     row('الشحن الآن',sq('#34c759','flash',15),'<label class="switch"><input type="checkbox" id="swChg" '+(S.batt.charging?'checked':'')+'><i></i></label>')+'</div>'+
+     '<div class="rbx-sec">الاستخدام حسب التطبيق</div><div class="setgroup">'+(rows.length?rows.map(r=>'<div class="setrow"><span style="flex:1">'+r[0]+'</span><span style="width:110px;height:7px;background:#e3e3e8;border-radius:4px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.round(r[1]/mx*100)+'%;background:#34c759"></span></span><span class="mut" style="width:52px;text-align:left">'+Math.max(1,Math.round(r[1]/60))+' د</span></div>').join(''):'<div class="setrow mut">لا يوجد استخدام بعد</div>')+'</div>';
+    $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});
+    $('#swLpm').addEventListener('change',e=>{S.set.lpm=e.target.checked;store.set('set',S.set);renderStatus();toast(S.set.lpm?'نمط الطاقة المنخفضة يشتغل':'انطفأ نمط الطاقة')});
+    $('#swChg').addEventListener('change',e=>{S.batt.charging=e.target.checked;store.set('batt',S.batt);renderStatus();appSettings(el)});return;
+  }
+  if(S.setPage==='wifi'){
+    const nets=[['Zain Home 5G',true],['Reda_Home',false],['Baghdad WiFi',false],['Neighbor_4G',false]];
+    el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button><div class="setgroup">'+
+     row('Wi-Fi',sq('#0a84ff','wifi',15),'<label class="switch"><input type="checkbox" id="swWifi2" '+(s.wifi?'checked':'')+'><i></i></label>')+'</div>'+
+     '<div class="rbx-sec">الشبكات</div><div class="setgroup">'+nets.map(n=>'<div class="setrow" data-net="'+n[0]+'" style="cursor:pointer"><span style="flex:1">'+n[0]+'</span>'+((s.ssid||'Zain Home 5G')===n[0]&&s.wifi?'<span style="color:#0a84ff;font-weight:700">✓</span>':'<span class="mut">'+g('wifi','#8e8e93',14)+'</span>')+'</div>').join('')+'</div>';
+    $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});
+    $('#swWifi2').addEventListener('change',e=>{S.set.wifi=e.target.checked;store.set('set',S.set);renderStatus();appSettings(el)});
+    el.querySelectorAll('[data-net]').forEach(r=>r.addEventListener('click',()=>{S.set.ssid=r.dataset.net;S.set.wifi=true;store.set('set',S.set);renderStatus();appSettings(el);toast('اتصلت بـ '+r.dataset.net)}));return;
+  }
+  const prof=S.apple.id?
+   '<div class="card" style="display:flex;gap:12px;align-items:center;padding:13px;cursor:pointer" id="profCard"><span style="width:52px;height:52px;border-radius:50%;background:linear-gradient(150deg,#8e8e93,#636366);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700">'+(S.apple.name||'R').slice(0,1).toUpperCase()+'</span><span style="flex:1"><b style="font-size:16px">'+S.apple.name+'</b><br><span class="mut">'+S.apple.id+' — iCloud</span></span></div>':
+   '<div class="card" style="display:flex;gap:12px;align-items:center;padding:13px;cursor:pointer" id="profCard"><span style="width:52px;height:52px;border-radius:50%;background:#e9e9ee;display:flex;align-items:center;justify-content:center">'+g('person','#8e8e93',26)+'</span><span style="flex:1"><b style="font-size:15px">تسجيل الدخول إلى iPad</b><br><span class="mut">iCloud وApp Store والرسائل</span></span></div>';
+  el.innerHTML=prof+
+   '<div class="setgroup">'+
+   row('وضع الطيران',sq('#ff9f0a','airplane',15),'<label class="switch"><input type="checkbox" id="swAir" '+(s.airplane?'checked':'')+'><i></i></label>')+
+   row('Wi-Fi',sq('#0a84ff','wifi',15),'<span class="mut">'+(s.wifi?(s.ssid||'Zain Home 5G'):'مطفأ')+'</span>'+arrow,'wifi')+
+   row('Bluetooth',sq('#0a84ff','bluetooth',15),'<label class="switch"><input type="checkbox" id="swBt" '+(s.bt?'checked':'')+'><i></i></label>')+
+   row('بيانات الهاتف',sq('#34c759','cellular',15),'<span class="mut">Zain 4.5G+</span>')+
+   row('نقطة اتصال شخصية',sq('#34c759','radio-outline',15),arrow)+'</div>'+
+   '<div class="setgroup">'+
+   row('الإشعارات',sq('#ff3b30','notifications',15),arrow,'nc')+
+   row('الأصوات والحس اللمسي',sq('#fc3c44','volume-high',15),arrow)+
+   row('التركيز',sq('#5e5ce6','moon',15),'<label class="switch"><input type="checkbox" id="swDnd" '+(s.dnd?'checked':'')+'><i></i></label>')+
+   row('مدة استخدام الجهاز',sq('#5e5ce6','timer',15),arrow,'usage')+'</div>'+
+   '<div class="setgroup">'+
+   row('عام',sq('#8e8e93','settings',16),arrow,'about')+
+   row('مركز التحكم',sq('#8e8e93','options',15),arrow,'cc')+
+   row('الشاشة والسطوع',sq('#0a84ff','sunny',15),'<span style="display:flex;align-items:center;gap:6px;width:130px"><input type="range" id="setBright" min="10" max="100" value="'+s.bright+'" style="flex:1"></span>')+
+   row('الشاشة الرئيسية',sq('#ff9500','grid',15),arrow)+
+   row('إمكانية الوصول',sq('#0a84ff','accessibility',16),arrow)+
+   row('الخلفية',sq('#30b0c7','image',15),arrow)+
+   row('البطارية',sq('#34c759','battery-charging',15),'<span class="mut">'+arabNum(Math.round(S.batt.pct))+'٪</span>'+arrow,'battery')+
+   row('الخصوصية والأمان',sq('#0a84ff','shield-checkmark',15),arrow)+'</div>'+
+   '<div class="setgroup">'+
+   row('App Store',sq('#0a84ff','bag',15),arrow,'store')+
+   row('المحفظة وApple Pay',sq('#111','wallet',15),arrow)+
+   row('كلمات السر',sq('#8e8e93','key',15),arrow)+'</div>'+
+   (S.apple.id?'<button class="btn gray" id="signOutBtn" style="width:100%;margin-top:6px">تسجيل الخروج من Apple ID</button>':'');
+  const pg=$('#profCard');if(pg)pg.addEventListener('click',()=>{if(!S.apple.id)appleSignInForm(el,()=>appSettings(el))});
+  const so=$('#signOutBtn');if(so)so.addEventListener('click',()=>{signOutApple();appSettings(el)});
+  const bind=(id,fn)=>{const e2=$(id);if(e2)e2.addEventListener('change',fn)};
+  bind('#swAir',e=>{S.set.airplane=e.target.checked;store.set('set',S.set);renderStatus()});
+  bind('#swBt',e=>{S.set.bt=e.target.checked;store.set('set',S.set);renderStatus()});
+  bind('#swDnd',e=>{S.set.dnd=e.target.checked;store.set('set',S.set);renderCC&&null});
+  const br=$('#setBright');if(br)br.addEventListener('input',e=>{S.set.bright=+e.target.value;store.set('set',S.set);renderStatus()});
+  el.querySelectorAll('[data-setact]').forEach(r=>r.addEventListener('click',()=>{
+    const a=r.dataset.setact;
+    if(a==='about'||a==='battery'||a==='wifi'){S.setPage=a;appSettings(el)}
+    else if(a==='nc')showNC();
+    else if(a==='cc'){closeApp();setTimeout(showCC,380)}
+    else if(a==='store'){openApp('appstore',null)}
+    else if(a==='usage'){S.setPage='battery';appSettings(el)}
+  }));
 }
 /* ================= App Store / Safari / Music / Clock / Notes / Calc ================= */
+const STORE=[
+ {k:'whatsapp',n:'WhatsApp Messenger',dev:'Meta Platforms',cat:'تواصل اجتماعي',ver:'24.10.4',size:'178 MB',desc:'مراسلة ومكالمات مجانية لكل العالم. محادثة عامة أونلاين داخل نسخة Rio.'},
+ {k:'telegram',n:'Telegram',dev:'Telegram FZ-LLC',cat:'تواصل اجتماعي',ver:'11.2',size:'96 MB',desc:'مراسلة سريعة وآمنة. قناة Rio العامة مباشرة من السيرفر.'},
+ {k:'instagram',n:'Instagram',dev:'Meta Platforms',cat:'صور وفيديو',ver:'312.0',size:'210 MB',desc:'شارك صورك وتابع العالم. موجز صور حقيقي وإعجابات أونلاين.'},
+ {k:'facebook',n:'Facebook',dev:'Meta Platforms',cat:'تواصل اجتماعي',ver:'485.0',size:'320 MB',desc:'تواصل مع الأصدقاء والعائلة. محادثة Rio العامة أونلاين.'},
+ {k:'messenger',n:'Messenger',dev:'Meta Platforms',cat:'تواصل اجتماعي',ver:'478.0',size:'150 MB',desc:'رسائل فورية لأصدقائك. غرفة Rio العامة أونلاين.'},
+ {k:'snapchat',n:'Snapchat',dev:'Snap Inc.',cat:'تواصل اجتماعي',ver:'13.9',size:'98 MB',desc:'لقطات ورسائل سريعة. غرفة Rio العامة أونلاين.'},
+ {k:'x',n:'X',dev:'X Corp.',cat:'أخبار وتواصل',ver:'10.55',size:'120 MB',desc:'منصة التغريدات. غرفة Rio العامة أونلاين.'},
+ {k:'discord',n:'Discord',dev:'Discord Inc.',cat:'تواصل اجتماعي',ver:'243.0',size:'132 MB',desc:'قنوات صوت ونص للمجتمعات. غرفة Rio العامة أونلاين.'},
+ {k:'minecraft',n:'Minecraft',dev:'Mojang',cat:'ألعاب',ver:'1.21',size:'1.1 GB',desc:'ابنِ عوالم لا نهائية من المكعبات.'},
+ {k:'subway',n:'Subway Surfers',dev:'SYBO',cat:'ألعاب',ver:'3.35',size:'190 MB',desc:'اجري واهرب على سكك القطارات.'},
+ {k:'candy',n:'Candy Crush Saga',dev:'King',cat:'ألعاب',ver:'1.28',size:'98 MB',desc:'لعبة الحلوى الأشهر عالمياً.'}
+];
+function storeRow(a){
+  const inst=S.installed.includes(a.k),hiddenB=false;
+  return '<div class="card row" style="align-items:center"><span style="flex:0 0 auto">'+icImg(ICONS[a.k])+'</span><span style="flex:1;cursor:pointer" data-detail="'+a.k+'"><span class="big" style="font-size:15px">'+a.n+'</span><br><span class="mut">'+a.cat+' — '+a.dev+'</span></span><button class="btn '+(inst?'gray':'')+'" data-get="'+a.k+'" style="border-radius:16px;padding:7px 18px">'+(inst?'فتح':'احصل')+'</button></div>';
+}
 function appStore(el){
-  el.innerHTML='<div class="rbx-sec" style="margin-top:2px">Today</div>'+
-   Object.entries(EXTRA).map(([k,v])=>{const got=S.installed.includes(k);
-    return '<div class="card row"><span>'+IC[v.ic]()+'</span><span style="flex:1"><span class="big">'+v.n+'</span><br><span class="mut">ألعاب</span></span><button class="btn '+(got?'gray':'')+'" data-inst="'+k+'">'+(got?'مثبتة':'GET')+'</button></div>'}).join('');
-  el.querySelectorAll('[data-inst]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.inst;
-    if(S.installed.includes(k))return;
-    b.textContent='...';setTimeout(()=>{S.installed.push(k);store.set('installed',S.installed);renderHome();appStore(el);toast('انثبت '+EXTRA[k].n)},700)}));
+  const tab=S.storeTab;
+  if(S.storeDetail){const a=STORE.find(x=>x.k===S.storeDetail);if(a){
+    const inst=S.installed.includes(a.k);
+    el.innerHTML='<button class="back" id="stBack" style="margin-bottom:8px">‹ رجوع</button>'+
+     '<div class="row" style="align-items:center;gap:12px"><span>'+icImg(ICONS[a.k])+'</span><span style="flex:1"><span class="big" style="font-size:18px">'+a.n+'</span><br><span class="mut">'+a.dev+'</span></span><button class="btn" id="stGet" style="border-radius:16px;padding:8px 20px">'+(inst?'فتح':'احصل')+'</button></div>'+
+     '<div style="display:flex;gap:8px;overflow-x:auto;margin:14px 0">'+[1,2,3].map(i=>'<img src="https://picsum.photos/seed/'+a.k+'shot'+i+'/150/270" style="width:110px;height:196px;object-fit:cover;border-radius:12px" alt="">').join('')+'</div>'+
+     '<div class="rbx-sec">الوصف</div><p style="line-height:1.8">'+a.desc+'</p>'+
+     '<div class="rbx-sec">المعلومات</div><div class="setgroup">'+
+     '<div class="setrow"><span style="flex:1">الإصدار</span><span class="mut">'+a.ver+'</span></div>'+
+     '<div class="setrow"><span style="flex:1">الحجم</span><span class="mut">'+a.size+'</span></div>'+
+     '<div class="setrow"><span style="flex:1">المطور</span><span class="mut">'+a.dev+'</span></div>'+
+     '<div class="setrow"><span style="flex:1">التصنيف</span><span class="mut">'+a.cat+'</span></div></div>';
+    $('#stBack').addEventListener('click',()=>{S.storeDetail=null;appStore(el)});
+    $('#stGet').addEventListener('click',e=>doGet(a.k,e.target,el));
+    return;
+  }}
+  const acct=S.apple.id?
+   '<span style="display:flex;align-items:center;gap:9px"><span style="width:38px;height:38px;border-radius:50%;background:linear-gradient(150deg,#8e8e93,#636366);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">'+S.apple.name.slice(0,1).toUpperCase()+'</span><b>'+S.apple.name+'</b></span>':
+   '<button class="btn" id="stSign" style="padding:8px 14px">تسجيل الدخول بـ Apple ID</button>';
+  let body='';
+  if(tab==='today'){
+    const f=STORE[0];
+    body='<div class="card" style="padding:0;overflow:hidden"><img src="https://picsum.photos/seed/riofeature/640/300" style="width:100%;height:150px;object-fit:cover;display:block" alt=""><div style="padding:12px"><span class="mut">تطبيق اليوم</span><div class="big" style="font-size:17px">'+f.n+'</div><p class="mut" style="margin:4px 0 10px">'+f.desc+'</p><button class="btn" data-get="'+f.k+'" style="border-radius:16px;padding:7px 18px">'+(S.installed.includes(f.k)?'فتح':'احصل')+'</button></div></div>'+
+     STORE.slice(1,4).map(storeRow).join('');
+  } else if(tab==='apps'){
+    body='<div class="rbx-sec" style="margin-top:2px">تواصل اجتماعي — أونلاين</div>'+STORE.filter(a=>SOCIAL[a.k]).map(storeRow).join('')+
+     (S.hidden.length?'<div class="rbx-sec">تطبيقات حذفتها — استرجعها</div>'+S.hidden.map(id=>{const pa=APPS.find(x=>x.id===id);return pa?'<div class="card row" style="align-items:center"><span>'+icImg(ICONS[pa.ic])+'</span><span style="flex:1"><span class="big" style="font-size:15px">'+pa.n+'</span><br><span class="mut">تطبيق نظام</span></span><button class="btn" data-unhide="'+id+'" style="border-radius:16px;padding:7px 18px">احصل</button></div>':''}).join(''):'');
+  } else if(tab==='games'){
+    body='<div class="rbx-sec" style="margin-top:2px">ألعاب</div>'+STORE.filter(a=>!SOCIAL[a.k]).map(storeRow).join('');
+  } else {
+    body='<div class="row" style="margin-bottom:10px"><input id="stQ" type="text" placeholder="ابحث عن تطبيقات وألعاب…" style="flex:1;padding:11px 13px;border:1px solid #d9d9de;border-radius:14px;font-size:14px"></div><div id="stRes">'+STORE.map(storeRow).join('')+'</div>';
+  }
+  el.innerHTML='<div class="row" style="align-items:center;margin-bottom:12px"><span class="big" style="font-size:21px;flex:1">App Store</span>'+acct+'</div>'+body+
+   '<div style="display:flex;gap:6px;margin-top:14px;background:#e9e9ee;border-radius:14px;padding:4px">'+
+   [['today','اليوم'],['apps','التطبيقات'],['games','الألعاب'],['search','بحث']].map(t=>'<button data-tab="'+t[0]+'" style="flex:1;padding:8px;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:12.5px;'+(tab===t[0]?'background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15)':'background:none;color:#555')+'">'+t[1]+'</button>').join('')+'</div>';
+  el.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{S.storeTab=b.dataset.tab;S.storeDetail=null;appStore(el)}));
+  const sg=$('#stSign');if(sg)sg.addEventListener('click',()=>appleSignInForm(el,()=>appStore(el)));
+  const q=$('#stQ');if(q)q.addEventListener('input',()=>{const v=q.value.trim();$('#stRes').innerHTML=STORE.filter(a=>!v||a.n.includes(v)||a.cat.includes(v)).map(storeRow).join('')||'<p class="mut" style="text-align:center;padding:16px">لا نتائج</p>';bindGets(el)});
+  el.querySelectorAll('[data-unhide]').forEach(b=>b.addEventListener('click',()=>{S.hidden=S.hidden.filter(x=>x!==b.dataset.unhide);store.set('hidden',S.hidden);renderHome();appStore(el);toast('رجع التطبيق للشاشة الرئيسية')}));
+  bindGets(el);
+}
+function bindGets(el){
+  el.querySelectorAll('[data-get]').forEach(b=>b.addEventListener('click',()=>doGet(b.dataset.get,b,el)));
+  el.querySelectorAll('[data-detail]').forEach(d=>d.addEventListener('click',()=>{S.storeDetail=d.dataset.detail;appStore(el)}));
+}
+function doGet(k,btn,el){
+  if(!S.apple.id){toast('سجل دخولك بـ Apple ID حتى تنزل — روح للإعدادات أو اضغط تسجيل الدخول');appleSignInForm(el,()=>appStore(el));return}
+  if(S.installed.includes(k)){S.storeDetail=null;openApp('x_'+k,null);return}
+  btn.textContent='...';
+  setTimeout(()=>{S.installed.push(k);store.set('installed',S.installed);renderHome();S.storeDetail=null;appStore(el);toast('انثبت '+STORE.find(a=>a.k===k).n+' على الشاشة الرئيسية')},750);
 }
 const SITES=[
  ['Apple','#111','apple','موقع آبل الحقيقي','https://picsum.photos/seed/riosf1/640/340','يفتح موقع آبل الرسمي على جهازك.','https://www.apple.com'],
@@ -1079,6 +1182,98 @@ function unlock(){if(!S.locked)return;S.locked=false;const L=$('#lock');L.classL
 $('#lock').addEventListener('click',()=>unlock());
 $('#lockTorch').addEventListener('click',e=>{e.stopPropagation();unlock();S.set.flash=!S.set.flash;store.set('set',S.set);toast(S.set.flash?'المصباح يعمل':'المصباح انطفأ')});
 $('#lockCam').addEventListener('click',e=>{e.stopPropagation();unlock();setTimeout(()=>openApp('camera'),480)});
+
+/* ================= 2.1: jiggle, accounts, online apps ================= */
+const FBB='https://spychat-4f8d5-default-rtdb.firebaseio.com/rio-ipad';
+function myName(){return S.apple.name||('Rio '+S.sid.slice(1,5))}
+async function fbGet(path){try{const r=await fetch(FBB+path+'.json');return await r.json()}catch(e){return null}}
+async function fbPost(path,body){try{await fetch(FBB+path+'.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})}catch(e){}}
+async function fbPut(path,body){try{await fetch(FBB+path+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})}catch(e){}}
+function simpHash(v){let h=5381;for(let i=0;i<v.length;i++)h=((h*33)^v.charCodeAt(i))>>>0;return h.toString(36)}
+function enterJiggle(){if(S.jiggle)return;S.jiggle=true;$('#screen').classList.add('jiggling');$('#editBar').style.display='block';if(navigator.vibrate)navigator.vibrate(12)}
+function exitJiggle(){S.jiggle=false;$('#screen').classList.remove('jiggling');$('#editBar').style.display='none';hideCtx()}
+function hideCtx(){$('#ctxMenu').style.display='none'}
+function showCtx(el){
+  const m=$('#ctxMenu'),name=navigator,appId=el.dataset.app;
+  const scr=$('#screen').getBoundingClientRect(),r=el.getBoundingClientRect();
+  m.innerHTML='<button class="danger" id="ctxDel">حذف التطبيق</button><button id="ctxMove">إعادة ترتيب التطبيقات</button><button id="ctxCancel">إلغاء</button>';
+  m.style.display='block';
+  m.style.left=Math.max(8,Math.min(scr.width-190,r.left-scr.left-40))+'px';
+  m.style.top=Math.max(30,r.bottom-scr.top+6)+'px';
+  $('#ctxDel').addEventListener('click',()=>{hideCtx();deleteApp(appId)});
+  $('#ctxMove').addEventListener('click',()=>{hideCtx();toast('اسحب الأيقونات حتى تعيد ترتيبها — قيد التطوير')});
+  $('#ctxCancel').addEventListener('click',hideCtx);
+}
+function deleteApp(id){
+  if(id.startsWith('x_')){const k=id.slice(2);S.installed=S.installed.filter(x=>x!==k);store.set('installed',S.installed)}
+  else if(!S.hidden.includes(id)){S.hidden.push(id);store.set('hidden',S.hidden)}
+  renderHome();toast('انحذف التطبيق — تكدر تنزله مرة ثانية من App Store');
+}
+$('#editDone').addEventListener('click',exitJiggle);
+$('#homeApps').addEventListener('click',e=>{if(S.jiggle&&e.target.id==='homeApps'||S.jiggle&&e.target.id==='pagesTrack'||S.jiggle&&e.target.classList.contains('hpage'))exitJiggle()});
+document.addEventListener('gesturestart',e=>e.preventDefault());
+document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+document.addEventListener('contextmenu',e=>{const t=e.target.tagName;if(t!=='INPUT'&&t!=='TEXTAREA')e.preventDefault()});
+/* -------- Apple ID (iCloud + App Store, backed by Firebase) -------- */
+function signOutApple(){S.apple={id:'',name:''};store.set('apple',S.apple);toast('انسجل خروجك من Apple ID')}
+function appleSignInForm(el,done){
+  el.innerHTML='<div class="card" style="max-width:340px;margin:16px auto;padding:22px 18px;text-align:center">'+
+   '<div style="font-size:34px">●</div><div class="big" style="font-size:19px">تسجيل الدخول بـ Apple ID</div>'+
+   '<p class="mut" style="margin:6px 0 14px">حسابك يربط iCloud وApp Store بهذا الآيباد</p>'+
+   '<input id="appleEmail" type="email" placeholder="Apple ID (إيميل)" style="width:100%;padding:12px;border:1px solid #d9d9de;border-radius:12px;font-size:14px;margin-bottom:9px">'+
+   '<input id="applePass" type="password" placeholder="كلمة السر" style="width:100%;padding:12px;border:1px solid #d9d9de;border-radius:12px;font-size:14px">'+
+   '<button class="btn" id="appleGo" style="width:100%;margin-top:12px;padding:12px">تسجيل الدخول</button>'+
+   '<p class="mut" style="margin-top:10px;font-size:11.5px">حساب تجريبي داخل اللعبة — لا تستخدم كلمة سرك الحقيقية</p></div>';
+  $('#appleGo').addEventListener('click',async()=>{
+    const em=$('#appleEmail').value.trim(),pw=$('#applePass').value;
+    if(!em||!pw)return toast('اكتب الإيميل وكلمة السر');
+    const nm=em.split('@')[0]||'Reda';
+    S.apple={id:em,name:nm};store.set('apple',S.apple);
+    fbPut('/accounts/'+simpHash(em),{name:nm,email:em,pw:simpHash(pw),ts:Date.now()});
+    toast('أهلاً '+nm+' — انسجل دخولك');
+    if(done)done();
+  });
+}
+/* -------- online chat rooms (Firebase RTDB) -------- */
+function appChatRoom(k){
+  const el=$('#appBody'),soc=SOCIAL[k];
+  el.innerHTML='<div style="background:'+soc.c+';color:#fff;border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:8px"><span style="width:9px;height:9px;border-radius:50%;background:#fff;display:inline-block"></span><b>'+soc.n+'</b><span style="font-size:12px;opacity:.9">متصلون الآن: <b id="prsN">…</b></span></div>'+
+   '<div id="chatList" style="padding:6px 2px 10px"><div class="mut" style="text-align:center;padding:16px">جاي يحمل المحادثة…</div></div>'+
+   '<div class="row" style="position:sticky;bottom:0;background:#f2f2f7;padding-top:8px"><input type="text" id="chatIn" placeholder="اكتب رسالة…" style="flex:1;padding:10px 12px;border:1px solid #d9d9de;border-radius:20px;font-size:14px"><button class="btn" id="chatSend">إرسال</button></div>';
+  const room='/rooms/'+k;
+  fbPost(room+'/presence',{u:myName(),sid:S.sid,ts:Date.now()});
+  const render=msgs=>{
+    const list=$('#chatList');if(!list){clearInterval(S.poll);return}
+    const arr=msgs?Object.values(msgs).sort((a,b)=>(a.ts||0)-(b.ts||0)).slice(-40):[];
+    list.innerHTML=arr.length?arr.map(m=>'<div class="msg '+(m.u===myName()?'me':'them')+'"><b style="display:block;font-size:11px;opacity:.8">'+String(m.u||'').replace(/</g,'&lt;')+'</b>'+String(m.t||'').replace(/</g,'&lt;')+'</div>').join(''):'<div class="mut" style="text-align:center;padding:22px">المحادثة فارغة — كن أول من يكتب</div>';
+    list.scrollTop=1e6;
+  };
+  const load=async()=>{const d=await fbGet(room+'/msgs');render(d);
+    const pr=await fbGet(room+'/presence');const n=$('#prsN');
+    if(n&&pr){const now=Date.now();n.textContent=String(Math.max(1,Object.values(pr).filter(x=>now-(x.ts||0)<60000).length))}};
+  load();clearInterval(S.poll);S.poll=setInterval(load,2500);
+  const send=async()=>{const inp=$('#chatIn'),v=inp.value.trim();if(!v)return;inp.value='';
+    await fbPost(room+'/msgs',{u:myName(),t:v,ts:Date.now()});load()};
+  $('#chatSend').addEventListener('click',send);
+  $('#chatIn').addEventListener('keydown',e=>{if(e.key==='Enter')send});
+}
+/* -------- Instagram: real photo feed with online likes -------- */
+function appInsta(){
+  const el=$('#appBody');
+  const seeds=['rioinsta1','rioinsta2','rioinsta3','rioinsta4'];
+  const heads=['rio_photos','iraq.views','baghdad.life','travel.iraq'];
+  el.innerHTML='<div class="rbx-sec" style="margin-top:2px">Instagram — موجز حقيقي</div>'+seeds.map((sd,i)=>
+   '<div class="card" style="padding:0;overflow:hidden"><div class="row" style="padding:9px 11px"><img src="https://i.pravatar.cc/60?img='+(12+i*7)+'" style="width:32px;height:32px;border-radius:50%" alt=""><b style="font-size:13px">@'+heads[i]+'</b></div>'+
+   '<img src="https://picsum.photos/seed/'+sd+'/600/430" style="width:100%;display:block" alt="">'+
+   '<div class="row" style="padding:9px 11px"><button class="btn gray" data-like="'+sd+'" style="padding:6px 14px">أعجبني</button><span class="mut" id="lk-'+sd+'">… إعجاب</span></div></div>').join('');
+  const refresh=async sd=>{const n=await fbGet('/rooms/instagram/likes/'+sd);const t=$('#lk-'+sd);if(t)t.textContent=(n||0)+' إعجاب'};
+  seeds.forEach(refresh);
+  el.querySelectorAll('[data-like]').forEach(b=>b.addEventListener('click',async()=>{
+    const sd=b.dataset.like,n=(await fbGet('/rooms/instagram/likes/'+sd))||0;
+    await fbPut('/rooms/instagram/likes/'+sd,n+1);refresh(sd);toast('انسجل إعجابك أونلاين');
+  }));
+}
+
 /* ================= init ================= */
 renderHome();renderStatus();
 setInterval(renderStatus,20000);
