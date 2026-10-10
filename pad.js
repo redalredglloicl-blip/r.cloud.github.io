@@ -819,9 +819,9 @@ function appMaint(el){
 S._maintTab=S._maintTab||'batt';
 const render=()=>{
 el.innerHTML='<b style="font-size:20px">الصيانة</b>'+
-'<div style="display:flex;gap:8px;margin:10px 0">'+
-'<button data-mtab="batt" class="btn'+(S._maintTab==='batt'?'':' gray')+'" style="flex:1;padding:10px;font-size:14px">البطارية</button>'+
-'<button data-mtab="repair" class="btn'+(S._maintTab==='repair'?'':' gray')+'" style="flex:1;padding:10px;font-size:14px">التصليح</button></div>'+
+'<div class="segCtl" data-sel="'+S._maintTab+'"><span class="segInd"></span>'+
+'<button data-mtab="batt" class="'+(S._maintTab==='batt'?'on':'')+'">البطارية</button>'+
+'<button data-mtab="repair" class="'+(S._maintTab==='repair'?'on':'')+'">التصليح</button></div>'+
 '<div id="maintBody"></div>';
 el.querySelectorAll('[data-mtab]').forEach(b=>b.addEventListener('click',()=>{S._maintTab=b.dataset.mtab;sfx('click');render();}));
 const body=el.querySelector('#maintBody');
