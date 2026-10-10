@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Rio iPad">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Rio iPad 3.5</title>
+<title>Rio iPad 3.6</title>
 <style>.sq{width:29px;height:29px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overflow:hidden;background:#79b5ff;font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif}
@@ -26,7 +26,7 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 .gbtn{width:58px;height:58px;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:rgba(10,20,40,.5);color:#fff;font-size:11px;font-weight:700;cursor:pointer;backdrop-filter:blur(3px)}
 .gbtn:active{transform:scale(.93)}
 #hint{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 8px);z-index:39;background:rgba(10,20,40,.55);color:#fff;font-size:12px;padding:6px 14px;border-radius:16px;white-space:nowrap}
-#padWrap{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 86px);transform:translateX(-50%);z-index:35;width:min(96vw,calc((100dvh - 84px)*1.3333),780px);aspect-ratio:4/3;transition:all .45s cubic-bezier(.2,.9,.25,1);filter:drop-shadow(0 18px 22px rgba(0,20,50,.45))}
+#padWrap{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 86px);transform:translateX(-50%);z-index:35;width:min(96vw,125dvh,820px);aspect-ratio:4/3;transition:all .45s cubic-bezier(.2,.9,.25,1);filter:drop-shadow(0 18px 22px rgba(0,20,50,.45))}
 .homeWidget{grid-column:span 6}
 @media (orientation:landscape){
 #padWrap{bottom:calc(env(safe-area-inset-bottom,0px) + 10px)}
@@ -327,7 +327,7 @@ img,a{-webkit-user-drag:none!important}
 <body>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 3.5</div>
+  <div id="verTag">Rio iPad 3.6</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -378,7 +378,7 @@ img,a{-webkit-user-drag:none!important}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 3.5</div>
+    <div class="ver">Rio iPad 3.6</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -815,7 +815,7 @@ function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.inne
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="pad.js?v=35"></script>
-<script src="sys3.js?v=35"></script>
+<script src="pad.js?v=36"></script>
+<script src="sys3.js?v=36"></script>
 </body>
 </html>
