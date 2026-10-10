@@ -40,14 +40,14 @@ const sw=$('#switcher');if(sw.classList.contains('open'))dismissSw();
 const win=$('#appWin');if(!win.classList.contains('open')){S.app=null;return}
 snapCur();
 const tok=(S._anim=(S._anim||0)+1);
-S.app=null;stopCam();disarmHome();
+S.app=null;stopCam();disarmHome();$('#screen').classList.remove('appzoom');
 const back=(S._from&&document.body.contains(S._from))?S._from:null;
 const scr=$('#screen').getBoundingClientRect();let r=back?back.getBoundingClientRect():null;
 if(!r||r.width<8||r.right<scr.left||r.left>scr.right||r.top>scr.bottom)r={left:scr.left+scr.width/2-26,top:scr.bottom-130,width:52,height:52};
 win.getBoundingClientRect();
 win.style.transformOrigin='0 0';
-win.style.transition='transform .48s '+IOS_EASE+',border-radius .48s '+IOS_EASE+',opacity .22s ease .2s,box-shadow .48s';
-win.style.borderRadius=((15*scr.width/Math.max(1,r.width)).toFixed(0))+'px/'+((15*scr.height/Math.max(1,r.height)).toFixed(0))+'px';win.style.boxShadow='0 18px 50px rgba(0,0,0,.35)';
+win.style.transition='transform .5s '+IOS_EASE+',border-radius .5s '+IOS_EASE+',opacity .12s ease .4s,box-shadow .5s';
+win.style.borderRadius=((19*scr.width/Math.max(1,r.width)).toFixed(0))+'px/'+((19*scr.height/Math.max(1,r.height)).toFixed(0))+'px';win.style.boxShadow='0 18px 50px rgba(0,0,0,.35)';
 win.style.transform='translate('+((r.left-scr.left)).toFixed(1)+'px,'+((r.top-scr.top)).toFixed(1)+'px) scale('+((r.width/scr.width)).toFixed(3)+','+((r.height/scr.height)).toFixed(3)+')';
 win.style.opacity='0';
 setTimeout(()=>{if(S._anim!==tok)return;
@@ -111,10 +111,12 @@ const dy=G.y0-(e.changedTouches[0]?e.changedTouches[0].clientY:G.y);
 const win=$('#appWin'),wasArmed=G.armedBefore;G=null;
 if($('#switcher').classList.contains('open'))return;
 if(win.classList.contains('open')){
+if(wasArmed&&dy>30){closeApp()}
+else{
 win.style.transition='transform .22s ease';win.style.transform='';
-setTimeout(()=>{win.style.transition=''},240);
-if(!wasArmed){if(dy>22)armHome()}
-else if(dy>30){closeApp()}
+const tkA=S._anim;setTimeout(()=>{if(S._anim===tkA)win.style.transition=''},240);
+if(!wasArmed&&dy>22)armHome();
+}
 }else if(dy>55)openSwitcher();
 });
 function openExtra(k,fromEl){
@@ -251,7 +253,7 @@ return;
 if(S.setPage==='about'){
 el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button><div class="setgroup">'+
 row('الاسم','',"Rio's iPad")+row('طراز الجهاز','', 'iPad Pro 11')+row('نظام التشغيل','', 'RioOS 26.0')+
-row('إصدار اللعبة','', 'Rio iPad 2.8')+row('السعة','', '64 GB')+row('المساحة المتوفرة','', '51.2 GB')+
+row('إصدار اللعبة','', 'Rio iPad 2.9')+row('السعة','', '64 GB')+row('المساحة المتوفرة','', '51.2 GB')+
 row('الرقم التسلسلي','', 'RGX2IPAD2026')+row('المشغل','', 'Zain — 4.5G+')+'</div>';
 $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});return;
 }
