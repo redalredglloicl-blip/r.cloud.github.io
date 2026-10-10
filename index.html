@@ -3,12 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Rio iPad 1.3</title>
+<title>Rio iPad 1.4</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overflow:hidden;background:#79b5ff;font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif}
 #game{position:fixed;inset:0;overflow:hidden}
-#world{position:absolute;inset:0;width:100%;height:100%;display:block}
+#world{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-events:none;transition:opacity .25s}
+#joy,#btnMenu{transition:opacity .25s}
 /* ===== game chrome ===== */
 #verTag{position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;z-index:40;background:rgba(10,20,40,.55);color:#fff;font-size:12px;font-weight:700;padding:5px 10px;border-radius:20px;backdrop-filter:blur(4px)}
 #btnMenu{position:absolute;top:calc(env(safe-area-inset-top,0px) + 8px);left:12px;z-index:40;width:44px;height:44px;border:none;border-radius:12px;background:rgba(10,20,40,.55);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer}
@@ -53,7 +55,7 @@ html,body{height:100%;overflow:hidden;background:#79b5ff;font-family:-apple-syst
 #dock .ic{width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,.25)}
 #homeBar{position:absolute;left:50%;transform:translateX(-50%);bottom:3px;width:120px;height:4px;border-radius:2px;background:rgba(255,255,255,.85);z-index:60;cursor:pointer}
 /* ===== app window ===== */
-#appWin{position:absolute;inset:0;z-index:30;background:#f2f2f7;display:none;flex-direction:column}
+#appWin{position:absolute;inset:0;z-index:30;background:#f2f2f7;display:none;flex-direction:column;will-change:transform,opacity;transform-origin:center center;overflow:hidden}
 #appWin.open{display:flex}
 #appHead{height:46px;flex:0 0 46px;display:flex;align-items:center;gap:8px;padding:26px 12px 6px;background:rgba(249,249,252,.92);border-bottom:1px solid #d9d9de;font-weight:700;font-size:16px;color:#111}
 #appHead .back{margin-left:auto;background:none;border:none;color:#007aff;font-size:14px;cursor:pointer;font-weight:600}
@@ -146,7 +148,7 @@ canvas#camView{width:100%;border-radius:12px;background:#000}
 <body>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 1.3</div>
+  <div id="verTag">Rio iPad 1.4</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -188,7 +190,7 @@ canvas#camView{width:100%;border-radius:12px;background:#000}
     <h1>Rio iPad</h1>
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 1.3</div>
+    <div class="ver">Rio iPad 1.4</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -330,7 +332,7 @@ function buildWorld(){
   geoTrunk=cylGeo(0.16,1.6,'#8a5a2b');
   geoLeaf=sphGeo(1.35,'#3e9e4f');geoLeaf2=sphGeo(1.0,'#57b96a');
   geoShadow=discGeo(1,'#5a7396');
-  geoGround=groundGeo(300,75);
+  geoGround=groundGeo(430,108);
   geoCloud=sphGeo(1,'#ffffff');geoSun=sphGeo(5,'#fff6bf');
   colliders.length=0;
   add(geoSky,0,0,0,0,null,1,1,1,1,true);
@@ -390,6 +392,10 @@ function loop(t){
   requestAnimationFrame(loop);
   if(!S.playing)return;
   const dt=Math.min(50,t-lastT||16);lastT=t;
+  // smooth head-turn easing so the world never flips or jerks
+  const ease=Math.min(1,dt*0.014);
+  S.yaw=(S.yaw||0)+((S.yawT||0)-(S.yaw||0))*ease;
+  S.pitch=(S.pitch||0)+((S.pitchT||0)-(S.pitch||0))*ease;
   // real movement: joystick relative to where you look
   const yaw=S.yaw||0,sp=0.0105*dt;
   const fx=-Math.sin(yaw),fz=-Math.cos(yaw),rx=Math.cos(yaw),rz=-Math.sin(yaw);
@@ -398,7 +404,7 @@ function loop(t){
   // collisions with houses/trees + world bounds
   colliders.forEach(c=>{const dx=S.cam.x-c.x,dz=S.cam.z-c.z;
     if(Math.abs(dx)<c.hw&&Math.abs(dz)<c.hd){if(c.hw-Math.abs(dx)<c.hd-Math.abs(dz))S.cam.x=c.x+Math.sign(dx||1)*c.hw;else S.cam.z=c.z+Math.sign(dz||1)*c.hd}});
-  S.cam.x=Math.max(-110,Math.min(110,S.cam.x));S.cam.z=Math.max(-110,Math.min(110,S.cam.z));
+  S.cam.x=Math.max(-150,Math.min(150,S.cam.x));S.cam.z=Math.max(-150,Math.min(150,S.cam.z));
   if(S.jumping){S.vy-=0.0035*dt;S.jumpY+=S.vy*dt*0.028;if(S.jumpY<=0){S.jumpY=0;S.jumping=false}}
   const moving=Math.abs(S.joy.x)+Math.abs(S.joy.y)>0.12;
   const bob=moving?Math.sin(t*0.011)*4:0;
@@ -409,10 +415,11 @@ function loop(t){
 requestAnimationFrame(loop);
 /* ---- look around: drag on the world to turn your head ---- */
 let lookId=null,lookX=0,lookY=0;
+S.yawT=0;S.pitchT=0;
 cv.addEventListener('pointerdown',e=>{if(!S.playing||S.padOut)return;lookId=e.pointerId;lookX=e.clientX;lookY=e.clientY;cv.setPointerCapture(e.pointerId)});
 cv.addEventListener('pointermove',e=>{if(e.pointerId!==lookId)return;
-  S.yaw=(S.yaw||0)-(e.clientX-lookX)*0.0052;
-  S.pitch=Math.max(-1.1,Math.min(1.1,(S.pitch||0)-(e.clientY-lookY)*0.0042));
+  S.yawT=(S.yawT||0)-(e.clientX-lookX)*0.0031;
+  S.pitchT=Math.max(-0.55,Math.min(0.55,(S.pitchT||0)-(e.clientY-lookY)*0.0024));
   lookX=e.clientX;lookY=e.clientY});
 ['pointerup','pointercancel'].forEach(ev=>cv.addEventListener(ev,e=>{if(e.pointerId===lookId)lookId=null}));
 /* ================= game controls ================= */
@@ -426,7 +433,7 @@ joy.addEventListener('pointerdown',e=>{joyId=e.pointerId;joy.setPointerCapture(e
 joy.addEventListener('pointermove',e=>{if(e.pointerId===joyId)joyMove(e)});
 ['pointerup','pointercancel'].forEach(ev=>joy.addEventListener(ev,e=>{if(e.pointerId===joyId){joyId=null;S.joy.x=0;S.joy.y=0;knob.style.transform='translate(-50%,-50%)'}}));
 $('#btnJump').addEventListener('click',()=>{if(!S.jumping){S.jumping=true;S.vy=0.55}});
-function setPad(out){S.padOut=out;$('#padWrap').classList.toggle('away',!out);$('#btnPad').textContent=out?'إغلاق':'الآيباد';
+function setPad(out){S.padOut=out;$('#padWrap').classList.toggle('away',!out);document.body.classList.toggle('padopen',out);$('#btnPad').textContent=out?'إغلاق':'الآيباد';
   if(out)tickUse('تصفح الآيباد'); else {closeApp();hideCC()}
   $('#hint').textContent=out?'دوس زر إغلاق حتى تشيل الآيباد من إيدك وتمشي براحتك':'امشِ بالعصا، ودوس زر الآيباد حتى تطلعه'}
 $('#btnPad').addEventListener('click',()=>setPad(!S.padOut));
@@ -436,7 +443,7 @@ $('#mResume').addEventListener('click',()=>$('#menuOverlay').classList.remove('s
 $('#mReset').addEventListener('click',()=>{
   $('#menuOverlay').classList.remove('show');
   let p=0;const iv=setInterval(()=>{p+=0.08;S.deadFall=Math.min(1,p);
-    if(p>=1){clearInterval(iv);S.cam.x=0;S.cam.z=16;S.yaw=0;S.pitch=0;setTimeout(()=>{S.deadFall=0;toast('رجعت من جديد')},350)}},40);
+    if(p>=1){clearInterval(iv);S.cam.x=0;S.cam.z=16;S.yaw=0;S.pitch=0;S.yawT=0;S.pitchT=0;setTimeout(()=>{S.deadFall=0;toast('رجعت من جديد')},350)}},40);
 });
 $('#mLeave').addEventListener('click',()=>{$('#menuOverlay').classList.remove('show');S.playing=false;$('#rotateHint').classList.remove('on');$('#startScreen').style.display='flex'});
 $('#btnPlay').addEventListener('click',()=>{
@@ -445,7 +452,7 @@ $('#btnPlay').addEventListener('click',()=>{
   toast('امشِ بالعصا — ودوس «الآيباد» من تريد تطلعه');
   scheduleCall(); scheduleMsg();
 });
-function scheduleCall(){setTimeout(()=>{if(S.playing)incomingCall()},26000)}
+function scheduleCall(){setTimeout(()=>{if(S.playing)incomingCall()},40000)}
 function scheduleMsg(){setTimeout(()=>{if(S.playing){showBanner('Messages','أحمد: وينك؟ تعال نلعب 😄',()=>{raisePad();openApp('messages')});
   S.msgs.push({me:false,t:'وينك؟ تعال نلعب 😄'});store.set('msgs',S.msgs);updBadges()}},45000)}
 </script>
@@ -516,7 +523,7 @@ function renderHome(){
     const a=APPS.find(x=>x.id===id)||{n:id,ic:id};
     return '<span data-app="'+id+'">'+IC[a.ic||id]()+'</span>'
   }).join('');
-  document.querySelectorAll('[data-app]').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();raisePad();openApp(el.dataset.app)}));
+  document.querySelectorAll('[data-app]').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();raisePad();openApp(el.dataset.app,el.querySelector('.ic')||el)}));
 }
 function raisePad(){if(!S.padOut)setPad(true)}
 /* status bar + battery */
@@ -577,20 +584,46 @@ function updBadges(){renderHome()}
 <script>
 /* ================= app framework ================= */
 S.msgs=store.get('msgs',[{me:false,t:'هلا! شفت الآيباد الجديد؟'}]);
-function openApp(id){
+function zoomFrom(fromEl){
+  if(!fromEl||!fromEl.getBoundingClientRect)return 'scale(.88)';
+  const scr=$('#screen').getBoundingClientRect(),r=fromEl.getBoundingClientRect();
+  const dx=(r.left+r.width/2)-(scr.left+scr.width/2),dy=(r.top+r.height/2)-(scr.top+scr.height/2);
+  const s=Math.max(0.05,Math.min(r.width/Math.max(1,scr.width),r.height/Math.max(1,scr.height)));
+  return 'translate('+dx.toFixed(1)+'px,'+dy.toFixed(1)+'px) scale('+s.toFixed(3)+')';
+}
+const IOS_EASE='cubic-bezier(.32,.72,.24,1)';
+function showAppWin(fromEl){
+  const win=$('#appWin');S._from=fromEl||null;const tok=(S._anim=(S._anim||0)+1);
+  win.classList.add('open');
+  win.style.transition='none';win.style.transform=zoomFrom(fromEl);win.style.opacity='0.3';win.style.borderRadius='26px';
+  win.getBoundingClientRect();
+  win.style.transition='transform .38s '+IOS_EASE+',opacity .3s ease,border-radius .38s '+IOS_EASE;
+  win.style.transform='none';win.style.opacity='1';win.style.borderRadius='0px';
+  setTimeout(()=>{if(S._anim===tok){win.style.transition='';win.style.transform='';win.style.opacity='';win.style.borderRadius=''}},400);
+}
+function openApp(id,fromEl){
   hideCC();
   if(id==='phone'){toast('المكالمات داخل FaceTime هنا');id='facetime'}
-  if(id&&id.startsWith('x_')){const k=id.slice(2);return openExtra(k)}
+  if(id&&id.startsWith('x_')){const k=id.slice(2);return openExtra(k,fromEl)}
   S.app=id; tickUse(id);
   const names={roblox:'Roblox',youtube:'YouTube',facetime:'FaceTime',camera:'Camera',photos:'Photos',messages:'Messages',appstore:'App Store',safari:'Safari',tiktok:'TikTok',maps:'Maps',weather:'Weather',calendar:'Calendar',music:'Music',clock:'Clock',notes:'Notes',calc:'Calculator',settings:'Settings'};
   $('#appTitle').textContent=names[id]||id;
-  $('#appWin').classList.add('open');
+  showAppWin(fromEl);
   ({roblox:appRoblox,youtube:appYouTube,facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,tiktok:appTikTok,maps:appMaps,weather:appWeather,calendar:appCalendar,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,settings:appSettings}[id]||(()=>{}))($('#appBody'));
 }
-function closeApp(){S.app=null;$('#appWin').classList.remove('open');stopCam()}
+function closeApp(){
+  const win=$('#appWin');if(!win.classList.contains('open')){S.app=null;return}
+  const tok=(S._anim=(S._anim||0)+1);
+  S.app=null;stopCam();
+  win.style.transition='transform .34s '+IOS_EASE+',opacity .3s ease,border-radius .34s '+IOS_EASE;
+  win.style.transform=zoomFrom(S._from&&document.body.contains(S._from)?S._from:null);
+  win.style.opacity='0.2';win.style.borderRadius='26px';
+  setTimeout(()=>{if(S._anim!==tok)return;
+    win.classList.remove('open');win.style.transition='';win.style.transform='';win.style.opacity='';win.style.borderRadius='';S._from=null},345);
+}
 $('#appBack').addEventListener('click',e=>{e.stopPropagation();closeApp()});
-function openExtra(k){
-  S.app='x_'+k;$('#appTitle').textContent=EXTRA[k].n;$('#appWin').classList.add('open');
+function openExtra(k,fromEl){
+  S.app='x_'+k;$('#appTitle').textContent=EXTRA[k].n;showAppWin(fromEl);
   $('#appBody').innerHTML='<div class="card" style="text-align:center;padding:28px 14px"><div style="display:flex;justify-content:center;margin-bottom:10px">'+IC[EXTRA[k].ic]()+'</div><div class="big">'+EXTRA[k].n+'</div><p class="mut" style="margin-top:6px">انثبت على الآيباد ويشتغل من الشاشة الرئيسية.</p><button class="btn" style="margin-top:12px" onclick="closeApp()">تمام</button></div>';
 }
 /* ================= Roblox ================= */
@@ -636,6 +669,8 @@ function appFaceTime(el){
   el.querySelectorAll('[data-call]').forEach(b=>b.addEventListener('click',()=>startCall(FRIENDS[+b.dataset.call],false)));
 }
 function incomingCall(){
+  if(S.calledOnce)return; // Eno calls once per session, never nags again
+  S.calledOnce=true;
   const f=FRIENDS[0];
   if(!S.padOut){S.missedCall=true;toast('مكالمة FaceTime واردة من '+f[0]+' — طلّع الآيباد وادخل FaceTime حتى ترد',5000);return}
   startCall(f,true);
@@ -646,7 +681,7 @@ function startCall(f,incoming){
    '<div class="callBtns">'+(incoming?'<button class="callBtn" style="background:#ff3b30" id="callDecline"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M4 9c5-3.4 11-3.4 16 0l-2 3c-.4.6-1.2.8-1.9.5l-2.4-1a13 13 0 0 1-3.4 0l-2.4 1c-.7.3-1.5.1-1.9-.5z" fill="#fff"/></svg></button>':'')+
    '<button class="callBtn" style="background:#34c759" id="callAccept"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M6.6 3.8c.6-.6 1.6-.5 2.1.2l1.6 2c.5.6.4 1.5-.1 2.1L9 9.3c.9 1.9 2.8 3.8 4.7 4.7l1.2-1.2c.6-.5 1.5-.6 2.1-.1l2 1.6c.7.5.8 1.5.2 2.1l-1.1 1.2c-.6.6-1.4.9-2.2.7C10.6 17.2 6.8 13.4 5.7 8.1c-.2-.8.1-1.6.7-2.2z" fill="#fff"/></svg></button></div>';
   ui.classList.add('show');
-  const dec=$('#callDecline');if(dec)dec.addEventListener('click',()=>{ui.classList.remove('show');showBanner('FaceTime','مكالمة فائتة من '+f[0],null);scheduleCallLater()});
+  const dec=$('#callDecline');if(dec)dec.addEventListener('click',()=>{ui.classList.remove('show');showBanner('FaceTime','مكالمة فائتة من '+f[0],null)});
   $('#callAccept').addEventListener('click',()=>{
     $('#callState').textContent='00:00';
     S.callSec=0;clearInterval(S.callTimer);
@@ -655,7 +690,7 @@ function startCall(f,incoming){
     $('#callEnd').addEventListener('click',()=>{clearInterval(S.callTimer);ui.classList.remove('show');toast('انتهت المكالمة')});
   });
 }
-function scheduleCallLater(){setTimeout(()=>{if(S.playing)incomingCall()},50000)}
+function scheduleCallLater(){/* removed: no repeat calls */}
 /* ================= Camera & Photos ================= */
 let camStream=null, selfieMode=true;
 async function appCamera(el){
@@ -725,8 +760,8 @@ function appSettings(el){
    '<div class="setrow"><span style="flex:1">الصوت</span><input type="range" id="setVol" min="0" max="100" value="'+s.vol+'" style="flex:1"></div></div>'+
    '<div class="setgroup"><div class="setrow"><span style="flex:1">البطارية</span><b>'+Math.round(S.batt.pct)+'%</b></div>'+
    '<div class="setrow"><span style="flex:1">الشحن</span><label class="switch"><input type="checkbox" id="swChg" '+(S.batt.charging?'checked':'')+'><i></i></label></div>'+usageRows+'</div>'+
-   '<div class="setgroup"><div class="setrow"><span style="flex:1">حول الجهاز</span><span class="mut">Rio iPad 1.3</span></div>'+
-   '<div class="setrow"><span style="flex:1">النظام</span><span class="mut">RioOS 1.3</span></div></div>';
+   '<div class="setgroup"><div class="setrow"><span style="flex:1">حول الجهاز</span><span class="mut">Rio iPad 1.4</span></div>'+
+   '<div class="setrow"><span style="flex:1">النظام</span><span class="mut">RioOS 1.4</span></div></div>';
   const bind=(id,key,cb)=>{const n=$(id);if(n)n.addEventListener('change',e=>{S.set[key]=e.target.checked;store.set('set',S.set);renderStatus();if(cb)cb()})};
   bind('#swWifi','wifi');bind('#swBt','bt');bind('#swAir','airplane');
   $('#swChg').addEventListener('change',e=>{S.batt.charging=e.target.checked;store.set('batt',S.batt);renderStatus()});
