@@ -5,7 +5,7 @@ const IOS_EASE='cubic-bezier(.32,.72,.24,1)';
 function iconImgOf(el){if(!el)return null;const im=el.tagName==='IMG'?el:el.querySelector&&el.querySelector('img');if(!im)return null;return im.currentSrc||im.src}
 function showAppWin(fromEl){
 const win=$('#appWin');S._from=fromEl||null;const tok=(S._anim=(S._anim||0)+1);
-win.classList.add('open');
+win.classList.add('open');document.body.classList.add('appopen');syncPill();
 win.style.transition='none';win.style.opacity='0';win.style.transform='scale(.965)';
 const src=iconImgOf(fromEl);let clone=null;
 if(src&&fromEl.getBoundingClientRect){
@@ -43,7 +43,7 @@ requestAnimationFrame(()=>{clone.style.transform='translate('+(r.left-scr.left).
 win.style.transition='opacity .30s ease,transform .36s '+IOS_EASE;
 win.style.opacity='0';win.style.transform='scale(.965)';
 setTimeout(()=>{if(S._anim!==tok)return;if(clone)clone.remove();
-win.classList.remove('open');win.style.transition='';win.style.transform='';win.style.opacity='';S._from=null},380);
+win.classList.remove('open');document.body.classList.remove('appopen');syncPill();win.style.transition='';win.style.transform='';win.style.opacity='';S._from=null},380);
 }
 function openApp(id,fromEl){
 hideCC();clearInterval(S.poll);
@@ -55,7 +55,15 @@ $('#appTitle').textContent=names[id]||id;
 showAppWin(fromEl);
 ({roblox:appRoblox,youtube:appYouTube,facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,tiktok:appTikTok,maps:appMaps,weather:appWeather,calendar:appCalendar,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,settings:appSettings}[id]||(()=>{}))($('#appBody'));
 }
-$('#appBack').addEventListener('click',e=>{e.stopPropagation();closeApp()});
+const _ab=$('#appBack');if(_ab)_ab.addEventListener('click',e=>{e.stopPropagation();closeApp()});
+function syncPill(){const pill=$('#spotPill');if(!pill)return;const lockOn=$('#lock').classList.contains('show');pill.style.display=($('#appWin').classList.contains('open')||lockOn)?'none':'flex'}
+new MutationObserver(syncPill).observe($('#lock'),{attributes:true,attributeFilter:['class']});
+$('#homeBar').addEventListener('click',()=>closeApp());
+let _swipeY=null;
+const _scr=$('#screen');
+_scr.addEventListener('touchstart',e=>{if(!$('#appWin').classList.contains('open'))return;const r=_scr.getBoundingClientRect();if(e.touches[0].clientY>r.bottom-30)_swipeY=e.touches[0].clientY},{passive:true});
+_scr.addEventListener('touchmove',e=>{if(_swipeY===null)return;if(_swipeY-e.touches[0].clientY>42){_swipeY=null;closeApp()}},{passive:true});
+_scr.addEventListener('touchend',()=>{_swipeY=null});
 function openExtra(k,fromEl){
 S.app='x_'+k;$('#appTitle').textContent=EXTRA[k].n;showAppWin(fromEl);
 if(k==='whatsapp')return appWhatsApp();
@@ -82,6 +90,7 @@ el.querySelectorAll('[data-game]').forEach(c=>c.addEventListener('click',()=>pla
 }
 function playFakeGame(name){toast('انسحبت اللعبة الوهمية — ألعابنا الحقيقية جاية قريباً')}
 let selfieMode=false;
+let camStream=null;
 async function appCamera(el){
 el.innerHTML='<canvas id="camView" width="340" height="250"></canvas>'+
 '<div class="row" style="flex-wrap:wrap;gap:6px;margin-top:8px;justify-content:center"><button class="btn gray" data-camf="none" style="padding:6px 12px;font-size:12px">عادي</button><button class="btn gray" data-camf="sepia(.45) saturate(1.25)" style="padding:6px 12px;font-size:12px">دافئ</button><button class="btn gray" data-camf="hue-rotate(-14deg) saturate(1.15)" style="padding:6px 12px;font-size:12px">بارد</button><button class="btn gray" data-camf="contrast(1.25) saturate(1.25)" style="padding:6px 12px;font-size:12px">درامي</button><button class="btn gray" data-camf="grayscale(1)" style="padding:6px 12px;font-size:12px">أحادي</button></div><div class="row" style="margin-top:10px;justify-content:center;gap:10px"><button class="btn gray" id="camFlip">سيلفي / عالم</button><button class="btn" id="camShoot" style="border-radius:50%;width:58px;height:58px;font-size:12px">صوّر</button></div><p class="mut" style="text-align:center;margin-top:8px">إذا سمحت للكاميرا تنفتح كامرتك الحقيقية، وإذا لا يتصور عالم اللعبة.</p>';
@@ -446,7 +455,7 @@ el.innerHTML='<div class="card"><div class="big" style="font-size:18px;color:#ff
 $('#lockGlyph').innerHTML=g('lock-closed','#fff',30);
 $('#lockTorch').innerHTML=g('flashlight','#fff',21);
 $('#lockCam').innerHTML=g('camera','#fff',21);
-function unlock(){if(!S.locked)return;S.locked=false;const L=$('#lock');L.classList.add('bye');setTimeout(()=>L.classList.remove('show','bye'),470)}
+function unlock(){if(!S.locked)return;S.locked=false;const L=$('#lock');L.classList.add('bye');setTimeout(()=>{L.classList.remove('show','bye');syncPill()},470)}
 $('#lock').addEventListener('click',()=>unlock());
 $('#lockTorch').addEventListener('click',e=>{e.stopPropagation();unlock();S.set.flash=!S.set.flash;store.set('set',S.set);toast(S.set.flash?'المصباح يعمل':'المصباح انطفأ')});
 $('#lockCam').addEventListener('click',e=>{e.stopPropagation();unlock();setTimeout(()=>openApp('camera'),480)});
