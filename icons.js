@@ -37,7 +37,7 @@ airplane:'<path d="M21 15.5v-2l-7.5-4.5V4.2a1.7 1.7 0 0 0-3.4 0V9L2.6 13.5v2l7.5
 moon:'<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/>',
 sunny:'<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/>',
 battery:'<rect x="2.5" y="8" width="17" height="9" rx="2.5"/><path d="M21.8 11v3" stroke-width="2.6"/><path d="M11 9.5 8.8 12.5h3L10.5 15.5" stroke-width="1.8"/>',
-flashlight:'<path d="M9 3h6l-1 5h3l-7 13 1.5-8H8l1-5z"/><path d="M9 3h6"/>',
+flashlight:'<path d="M9 2.5h6v3H9z" fill="COLOR" stroke="none"/><rect x="8" y="5.5" width="8" height="3" rx="1" fill="COLOR" stroke="none"/><path d="M10 8.5h4l1.5 11a2 2 0 0 1-2 2h-3a2 2 0 0 1-2-2z" fill="COLOR" stroke="none"/><circle cx="12" cy="18" r="1" fill="#000" stroke="none" opacity=".3"/>',
 timer:'<circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v3.5l2.5 1.5M9.5 2.5h5M12 2.5V6"/>',
 calculator:'<rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 15.5h.01M12 15.5h.01M15.5 15.5h.01"/>',
 camera:'<path d="M4 8h3l2-2.5h6L17 8h3a1.5 1.5 0 0 1 1.5 1.5V18a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V9.5A1.5 1.5 0 0 1 4 8z"/><circle cx="12" cy="13.5" r="3.4"/>',
