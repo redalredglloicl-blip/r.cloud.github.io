@@ -184,8 +184,10 @@ let x=$('#lockX');
 if(!x){x=document.createElement('div');x.id='lockX'}
 const _lt=document.querySelector('#lockTime');if(_lt)_lt.after(x);else L.appendChild(x)
 const pinAsk=S._pinAsk&&S.locked&&(S.fx.pass||S.fx.faceid);
+const _L0=$('#lock');if(_L0&&!S.fx.ownerLock){_L0.style.backdropFilter='';_L0.style.webkitBackdropFilter='';_L0.style.background=''}
 if(S.fx.ownerLock){
 const _olt=$('#lockTime'),_old=$('#lockDate');if(_olt)_olt.style.display='none';if(_old)_old.style.display='none';
+const _Lb=$('#lock');if(_Lb){_Lb.style.backdropFilter='none';_Lb.style.webkitBackdropFilter='none';_Lb.style.background='rgba(0,0,0,.94)'}
 const _aid=(S.apple&&S.apple.id)||'';
 const _mask=_aid?_aid.slice(0,1)+'•••'+_aid.slice(_aid.indexOf('@')):'';
 x.innerHTML='<div id="ownLock" style="text-align:center;color:#fff;padding:40px 26px;animation:pinIn .35s">'+
