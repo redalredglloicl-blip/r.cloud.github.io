@@ -33,7 +33,22 @@ cloud:'<path d="M7 18.5a4.5 4.5 0 0 1-.4-9A6 6 0 0 1 18.2 11 3.8 3.8 0 0 1 17.5 
 copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/>',
 doc:'<path d="M6 3.5h8L19 8.5V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z"/><path d="M14 3.5V8.5H19M8.5 13h7M8.5 16.5h7"/>',
 folder:'<path d="M3.5 7a1.5 1.5 0 0 1 1.5-1.5h5l2 2.5h6.5A1.5 1.5 0 0 1 20 9.5V18a1.5 1.5 0 0 1-1.5 1.5h-14A1.5 1.5 0 0 1 3 18V7z"/>',
+accessibility:'<circle cx="12" cy="5.5" r="2"/><path d="M4.5 9.5c2.5.7 5 .9 7.5.9s5-.2 7.5-.9M12 10.5v5m0 0-3 6m3-6 3 6"/>',
+apps:'<rect x="4" y="4" width="7" height="7" rx="1.8"/><rect x="13" y="4" width="7" height="7" rx="1.8"/><rect x="4" y="13" width="7" height="7" rx="1.8"/><rect x="13" y="13" width="7" height="7" rx="1.8"/>',
+bag:'<path d="M6 8h12l-1 12a1.5 1.5 0 0 1-1.5 1.4h-7A1.5 1.5 0 0 1 7 20L6 8z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/>',
+call:'<path d="M5 4h4l2 5-2.5 1.5a12 12 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
+gamepad:'<path d="M7 8h10a5 5 0 0 1 5 5c0 2.8-2.2 5-5 5-1.5 0-2.8-.7-3.7-1.7L12 15l-1.3 1.3c-.9 1-2.2 1.7-3.7 1.7-2.8 0-5-2.2-5-5a5 5 0 0 1 5-5z"/><path d="M8 11.5v3M6.5 13h3M16 12h.01M17.5 14.5h.01"/>',
+grid:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+heart:'<path d="M12 20.5C7 16.5 3.5 13.3 3.5 9.5A4.5 4.5 0 0 1 8 5c1.6 0 3.1.8 4 2.1A4.5 4.5 0 0 1 16 5a4.5 4.5 0 0 1 4.5 4.5c0 3.8-3.5 7-8.5 11z"/>',
+image:'<rect x="3.5" y="5" width="17" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="M4.5 17.5 10 12l3.5 3.5L16 13l3.5 3.5"/>',
+key:'<circle cx="8.5" cy="12" r="4"/><path d="M12.5 12H21M18 12v4M21 12v3"/>',
+bell:'<path d="M6 10a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 14 6 10z"/><path d="M10 19a2.2 2.2 0 0 0 4 0"/>',
+sliders:'<path d="M5 7h14M5 12h14M5 17h14"/><circle cx="9.5" cy="7" r="2.2" fill="#000" stroke="COLOR"/><circle cx="15" cy="12" r="2.2"/><circle cx="8" cy="17" r="2.2"/>',
+radio:'<circle cx="12" cy="12" r="2" fill="COLOR" stroke="none"/><path d="M8.5 15.5a5 5 0 0 1 0-7M15.5 8.5a5 5 0 0 1 0 7M5.8 18.2a9 9 0 0 1 0-12.4M18.2 5.8a9 9 0 0 1 0 12.4"/>',
+search:'<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
+gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.2 5.2l1.8 1.8M17 17l1.8 1.8M18.8 5.2 17 7M7 17l-1.8 1.8"/>',
+shield:'<path d="M12 3 5 5.8v6c0 4.4 2.9 7.6 7 9.2 4.1-1.6 7-4.8 7-9.2v-6L12 3z"/><path d="m9 11.5 2.2 2.2L15.5 9.5"/>',
 flash:'<path d="M13 2.5 4.5 13.5H11l-1 8 8.5-11H12l1-8z"/>'
 };
-const G_ALIAS={celldata:'celldata',airdrop:'airdrop',bt:'bt',darkmode:'darkmode',dnd:'dnd',hotspot:'hotspot',lowpower:'lowpower',mirror:'mirror',music:'music','musical-notes':'music',nshift:'nshift',screenrec:'screenrec',shazam:'shazam','copy-outline':'copy','document-text':'doc','lock-closed':'lock','volume-high':'volume','battery-charging':'battery','play-circle':'playcircle','qr-code':'qr','flashlight':'flashlight'};
+const G_ALIAS={celldata:'celldata',airdrop:'airdrop',bt:'bt',darkmode:'darkmode',dnd:'dnd',hotspot:'hotspot',lowpower:'lowpower',mirror:'mirror',music:'music','musical-notes':'music',nshift:'nshift',screenrec:'screenrec',shazam:'shazam','copy-outline':'copy','document-text':'doc','lock-closed':'lock','volume-high':'volume','battery-charging':'battery','play-circle':'playcircle','qr-code':'qr','flashlight':'flashlight','bluetooth':'bt','notifications':'bell','options':'sliders','radio-outline':'radio','game-controller':'gamepad','settings':'gear','shield-checkmark':'shield'};
 function g(name,color,size){size=size||22;color=color||'#fff';const k=G_ALIAS[name]||name;return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto;vertical-align:middle;display:inline-block">'+(G_P[k]||'<circle cx="12" cy="12" r="8"/>').replace(/COLOR/g,color)+'</svg>'}
