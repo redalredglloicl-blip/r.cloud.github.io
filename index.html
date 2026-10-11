@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Rio iPad">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Rio iPad 8.6</title>
+<title>Rio iPad 9.0</title>
 <style>.sq{width:29px;height:29px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{height:100%;overflow:hidden;background:radial-gradient(120% 100% at 50% 0%,#2b3348 0%,#141821 60%,#0b0e14 100%);font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif}
@@ -129,7 +129,6 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 .segCtl{position:relative;display:flex;direction:ltr;background:rgba(120,120,128,.22);border-radius:12px;padding:2px;margin:10px 0}
 .segCtl button{flex:1;position:relative;z-index:1;background:none;border:none;padding:9px 4px;font-size:14px;font-weight:600;color:#111;cursor:pointer;font-family:inherit}
 .segInd{position:absolute;top:2px;bottom:2px;left:2px;width:calc(50% - 2px);background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.18);transition:transform .25s cubic-bezier(.3,.7,.3,1)}
-.segCtl[data-sel="repair"] .segInd{transform:translateX(100%)}
 #ipad.dark .segCtl{background:rgba(120,120,128,.36)}
 #ipad.dark .segInd{background:#636366}
 #ipad.dark .segCtl button{color:#fff}
@@ -368,7 +367,7 @@ img,a{-webkit-user-drag:none!important}
 <body>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 8.6</div>
+  <div id="verTag">Rio iPad 9.0</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -420,7 +419,7 @@ img,a{-webkit-user-drag:none!important}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 8.6</div>
+    <div class="ver">Rio iPad 9.0</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -831,7 +830,6 @@ window.addEventListener('load',()=>{
 $('#startScreen').style.display='none';S.playing=true;lastT=performance.now();setPad(true);
 });</script>
 <script>const APPS=[
-{id:'roblox',n:'Roblox',ic:'roblox'},
 {id:'facetime',n:'FaceTime',ic:'facetime'},
 {id:'camera',n:'Camera',ic:'camera'},
 {id:'photos',n:'Photos',ic:'photos',badge:()=>S.photos.length||''},
@@ -846,7 +844,7 @@ $('#startScreen').style.display='none';S.playing=true;lastT=performance.now();se
 {id:'clock',n:'Clock',ic:'clock'},
 {id:'notes',n:'Notes',ic:'notes'},
 {id:'calc',n:'Calculator',ic:'calc'},
-{id:'maint',n:'الصيانة',ic:'maint'},
+{id:'maint',n:'البطارية',ic:'maint'},
 {id:'voicememos',n:'Voice Memos',ic:'voicememos'},
 {id:'files',n:'Files',ic:'files'},
 {id:'shortcuts',n:'Shortcuts',ic:'shortcuts'},
@@ -854,7 +852,6 @@ $('#startScreen').style.display='none';S.playing=true;lastT=performance.now();se
 {id:'applestore',n:'Apple Store',ic:'applestore'}
 ];
 const ICONS={
-roblox:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
 youtube:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/91/e3/6d/91e36d95-56fd-4162-3ab5-1fd5e18db785/logo_youtube_2024_q4_color-0-0-1x_U007emarketing-0-0-0-7-0-0-0-85-220.png/512x512bb.jpg',
 facetime:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/b1/05/6a/b1056a9b-6401-b268-31db-89e724d65054/facetimeCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
 camera:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/c3/28/70/c3287077-6963-7a9c-03a0-c76df858ee84/cameraCalistoga-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg',
@@ -1001,7 +998,7 @@ renderStatus();
 const lowBoost=1+(100-S.batt.pct)/100*1.6;
 const lpmF=S.set.lpm?0.45:1;
 const capF=Math.pow(100/Math.max(72,S.batt.maxCap||100),1.5);
-const drainBase=0.028*(0.5+S.set.bright/100)*(S.app==='camera'||S.app==='roblox'||S.app==='x_youtube'?2.6:1)*(S.padOut?1.4:0.5)*lowBoost*lpmF*capF;
+const drainBase=0.028*(0.5+S.set.bright/100)*(S.app==='camera'||S.app==='x_youtube'?2.6:1)*(S.padOut?1.4:0.5)*lowBoost*lpmF*capF;
 if(S.batt.charging){S.batt.pct=Math.min(100,S.batt.pct+0.06)}
 else if(S.playing){S.batt.pct=Math.max(0,S.batt.pct-drainBase)}
 if(S.batt.pct<70){S._degT=(S._degT||0)+1;if(S._degT>=60){S._degT=0;if((S.batt.maxCap||100)>72){S.batt.maxCap=Math.max(72,(S.batt.maxCap||100)-1);store.set('batt',S.batt)}}}else S._degT=0
@@ -1021,7 +1018,7 @@ if(S.notifs.length>12)S.notifs.pop();
 store.set('notifs',S.notifs);
 }
 function notifIcon(app){
-const k={FaceTime:'facetime',Messages:'messages',Roblox:'roblox',YouTube:'youtube',TikTok:'tiktok'}[app]||'messages';
+const k={FaceTime:'facetime',Messages:'messages',YouTube:'youtube',TikTok:'tiktok'}[app]||'messages';
 return '<img class="appic" src="'+ICONS[k]+'">';
 }
 function renderNC(){
@@ -1096,9 +1093,30 @@ function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.inne
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="pad.js?v=86"></script>
-<script src="social.js?v=86"></script>
-<script src="sys3.js?v=86"></script>
-<script src="repair.js?v=86"></script>
+<script src="pad.js?v=90"></script>
+<script src="social.js?v=90"></script>
+<script src="sys3.js?v=90"></script>
+<script>
+(function(){
+const actId=localStorage.getItem('rio-actlock');
+if(!actId)return;
+const d=document.createElement('div');
+d.id='actLock';
+d.style.cssText='position:fixed;inset:0;z-index:9999;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;font-family:inherit';
+const mask=actId.slice(0,1)+String.fromCharCode(8226,8226,8226)+actId.slice(actId.indexOf('@'));
+d.innerHTML='<div style="max-width:340px;animation:pinIn .4s">'+
+'<div style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 18px">'+g('lock-closed','#fff',34)+'</div>'+
+'<div style="font-size:23px;font-weight:800;margin-bottom:10px">مقيد بالمالك</div>'+
+'<p style="font-size:13.5px;line-height:2;opacity:.8;margin:0 0 20px">انمسح هذا الآيباد وهو مرتبط بحساب iCloud.<br>أدخل بريد الحساب المرتبط للمتابعة.</p>'+
+'<input id="actMail" type="email" autocomplete="off" placeholder="بريد iCloud" dir="ltr" style="width:100%;padding:13px;border:none;border-radius:12px;font-size:15px;text-align:center;margin-bottom:10px;box-sizing:border-box">'+
+'<button id="actGo" style="width:100%;padding:13px;border:none;border-radius:12px;background:#0a84ff;color:#fff;font-size:16px;font-weight:700;cursor:pointer">التالي</button>'+
+'<p style="margin-top:12px;font-size:12px;opacity:.55">تلميح الحساب: '+escH(mask)+'</p></div>';
+document.body.appendChild(d);
+document.querySelector('#actGo').addEventListener('click',()=>{
+const v=(document.querySelector('#actMail').value||'').trim().toLowerCase();
+if(v&&v===actId.toLowerCase()){localStorage.removeItem('rio-actlock');d.remove()}
+else toast('بريد iCloud غير صحيح')});
+})();
+</script>
 </body>
 </html>
