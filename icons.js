@@ -1,6 +1,6 @@
 const G_P={
 wifi:'<path d="M2.5 9.5a14 14 0 0 1 19 0M5.5 13a10 10 0 0 1 13 0M8.6 16.4a6 6 0 0 1 6.8 0"/><circle cx="12" cy="19.2" r="1.4" fill="COLOR" stroke="none"/>',
-cellular:'<path d="M5 19v-4M10 19v-8M15 19V7M20 19V4" stroke-width="2.6"/>',
+cellular:'<path d="M5.5 19v-5M10.2 19v-9M14.9 19V6.5M19.6 19V4" stroke-width="3.4"/>',
 celldata:'<path d="M5 19v-4M10 19v-8M15 19V7M20 19V4" stroke-width="2.6"/>',
 airplane:'<path d="M10.5 13.5 3 11l1.5-1.5L11 11l3.5-5.5c.8-1.2 2.6-1.4 3.4-.6.8.8.6 2.6-.6 3.4L12 12l1.5 6.5L12 20l-1.5-6.5z"/>',
 moon:'<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/>',
