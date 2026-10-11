@@ -373,6 +373,19 @@ const freeFirst=!S.gameFree[g.k]&&!inst;
 return '<div class="card row" style="align-items:center"><span style="flex:0 0 auto">'+icImg(ICONS[g.k])+'</span><span style="flex:1;cursor:pointer" data-detail="'+g.k+'"><span class="big" style="font-size:15px">'+g.n+'</span><br><span class="mut">'+g.cat+' — '+g.dev+'</span><br>'+(freeFirst?'<span style="font-size:12px;color:#34c759;font-weight:700">مجاناً لأول مرة</span> <span class="mut" style="font-size:12px;text-decoration:line-through">$'+g.price+'</span>':'<b style="font-size:13px;color:#0a84ff">$'+g.price+'</b>')+'</span><button class="btn '+(inst?'gray':'')+'" data-get="'+g.k+'" style="border-radius:16px;padding:7px 18px">'+(inst?'فتح':(freeFirst?'مجاناً':'$'+g.price))+'</button></div>';
 }
 function anyRow(a){return a.price!=null?gameRow(a):storeRow(a)}
+function lgTabs(bar,tabs,cur,onPick){
+const pill=bar.querySelector('.lg-pill'),btns=[...bar.querySelectorAll('.lg-tab')];
+function place(i,instant){const b=btns[i];if(!b)return;const br=b.getBoundingClientRect(),cr=bar.getBoundingClientRect();if(instant)pill.style.transition='none';pill.style.transform='translateX('+(br.left-cr.left)+'px)';pill.style.width=br.width+'px';if(instant)requestAnimationFrame(()=>{pill.style.transition=''})}
+function setOn(i){btns.forEach((b,j)=>b.classList.toggle('on',j===i))}
+place(cur,true);setOn(cur);
+let drag=false,pid=null,pend=cur;
+function moveTo(x){const cr=bar.getBoundingClientRect(),cx=Math.max(cr.left,Math.min(cr.right,x)),bw=btns[cur].offsetWidth;pill.style.transform='translateX('+(cx-cr.left-bw/2)+'px)';pill.style.width=bw+'px';let best=cur,bd=1e9;btns.forEach((b,j)=>{const r=b.getBoundingClientRect(),d=Math.abs(cx-(r.left+r.width/2));if(d<bd){bd=d;best=j}});if(best!==pend){pend=best;setOn(best)}}
+bar.addEventListener('pointerdown',e=>{const t=e.target.closest('.lg-tab');if(!t||drag)return;drag=true;pid=e.pointerId;pend=btns.indexOf(t);try{bar.setPointerCapture(pid)}catch(_){}pill.classList.add('bloom');pill.style.transition='none';setOn(pend);moveTo(e.clientX);e.preventDefault()});
+bar.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==pid)return;moveTo(e.clientX)});
+function end(e){if(!drag||(e&&e.pointerId!==pid))return;drag=false;pill.classList.remove('bloom');pill.style.transition='';cur=pend;place(cur,false);setOn(cur);onPick(tabs[cur])}
+bar.addEventListener('pointerup',end);bar.addEventListener('pointercancel',end);
+window.addEventListener('resize',()=>place(cur,true));
+}
 function appStore(el){
 S.gameFree=store.get('gameFree',{});
 if(!S.storeTab)S.storeTab='games';
@@ -409,9 +422,9 @@ body='<div class="rbx-sec" style="margin-top:2px">تواصل اجتماعي — 
 body='<div class="row" style="margin-bottom:10px"><input id="stQ" type="text" placeholder="ابحث عن تطبيقات وألعاب…" style="flex:1;padding:11px 13px;border:1px solid #d9d9de;border-radius:14px;font-size:14px"></div><div id="stRes">'+GAMES.map(gameRow).join('')+STORE.map(storeRow).join('')+'</div>';
 }
 el.innerHTML='<div class="row" style="align-items:center;margin-bottom:12px"><span class="big" style="font-size:21px;flex:1">App Store</span>'+acct+'</div>'+body+
-'<div style="display:flex;gap:6px;margin-top:14px;background:#e9e9ee;border-radius:14px;padding:4px">'+
-[['games','الألعاب'],['today','اليوم'],['apps','التطبيقات'],['search','بحث']].map(t=>'<button data-tab="'+t[0]+'" style="flex:1;padding:8px;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:12.5px;'+(tab===t[0]?'background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15)':'background:none;color:#555')+'">'+t[1]+'</button>').join('')+'</div>';
-el.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{S.storeTab=b.dataset.tab;S.storeDetail=null;appStore(el)}));
+'<div class="lg-bar'+(S.set.dark?' dk':'')+'" id="lgStoreBar"><div class="lg-pill"></div>'+
+[['games','الألعاب'],['today','اليوم'],['apps','التطبيقات'],['search','بحث']].map(t=>'<button class="lg-tab" data-tab="'+t[0]+'">'+t[1]+'</button>').join('')+'</div>';
+lgTabs($('#lgStoreBar'),['games','today','apps','search'],['games','today','apps','search'].indexOf(tab),k=>{S.storeTab=k;S.storeDetail=null;appStore(el)});
 const sg=$('#stSign');if(sg)sg.addEventListener('click',()=>appleSignInForm(el,()=>appStore(el)));
 const q=$('#stQ');if(q)q.addEventListener('input',()=>{const v=q.value.trim();$('#stRes').innerHTML=STORE.concat(GAMES).filter(a=>!v||a.n.includes(v)||a.cat.includes(v)).map(anyRow).join('')||'<p class="mut" style="text-align:center;padding:16px">لا نتائج</p>';bindGets(el)});
 el.querySelectorAll('[data-unhide]').forEach(b=>b.addEventListener('click',()=>{S.hidden=S.hidden.filter(x=>x!==b.dataset.unhide);store.set('hidden',S.hidden);renderHome();appStore(el);toast('رجع التطبيق للشاشة الرئيسية')}));
