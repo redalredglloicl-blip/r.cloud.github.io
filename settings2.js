@@ -168,46 +168,70 @@ window.openExtra=function(k,fromEl){
 // === Phone/FaceTime: real iPhone style, no fake contacts ===
 (function(){
 window.appFaceTime=function(el){
- S.myContacts=S.myContacts||[];
- const tab=S.ftTab||'contacts';
- let h='<div class="row" style="align-items:center;margin-bottom:10px"><b style="font-size:22px;flex:1">الهاتف</b><button class="btn" id="ftAdd" style="font-size:20px;padding:4px 12px">+</button></div>';
+ S.myContacts=S.myContacts||[];S.myFavs=S.myFavs||[];
+ const tab=S.ftTab||'recents';
+ const plusSVG='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a84ff" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+ let h='<div class="row" style="align-items:center;margin-bottom:10px"><b style="font-size:22px;flex:1">الهاتف</b><button id="ftAdd" style="background:none;border:none;cursor:pointer;padding:8px">'+plusSVG+'</button></div>';
  h+='<div class="segRow" style="margin-bottom:12px">'+
-  ['recents','contacts','keypad'].map(t=>'<button data-fttab="'+t+'" style="flex:1;padding:8px;border-radius:8px;'+(tab===t?'background:#0a84ff;color:#fff':'background:#f0f0f2')+'">'+({recents:'الأخيرة',contacts:'جهات الاتصال',keypad:'لوحة المفاتيح'}[t])+'</button>').join('')+'</div>';
- if(tab==='contacts'){
+  ['favs','recents','contacts','keypad'].map(t=>'<button data-fttab="'+t+'" style="flex:1;padding:8px;border-radius:8px;font-size:13px;'+(tab===t?'background:#0a84ff;color:#fff':'background:#f0f0f2')+'">'+({favs:'\u0627\u0644\u0645\u0641\u0636\u0644\u0629',recents:'\u0627\u0644\u0623\u062e\u064a\u0631\u0629',contacts:'\u062c\u0647\u0627\u062a \u0627\u0644\u0627\u062a\u0635\u0627\u0644',keypad:'\u0644\u0648\u062d\u0629 \u0627\u0644\u0645\u0641\u0627\u062a\u064a\u062d'}[t])+'</button>').join('')+'</div>';
+ if(tab==='favs'){
+  const favs=S.myContacts.filter(c=>S.myFavs.includes(c.p));
+  h+=favs.length?'<div class="setgroup">'+favs.map(c=>'<div class="setrow"><span style="width:38px;height:38px;border-radius:50%;background:#ff9f0a;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">'+escH(c.n[0]||'?')+'</span><span style="flex:1"><b>'+escH(c.n)+'</b><br><span class="mut" dir="ltr">'+escH(c.p)+'</span></span><button class="btn gray" data-ftcallp="'+escH(c.p)+'">\u0627\u062a\u0635\u0627\u0644</button></div>').join('')+'</div>':'<div style="text-align:center;padding:50px 20px"><p class="mut">\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0641\u0636\u0644\u0629</p></div>';
+ }else if(tab==='contacts'){
   if(!S.myContacts.length){
-   h+='<div style="text-align:center;padding:50px 20px"><p class="mut">لا توجد جهات اتصال<br>اضغط + لإضافة رقم</p></div>';
+   h+='<div style="text-align:center;padding:50px 20px"><p class="mut">\u0644\u0627 \u062a\u0648\u062c\u062f \u062c\u0647\u0627\u062a \u0627\u062a\u0635\u0627\u0644</p></div>';
   }else{
-   h+='<div class="setgroup">'+S.myContacts.map((c,i)=>'<div class="setrow"><span style="width:38px;height:38px;border-radius:50%;background:#0a84ff;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">'+c.n[0]+'</span><span style="flex:1"><b>'+c.n+'</b><br><span class="mut">'+c.p+'</span></span><button class="btn gray" data-ftcall="'+i+'">اتصال</button></div>').join('')+'</div>';
+   h+='<div class="setgroup">'+S.myContacts.map((c,i)=>{const isFav=S.myFavs.includes(c.p);return '<div class="setrow"><span style="width:38px;height:38px;border-radius:50%;background:#0a84ff;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:0 0 auto">'+escH(c.n[0]||'?')+'</span><span style="flex:1;min-width:0"><b>'+escH(c.n)+'</b><br><span class="mut" dir="ltr">'+escH(c.p)+'</span></span><button data-ftfav="'+i+'" style="background:none;border:none;cursor:pointer;padding:6px"><svg width="20" height="20" viewBox="0 0 24 24" fill="'+(isFav?'#ff9f0a':'none')+'" stroke="'+(isFav?'#ff9f0a':'#8e8e93')+'" stroke-width="2"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg></button><button class="btn gray" data-ftcall="'+i+'">\u0627\u062a\u0635\u0627\u0644</button></div>'}).join('')+'</div>';
   }
  }else if(tab==='recents'){
   const rec=S.ftRecents||[];
-  h+=rec.length?'<div class="setgroup">'+rec.map(r=>'<div class="setrow"><span style="flex:1"><b>'+r.n+'</b><br><span class="mut">'+r.t+'</span></span><span class="mut">'+r.d+'</span></div>').join('')+'</div>':'<div style="text-align:center;padding:50px 20px"><p class="mut">لا توجد مكالمات أخيرة</p></div>';
+  h+=rec.length?'<div class="setgroup">'+rec.map(r=>'<div class="setrow"><span style="flex:1"><b>'+escH(r.n)+'</b><br><span class="mut">'+escH(r.t)+'</span></span><span class="mut">'+escH(r.d)+'</span></div>').join('')+'</div>':'<div style="text-align:center;padding:50px 20px"><p class="mut">\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0643\u0627\u0644\u0645\u0627\u062a</p></div>';
  }else{
-  h+='<div style="text-align:center;padding:10px"><div id="ftNum" style="font-size:32px;min-height:44px;letter-spacing:2px"></div><div style="display:grid;grid-template-columns:repeat(3,72px);gap:12px;justify-content:center;margin-top:10px">'+
-  [1,2,3,4,5,6,7,8,9,'*',0,'#'].map(n=>'<button data-ftk="'+n+'" style="width:72px;height:72px;border-radius:50%;background:#f0f0f2;font-size:26px;border:none">'+n+'</button>').join('')+'</div><button class="btn" id="ftDial" style="margin-top:14px;background:#34c759;border-radius:50%;width:72px;height:72px;display:flex;align-items:center;justify-content:center"><svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg></button></div>';
+  h+='<div style="text-align:center;padding:10px"><div id="ftNum" dir="ltr" style="font-size:32px;min-height:44px;letter-spacing:2px"></div><div style="display:grid;grid-template-columns:repeat(3,72px);gap:12px;justify-content:center;margin-top:10px">'+
+  [1,2,3,4,5,6,7,8,9,'*',0,'#'].map(n=>'<button data-ftk="'+n+'" style="width:72px;height:72px;border-radius:50%;background:#f0f0f2;font-size:26px;border:none;cursor:pointer">'+n+'</button>').join('')+'</div><button id="ftDial" style="margin-top:14px;background:#34c759;border-radius:50%;width:72px;height:72px;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center"><svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg></button></div>';
  }
+ h+='<div id="ftModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:999;align-items:center;justify-content:center"><div style="background:#fff;border-radius:14px;padding:20px;width:85%;max-width:320px"><b style="font-size:17px">\u062c\u0647\u0629 \u0627\u062a\u0635\u0627\u0644 \u062c\u062f\u064a\u062f\u0629</b><div style="margin-top:14px"><input id="ftName" placeholder="\u0627\u0644\u0627\u0633\u0645" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-bottom:10px;font-size:15px;box-sizing:border-box"><input id="ftPhone" placeholder="\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641" dir="ltr" inputmode="tel" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:15px;box-sizing:border-box;text-align:left"></div><div class="row" style="margin-top:14px;gap:8px"><button id="ftCancel" class="btn gray" style="flex:1">\u0625\u0644\u063a\u0627\u0621</button><button id="ftSave" class="btn" style="flex:1">\u062d\u0641\u0638</button></div></div></div>';
  el.innerHTML=h;
  el.querySelectorAll('[data-fttab]').forEach(b=>b.addEventListener('click',()=>{S.ftTab=b.dataset.fttab;window.appFaceTime(el);}));
- const addB=$('#ftAdd');if(addB)addB.addEventListener('click',()=>{
-  const n=prompt('اسم جهة الاتصال:');if(!n)return;
-  const p=prompt('رقم الهاتف:');if(!p)return;
-  S.myContacts.push({n:n,p:p});try{saveFx()}catch(e){}
-  window.appFaceTime(el);toast('تمت الإضافة');
+ const modal=el.querySelector('#ftModal');
+ const addB=el.querySelector('#ftAdd');
+ if(addB)addB.addEventListener('click',()=>{modal.style.display='flex';});
+ const cancelB=el.querySelector('#ftCancel');
+ if(cancelB)cancelB.addEventListener('click',()=>{modal.style.display='none';});
+ const saveB=el.querySelector('#ftSave');
+ if(saveB)saveB.addEventListener('click',()=>{
+  const n=el.querySelector('#ftName').value.trim(),p=el.querySelector('#ftPhone').value.trim();
+  if(!n){toast('\u0623\u062f\u062e\u0644 \u0627\u0644\u0627\u0633\u0645');return;}
+  if(!p){toast('\u0623\u062f\u062e\u0644 \u0627\u0644\u0631\u0642\u0645');return;}
+  S.myContacts.push({n:n,p:p});
+  try{if(typeof saveFx==='function')saveFx();}catch(e){}
+  S.ftTab='contacts';window.appFaceTime(el);toast('\u062a\u0645\u062a \u0627\u0644\u0625\u0636\u0627\u0641\u0629');
  });
- el.querySelectorAll('[data-ftcall]').forEach(b=>b.addEventListener('click',()=>{
-  const c=S.myContacts[+b.dataset.ftcall];
-  S.ftRecents=S.ftRecents||[];S.ftRecents.unshift({n:c.n,t:'صادرة',d:'الآن'});
-  toast('جاري الاتصال بـ '+c.n+'...');
+ el.querySelectorAll('[data-ftfav]').forEach(b=>b.addEventListener('click',()=>{
+  const c=S.myContacts[+b.dataset.ftfav];const i=S.myFavs.indexOf(c.p);
+  if(i>=0)S.myFavs.splice(i,1);else S.myFavs.push(c.p);
+  try{if(typeof saveFx==='function')saveFx();}catch(e){}
+  window.appFaceTime(el);
  }));
- // keypad
+ const doCall=(name)=>{
+  S.ftRecents=S.ftRecents||[];S.ftRecents.unshift({n:name,t:'\u0635\u0627\u062f\u0631\u0629',d:'\u0627\u0644\u0622\u0646'});
+  try{if(typeof saveFx==='function')saveFx();}catch(e){}
+  toast('\u062c\u0627\u0631\u064a \u0627\u0644\u0627\u062a\u0635\u0627\u0644 \u0628\u0640 '+name+'...');
+ };
+ el.querySelectorAll('[data-ftcall]').forEach(b=>b.addEventListener('click',()=>{
+  const c=S.myContacts[+b.dataset.ftcall];doCall(c.n);
+ }));
+ el.querySelectorAll('[data-ftcallp]').forEach(b=>b.addEventListener('click',()=>{
+  const c=S.myContacts.find(x=>x.p===b.dataset.ftcallp);if(c)doCall(c.n);
+ }));
  let num='';
  el.querySelectorAll('[data-ftk]').forEach(b=>b.addEventListener('click',()=>{
-  num+=b.dataset.ftk;const d=$('#ftNum');if(d)d.textContent=num;
+  num+=b.dataset.ftk;const d=el.querySelector('#ftNum');if(d)d.textContent=num;
  }));
- const dial=$('#ftDial');if(dial)dial.addEventListener('click',()=>{
-  if(!num){toast('أدخل الرقم أولاً');return;}
-  S.ftRecents=S.ftRecents||[];S.ftRecents.unshift({n:num,t:'صادرة',d:'الآن'});
-  toast('جاري الاتصال بـ '+num+'...');num='';const d=$('#ftNum');if(d)d.textContent='';
+ const dial=el.querySelector('#ftDial');
+ if(dial)dial.addEventListener('click',()=>{
+  if(!num){toast('\u0623\u062f\u062e\u0644 \u0627\u0644\u0631\u0642\u0645 \u0623\u0648\u0644\u0627\u064b');return;}
+  doCall(num);num='';const d=el.querySelector('#ftNum');if(d)d.textContent='';
  });
 };
 })();
