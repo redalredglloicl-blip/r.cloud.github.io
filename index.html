@@ -1024,7 +1024,7 @@ $('#sbIcons').innerHTML='<span style="display:inline-flex;align-items:center;gap
 $('#dim').style.opacity=String((80-S.set.bright)/100*0.55);
 const lt=$('#lockTime');if(lt){lt.textContent=fmtTime();
 const d=new Date(),days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],months=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-$('#lockDate').textContent=days[d.getDay()]+'، '+arabNum(d.getDate())+' '+months[d.getMonth()];const _lc=$('#lockChg');if(_lc){if(S.batt.charging){_lc.style.display='';_lc.textContent='⚡ '+arabNum(Math.round(S.batt.pct))+'٪ — جاي ينشحن'}else _lc.style.display='none'}}
+$('#lockDate').textContent=days[d.getDay()]+'، '+arabNum(d.getDate())+' '+months[d.getMonth()];const _lc=$('#lockChg');if(_lc){if(S.batt.charging){_lc.style.display='';_lc.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" style="vertical-align:-1px"><path d="M13 2 4 14h6l-1 8 9-12h-6z" fill="#34c759"/></svg> '+arabNum(Math.round(S.batt.pct))+'٪ — جاي ينشحن'}else _lc.style.display='none'}}
 }
 function tickUse(name){const u=S.batt.usage;u[name]=(u[name]||0)+1;store.set('batt',S.batt)}
 setInterval(()=>{
@@ -1065,7 +1065,7 @@ $('#nc').innerHTML='<div style="text-align:center;margin-bottom:8px"><div style=
 '<div style="text-align:center;font-size:12px;opacity:.8;margin-top:8px">اضغط بره حتى تسكر</div>';
 $('#ncClear').addEventListener('click',e=>{e.stopPropagation();S.notifs=[];store.set('notifs',[]);renderNC()});
 }
-function relTime(t){const m=Math.max(0,Math.round((Date.now()-t)/60000));return m<1?'هسه':(m<60?arabNum(m)+' د':arabNum(Math.round(m/60))+' س')}
+function relTime(t){const m=Math.max(0,Math.round((Date.now()-t)/60000));return m<1?'الآن':(m<60?arabNum(m)+' د':arabNum(Math.round(m/60))+' س')}
 function showNC(){renderNC();$('#nc').classList.add('open');$('#statusbar').style.opacity='0'}
 function hideNC(){$('#nc').classList.remove('open');$('#statusbar').style.opacity=''}
 function renderCC(){
@@ -1135,10 +1135,10 @@ function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.inne
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="pad.js?v=112"></script>
-<script src="social.js?v=112"></script>
-<script src="safari.js?v=112"></script>
-<script src="sys3.js?v=112"></script>
+<script src="pad.js?v=113"></script>
+<script src="social.js?v=113"></script>
+<script src="safari.js?v=113"></script>
+<script src="sys3.js?v=113"></script>
 <script>
 (function(){
 const actId=localStorage.getItem('rio-actlock');
