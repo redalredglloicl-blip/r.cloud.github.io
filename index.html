@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="iPhone">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Update 9.25</title>
+<title>Update 9.26</title>
 <style>
 .glass{background:linear-gradient(135deg,rgba(255,255,255,.17),rgba(255,255,255,.06) 55%,rgba(255,255,255,.12));-webkit-backdrop-filter:blur(10px) saturate(185%) brightness(1.06);backdrop-filter:blur(10px) saturate(185%) brightness(1.06);border:1px solid rgba(255,255,255,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 1px 0 0 rgba(255,255,255,.13),inset -1px 0 0 rgba(255,255,255,.13),inset 0 -1px 0 rgba(255,255,255,.08),0 10px 28px rgba(0,0,0,.13)}
 #ipad.dark .glass{background:linear-gradient(135deg,rgba(88,88,100,.3),rgba(48,48,56,.15) 55%,rgba(78,78,90,.24));border-color:rgba(255,255,255,.17);box-shadow:inset 0 1px 0 rgba(255,255,255,.26),inset 1px 0 0 rgba(255,255,255,.08),inset -1px 0 0 rgba(255,255,255,.08),0 10px 28px rgba(0,0,0,.42)}
@@ -396,7 +396,7 @@ img,a{-webkit-user-drag:none!important}
 <body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="rio-liquid" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.02 0.032" numOctaves="1" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Update 9.25</div>
+  <div id="verTag">Update 9.26</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -450,7 +450,7 @@ img,a{-webkit-user-drag:none!important}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Update 9.25</div>
+    <div class="ver">Update 9.26</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -1069,18 +1069,17 @@ function raisePad(){if(!S.padOut)setPad(true)}
 function fmtTime(){const d=new Date();let h=d.getHours()%12;if(h===0)h=12;return h+':'+String(d.getMinutes()).padStart(2,'0')}
 function arabNum(n){return String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d])}
 function battPill(p,mini){
-const low=p<=20,lpm=S.set&&S.set.lpm&&!low;
-const col=low?'#ff3b30':(lpm?'#ffd60a':'#ffffff');
-const ncol=low?'#ffffff':'#111111';
+const low=p<=20,lpm=S.set&&S.set.lpm&&!low,chg=S.batt.charging;
+const col=chg?'#34c759':(low?'#ff3b30':(lpm?'#ffd60a':'#ffffff'));
 const W=mini?30:37,H=mini?12:14;
 const lv=(21.2*Math.max(0,Math.min(100,p))/100).toFixed(1);
+const fx=(27.6-parseFloat(lv)).toFixed(1);
 let s='';
-if(S.batt.charging)s+='<svg width="9" height="'+H+'" viewBox="0 0 10 14" style="display:inline-block;vertical-align:middle;margin-inline-end:3px"><path d="M5.8 1 L2.4 8h2.2 L4 13 L8 6H5.8z" fill="#34c759"/></svg>';
 s+='<svg width="'+W+'" height="'+H+'" viewBox="0 0 30 14" style="display:inline-block;vertical-align:middle" aria-hidden="true">';
-s+='<rect x="1" y="1" width="24" height="12" rx="3.6" fill="rgba(255,255,255,.28)" stroke="rgba(130,130,135,.55)" stroke-width="1"/>';
-if(p>2)s+='<rect x="2.4" y="2.4" width="'+lv+'" height="9.2" rx="2.2" fill="'+col+'"/>';
-s+='<path d="M26.6 4.6v4.8c1.1-.3 1.9-1.2 1.9-2.4s-.8-2.1-1.9-2.4z" fill="rgba(130,130,135,.55)"/>';
-s+='<text x="13" y="10.8" text-anchor="middle" font-size="8.2" font-weight="700" fill="#fff" stroke="rgba(0,0,0,.65)" stroke-width="1" paint-order="stroke">'+arabNum(Math.round(p))+'</text></svg>';
+s+='<rect x="5" y="1" width="24" height="12" rx="3.6" fill="rgba(255,255,255,.28)" stroke="rgba(130,130,135,.55)" stroke-width="1"/>';
+if(p>2)s+='<rect x="'+fx+'" y="2.4" width="'+lv+'" height="9.2" rx="2.2" fill="'+col+'"/>';
+s+='<path d="M3.4 4.6v4.8c-1.1-.3-1.9-1.2-1.9-2.4s.8-2.1 1.9-2.4z" fill="rgba(130,130,135,.55)"/>';
+s+='<text x="17" y="10.8" text-anchor="middle" font-size="8.2" font-weight="700" fill="#fff" stroke="rgba(0,0,0,.65)" stroke-width="1" paint-order="stroke">'+arabNum(Math.round(p))+'</text></svg>';
 return s;
 }
 function renderStatus(){
@@ -1199,17 +1198,17 @@ $('#cc').addEventListener('click',e=>{if(e.target.id==='cc')hideCC()});
 $('#nc').addEventListener('click',e=>{if(e.target.id==='nc')hideNC()});
 $('#statusbar').addEventListener('click',e=>{e.stopPropagation();if(!S.padOut)return;
 const r=$('#screen').getBoundingClientRect();
-if(e.clientX<r.left+r.width*0.38)showNC();else showCC()});
+if(e.clientX<r.left+r.width*0.62)showCC();else showNC()});
 function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.innerHTML='<span style="flex:0 0 auto">'+IC[app==='Messages'?'messages':'facetime']().replace('30','24').replace('30','24')+'</span><span class="bt"><b>'+app+'</b>'+text+'</span>';
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="icons.js?v=138"></script>
-<script src="pad.js?v=138"></script>
-<script src="photos.js?v=138"></script>
-<script src="social.js?v=138"></script>
-<script src="safari.js?v=138"></script>
-<script src="sys3.js?v=138"></script>
+<script src="icons.js?v=139"></script>
+<script src="pad.js?v=139"></script>
+<script src="photos.js?v=139"></script>
+<script src="social.js?v=139"></script>
+<script src="safari.js?v=139"></script>
+<script src="sys3.js?v=139"></script>
 <script>
 (function(){
 const actId=localStorage.getItem('rio-actlock');
