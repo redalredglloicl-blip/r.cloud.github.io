@@ -112,6 +112,7 @@ if(S.locked&&(S.timerEnd||S.musicPlay||S._ring))renderLockX();
 },1000);
 setInterval(()=>{
 try{
+if(typeof isGameOpen==='function'&&isGameOpen())return;
 updWidgets();if(S.locked)renderLockX();
 }catch(e){}
 },5000);
