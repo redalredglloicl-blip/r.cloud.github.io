@@ -146,3 +146,68 @@ setInterval(forceBig,2000);
 const _oAF=window.applyFx;
 window.applyFx=function(){try{if(S.fx&&S.fx.icons)S.fx.icons.big=true;}catch(e){}_oAF();};
 })();
+
+// === Social apps -> coming soon mode ===
+(function(){
+const _oOE=window.openExtra;
+window.openExtra=function(k,fromEl){
+ if(k==='instagram'||k==='facebook'||k==='x'){
+  appHeadReset();
+  S.app='x_'+k;
+  const meta={instagram:['Instagram','#E1306C'],facebook:['Facebook','#1877F2'],x:['X','#111']}[k];
+  try{noteRunning('x_'+k,meta[0],k)}catch(e){}
+  $('#appTitle').textContent=meta[0];
+  showAppWin(fromEl);
+  emptyChats(meta[0],'<div style="background:'+meta[1]+';color:#fff;border-radius:14px;padding:12px"><b style="font-size:16px">'+meta[0]+'</b><span style="display:block;font-size:12px;opacity:.85">متصل — بانتظار ميزة اليوزر</span></div>');
+  return;
+ }
+ _oOE(k,fromEl);
+};
+})();
+
+// === Phone/FaceTime: real iPhone style, no fake contacts ===
+(function(){
+window.appFaceTime=function(el){
+ S.myContacts=S.myContacts||[];
+ const tab=S.ftTab||'contacts';
+ let h='<div class="row" style="align-items:center;margin-bottom:10px"><b style="font-size:22px;flex:1">الهاتف</b><button class="btn" id="ftAdd" style="font-size:20px;padding:4px 12px">+</button></div>';
+ h+='<div class="segRow" style="margin-bottom:12px">'+
+  ['recents','contacts','keypad'].map(t=>'<button data-fttab="'+t+'" style="flex:1;padding:8px;border-radius:8px;'+(tab===t?'background:#0a84ff;color:#fff':'background:#f0f0f2')+'">'+({recents:'الأخيرة',contacts:'جهات الاتصال',keypad:'لوحة المفاتيح'}[t])+'</button>').join('')+'</div>';
+ if(tab==='contacts'){
+  if(!S.myContacts.length){
+   h+='<div style="text-align:center;padding:50px 20px"><p class="mut">لا توجد جهات اتصال<br>اضغط + لإضافة رقم</p></div>';
+  }else{
+   h+='<div class="setgroup">'+S.myContacts.map((c,i)=>'<div class="setrow"><span style="width:38px;height:38px;border-radius:50%;background:#0a84ff;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">'+c.n[0]+'</span><span style="flex:1"><b>'+c.n+'</b><br><span class="mut">'+c.p+'</span></span><button class="btn gray" data-ftcall="'+i+'">اتصال</button></div>').join('')+'</div>';
+  }
+ }else if(tab==='recents'){
+  const rec=S.ftRecents||[];
+  h+=rec.length?'<div class="setgroup">'+rec.map(r=>'<div class="setrow"><span style="flex:1"><b>'+r.n+'</b><br><span class="mut">'+r.t+'</span></span><span class="mut">'+r.d+'</span></div>').join('')+'</div>':'<div style="text-align:center;padding:50px 20px"><p class="mut">لا توجد مكالمات أخيرة</p></div>';
+ }else{
+  h+='<div style="text-align:center;padding:10px"><div id="ftNum" style="font-size:32px;min-height:44px;letter-spacing:2px"></div><div style="display:grid;grid-template-columns:repeat(3,72px);gap:12px;justify-content:center;margin-top:10px">'+
+  [1,2,3,4,5,6,7,8,9,'*',0,'#'].map(n=>'<button data-ftk="'+n+'" style="width:72px;height:72px;border-radius:50%;background:#f0f0f2;font-size:26px;border:none">'+n+'</button>').join('')+'</div><button class="btn" id="ftDial" style="margin-top:14px;background:#34c759;border-radius:50%;width:72px;height:72px;display:flex;align-items:center;justify-content:center"><svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg></button></div>';
+ }
+ el.innerHTML=h;
+ el.querySelectorAll('[data-fttab]').forEach(b=>b.addEventListener('click',()=>{S.ftTab=b.dataset.fttab;window.appFaceTime(el);}));
+ const addB=$('#ftAdd');if(addB)addB.addEventListener('click',()=>{
+  const n=prompt('اسم جهة الاتصال:');if(!n)return;
+  const p=prompt('رقم الهاتف:');if(!p)return;
+  S.myContacts.push({n:n,p:p});try{saveFx()}catch(e){}
+  window.appFaceTime(el);toast('تمت الإضافة');
+ });
+ el.querySelectorAll('[data-ftcall]').forEach(b=>b.addEventListener('click',()=>{
+  const c=S.myContacts[+b.dataset.ftcall];
+  S.ftRecents=S.ftRecents||[];S.ftRecents.unshift({n:c.n,t:'صادرة',d:'الآن'});
+  toast('جاري الاتصال بـ '+c.n+'...');
+ }));
+ // keypad
+ let num='';
+ el.querySelectorAll('[data-ftk]').forEach(b=>b.addEventListener('click',()=>{
+  num+=b.dataset.ftk;const d=$('#ftNum');if(d)d.textContent=num;
+ }));
+ const dial=$('#ftDial');if(dial)dial.addEventListener('click',()=>{
+  if(!num){toast('أدخل الرقم أولاً');return;}
+  S.ftRecents=S.ftRecents||[];S.ftRecents.unshift({n:num,t:'صادرة',d:'الآن'});
+  toast('جاري الاتصال بـ '+num+'...');num='';const d=$('#ftNum');if(d)d.textContent='';
+ });
+};
+})();
