@@ -92,7 +92,7 @@ $('#switcher').addEventListener('click',e=>{if(!e.target.closest('.swCard'))dism
 let _swY=null;
 $('#switcher').addEventListener('touchstart',e=>{_swY=e.touches[0].clientY},{passive:true});
 $('#switcher').addEventListener('touchend',e=>{if(_swY===null)return;const dy=e.changedTouches[0].clientY-_swY;_swY=null;if(dy>45)dismissSw()});
-function killApp(id){S.running=(S.running||[]).filter(r=>r.id!==id);if(S.snaps)delete S.snaps[id];if(S.app===id){dismissSw();closeApp()}else renderSwitcher();toast('انقتل التطبيق من الخلفية')}
+function killApp(id){S.running=(S.running||[]).filter(r=>r.id!==id);if(S.snaps)delete S.snaps[id];if(id==='x_youtube'&&S.ytVid){try{fetch(FBB+'/rooms/youtube/'+S.ytVid+'/comments.json',{method:'DELETE'})}catch(e){}}if(S.app===id){dismissSw();closeApp()}else renderSwitcher();toast('انقتل التطبيق من الخلفية')}
 function openApp(id,fromEl){
 appHeadReset();hideCC();clearInterval(S.poll);
 if(gateBlock(id))return;
