@@ -347,7 +347,7 @@ function ytParseId(u){u=String(u||'').trim();const m=u.match(/(?:youtube\.com\/(
 function ytNum(s){const m=String(s).match(/([\d.]+)([KMB])?/);if(!m)return 0;const n=parseFloat(m[1]);return Math.round(n*(m[2]==='B'?1e9:m[2]==='M'?1e6:m[2]==='K'?1e3:1))}
 function ytFmt(n){n=+n||0;if(n>=1e9)return (n/1e9).toFixed(1)+'B';if(n>=1e6)return (n/1e6).toFixed(1)+'M';if(n>=1e3)return (n/1e3).toFixed(1)+'K';return ''+n}
 const ytEstPos=()=>S.ytPos&&S.ytPos.playing?(S.ytPos.t+(Date.now()-S.ytPos.at)/1000):((S.ytPos||{}).t||0);
-const ytSeek=d=>{const np=Math.max(0,Math.round(ytEstPos()+d));ytCmd('seekTo',[np,true]);S.ytPos={t:np,at:Date.now(),playing:true};S.ytLastSync=Date.now();fbPut('/rooms/youtube/'+S.ytVid+'/sync',{a:'seek',pos:np,by:ytUid(),ts:Date.now()});toast(d>0?'قدّمت 10 ثواني — وصل لصديقك':'رجّعت 10 ثواني — وصل لصديقك')};
+const ytSeek=d=>{const np=Math.max(0,Math.round(ytEstPos()+d));ytCmd('seekTo',[np,true]);S.ytPos={t:np,at:Date.now(),playing:true};S.ytLastSync=Date.now();fbPut('/rooms/youtube/'+S.ytVid+'/sync',{a:'seek',pos:np,by:ytUid(),ts:Date.now()});toast(d>0?'قدّمت 5 ثواني — وصل لصديقك':'رجّعت 5 ثواني — وصل لصديقك')};
 function ytCmd(f,a){const fr=document.querySelector('#ytFrame');if(fr&&fr.contentWindow){try{fr.contentWindow.postMessage(JSON.stringify({event:'command',func:f,args:a||[]}),'*')}catch(e){}}}
 function ytEst(){const p=S.ytPos||{t:0,at:Date.now(),playing:false};return p.playing?p.t+(Date.now()-p.at)/1000:p.t}
 function ytSay(a,pos){fbPut('/rooms/youtube/'+S.ytVid+'/sync',{a:a,pos:Math.round(pos),by:ytUid(),ts:Date.now()})}
@@ -404,7 +404,7 @@ const chId='ch'+simpHash(v.ch);
 const me=ytUid(),myName=S.apple.name||'Rio';
 let h='<div class="row" style="align-items:center;margin-bottom:8px"><span id="ytBack" style="color:#0a84ff;cursor:pointer;font-size:15px">‹ رجوع</span><span style="flex:1"></span><span id="ytWatchN" class="mut" style="font-size:12px"></span></div>';
 h+='<div style="position:relative;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden"><iframe id="ytFrame" src="https://www.youtube-nocookie.com/embed/'+v.id+'?enablejsapi=1&rel=0&playsinline=1&autoplay=1&origin='+encodeURIComponent(location.origin)+'" style="width:100%;height:100%;border:0" allow="autoplay;encrypted-media;picture-in-picture;fullscreen" allowfullscreen></iframe></div>';
-h+='<div class="row" style="gap:10px;justify-content:center;margin:12px 0 2px"><button class="btn gray" id="ytBack10" style="border-radius:50%;width:46px;height:46px;padding:0;font-size:14px;flex:0 0 auto">-10</button><button class="btn gray" id="ytFwd10" style="border-radius:50%;width:46px;height:46px;padding:0;font-size:14px;flex:0 0 auto">+10</button></div>';
+h+='<div class="row" style="gap:10px;justify-content:center;margin:12px 0 2px"><button class="btn gray" id="ytBack10" style="border-radius:50%;width:46px;height:46px;padding:0;font-size:14px;flex:0 0 auto">-5</button><button class="btn gray" id="ytFwd10" style="border-radius:50%;width:46px;height:46px;padding:0;font-size:14px;flex:0 0 auto">+5</button></div>';
 h+='<b style="font-size:15.5px;margin-top:10px;display:block;line-height:1.6">'+v.title+'</b>';
 h+='<div class="row" style="align-items:center;margin-top:10px;gap:10px"><span style="width:40px;height:40px;border-radius:50%;background:linear-gradient(150deg,#ff0033,#7a0018);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:0 0 auto">'+v.ch.slice(0,1)+'</span><span style="flex:1;min-width:0"><b style="font-size:14px">'+v.ch+'</b><br><span class="mut" style="font-size:12px"><span id="ytSubN">…</span> مشترك</span></span><button class="btn" id="ytSubB" style="border-radius:18px;padding:8px 18px;font-size:13px">اشتراك</button></div>';
 h+='<div class="row" style="gap:8px;margin-top:12px"><button class="btn gray" id="ytLikeB" style="flex:1;border-radius:18px;padding:9px;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:6px">'+si('thumb',15)+' <span id="ytLikeN">…</span></button><button class="btn gray" id="ytShareB" style="flex:1;border-radius:18px;padding:9px;font-size:13px">مشاركة</button></div>';
@@ -413,7 +413,7 @@ h+='<div class="card" style="margin-top:14px;padding:0;overflow:hidden"><div sty
 el.innerHTML=h;
 const ytLeave=async()=>{const vid=S.ytVid;S.ytVid=null;clearInterval(S.ytCPoll);if(!vid)return;try{const c=await fbGet('/rooms/youtube/'+vid+'/comments');if(c){const me=ytUid();for(const k of Object.keys(c)){if(c[k]&&c[k].uid===me){try{await fetch(FBB+'/rooms/youtube/'+vid+'/comments/'+k+'.json',{method:'DELETE'})}catch(e){}}}}}catch(e){}};
 document.querySelector('#ytBack').addEventListener('click',()=>{ytLeave();S.ytView='home';appYouTubeX()});
-document.querySelector('#ytBack10').addEventListener('click',()=>ytSeek(-10));document.querySelector('#ytFwd10').addEventListener('click',()=>ytSeek(10));
+document.querySelector('#ytBack10').addEventListener('click',()=>ytSeek(-5));document.querySelector('#ytFwd10').addEventListener('click',()=>ytSeek(5));
 const fr=document.querySelector('#ytFrame');
 fr.addEventListener('load',()=>{setTimeout(()=>ytCmd('addEventListener',['onStateChange']),700)});
 const room='/rooms/youtube/'+v.id;
@@ -453,31 +453,46 @@ function gptLogo(sz){sz=sz||30;let p='';for(let k=0;k<6;k++)p+='<path d="M50 14 
 function appChatGPT(){
 const el=document.querySelector('#appBody');
 S.gpt=S.gpt||[];
+const mdLite=s=>{
+const lines2=escH(s||'').split('\n');let h='',inCode=false,cb='';
+const inl=t=>t.replace(/`([^`]+)`/g,'<code style="background:#ececf1;border-radius:6px;padding:1px 6px;font-size:12.5px">$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
+for(const ln of lines2){
+if(/^```/.test(ln)){if(inCode){h+='<pre style="background:#1c1c1e;color:#f5f5f7;border-radius:12px;padding:12px;overflow-x:auto;font-size:12.5px;direction:ltr;text-align:left;margin:6px 0">'+cb.replace(/\n$/,'')+'</pre>';cb=''}inCode=!inCode;continue}
+if(inCode){cb+=ln+'\n';continue}
+let m;
+if(m=ln.match(/^#{1,3}\s+(.*)/))h+='<div style="font-weight:700;font-size:'+(ln.indexOf('###')===0?'15px':'16.5px')+';margin:8px 0 3px">'+inl(m[1])+'</div>';
+else if(m=ln.match(/^(\d+)[.)]\s+(.*)/))h+='<div style="margin:3px 0"><span style="font-weight:700">'+m[1]+'.</span> '+inl(m[2])+'</div>';
+else if(m=ln.match(/^[-*\u2022]\s+(.*)/))h+='<div style="margin:3px 0;padding-inline-start:18px;position:relative"><span style="position:absolute;inset-inline-start:5px">\u2022</span>'+inl(m[1])+'</div>';
+else if(!ln.trim())h+='<div style="height:7px"></div>';
+else h+='<div style="margin:3px 0">'+inl(ln)+'</div>';
+}
+if(inCode)h+='<pre style="background:#1c1c1e;color:#f5f5f7;border-radius:12px;padding:12px;overflow-x:auto;font-size:12.5px;direction:ltr;text-align:left;margin:6px 0">'+cb+'</pre>';
+return h;
+};
 const render=()=>{
 const msgs=S.gpt;
 let h='<div class="row" style="align-items:center;margin:-12px -12px 0;padding:11px 14px 9px;position:sticky;top:-12px;background:#fff;z-index:5;border-bottom:1px solid #f0f0f2"><span style="display:inline-flex">'+si('menu',21)+'</span><b style="flex:1;text-align:center;font-size:16.5px">ChatGPT</b><span id="gptNew" style="display:inline-flex;cursor:pointer">'+si('edit',20)+'</span></div>';
-h+='<div style="text-align:center;margin:2px 0 10px"><span style="display:inline-block;background:#f4f4f5;border:1px solid #e4e4e7;border-radius:16px;padding:5px 14px;font-size:12.5px;color:#3f3f46">GPT-4o mini — نموذج مجاني</span></div>';
-h+='<div id="gptList" style="display:flex;flex-direction:column;gap:14px;padding:4px 2px;min-height:280px">';
+h+='<div style="text-align:center;margin:10px 0 4px"><span style="display:inline-block;background:#f4f4f5;border:1px solid #e4e4e7;border-radius:16px;padding:5px 14px;font-size:12.5px;color:#3f3f46">GPT-4o mini \u2014 \u0646\u0645\u0648\u0630\u062c \u0645\u062c\u0627\u0646\u064a</span></div>';
+h+='<div id="gptList" style="display:flex;flex-direction:column;gap:16px;padding:6px 2px 10px;min-height:280px">';
 if(!msgs.length){
-h+='<div style="text-align:center;padding:26px 6px"><div style="display:flex;justify-content:center;margin-bottom:12px">'+gptLogo(54)+'</div><b style="font-size:19px">كيف أقدر أساعدك اليوم؟</b></div>';
-h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+['اكتبلي نكتة تضحك','شرحلي الذكاء الاصطناعي','نصيحة لتعلم الإنجليزية','اكتبلي قصة قصيرة'].map(s2=>'<div data-gptsug="'+s2+'" class="card" style="margin:0;padding:12px;font-size:13px;cursor:pointer;line-height:1.6">'+s2+'</div>').join('')+'</div>';
+h+='<div style="text-align:center;padding:30px 6px 8px"><div style="display:flex;justify-content:center;margin-bottom:14px">'+gptLogo(56)+'</div><b style="font-size:20px">\u0643\u064a\u0641 \u0623\u0642\u062f\u0631 \u0623\u0633\u0627\u0639\u062f\u0643 \u0627\u0644\u064a\u0648\u0645\u061f</b><p class="mut" style="font-size:13px;margin:8px 0 0">\u062c\u0631\u0651\u0628 \u0648\u0627\u062d\u062f \u0645\u0646 \u0627\u0644\u0627\u0642\u062a\u0631\u0627\u062d\u0627\u062a \u0623\u0648 \u0627\u0633\u0623\u0644 \u0623\u064a \u0634\u064a\u0621</p></div>';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">'+['\u0627\u0643\u062a\u0628\u0644\u064a \u0646\u0643\u062a\u0629 \u062a\u0636\u062d\u0643','\u0627\u0634\u0631\u062d\u0644\u064a \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0628\u0628\u0633\u0627\u0637\u0629','\u0646\u0635\u064a\u062d\u0629 \u0644\u062a\u0639\u0644\u0645 \u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629 \u0628\u0633\u0631\u0639\u0629','\u0627\u0643\u062a\u0628\u0644\u064a \u0642\u0635\u0629 \u0642\u0635\u064a\u0631\u0629 \u0645\u0634\u0648\u0642\u0629'].map(s2=>'<div data-gptsug="'+s2+'" class="card" style="margin:0;padding:13px 12px;font-size:13px;cursor:pointer;line-height:1.7;border-radius:14px">'+s2+'</div>').join('')+'</div>';
 }else{
-h+=msgs.map(m=>m.role==='user'
-?'<div style="align-self:flex-end;max-width:82%;background:#f4f4f5;border-radius:18px;padding:10px 14px;font-size:14.5px;line-height:1.7;word-break:break-word">'+escH(m.t)+'</div>'
-:'<div class="row" style="gap:9px;align-items:flex-start"><span style="flex:0 0 auto;margin-top:2px">'+gptLogo(24)+'</span><div style="flex:1;font-size:14.5px;line-height:1.85;word-break:break-word">'+m.html+'</div></div>'
+h+=msgs.map((m,ix)=>m.role==='user'
+?'<div style="align-self:flex-end;max-width:85%;background:#f4f4f5;border-radius:20px;padding:10px 15px;font-size:14.5px;line-height:1.75;word-break:break-word">'+escH(m.t)+'</div>'
+:'<div style="display:flex;flex-direction:column;gap:4px"><div class="row" style="gap:10px;align-items:flex-start"><span style="flex:0 0 auto;margin-top:1px">'+gptLogo(26)+'</span><div style="flex:1;font-size:14.5px;line-height:1.9;word-break:break-word;min-width:0">'+mdLite(m.t)+'</div></div><div class="row" style="gap:4px;padding-inline-start:36px"><span data-gptcopy="'+ix+'" style="display:inline-flex;align-items:center;gap:5px;color:#8e8e93;font-size:12px;cursor:pointer;padding:5px 9px;border-radius:8px">'+si('copy',13)+' \u0646\u0633\u062e</span></div></div>'
 ).join('');
-if(S.gptBusy)h+='<div class="row" style="gap:9px;align-items:center"><span>'+gptLogo(24)+'</span><span style="display:flex;gap:5px"><span class="tdot"></span><span class="tdot"></span><span class="tdot"></span></span></div>';
+if(S.gptBusy)h+='<div class="row" style="gap:10px;align-items:center"><span>'+gptLogo(26)+'</span><span style="display:flex;gap:5px"><span class="tdot"></span><span class="tdot"></span><span class="tdot"></span></span></div>';
 }
 h+='</div>';
-h+='<div style="position:sticky;bottom:-12px;margin:12px -12px -12px;background:#fff;padding:10px 12px 16px"><div class="row" style="align-items:center;gap:6px;background:#f7f7f8;border:1px solid #e9e9ec;border-radius:28px;padding:6px 6px 6px 12px"><span style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;color:#3f3f46">'+si('plus',18)+'</span><input id="gptIn" placeholder="اسأل أي شيء…" style="flex:1;border:none;background:none;outline:none;font-size:14px;font-family:inherit;min-width:0;padding:8px 0"><button id="gptSend" style="width:36px;height:36px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto">'+si('upRight',16,'#fff')+'</button></div></div>';
-
+h+='<div style="position:sticky;bottom:-12px;margin:12px -12px -12px;background:#fff;padding:10px 12px 16px"><div class="row" style="align-items:center;gap:6px;background:#f7f7f8;border:1px solid #e9e9ec;border-radius:28px;padding:6px 6px 6px 12px"><span style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;color:#3f3f46">'+si('plus',18)+'</span><input id="gptIn" placeholder="\u0627\u0633\u0623\u0644 \u0623\u064a \u0634\u064a\u0621\u2026" style="flex:1;border:none;background:none;outline:none;font-size:14px;font-family:inherit;min-width:0;padding:8px 0"><button id="gptSend" style="width:36px;height:36px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto">'+si('upRight',16,'#fff')+'</button></div></div>';
 el.innerHTML=h;
-const list=document.querySelector('#gptList');if(list)list.scrollTop=1e6;
+requestAnimationFrame(()=>{try{el.scrollTop=el.scrollHeight}catch(e){}});
 const inp=document.querySelector('#gptIn');
 const send=async txt=>{
 const v=(txt||inp.value).trim();if(!v||S.gptBusy)return;
 S.gpt.push({role:'user',t:v});S.gptBusy=true;render();
-const SYS='أنت مساعد ذكي ودود اسمك ChatGPT. أجب باللغة العربية دائماً وبأسلوب واضح ومختصر ومفيد.';
+const SYS='\u0623\u0646\u062a \u0645\u0633\u0627\u0639\u062f \u0630\u0643\u064a \u0648\u062f\u0648\u062f \u0627\u0633\u0645\u0643 ChatGPT. \u0623\u062c\u0628 \u0628\u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u062f\u0627\u0626\u0645\u0627\u064b \u0648\u0628\u0623\u0633\u0644\u0648\u0628 \u0648\u0627\u0636\u062d \u0648\u0645\u0646\u0638\u0645: \u0627\u0633\u062a\u062e\u062f\u0645 \u0627\u0644\u0639\u0646\u0627\u0648\u064a\u0646 (##) \u0648\u0627\u0644\u0642\u0648\u0627\u0626\u0645 \u0627\u0644\u0645\u0631\u0642\u0645\u0629 \u0648\u0627\u0644\u0646\u0642\u0627\u0637 (-) \u0648\u0627\u0644\u062e\u0637 \u0627\u0644\u0639\u0631\u064a\u0636 (**) \u0644\u062a\u0646\u0638\u064a\u0645 \u0627\u0644\u0625\u062c\u0627\u0628\u0629.';
 const histMsgs=S.gpt.slice(0,-1).slice(-8).map(m=>({role:m.role==='ai'?'assistant':'user',content:m.t}));
 const body=JSON.stringify({model:'openai',messages:[{role:'system',content:SYS}].concat(histMsgs,[{role:'user',content:v}])});
 const isSrvErr=t=>{const s=(t||'').trim();return !s||(/^\s*\{/.test(s)&&/"(error|status)"/.test(s))};
@@ -490,14 +505,15 @@ const t=await r.text();
 if(r.ok&&!isSrvErr(t))ans=t.trim().slice(0,2500);
 }catch(e){}
 }
-if(ans)S.gpt.push({role:'ai',t:ans,html:escH(ans).replace(/\n/g,'<br>')});
-else S.gpt.push({role:'ai',t:'err',html:'الخدمة مشغولة حالياً — انتظر شوي وحاول مرة ثانية.'});
+if(ans)S.gpt.push({role:'ai',t:ans});
+else S.gpt.push({role:'ai',t:'\u0627\u0644\u062e\u062f\u0645\u0629 \u0645\u0634\u063a\u0648\u0644\u0629 \u062d\u0627\u0644\u064a\u0627\u064b \u2014 \u0627\u0646\u062a\u0638\u0631 \u0634\u0648\u064a \u0648\u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u062b\u0627\u0646\u064a\u0629.'});
 S.gptBusy=false;render();
 };
 document.querySelector('#gptSend').addEventListener('click',()=>send());
 inp.addEventListener('keydown',e=>{if(e.key==='Enter')send()});
 el.querySelectorAll('[data-gptsug]').forEach(c=>c.addEventListener('click',()=>send(c.dataset.gptsug)));
-const nn=document.querySelector('#gptNew');if(nn)nn.addEventListener('click',()=>{S.gpt=[];S.gptBusy=false;render();toast('محادثة جديدة')});
+el.querySelectorAll('[data-gptcopy]').forEach(c=>c.addEventListener('click',()=>{const m=S.gpt[+c.dataset.gptcopy];if(m&&m.t&&navigator.clipboard)navigator.clipboard.writeText(m.t).then(()=>toast('\u0627\u0646\u0646\u0633\u062e \u0627\u0644\u0646\u0635')).catch(()=>toast('\u0645\u0627 \u0627\u0646\u0646\u0633\u062e'));}));
+const nn=document.querySelector('#gptNew');if(nn)nn.addEventListener('click',()=>{S.gpt=[];S.gptBusy=false;render();toast('\u0645\u062d\u0627\u062f\u062b\u0629 \u062c\u062f\u064a\u062f\u0629')});
 setTimeout(()=>{const i2=document.querySelector('#gptIn');if(i2&&!S.gpt.length)i2.focus()},400);
 };
 render();
