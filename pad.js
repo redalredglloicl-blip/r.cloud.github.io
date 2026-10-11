@@ -637,7 +637,7 @@ el.innerHTML='<div class="card"><div class="big" style="font-size:18px;color:#ff
 $('#lockGlyph').innerHTML=g('lock-closed','#fff',30);
 $('#lockTorch').innerHTML=g('flashlight','#fff',21);
 $('#lockCam').innerHTML=g('camera','#fff',21);
-function unlock(){if(!S.locked)return;S.locked=false;sfx('unlock');const L=$('#lock');L.classList.add('bye');setTimeout(()=>{L.classList.remove('show','bye');syncPill()},470)}
+function unlock(){if(!S.locked)return;S.locked=false;sfx('unlock');const L=$('#lock');L.classList.add('bye');setTimeout(()=>{L.classList.remove('show','bye');syncPill()},400)}
 $('#lock').addEventListener('click',()=>unlock());
 $('#lockTorch').addEventListener('click',e=>{e.stopPropagation();unlock();S.set.flash=!S.set.flash;store.set('set',S.set);toast(S.set.flash?'المصباح يعمل':'المصباح انطفأ')});
 $('#lockCam').addEventListener('click',e=>{e.stopPropagation();unlock();setTimeout(()=>openApp('camera'),480)});
