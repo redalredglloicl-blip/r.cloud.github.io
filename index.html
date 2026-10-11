@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Rio iPad">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Rio iPad 9.7</title>
+<title>Rio iPad 9.8</title>
 <style>
 .glass{background:linear-gradient(135deg,rgba(255,255,255,.17),rgba(255,255,255,.06) 55%,rgba(255,255,255,.12));-webkit-backdrop-filter:blur(10px) saturate(185%) brightness(1.06);backdrop-filter:blur(10px) saturate(185%) brightness(1.06);border:1px solid rgba(255,255,255,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 1px 0 0 rgba(255,255,255,.13),inset -1px 0 0 rgba(255,255,255,.13),inset 0 -1px 0 rgba(255,255,255,.08),0 10px 28px rgba(0,0,0,.13)}
 #ipad.dark .glass{background:linear-gradient(135deg,rgba(88,88,100,.3),rgba(48,48,56,.15) 55%,rgba(78,78,90,.24));border-color:rgba(255,255,255,.17);box-shadow:inset 0 1px 0 rgba(255,255,255,.26),inset 1px 0 0 rgba(255,255,255,.08),inset -1px 0 0 rgba(255,255,255,.08),0 10px 28px rgba(0,0,0,.42)}
@@ -394,7 +394,7 @@ img,a{-webkit-user-drag:none!important}
 <body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="rio-liquid" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.02 0.032" numOctaves="1" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 9.7</div>
+  <div id="verTag">Rio iPad 9.8</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -447,7 +447,7 @@ img,a{-webkit-user-drag:none!important}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 9.7</div>
+    <div class="ver">Rio iPad 9.8</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -901,6 +901,7 @@ phone:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/b0/0f/2e/b00f2e0d-f
 candy:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/72/83/04/728304ea-32e2-1979-e845-e5f25dd731f6/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/512x512bb.jpg'
 };
 const IC_ZOOM={settings:1.18};
+document.addEventListener('error',function(e){var t=e.target;if(t&&t.tagName==='IMG'&&t.id!=='frameImg'&&t.id!=='lockWall'){t.style.visibility='hidden'}},true);
 const DICON='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%238e8e93%22/%3E%3Cstop offset=%221%22 stop-color=%22%235a5a5e%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22url(%23g)%22/%3E%3C/svg%3E';
 function icImg(url){if(!url)url=DICON;let z=1;try{for(const k in IC_ZOOM){if(ICONS[k]===url)z=IC_ZOOM[k]}}catch(e){}return '<span class="ic" style="background:none;box-shadow:0 2px 6px rgba(0,0,0,.18)"><img src="'+url+'" loading="lazy" onerror="this.onerror=null;this.src=DICON" style="width:100%;height:100%;display:block;border-radius:22.37%;transform:scale('+z+')"></span>'}
 const IC={};Object.keys(ICONS).forEach(k=>{IC[k]=()=>icImg(ICONS[k])});
@@ -1062,7 +1063,6 @@ document.querySelectorAll('[data-libmini]').forEach(m=>{m.addEventListener('clic
 const ls=$('#libSearch');if(ls)ls.addEventListener('input',()=>libSearch(ls.value.trim()))}
 function raisePad(){if(!S.padOut)setPad(true)}
 function fmtTime(){const d=new Date();let h=d.getHours()%12;if(h===0)h=12;return h+':'+String(d.getMinutes()).padStart(2,'0')}
-function g(name,color,size){return '<img src="https://api.iconify.design/ion/'+name+'.svg?color='+encodeURIComponent(color||'#fff')+'" style="width:'+(size||22)+'px;height:'+(size||22)+'px">'}
 function arabNum(n){return String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d])}
 function battPill(p,mini){
 const low=p<=20,lpm=S.set&&S.set.lpm&&!low;
@@ -1200,11 +1200,12 @@ function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.inne
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="pad.js?v=120"></script>
-<script src="photos.js?v=120"></script>
-<script src="social.js?v=120"></script>
-<script src="safari.js?v=120"></script>
-<script src="sys3.js?v=120"></script>
+<script src="pad.js?v=121"></script>
+<script src="icons.js?v=121"></script>
+<script src="photos.js?v=121"></script>
+<script src="social.js?v=121"></script>
+<script src="safari.js?v=121"></script>
+<script src="sys3.js?v=121"></script>
 <script>
 (function(){
 const actId=localStorage.getItem('rio-actlock');
