@@ -565,7 +565,7 @@ return}
 if(p==='gstorage'){
 const used=(12400+S.photos.length*1.3+S.installed.length*86)/1000;
 el.innerHTML=head('سعة تخزين iPad','general')+
-'<div class="card"><div class="row" style="justify-content:space-between"><b>'+used.toFixed(1)+' GB</b><span class="mut">من 64 GB</span></div><div style="height:9px;background:#e9e9ee;border-radius:5px;margin-top:9px;overflow:hidden;display:flex"><span style="height:100%;width:14%;background:#ff9f0a"></span><span style="height:100%;width:'+Math.min(20,used-12)+'%;background:#0a84ff"></span><span style="height:100%;width:8%;background:#34c759"></span></div></div>'+
+'<div class="card"><div class="row" style="justify-content:space-between"><b>'+used.toFixed(1)+' GB</b><span class="mut">من 128 GB</span></div><div style="height:9px;background:#e9e9ee;border-radius:5px;margin-top:9px;overflow:hidden;display:flex"><span style="height:100%;width:'+(9.2/128*100).toFixed(1)+'%;background:#ff9f0a"></span><span style="height:100%;width:'+((2.1+S.installed.length*0.086)/128*100).toFixed(1)+'%;background:#0a84ff"></span><span style="height:100%;width:'+((0.4+S.photos.length*0.0013)/128*100).toFixed(1)+'%;background:#34c759"></span></div><div class="mut" style="font-size:11.5px;margin-top:8px">متاح: '+(128-used).toFixed(1)+' GB من 128 GB</div></div>'+
 grp(row2('النظام RioOS','','<span class="mut">9.2 GB</span>')+
 row2('التطبيقات ('+arabNum(APPS.length+S.installed.length)+')','','<span class="mut">'+(2.1+S.installed.length*0.086).toFixed(1)+' GB</span>')+
 row2('الصور','','<span class="mut">'+(0.4+S.photos.length*0.0013).toFixed(2)+' GB</span>')+
