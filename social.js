@@ -52,31 +52,8 @@ const WA_LIST=[
 ['whatsapp-dm-sara','سارة','dm',47,'دزيتلك الصور شوفهن','أمس',0],
 ['whatsapp-grp','عائلة Rio','group',32,'أمي: الغده جاهز','أمس',5],
 ['whatsapp-dm-omar','عمر','dm',59,'شفت المباراة البارحة؟','الثلاثاء',0]];
-function appWhatsApp(){
-clearInterval(S.poll);S.waTab=S.waTab||'chats';
-const el=$('#appBody');
-const tabs=[['chats','الدردشات'],['updates','المستجدات'],['calls','المكالمات']];
-let h='<div style="background:#075e54;color:#fff;border-radius:14px 14px 0 0;padding:12px 12px 0"><div class="row" style="align-items:center"><b style="font-size:17px">WhatsApp</b><span style="margin-inline-start:auto;display:flex;gap:14px;align-items:center"><span>'+si('camera',20,'#fff')+'</span><span>'+si('search',20,'#fff')+'</span><span>'+si('plus',20,'#fff')+'</span></span></div>'+
-'<div style="display:flex;margin-top:6px">'+tabs.map(t=>'<span data-watab="'+t[0]+'" style="flex:1;text-align:center;font-size:13px;font-weight:600;padding:9px 4px;cursor:pointer;border-bottom:3px solid '+(S.waTab===t[0]?'#fff':'transparent')+';opacity:'+(S.waTab===t[0]?'1':'.75')+'">'+t[1]+'</span>').join('')+'</div></div>';
-if(S.waTab==='chats'){
-h+='<div style="padding:8px 10px 0"><input type="text" placeholder="بحث" style="width:100%;padding:9px 12px;border:none;border-radius:18px;background:#f0f2f5;font-size:13.5px;font-family:inherit"></div>';
-h+='<div style="padding:4px 2px">'+WA_LIST.map(t=>'<div class="row" data-wa="'+t[0]+'" style="align-items:center;padding:10px 8px;cursor:pointer;border-bottom:1px solid #f0f2f5">'+sAv(t[3],48)+'<span style="flex:1;min-width:0"><span class="row" style="align-items:baseline"><b style="font-size:14.5px">'+t[1]+'</b><span class="mut" style="margin-inline-start:auto;font-size:11.5px;flex:0 0 auto">'+t[5]+'</span></span><span class="row" style="align-items:center"><span class="mut" style="font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1">'+t[4]+'</span>'+(t[6]?'<span style="background:#25d366;color:#fff;font-size:11px;font-weight:700;min-width:20px;height:20px;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:0 6px">'+arabNum(t[6])+'</span>':'')+'</span></span></div>').join('')+'</div>';
-h+='<p class="mut" style="text-align:center;font-size:11.5px;padding:8px">محادثات حقيقية — أي شخص يفتح Rio iPad يدخل نفس الغرف</p>';
-}else if(S.waTab==='updates'){
-h+='<div style="padding:12px 10px"><b style="font-size:14px">الحالة</b><div style="display:flex;gap:12px;overflow-x:auto;padding:10px 2px">'+
-[['حالتك',12,true]].concat([['أحمد',12],['سارة',47],['عمر',59],['لينا',32]].map(x=>'<span style="text-align:center;flex:0 0 auto"><span style="display:inline-block;border:2.5px solid #25d366;border-radius:50%;padding:2px">'+sAv(x[1],52)+'</span><br><span style="font-size:11px">'+x[0]+'</span></span>')).join('')+'</div>'+
-'<b style="font-size:14px">القنوات</b>'+[['أخبار التقنية',22,'١٢ ألف متابِع'],['كرة القدم',56,'٨ آلاف متابِع']].map(c=>'<div class="card row" style="align-items:center;margin-top:8px">'+sAv(c[1],44)+'<span style="flex:1"><b style="font-size:13.5px">'+c[0]+'</b><br><span class="mut">'+c[2]+'</span></span><button class="btn gray" style="padding:6px 14px">متابعة</button></div>').join('')+'</div>';
-}else{
-const calls=[['أحمد',12,'صادرة','١٠:٣٠ ص','video'],['سارة',47,'واردة','أمس','phone'],['عمر',59,'فائتة','أمس','video'],['أمي',32,'واردة','الثلاثاء','phone']];
-h+='<div style="padding:6px 2px">'+calls.map(c=>'<div class="row" style="align-items:center;padding:10px 8px;border-bottom:1px solid #f0f2f5">'+sAv(c[1],46)+'<span style="flex:1"><b style="font-size:14px">'+c[0]+'</b><br><span class="mut" style="font-size:12px;color:'+(c[2]==='فائتة'?'#ff3b30':'#8696a0')+'">'+si(c[2]==='صادرة'?'upRight':'downLeft',13)+' '+c[2]+' · '+c[3]+'</span></span><span style="color:#00a884;display:inline-flex">'+si(c[4],20)+'</span></div>').join('')+'</div>';
-}
-el.innerHTML=h;
-el.querySelectorAll('[data-watab]').forEach(t=>t.addEventListener('click',()=>{S.waTab=t.dataset.watab;appWhatsApp()}));
-el.querySelectorAll('[data-wa]').forEach(c=>c.addEventListener('click',()=>{
-const t=WA_LIST.find(x=>x[0]===c.dataset.wa);
-waThread('/rooms/'+t[0],t[1],t[3]);
-}));
-}
+function appWhatsApp(){emptyChats('WhatsApp','<div style="background:#075e54;color:#fff;border-radius:14px;padding:12px"><b style="font-size:16px">WhatsApp</b><span style="display:block;font-size:12px;opacity:.85">متصل \u2014 بانتظار ميزة اليوزر</span></div>')}
+
 function waThread(room,title,seed){
 const el=$('#appBody');
 el.innerHTML=sBack()+'<div style="background:#075e54;color:#fff;border-radius:12px;padding:9px 12px"><div class="row" style="align-items:center;gap:9px">'+sAv(seed,38)+'<span><b style="font-size:14.5px">'+title+'</b><br><span style="font-size:11.5px;opacity:.85">متصل الآن · <b id="prsN">…</b></span></span><span style="margin-inline-start:auto;display:flex;gap:12px;align-items:center">'+si('video',19)+si('phone',19)+'</span></div></div>'+
@@ -143,23 +120,8 @@ const TG_CHATS=[
 ['tg-nora','نورا','dm',47,'أمس'],
 ['tg-news','قناة الأخبار','channel',22,'أمس'],
 ['tg-movies','أفلام ومسلسلات','channel',56,'الثلاثاء']];
-function appTelegram(){
-clearInterval(S.poll);
-const el=$('#appBody');
-el.innerHTML='<div style="background:#2AABEE;color:#fff;border-radius:14px;padding:12px"><div class="row" style="align-items:center"><span style="display:inline-flex">'+si('menu',20,'#fff')+'</span><b style="font-size:16.5px;margin-inline-start:10px">Telegram</b><span style="margin-inline-start:auto;display:inline-flex">'+si('search',20,'#fff')+'</span></div></div>'+
-'<div style="display:flex;gap:8px;padding:10px 2px;overflow-x:auto">'+['الكل','الخاص','المجموعات','القنوات'].map((f,i)=>'<span style="flex:0 0 auto;background:'+(i===0?'#2AABEE':'#f0f2f5')+';color:'+(i===0?'#fff':'#2AABEE')+';font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:16px">'+f+'</span>').join('')+'</div>'+
-'<div id="tgList">'+TG_CHATS.map(c=>'<div class="row" data-tg="'+c[0]+'" style="align-items:center;padding:10px 6px;cursor:pointer;border-bottom:1px solid #f5f5f5">'+sAv(c[3],50)+'<span style="flex:1;min-width:0"><span class="row" style="align-items:baseline"><b style="font-size:14.5px">'+c[1]+'</b><span class="mut" style="margin-inline-start:auto;font-size:11.5px">'+c[4]+'</span></span><span class="mut" id="pv-'+c[0]+'" style="font-size:12.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">جاي يحمل…</span></span></div>').join('')+'</div>'+
-'<p class="mut" style="text-align:center;font-size:11.5px;padding:8px">محادثات حقيقية عبر Firebase</p>';
-el.querySelectorAll('[data-tg]').forEach(x=>x.addEventListener('click',()=>{
-const c=TG_CHATS.find(z=>z[0]===x.dataset.tg);
-tgThread(c[0],c[1],c[3],c[2]==='channel'?'قناة':'متصل مؤخراً');
-}));
-TG_CHATS.forEach(c=>{fbGet('/rooms/'+c[0]+'/msgs').then(msgs=>{
-const pv=$('#pv-'+c[0]);if(!pv)return;
-const arr=msgs?Object.values(msgs).sort((a,b)=>(a.ts||0)-(b.ts||0)):[];
-pv.textContent=arr.length?(arr[arr.length-1].u+': '+arr[arr.length-1].t):'لا رسائل بعد — كن أول من يكتب';
-}).catch(()=>{})});
-}
+function appTelegram(){emptyChats('Telegram','<div style="background:#2AABEE;color:#fff;border-radius:14px;padding:12px"><b style="font-size:16px">Telegram</b></div>')}
+
 function tgThread(roomId,title,seed,sub){
 const el=$('#appBody');
 el.innerHTML=sBack()+'<div style="background:#2AABEE;color:#fff;border-radius:12px;padding:9px 12px"><div class="row" style="align-items:center;gap:9px">'+sAv(seed,38)+'<span><b style="font-size:14.5px">'+title+'</b><br><span style="font-size:11.5px;opacity:.85">'+sub+' · <b id="prsN">…</b> متصل</span></span><span style="margin-inline-start:auto;font-size:17px">📞 📹</span></div></div>'+
@@ -173,24 +135,8 @@ const MS_CHATS=[
 ['ms-sara','Sara','dm',47,'١٢:١٠ م',true],
 ['ms-omar','Omar','dm',59,'أمس',false],
 ['ms-lina','Lina','dm',32,'أمس',true]];
-function appMessenger(){
-clearInterval(S.poll);
-const el=$('#appBody');
-el.innerHTML='<div class="row" style="align-items:center;padding:4px 2px">'+sAv(8,38)+'<b style="font-size:19px;margin-inline-start:8px">Chats</b><span style="margin-inline-start:auto;display:flex;gap:14px;align-items:center"><span style="display:inline-flex">'+si('camera',20)+'</span><span style="display:inline-flex">'+si('edit',20)+'</span></span></div>'+
-'<div style="padding:8px 2px"><input type="text" placeholder="بحث" style="width:100%;padding:9px 12px;border:none;border-radius:18px;background:#f0f2f5;font-size:13.5px;font-family:inherit"></div>'+
-'<div style="display:flex;gap:12px;overflow-x:auto;padding:4px 2px 10px">'+['<span style="text-align:center;flex:0 0 auto"><span style="display:inline-block;background:#f0f2f5;border-radius:50%;width:56px;height:56px;font-size:22px;line-height:56px">+</span><br><span style="font-size:11px">قصتك</span></span>'].concat(MS_CHATS.map(c=>'<span style="text-align:center;flex:0 0 auto"><span style="position:relative;display:inline-block">'+sAv(c[3],56)+'<span style="position:absolute;bottom:2px;left:2px;width:14px;height:14px;background:#31a24c;border:2.5px solid #fff;border-radius:50%"></span></span><br><span style="font-size:11px">'+c[1]+'</span></span>')).join('')+'</div>'+
-'<div id="msList">'+MS_CHATS.map(c=>'<div class="row" data-ms="'+c[0]+'" style="align-items:center;padding:9px 4px;cursor:pointer"><span style="position:relative">'+sAv(c[3],52)+(c[5]?'<span style="position:absolute;bottom:2px;left:2px;width:14px;height:14px;background:#31a24c;border:2.5px solid #fff;border-radius:50%"></span>':'')+'</span><span style="flex:1;min-width:0;margin-inline-start:10px"><span class="row" style="align-items:baseline"><b style="font-size:14.5px">'+c[1]+'</b><span class="mut" style="margin-inline-start:auto;font-size:11.5px">'+c[4]+'</span></span><span class="mut" id="pv-'+c[0]+'" style="font-size:12.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">جاي يحمل…</span></span></div>').join('')+'</div>'+
-'<p class="mut" style="text-align:center;font-size:11.5px;padding:8px">محادثات حقيقية عبر Firebase</p>';
-el.querySelectorAll('[data-ms]').forEach(x=>x.addEventListener('click',()=>{
-const c=MS_CHATS.find(z=>z[0]===x.dataset.ms);
-msThread(c[0],c[1],c[3],c[5]);
-}));
-MS_CHATS.forEach(c=>{fbGet('/rooms/'+c[0]+'/msgs').then(msgs=>{
-const pv=$('#pv-'+c[0]);if(!pv)return;
-const arr=msgs?Object.values(msgs).sort((a,b)=>(a.ts||0)-(b.ts||0)):[];
-pv.textContent=arr.length?(arr[arr.length-1].u+': '+arr[arr.length-1].t):'لا رسائل بعد';
-}).catch(()=>{})});
-}
+function appMessenger(){emptyChats('Messenger','<div style="background:linear-gradient(90deg,#0084ff,#9b30d9);color:#fff;border-radius:14px;padding:12px"><b style="font-size:16px">Messenger</b></div>')}
+
 function msThread(roomId,name,seed,active){
 const el=$('#appBody');
 el.innerHTML=sBack()+'<div class="row" style="align-items:center;gap:9px;padding:6px 2px;border-bottom:1px solid #eee"><span style="position:relative">'+sAv(seed,40)+(active?'<span style="position:absolute;bottom:1px;left:1px;width:12px;height:12px;background:#31a24c;border:2px solid #fff;border-radius:50%"></span>':'')+'</span><span><b style="font-size:14.5px">'+name+'</b><br><span class="mut" style="font-size:11.5px">'+(active?'نشط الآن':'نشط قبل ساعة')+' · <b id="prsN">…</b></span></span><span style="margin-inline-start:auto;display:flex;gap:12px;align-items:center;color:#0084ff">'+si('phone',19)+si('video',19)+'</span></div>'+
@@ -233,31 +179,8 @@ const SN_CHATS=[
 ['snapchat','أحمد',12,'٢٠ د'],
 ['sn-sara','سارة',47,'١ س'],
 ['sn-omar','عمر',59,'٢ س']];
-function appSnapchat(){
-clearInterval(S.poll);S.snapTab=S.snapTab||'chat';
-const el=$('#appBody');
-let h='<div class="row" style="align-items:center;padding:6px 4px"><span style="display:inline-flex">'+si('ghost',24,'#000')+'</span><b style="font-size:16px;margin-inline-start:6px">Snapchat</b><span style="margin-inline-start:auto;display:flex;gap:12px;align-items:center">'+si('search',20)+si('user',20)+'</span></div>';
-if(S.snapTab==='chat'){
-h+='<b style="font-size:14px;padding:4px">الأصدقاء — محادثات حقيقية</b><div id="snList">'+SN_CHATS.map(f=>'<div class="row" data-sn="'+f[0]+'" style="align-items:center;padding:10px 4px;border-bottom:1px solid #f5f5f5;cursor:pointer">'+sAv(f[2],48)+'<span style="flex:1;margin-inline-start:10px;min-width:0"><b style="font-size:14px">'+f[1]+'</b><br><span class="mut" id="pv-'+f[0]+'" style="font-size:12px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">جاي يحمل…</span></span><span class="mut" style="font-size:11px">'+f[3]+'</span></div>').join('')+'</div>';
-}else if(S.snapTab==='cam'){
-h+='<div style="position:relative;border-radius:16px;overflow:hidden;margin-top:6px"><img src="https://picsum.photos/seed/snapcam/600/700" style="width:100%;display:block"><div style="position:absolute;top:10px;left:0;right:0;display:flex;justify-content:center;gap:18px;font-size:20px"><span>'+si('zap',20,'#fff')+'</span><span>'+si('refresh',20,'#fff')+'</span><span>'+si('clock',20,'#fff')+'</span></div><div style="position:absolute;bottom:14px;left:0;right:0;display:flex;justify-content:center"><span style="width:64px;height:64px;border-radius:50%;border:4px solid #fff;background:rgba(255,255,255,.25)"></span></div></div>';
-}else{
-h+='<b style="font-size:14px;padding:4px">القصص</b><div style="display:flex;gap:8px;overflow-x:auto;padding:6px 2px">'+SN_CHATS.map(s=>'<span style="flex:0 0 auto;position:relative"><img src="https://picsum.photos/seed/snapstory'+s[2]+'/110/170" style="width:104px;height:160px;border-radius:12px;object-fit:cover" loading="lazy"><span style="position:absolute;bottom:6px;right:6px;color:#fff;font-size:11.5px">'+s[1]+'</span></span>').join('')+'</div>';
-}
-const tabs=[['map','mapPin'],['chat','comment'],['cam','camera'],['stories','play'],['spot','zap']];
-h+='<div style="display:flex;border-top:1px solid #eee;margin-top:10px;padding-top:6px;position:sticky;bottom:0;background:#fff">'+tabs.map(t=>'<span data-snaptab="'+t[0]+'" style="flex:1;text-align:center;padding:8px;cursor:pointer;display:flex;justify-content:center;opacity:'+(S.snapTab===t[0]?'1':'.4')+'">'+si(t[1],23)+'</span>').join('')+'</div>';
-el.innerHTML=h;
-el.querySelectorAll('[data-snaptab]').forEach(t=>t.addEventListener('click',()=>{S.snapTab=t.dataset.snaptab;appSnapchat()}));
-el.querySelectorAll('[data-sn]').forEach(x=>x.addEventListener('click',()=>{
-const f=SN_CHATS.find(z=>z[0]===x.dataset.sn);
-snThread(f[0],f[1],f[2]);
-}));
-SN_CHATS.forEach(f=>{fbGet('/rooms/'+f[0]+'/msgs').then(msgs=>{
-const pv=$('#pv-'+f[0]);if(!pv)return;
-const arr=msgs?Object.values(msgs).sort((a,b)=>(a.ts||0)-(b.ts||0)):[];
-pv.textContent=arr.length?('🟥 '+arr[arr.length-1].u+': '+arr[arr.length-1].t):'لا سنابات بعد';
-}).catch(()=>{})});
-}
+function appSnapchat(){emptyChats('Snapchat','<div style="background:#e8c832;color:#111;border-radius:14px;padding:12px"><b style="font-size:16px">Snapchat</b></div>')}
+
 function snThread(roomId,name,seed){
 const el=$('#appBody');
 el.innerHTML=sBack()+'<div style="background:#e8c832;border-radius:12px;padding:9px 12px"><div class="row" style="align-items:center;gap:9px">'+sAv(seed,38)+'<span><b style="font-size:14.5px">'+name+'</b><br><span style="font-size:11.5px;opacity:.75">صديق · <b id="prsN">…</b> متصل</span></span><span style="margin-inline-start:auto;display:flex;gap:12px;align-items:center">'+si('camera',19)+si('phone',19)+'</span></div></div>'+
@@ -267,26 +190,8 @@ chatThread('/rooms/'+roomId,{own:'#fffc00',ownTx:'#111',other:'#ffffff',otherTx:
 }
 /* ================= Discord — REAL ================= */
 const DC_CH=[['discord','# عام'],['dc-news','# إعلانات'],['dc-pics','# صور-اللاعبين']];
-function appDiscord(){
-clearInterval(S.poll);S.dcCh=S.dcCh||'discord';
-const el=$('#appBody');
-el.innerHTML='<div style="display:flex;gap:0;background:#1e1f22;border-radius:14px;overflow:hidden;color:#dbdee1;min-height:260px">'+
-'<div style="width:58px;background:#121214;display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:10px"><span style="width:44px;height:44px;border-radius:16px;background:#5865F2;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px">Rio</span><span style="width:44px;height:44px;border-radius:50%;background:#2b2d31;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff">G</span></div>'+
-'<div style="flex:1;display:flex;flex-direction:column;min-width:0"><div style="padding:10px 12px;border-bottom:1px solid #2b2d31"><b style="color:#fff;font-size:14px">Rio Server</b><span class="mut" style="font-size:11px;display:block">'+si('users',13)+' ١٢٨ عضو · <b id="prsN">…</b> متصل</span></div>'+
-'<div style="padding:8px 10px;font-size:13px"><div style="color:#949ba4;font-size:11px;font-weight:700;margin:4px 0">قنوات نصية — حقيقية</div>'+DC_CH.map(c=>'<div data-dc="'+c[0]+'" style="padding:7px 8px;border-radius:6px;cursor:pointer;background:'+(S.dcCh===c[0]?'#35373c':'transparent')+';color:'+(S.dcCh===c[0]?'#fff':'#949ba4')+'">'+c[1]+'</div>').join('')+'</div></div></div>'+
-'<div id="chatList" style="background:#313338;border-radius:12px;padding:8px 6px;min-height:180px;margin-top:8px"><div class="mut" style="text-align:center;padding:16px;color:#949ba4">جاي يحمل…</div></div>'+
-'<div class="row" style="position:sticky;bottom:0;padding-top:8px"><input type="text" id="chatIn" placeholder="راسل '+DC_CH.find(c=>c[0]===S.dcCh)[1]+'… " style="flex:1;padding:10px 12px;border:1px solid #d9d9de;border-radius:20px;font-size:14px;background:#383a40;color:#dbdee1;border-color:#383a40"><button class="btn" id="chatSend">إرسال</button></div>';
-el.querySelectorAll('[data-dc]').forEach(x=>x.addEventListener('click',()=>{S.dcCh=x.dataset.dc;appDiscord()}));
-chatThread('/rooms/'+S.dcCh,{own:'#5865F2',ownTx:'#fff',other:'#2b2d31',otherTx:'#dbdee1'});
-}
-/* ================= Apple Store ================= */
-const AP_PRODUCTS=[
-{id:'ip17pro',n:'iPhone 17 Pro',tag:'الأقوى. الأخف. الأكثر احترافاً.',price:999,colors:['Deep Blue','Silver','Cosmic Orange'],stor:['256GB','512GB','1TB'],g:'linear-gradient(135deg,#1c2b4a,#3a5a8c)'},
-{id:'ipair',n:'iPhone Air',tag:'أنحف iPhone على الإطلاق.',price:899,colors:['White','Black','Gold'],stor:['128GB','256GB','512GB'],g:'linear-gradient(135deg,#e8e8ec,#b9c2d0)'},
-{id:'ipadpro',n:'iPad Pro 11',tag:'قوة M4 في أنحف تصميم.',price:999,colors:['Silver','Space Black'],stor:['256GB','512GB','1TB'],g:'linear-gradient(135deg,#2b2f36,#5a6270)'},
-{id:'mba',n:'MacBook Air 13',tag:'خفيف. قوي. بشريحة M4.',price:999,colors:['Midnight','Starlight','Silver'],stor:['256GB','512GB'],g:'linear-gradient(135deg,#3a3f4b,#7c8598)'},
-{id:'watch11',n:'Watch Series 11',tag:'رفيقك الصحي الأذكى.',price:399,colors:['Midnight','Starlight'],stor:['GPS','GPS + Cellular'],g:'linear-gradient(135deg,#123a2a,#2e7d5b)'},
-{id:'app3',n:'AirPods Pro 3',tag:'صوت بلا ضجيج.',price:249,colors:['White'],stor:['USB-C'],g:'linear-gradient(135deg,#f2f2f5,#c9ccd4)'}];
+function appDiscord(){emptyChats('Discord','<div style="background:#1e1f22;color:#fff;border-radius:14px;padding:12px"><b style="font-size:16px">Discord</b></div>')}
+
 function appAppleStore(){
 S.apTab=S.apTab||'shop';S.bag=S.bag||[];
 const el=$('#appBody');
@@ -330,17 +235,23 @@ $('#apAdd').addEventListener('click',()=>{S.bag.push({n:p.n,price:p.price,g:p.g,
 render();
 }
 const YT_VIDS=[
-['aqz-KE-bpKQ','Big Buck Bunny — فيلم قصير','Blender Foundation','3.4M','21M'],
-['jfKfPfyJRdk','lofi hip hop radio — beats to relax/study to','Lofi Girl','14.8M','34K'],
-['dQw4w9WgXcQ','Rick Astley — Never Gonna Give You Up (Official Video)','Rick Astley','3.1M','1.6B'],
-['kJQP7kiw5Fk','Luis Fonsi — Despacito ft. Daddy Yankee','Luis Fonsi','42M','8.7B'],
-['JGwWNGJdvx8','Ed Sheeran — Shape of You (Official Music Video)','Ed Sheeran','39M','6.3B'],
-['60ItHLz5WEA','Alan Walker — Faded','Alan Walker','46M','3.8B'],
-['fJ9rUzIMcZQ','Queen — Bohemian Rhapsody (Official Video Remastered)','Queen Official','18M','1.9B'],
-['9bZkp7q19f0','PSY — GANGNAM STYLE (Official M/V)','officialpsy','32M','5.1B'],
-['RgKAFK5djSk','Wiz Khalifa — See You Again ft. Charlie Puth','Wiz Khalifa','36M','6.5B'],
-['hTWKbfoikeg','Nirvana — Smells Like Teen Spirit (Official Music Video)','Nirvana','12M','2.1B'],
-['MmB9b5njVbA','Minecraft: Official Trailer','Minecraft','15M','220M']
+['aqz-KE-bpKQ','Big Buck Bunny \u2014 \u0641\u064a\u0644\u0645 \u0642\u0635\u064a\u0631','Blender Foundation','3.4M','21M','\u0623\u0641\u0644\u0627\u0645','9:56','\u0642\u0628\u0644 5 \u0633\u0646\u0648\u0627\u062a'],
+['jfKfPfyJRdk','lofi hip hop radio \u2014 beats to relax/study to','Lofi Girl','14.8M','34K','\u0628\u062b \u0645\u0628\u0627\u0634\u0631','\u0645\u0628\u0627\u0634\u0631','\u0627\u0644\u0622\u0646'],
+['dQw4w9WgXcQ','Rick Astley \u2014 Never Gonna Give You Up (Official Video)','Rick Astley','3.1M','1.6B','\u0645\u0648\u0633\u064a\u0642\u0649','3:33','\u0642\u0628\u0644 14 \u0633\u0646\u0629'],
+['kJQP7kiw5Fk','Luis Fonsi \u2014 Despacito ft. Daddy Yankee','Luis Fonsi','42M','8.7B','\u0645\u0648\u0633\u064a\u0642\u0649','4:42','\u0642\u0628\u0644 8 \u0633\u0646\u0648\u0627\u062a'],
+['JGwWNGJdvx8','Ed Sheeran \u2014 Shape of You (Official Music Video)','Ed Sheeran','39M','6.3B','\u0645\u0648\u0633\u064a\u0642\u0649','4:24','\u0642\u0628\u0644 8 \u0633\u0646\u0648\u0627\u062a'],
+['60ItHLz5WEA','Alan Walker \u2014 Faded','Alan Walker','46M','3.8B','\u0645\u0648\u0633\u064a\u0642\u0649','3:33','\u0642\u0628\u0644 9 \u0633\u0646\u0648\u0627\u062a'],
+['fJ9rUzIMcZQ','Queen \u2014 Bohemian Rhapsody (Official Video Remastered)','Queen Official','18M','1.9B','\u0645\u0648\u0633\u064a\u0642\u0649','5:59','\u0642\u0628\u0644 6 \u0633\u0646\u0648\u0627\u062a'],
+['9bZkp7q19f0','PSY \u2014 GANGNAM STYLE (Official M/V)','officialpsy','32M','5.1B','\u0645\u0648\u0633\u064a\u0642\u0649','4:13','\u0642\u0628\u0644 12 \u0633\u0646\u0629'],
+['RgKAFK5djSk','Wiz Khalifa \u2014 See You Again ft. Charlie Puth','Wiz Khalifa','36M','6.5B','\u0645\u0648\u0633\u064a\u0642\u0649','3:58','\u0642\u0628\u0644 10 \u0633\u0646\u0648\u0627\u062a'],
+['hTWKbfoikeg','Nirvana \u2014 Smells Like Teen Spirit (Official Music Video)','Nirvana','12M','2.1B','\u0645\u0648\u0633\u064a\u0642\u0649','4:38','\u0642\u0628\u0644 15 \u0633\u0646\u0629'],
+['MmB9b5njVbA','Minecraft: Official Trailer','Minecraft','15M','220M','\u0623\u0644\u0639\u0627\u0628','1:01','\u0642\u0628\u0644 12 \u0633\u0646\u0629'],
+['CevxZvSJLk8','Katy Perry \u2014 Roar (Official)','Katy Perry','45M','4.1B','\u0645\u0648\u0633\u064a\u0642\u0649','3:48','\u0642\u0628\u0644 11 \u0633\u0646\u0629'],
+['YQHsXMglC9A','Adele \u2014 Hello (Official Music Video)','Adele','31M','3.2B','\u0645\u0648\u0633\u064a\u0642\u0649','6:07','\u0642\u0628\u0644 9 \u0633\u0646\u0648\u0627\u062a'],
+['e-ORhEE9VVg','Taylor Swift \u2014 Blank Space (Official Music Video)','Taylor Swift','58M','3.1B','\u0645\u0648\u0633\u064a\u0642\u0649','4:33','\u0642\u0628\u0644 10 \u0633\u0646\u0648\u0627\u062a'],
+['OPf0YbXqDm0','Mark Ronson \u2014 Uptown Funk (Official Video) ft. Bruno Mars','Mark Ronson','20M','5.2B','\u0645\u0648\u0633\u064a\u0642\u0649','4:31','\u0642\u0628\u0644 10 \u0633\u0646\u0648\u0627\u062a'],
+['pRpeEdMmmQY','Shakira \u2014 Waka Waka (Esto es \u00c1frica) (Official Video)','Shakira','44M','4.0B','\u0645\u0648\u0633\u064a\u0642\u0649','3:31','\u0642\u0628\u0644 14 \u0633\u0646\u0629'],
+['fRh_vgS2dFE','Justin Bieber \u2014 Sorry (Official Video)','Justin Bieber','72M','3.9B','\u0645\u0648\u0633\u064a\u0642\u0649','3:25','\u0642\u0628\u0644 9 \u0633\u0646\u0648\u0627\u062a']
 ];
 function ytUid(){if(!S.uid){S.uid='u'+Math.random().toString(36).slice(2,9);store.set('uid',S.uid)}return S.uid}
 function ytParseId(u){u=String(u||'').trim();const m=u.match(/(?:youtube\.com\/(?:watch\?[^#]*v=|shorts\/|live\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);return m?m[1]:null}
@@ -358,10 +269,11 @@ else if(info===2){S.ytPos={t:ytEst(),at:Date.now(),playing:false};ytSay('pause',
 }
 if(!window._ytL){window._ytL=true;window.addEventListener('message',e=>{let d;try{d=typeof e.data==='string'?JSON.parse(e.data):e.data}catch(_){return}if(d&&d.event==='onStateChange')ytState(d.info)})}
 function ytCard(v){
-return '<div data-ytv="'+v[0]+'" style="margin-top:14px;cursor:pointer"><div style="position:relative"><img src="https://img.youtube.com/vi/'+v[0]+'/hqdefault.jpg" loading="lazy" style="width:100%;border-radius:12px;aspect-ratio:16/9;object-fit:cover;background:#111"></div>'+
+return '<div data-ytv="'+v[0]+'" style="margin-top:14px;cursor:pointer"><div style="position:relative"><img src="https://img.youtube.com/vi/'+v[0]+'/hqdefault.jpg" loading="lazy" style="width:100%;border-radius:12px;aspect-ratio:16/9;object-fit:cover;background:#111;display:block"><span style="position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,.82);color:#fff;font-size:11.5px;padding:2px 7px;border-radius:6px">'+(v[6]||'')+'</span>'+(v[5]==='بث مباشر'?'<span style="position:absolute;bottom:8px;right:8px;background:#c00;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px">مباشر</span>':'')+'</div>'+
 '<div class="row" style="margin-top:8px;gap:10px;align-items:flex-start"><span style="width:38px;height:38px;border-radius:50%;background:linear-gradient(150deg,#ff0033,#7a0018);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:0 0 auto">'+v[2].slice(0,1)+'</span>'+
-'<span style="flex:1;min-width:0"><b style="font-size:14px;line-height:1.5;display:block">'+v[1]+'</b><span class="mut" style="font-size:12.5px">'+v[2]+' • '+v[4]+' مشاهدة</span></span></div></div>';
+'<span style="flex:1;min-width:0"><b style="font-size:14px;line-height:1.5;display:block">'+v[1]+'</b><span class="mut" style="font-size:12.5px">'+v[2]+' • '+v[4]+' مشاهدة • '+(v[7]||'')+'</span></span></div></div>';
 }
+function ytMini(v){return '<div data-ytv="'+v[0]+'" class="row" style="margin-top:10px;cursor:pointer;gap:10px;align-items:flex-start"><div style="position:relative;flex:0 0 150px"><img src="https://img.youtube.com/vi/'+v[0]+'/hqdefault.jpg" loading="lazy" style="width:150px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:#111;display:block"><span style="position:absolute;bottom:5px;left:5px;background:rgba(0,0,0,.82);color:#fff;font-size:10.5px;padding:1px 6px;border-radius:5px">'+(v[6]||'')+'</span></div><span style="flex:1;min-width:0"><b style="font-size:13px;line-height:1.5;display:block;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+v[1]+'</b><span class="mut" style="font-size:11.5px">'+v[2]+' • '+v[4]+' مشاهدة</span></span></div>';}
 function appYouTubeX(){
 const el=document.querySelector('#appBody');
 S.ytView=S.ytView||'home';
@@ -371,20 +283,27 @@ return ytWatch(el,S.ytVidV);
 }
 function ytHome(el){
 let h='<div class="row" style="align-items:center;margin:-12px -12px 0;padding:11px 14px 9px;position:sticky;top:-12px;background:#fff;z-index:5;border-bottom:1px solid #f0f0f2"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:30px;height:22px;background:#ff0033;border-radius:6px;display:inline-flex;align-items:center;justify-content:center"><span style="width:0;height:0;border-left:9px solid #fff;border-top:6px solid transparent;border-bottom:6px solid transparent;margin-inline-start:2px"></span></span><b style="font-size:19px;letter-spacing:-.5px">YouTube</b></span><span style="margin-inline-start:auto;display:flex;gap:16px;align-items:center"><span data-ytgo="search" style="display:inline-flex;cursor:pointer">'+si('search',21)+'</span><span style="display:inline-flex">'+si('bell',21)+'</span><span style="display:inline-flex">'+meAv(30)+'</span></span></div>';
-h+='<div class="row" style="gap:8px;overflow-x:auto;padding:4px 0">'+['الكل','موسيقى','أفلام','بث مباشر','ألعاب'].map((c,i)=>'<span style="padding:7px 14px;border-radius:9px;font-size:13px;white-space:nowrap;cursor:pointer;'+(i===0?'background:#0f0f0f;color:#fff':'background:#f2f2f2')+'">'+c+'</span>').join('')+'</div>';
-h+=YT_VIDS.map(ytCard).join('');
+S.ytCat=S.ytCat||'الكل';
+h+='<div class="row" style="gap:8px;overflow-x:auto;padding:4px 0">'+['الكل','موسيقى','أفلام','بث مباشر','ألعاب'].map(c=>'<span data-ytcat="'+c+'" style="padding:7px 14px;border-radius:9px;font-size:13px;white-space:nowrap;cursor:pointer;'+(S.ytCat===c?'background:#0f0f0f;color:#fff':'background:#f2f2f2')+'">'+c+'</span>').join('')+'</div>';
+const _vf=YT_VIDS.filter(v=>S.ytCat==='الكل'||v[5]===S.ytCat);
+h+='<div class="row" style="align-items:center;margin-top:14px"><span style="width:24px;height:32px;background:#ff0033;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;margin-inline-end:8px;flex:0 0 auto"><span style="width:0;height:0;border-left:9px solid #fff;border-top:6px solid transparent;border-bottom:6px solid transparent;margin-inline-start:2px"></span></span><b style="font-size:16px">Shorts</b></div>';
+h+='<div class="row" style="gap:10px;overflow-x:auto;padding:10px 2px 4px">'+YT_VIDS.slice(0,8).map(v=>'<div data-ytv="'+v[0]+'" style="flex:0 0 118px;cursor:pointer"><img src="https://img.youtube.com/vi/'+v[0]+'/hqdefault.jpg" loading="lazy" style="width:118px;height:210px;object-fit:cover;border-radius:10px;background:#111;display:block"><b style="font-size:12px;line-height:1.5;display:block;margin-top:6px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+v[1]+'</b><span class="mut" style="font-size:11px">'+v[4]+' مشاهدة</span></div>').join('')+'</div>';
+h+=_vf.length?_vf.map(ytCard).join(''):'<p class="mut" style="text-align:center;padding:30px">لا توجد فيديوات بهذا التصنيف</p>';
 el.innerHTML=h;
 el.querySelectorAll('[data-ytgo]').forEach(x=>x.addEventListener('click',()=>{S.ytView=x.dataset.ytgo;appYouTubeX()}));
-el.querySelectorAll('[data-ytv]').forEach(c=>c.addEventListener('click',()=>{const v=YT_VIDS.find(x=>x[0]===c.dataset.ytv);S.ytView='watch';S.ytVidV={id:v[0],title:v[1],ch:v[2],subs:v[3]};appYouTubeX()}));
+el.querySelectorAll('[data-ytcat]').forEach(x=>x.addEventListener('click',()=>{S.ytCat=x.dataset.ytcat;appYouTubeX()}));
+el.querySelectorAll('[data-ytv]').forEach(c=>c.addEventListener('click',()=>{const v=YT_VIDS.find(x=>x[0]===c.dataset.ytv);S.ytView='watch';S.ytVidV={id:v[0],title:v[1],ch:v[2],subs:v[3],views:v[4],cat:v[5],dur:v[6],time:v[7]};appYouTubeX()}));
 }
 function ytSearchV(el){
 el.innerHTML='<div class="row" style="align-items:center;margin-bottom:10px"><span data-ytgo="home" style="color:#0a84ff;cursor:pointer">‹ رجوع</span><b style="flex:1;text-align:center">بحث</b><span style="width:50px"></span></div>'+
 '<div class="card"><b style="font-size:14.5px">الصق رابط أي مقطع يوتيوب</b><p class="mut" style="font-size:12.5px;margin:4px 0 10px;line-height:1.8">انسخ رابط الفيديو من يوتيوب والصقه هنا — يشتغل عندك مباشرة مع التعليقات والمشاهدة المشتركة.</p>'+
 '<input id="ytUrl" placeholder="https://www.youtube.com/watch?v=…" style="width:100%;padding:12px;border:1px solid #d9d9de;border-radius:12px;font-size:14px;font-family:inherit;direction:ltr;text-align:left">'+
 '<button class="btn" id="ytPlayUrl" style="width:100%;margin-top:10px;padding:12px">تشغيل المقطع</button></div>'+
+'<div class="card"><b style="font-size:14px">بحث في الفيديوات</b><input id="ytQ" placeholder="ابحث بعنوان أو قناة\u2026" style="width:100%;padding:11px 12px;border:1px solid #d9d9de;border-radius:12px;font-size:14px;font-family:inherit;margin-top:8px"><div id="ytQR"></div></div>'+
 '<div class="card"><b style="font-size:14px">فيديوات مقترحة</b><div style="margin-top:6px">'+YT_VIDS.slice(0,4).map(ytCard).join('')+'</div></div>';
 el.querySelectorAll('[data-ytgo]').forEach(x=>x.addEventListener('click',()=>{S.ytView=x.dataset.ytgo;appYouTubeX()}));
-el.querySelectorAll('[data-ytv]').forEach(c=>c.addEventListener('click',()=>{const v=YT_VIDS.find(x=>x[0]===c.dataset.ytv);S.ytView='watch';S.ytVidV={id:v[0],title:v[1],ch:v[2],subs:v[3]};appYouTubeX()}));
+el.querySelectorAll('[data-ytv]').forEach(c=>c.addEventListener('click',()=>{const v=YT_VIDS.find(x=>x[0]===c.dataset.ytv);S.ytView='watch';S.ytVidV={id:v[0],title:v[1],ch:v[2],subs:v[3],views:v[4],cat:v[5],dur:v[6],time:v[7]};appYouTubeX()}));
+const ytQ=document.querySelector('#ytQ');if(ytQ)ytQ.addEventListener('input',()=>{const q=ytQ.value.trim();const r=document.querySelector('#ytQR');if(!r)return;if(!q){r.innerHTML='';return}const f=YT_VIDS.filter(v=>v[1].includes(q)||v[2].includes(q));r.innerHTML=f.length?f.slice(0,6).map(ytMini).join(''):'<p class="mut" style="padding:10px 2px;font-size:13px">لا نتائج</p>';r.querySelectorAll('[data-ytv]').forEach(c=>c.addEventListener('click',()=>{const v=YT_VIDS.find(x=>x[0]===c.dataset.ytv);S.ytView='watch';S.ytVidV={id:v[0],title:v[1],ch:v[2],subs:v[3],views:v[4],cat:v[5],dur:v[6],time:v[7]};appYouTubeX()}));});
 document.querySelector('#ytPlayUrl').addEventListener('click',()=>{
 const id=ytParseId(document.querySelector('#ytUrl').value);
 if(!id)return toast('الرابط مو صحيح — الصق رابط يوتيوب كامل');
@@ -407,13 +326,16 @@ h+='<div style="position:relative;aspect-ratio:16/9;background:#000;border-radiu
 h+='<div class="row" style="gap:10px;justify-content:center;margin:12px 0 2px"><button class="btn gray" id="ytBack10" style="border-radius:50%;width:46px;height:46px;padding:0;font-size:14px;flex:0 0 auto">-5</button><button class="btn gray" id="ytFwd10" style="border-radius:50%;width:46px;height:46px;padding:0;font-size:14px;flex:0 0 auto">+5</button></div>';
 h+='<b style="font-size:15.5px;margin-top:10px;display:block;line-height:1.6">'+v.title+'</b>';
 h+='<div class="row" style="align-items:center;margin-top:10px;gap:10px"><span style="width:40px;height:40px;border-radius:50%;background:linear-gradient(150deg,#ff0033,#7a0018);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:0 0 auto">'+v.ch.slice(0,1)+'</span><span style="flex:1;min-width:0"><b style="font-size:14px">'+v.ch+'</b><br><span class="mut" style="font-size:12px"><span id="ytSubN">…</span> مشترك</span></span><button class="btn" id="ytSubB" style="border-radius:18px;padding:8px 18px;font-size:13px">اشتراك</button></div>';
+h+='<div class="card" style="margin-top:12px;background:#f2f2f2"><b style="font-size:13px">'+(v.views||'')+' مشاهدة • '+(v.time||'')+'</b><p class="mut" style="font-size:12.5px;margin:6px 0 0;line-height:1.8">'+escH(v.title||'')+' — شاهد المقطع كاملاً مع المشاهدة المشتركة والتعليقات المباشرة.</p></div>';
 h+='<div class="row" style="gap:8px;margin-top:12px"><button class="btn gray" id="ytLikeB" style="flex:1;border-radius:18px;padding:9px;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:6px">'+si('thumb',15)+' <span id="ytLikeN">…</span></button><button class="btn gray" id="ytShareB" style="flex:1;border-radius:18px;padding:9px;font-size:13px">مشاركة</button></div>';
 h+='<div class="card" id="ytParty" style="margin-top:12px;background:#f6f6fa"><div class="row" style="align-items:center"><b style="font-size:13.5px;flex:1">مشاهدة مشتركة — نفس اللحظة</b><span style="width:9px;height:9px;border-radius:50%;background:#34c759;display:inline-block"></span></div><p class="mut" style="font-size:12px;margin:4px 0 0;line-height:1.8">أي واحد يشغّل أو يوقف أو يقدّم — يصير عند الكل بنفس اللحظة. افتح نفس المقطع بجهاز صديقك.</p><div id="ytWatchers" class="mut" style="font-size:12px;margin-top:6px"></div></div>';
+h+='<b style="font-size:15px;display:block;margin:18px 0 2px">فيديوات مقترحة</b>'+YT_VIDS.filter(x=>x[0]!==v.id).slice(0,6).map(ytMini).join('');
 h+='<div class="card" style="margin-top:14px;padding:0;overflow:hidden"><div style="text-align:center;padding:9px 0 0"><span style="display:inline-block;width:38px;height:4.5px;border-radius:3px;background:#d9d9de"></span></div><div class="row" style="align-items:center;padding:8px 14px 4px"><b style="font-size:14.5px;flex:1">التعليقات <span class="mut" id="ytCN" style="font-weight:400"></span></b></div><div id="ytCList" style="display:flex;flex-direction:column;gap:12px;padding:8px 14px;max-height:360px;overflow-y:auto"></div><div class="row" style="gap:8px;align-items:center;padding:10px 14px;border-top:1px solid #f0f0f2;background:#fafafc">'+meAv(34)+'<input id="ytCIn" placeholder="أضف تعليقاً…" style="flex:1;padding:10px 14px;border:1px solid #e4e4e7;border-radius:20px;font-size:13.5px;font-family:inherit;background:#fff;min-width:0"><button class="btn" id="ytCSend" style="border-radius:50%;width:38px;height:38px;padding:0;flex:0 0 auto;font-size:16px">↑</button></div></div>';
 el.innerHTML=h;
 const ytLeave=async()=>{const vid=S.ytVid;S.ytVid=null;clearInterval(S.ytCPoll);if(!vid)return;try{const c=await fbGet('/rooms/youtube/'+vid+'/comments');if(c){const me=ytUid();for(const k of Object.keys(c)){if(c[k]&&c[k].uid===me){try{await fetch(FBB+'/rooms/youtube/'+vid+'/comments/'+k+'.json',{method:'DELETE'})}catch(e){}}}}}catch(e){}};
 document.querySelector('#ytBack').addEventListener('click',()=>{ytLeave();S.ytView='home';appYouTubeX()});
 document.querySelector('#ytBack10').addEventListener('click',()=>ytSeek(-5));document.querySelector('#ytFwd10').addEventListener('click',()=>ytSeek(5));
+el.querySelectorAll('[data-ytv]').forEach(c=>c.addEventListener('click',()=>{const vv=YT_VIDS.find(x=>x[0]===c.dataset.ytv);if(!vv)return;S.ytView='watch';S.ytVidV={id:vv[0],title:vv[1],ch:vv[2],subs:vv[3],views:vv[4],cat:vv[5],dur:vv[6],time:vv[7]};appYouTubeX()}));
 const fr=document.querySelector('#ytFrame');
 fr.addEventListener('load',()=>{setTimeout(()=>ytCmd('addEventListener',['onStateChange']),700)});
 const room='/rooms/youtube/'+v.id;
