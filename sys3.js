@@ -427,7 +427,7 @@ S.photos.slice(0,6).forEach((p,i)=>items.push({t:'img',src:p,label:'صورة '+(
 if(notePrev)items.push({t:'note',label:'ملاحظة',sub:notePrev});
 const show=S.filesTab==='img'?items.filter(i=>i.t==='img'):S.filesTab==='note'?items.filter(i=>i.t==='note'):items;
 el.innerHTML='<div class="big" style="font-size:20px;margin-bottom:8px">الملفات</div>'+
-'<div class="card"><div class="row" style="justify-content:space-between"><b>iCloud Drive</b><span class="mut">'+used.toFixed(1)+' GB من 64 GB</span></div><div style="height:7px;background:#e9e9ee;border-radius:4px;margin-top:9px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.min(96,used/64*100)+'%;background:#0a84ff"></span></div></div>'+
+'<div class="card"><div class="row" style="justify-content:space-between"><b>iCloud Drive</b><span class="mut">'<span dir="ltr">'+used.toFixed(1)+' GB</span> من <span dir="ltr">64 GB</span></span></div><div style="height:7px;background:#e9e9ee;border-radius:4px;margin-top:9px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.min(96,used/64*100)+'%;background:#0a84ff"></span></div></div>'+
 '<div class="row" style="margin-bottom:6px">'+[['all','الكل'],['img','الصور'],['note','النصوص']].map(t=>'<button class="btn '+(S.filesTab===t[0]?'':'gray')+'" data-ftab="'+t[0]+'" style="padding:7px 14px">'+t[1]+'</button>').join('')+'</div>'+
 '<div class="rbx-sec">الأخيرة</div>'+
 (show.length?show.map(i=>i.t==='img'?'<div class="card row" data-fopen="photos" style="cursor:pointer"><img src="'+i.src+'" style="width:46px;height:46px;object-fit:cover;border-radius:9px" alt=""><span style="flex:1"><b style="font-size:13.5px">'+i.label+'</b><br><span class="mut">صور — على هذا الآيفون</span></span></div>':'<div class="card row" data-fopen="notes" style="cursor:pointer"><span class="sq" style="background:#ffcc00">'+g('document-text','#fff',16)+'</span><span style="flex:1"><b style="font-size:13.5px">'+i.label+'</b><br><span class="mut">'+escH(i.sub)+'</span></span></div>').join(''):'<div class="mut" style="text-align:center;padding:20px">لا ملفات من هذا النوع بعد</div>')+
@@ -566,13 +566,13 @@ if(p==='gupdate'){
 el.innerHTML=head('تحديث البرنامج','general')+
 '<div class="card" style="text-align:center;padding:22px"><div class="big" style="font-size:18px">iOS 17</div><p class="mut" style="margin:6px 0 14px">إصدار نظام iOS الحالي</p><button class="btn" id="updChk" style="padding:11px 22px">التحقق من تحديث</button><div id="updOut" class="mut" style="margin-top:12px"></div></div>';
 bk('general');
-$('#updChk').addEventListener('click',()=>{const o=$('#updOut');o.textContent='جاي يتحقق من خوادم Apple…';setTimeout(()=>{o.textContent='نظامك محدّث — ماكو تحديث أجدد من iPadOS 26.2';notify('الإعدادات','تحديث البرنامج','نظامك محدث بالكامل',null,{pop:false})},1100)});
+$('#updChk').addEventListener('click',()=>{const o=$('#updOut');o.textContent='جاي يتحقق من خوادم Apple…';setTimeout(()=>{o.textContent='نظامك محدّث — ماكو تحديث أجدد من iOS 17';notify('الإعدادات','تحديث البرنامج','نظامك محدث بالكامل',null,{pop:false})},1100)});
 return}
 if(p==='gstorage'){
 const used=(12400+S.photos.length*1.3+S.installed.length*86)/1000;
 el.innerHTML=head('سعة تخزين iPad','general')+
 '<div class="card"><div class="row" style="justify-content:space-between"><b>'+used.toFixed(1)+' GB</b><span class="mut">من 128 GB</span></div><div style="height:9px;background:#e9e9ee;border-radius:5px;margin-top:9px;overflow:hidden;display:flex"><span style="height:100%;width:'+(9.2/128*100).toFixed(1)+'%;background:#ff9f0a"></span><span style="height:100%;width:'+((2.1+S.installed.length*0.086)/128*100).toFixed(1)+'%;background:#0a84ff"></span><span style="height:100%;width:'+((0.4+S.photos.length*0.0013)/128*100).toFixed(1)+'%;background:#34c759"></span></div><div class="mut" style="font-size:11.5px;margin-top:8px">متاح: '+(128-used).toFixed(1)+' GB من 128 GB</div></div>'+
-grp(row2('النظام iPadOS','','<span class="mut">9.2 GB</span>')+
+grp(row2('النظام iOS','','<span class="mut">9.2 GB</span>')+
 row2('التطبيقات ('+arabNum(APPS.length+S.installed.length)+')','','<span class="mut">'+(2.1+S.installed.length*0.086).toFixed(1)+' GB</span>')+
 row2('الصور','','<span class="mut">'+(0.4+S.photos.length*0.0013).toFixed(2)+' GB</span>')+
 row2('بيانات النظام','','<span class="mut">0.8 GB</span>'));
