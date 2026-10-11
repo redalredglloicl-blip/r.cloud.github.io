@@ -115,7 +115,12 @@ function s2Inject(el){
 window.appSettings=function(el){
  _origAppSettings(el);
  // Defer inject to after render
- setTimeout(()=>s2Inject(el),0);
+ setTimeout(()=>{s2Inject(el);
+  // Hide the 'big icons' toggle row (always-on now)
+  el.querySelectorAll('.setrow').forEach(r=>{
+   if(r.textContent.includes('أيقونات كبيرة'))r.style.display='none';
+  });
+ },0);
 };
 // Wrap setSubPage
 window.setSubPage=function(el){
@@ -126,4 +131,18 @@ window.setSubPage=function(el){
  }
  _origSetSubPage(el);
 };
+})();
+// Force big icons always ON (user preference)
+(function(){
+function forceBig(){
+ try{
+  if(window.S&&S.fx&&S.fx.icons){S.fx.icons.big=true;}
+  const scr=document.querySelector('#screen');
+  if(scr)scr.classList.add('icons-big');
+ }catch(e){}
+}
+forceBig();
+setInterval(forceBig,2000);
+const _oAF=window.applyFx;
+window.applyFx=function(){try{if(S.fx&&S.fx.icons)S.fx.icons.big=true;}catch(e){}_oAF();};
 })();
