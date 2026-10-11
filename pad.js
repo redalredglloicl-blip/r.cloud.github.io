@@ -6,6 +6,7 @@ const IOS_SPRING='cubic-bezier(.30,1.08,.36,1)';
 function iconImgOf(el){if(!el)return null;const im=el.tagName==='IMG'?el:el.querySelector&&el.querySelector('img');if(!im)return null;return im.currentSrc||im.src}
 function showAppWin(fromEl){
 const win=$('#appWin');S._from=fromEl||null;const tok=(S._anim=(S._anim||0)+1);
+win.style.opacity='';win.style.borderRadius='';
 win.classList.add('open');document.body.classList.add('appopen');syncPill();
 $('#screen').classList.add('appzoom');
 const scr=$('#screen').getBoundingClientRect();
@@ -54,40 +55,30 @@ setTimeout(()=>{if(S._anim!==tok)return;
 win.classList.remove('open');document.body.classList.remove('appopen');$('#screen').classList.remove('appzoom');syncPill();win.style.transition='';win.style.transform='';win.style.opacity='';win.style.borderRadius='';win.style.boxShadow='';win.style.transformOrigin='';S._from=null;
 const land=back&&(back.closest?back.closest('.app'):null);if(land&&land.animate)land.animate([{transform:'scale(1)'},{transform:'scale(1.09)'},{transform:'scale(1)'}],{duration:200,easing:'ease-out'})},400);
 }
-function flingClose(){
-clearInterval(S.poll);
-const sw=$('#switcher');if(sw.classList.contains('open'))dismissSw();
-const win=$('#appWin');if(!win.classList.contains('open')){S.app=null;return}
-snapCur();
-const tok=(S._anim=(S._anim||0)+1);
-S.app=null;try{stopCam()}catch(_){}disarmHome();$('#screen').classList.remove('appzoom');
-win.style.transition='transform .34s cubic-bezier(.32,.72,0,1),opacity .3s ease,border-radius .34s';
-win.style.transform='translateY(-72%) scale(.88)';
-win.style.borderRadius='26px';
-win.style.opacity='0';
-setTimeout(()=>{if(S._anim!==tok)return;
-win.classList.remove('open');document.body.classList.remove('appopen');$('#screen').classList.remove('appzoom');syncPill();
-win.style.transition='';win.style.transform='';win.style.opacity='';win.style.borderRadius='';win.style.boxShadow='';win.style.transformOrigin='';S._from=null},360);
-}
 function renderSwitcher(){
 const track=$('#swTrack');const list=S.running||[];
 track.innerHTML=list.length?list.map((r,ix)=>{const snap=(S.snaps||{})[r.id];
 return '<div class="swCard" data-sw="'+r.id+'" style="animation-delay:'+(ix*55)+'ms"><div class="swPrev">'+(snap?'<div class="swSnap">'+snap+'</div>':'<div class="swBig">'+icImg(ICONS[r.ic]||'')+'</div>')+'</div><div class="swLabel">'+icImg(ICONS[r.ic]||'')+'<b>'+r.title+'</b></div></div>'}).join(''):'<div style="color:#fff;text-align:center;width:100%;padding:40px 0;font-size:14px">لا تطبيقات شغالة بالخلفية</div>';
 track.querySelectorAll('[data-sw]').forEach(c=>{
-let sy=null,dy=0,pid=null,moved=false;
-c.addEventListener('pointerdown',e=>{sy=e.clientY;dy=0;pid=e.pointerId;moved=false;try{c.setPointerCapture(pid)}catch(_){}});
+let sx=null,sy=null,pid=null,mode=null;
+c.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;pid=e.pointerId;mode=null});
 c.addEventListener('pointermove',e=>{
-if(sy===null||e.pointerId!==pid)return;
-dy=sy-e.clientY;
-if(dy>10)moved=true;
-if(moved){c.style.transition='none';c.style.transform='translateY('+Math.min(0,-dy)+'px) scale('+(1-Math.min(.1,dy/1100))+')';c.style.opacity=String(1-Math.min(.55,dy/560))}
+if(sx===null||e.pointerId!==pid)return;
+const dx=e.clientX-sx,dy=sy-e.clientY;
+if(!mode){
+if(dy>14){mode='kill';try{c.setPointerCapture(pid)}catch(_){}c.style.transition='none'}
+else if(Math.abs(dx)>14||dy<-14){mode='scroll'}
+}
+if(mode==='kill'){const d=Math.max(0,dy);c.style.transform='translateY('+(-d)+'px) scale('+(1-Math.min(.1,d/1100)).toFixed(3)+')';c.style.opacity=String(1-Math.min(.55,d/560))}
 });
 function cend(e){
-if(sy===null||(e&&e.pointerId!==pid))return;
-const fdy=dy;sy=null;c.style.transition='';
-if(moved&&fdy>85){c.style.transform='translateY(-115%) scale(.86)';c.style.opacity='0';const id=c.dataset.sw;setTimeout(()=>killApp(id),170)}
-else{c.style.transform='';c.style.opacity='';if(!moved){const id=c.dataset.sw;const ic=c.querySelector('.swLabel .ic');dismissSw();if(id===S.app)return;id.startsWith('x_')?openExtra(id.slice(2),ic):openApp(id,ic)}}
-moved=false;dy=0;
+if(sx===null||(e&&e.pointerId!==pid))return;
+const dx=e.clientX-sx,dy=sy-e.clientY,wasKill=mode==='kill';
+sx=null;sy=null;mode=null;c.style.transition='';
+if(wasKill&&dy>85){c.style.transform='translateY(-115%) scale(.86)';c.style.opacity='0';const id=c.dataset.sw;setTimeout(()=>killApp(id),170)}
+else if(wasKill){c.style.transform='';c.style.opacity=''}
+else if(Math.abs(dx)<12&&Math.abs(dy)<12){const id=c.dataset.sw;const ic=c.querySelector('.swLabel .ic');dismissSw();if(id!==S.app){id.startsWith('x_')?openExtra(id.slice(2),ic):openApp(id,ic)}}
+else{c.style.transform='';c.style.opacity=''}
 }
 c.addEventListener('pointerup',cend);
 c.addEventListener('pointercancel',cend);
@@ -141,7 +132,7 @@ const dy=G.y0-endY;const vel=dy/Math.max(1,Date.now()-(G.t0||Date.now()));
 const win=$('#appWin');G=null;
 if($('#switcher').classList.contains('open'))return;
 if(win.classList.contains('open')){
-if(dy>110||vel>0.5){flingClose()}
+if(dy>100||vel>0.45){closeApp()}
 else{
 win.style.transition='transform .42s cubic-bezier(.32,.72,0,1),border-radius .42s,opacity .32s';win.style.transform='';win.style.borderRadius='';win.style.opacity='';
 const tkA=S._anim;setTimeout(()=>{if(S._anim===tkA){win.style.transition='';win.style.transform='';win.style.borderRadius='';win.style.opacity=''}},440);
