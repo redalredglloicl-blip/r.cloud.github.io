@@ -288,13 +288,14 @@ const oc=$('#swOptChg');if(oc)oc.addEventListener('change',e=>{S.set.optChg=e.ta
 return;
 }
 if(S.setPage==='battery'){
-const rows=Object.entries(u).sort((a,b)=>b[1]-a[1]).slice(0,6);
-const mx=Math.max(1,...rows.map(r=>r[1]));
+const useObj=((S.fx.use||{}).sec)||{};
+const rows=Object.entries(useObj).filter(r=>r[1]>4).sort((a,b)=>b[1]-a[1]).slice(0,8);
+const tot=rows.reduce((t,r)=>t+r[1],0),mx=Math.max(1,...rows.map(r=>r[1]));
 el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button>'+
 '<div class="card" style="text-align:center"><div style="font-size:36px;font-weight:700">'+arabNum(Math.round(S.batt.pct))+'٪</div><div class="mut">'+(S.batt.charging?'جاي ينشحن':'غير موصول بالشاحن')+'</div></div>'+
 '<div class="setgroup">'+row('نمط الطاقة المنخفضة',sq('#f5c518','battery-charging',15),'<label class="switch"><input type="checkbox" id="swLpm" '+(s.lpm?'checked':'')+'><i></i></label>')+
 row('الشحن الآن',sq('#34c759','flash',15),'<label class="switch"><input type="checkbox" id="swChg" '+(S.batt.charging?'checked':'')+'><i></i></label>')+'</div>'+
-'<div class="setgroup">'+row('صحة البطارية',sq('#ff9f0a','heart',15),'<span class="mut">'+arabNum(Math.max(72,Math.round(S.batt.maxCap||100)))+'٪</span>'+arrow,'batteryhealth')+'</div>'+'<div class="rbx-sec">الاستخدام حسب التطبيق</div><div class="setgroup">'+(rows.length?rows.map(r=>'<div class="setrow"><span style="flex:1">'+r[0]+'</span><span style="width:110px;height:7px;background:#e3e3e8;border-radius:4px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.round(r[1]/mx*100)+'%;background:#34c759"></span></span><span class="mut" style="width:52px;text-align:left">'+Math.max(1,Math.round(r[1]/60))+' د</span></div>').join(''):'<div class="setrow mut">لا يوجد استخدام بعد</div>')+'</div>';
+'<div class="setgroup">'+row('صحة البطارية',sq('#ff9f0a','heart',15),'<span class="mut">'+arabNum(Math.max(72,Math.round(S.batt.maxCap||100)))+'٪</span>'+arrow,'batteryhealth')+'</div>'+'<div class="rbx-sec">استهلاك البطارية — آخر 24 ساعة</div><div class="setgroup">'+(rows.length?rows.map(r=>{const m=appMeta(r[0]);return '<div class="setrow" style="align-items:center;gap:10px"><span style="width:32px;height:32px;flex:0 0 auto">'+icImg(ICONS[m.ic]||ICONS.settings)+'</span><span style="flex:1;min-width:0"><b style="font-size:14px">'+m.n+'</b><br><span class="mut" style="font-size:12px">'+arabNum(Math.round(r[1]/tot*100))+'٪ من استهلاك اليوم</span></span><span style="width:80px;height:7px;background:#e3e3e8;border-radius:4px;overflow:hidden;flex:0 0 auto"><span style="display:block;height:100%;width:'+Math.round(r[1]/mx*100)+'%;background:#34c759"></span></span><span class="mut" style="width:54px;text-align:left;font-size:12.5px;flex:0 0 auto">'+arabNum(Math.max(1,Math.round(r[1]/60)))+' د</span></div>'}).join(''):'<div class="setrow mut">استخدم تطبيقاتك وشوف استهلاكها هنا</div>')+'</div>';
 $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});
 $('#swLpm').addEventListener('change',e=>{S.set.lpm=e.target.checked;store.set('set',S.set);renderStatus();toast(S.set.lpm?'نمط الطاقة المنخفضة يشتغل':'انطفأ نمط الطاقة')});
 $('#swChg').addEventListener('change',e=>{S.batt.charging=e.target.checked;store.set('batt',S.batt);renderStatus();appSettings(el)});return;
@@ -504,6 +505,10 @@ renderHome();S.storeDetail=null;appStore(el);toast('انثبت '+nm+' على ا�
 }
 function isGameOpen(){const id=S.app||'';if(!id.startsWith('x_'))return false;try{return!!GAMES.find(x=>x.k===id.slice(2))}catch(e){return false}}
 function appHeadReset(){const hh=$('#appHead');if(hh)hh.style.display='';const ab=$('#appBody');if(ab){ab.style.position='';ab.style.padding='';ab.style.overflow=''}}
+function appMeta(id){try{const a=APPS.find(x=>x.id===id);if(a)return{n:a.n,ic:a.ic};if(id&&id.startsWith('x_')){const m=extraMeta(id.slice(2));if(m)return m}}catch(e){}return{n:id||'تطبيق',ic:'settings'}}
+const APP_SIZES={safari:184,photos:96,camera:88,messages:142,music:210,clock:24,notes:38,calc:18,files:64,settings:52,appstore:176,weather:44,calendar:36,maps:288,tiktok:320,facetime:96,voicememos:42,shortcuts:58,maint:34,applestore:148};
+function appSizeMB(id){try{if(id&&id.startsWith('x_')){const gm=GAMES.find(x=>x.k===id.slice(2));if(gm&&gm.size){const m=gm.size.match(/([\d.]+)\s*GB/);if(m)return Math.round(parseFloat(m[1])*1000)}return 86}}catch(e){}return APP_SIZES[id]||64}
+function fmtSize(mb){return mb>=1000?(mb/1000).toFixed(1)+' GB':Math.round(mb)+' MB'}
 function appGame(k){
 const g=GAMES.find(x=>x.k===k);if(!g)return;
 const hh=$('#appHead');if(hh)hh.style.display='none';
