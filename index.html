@@ -61,6 +61,8 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 #padAls{position:absolute;top:8px;left:calc(50% + 15px);width:5px;height:5px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#334052,#090c12 78%);z-index:60;pointer-events:none;opacity:.85}
 #sheen{position:absolute;inset:0;border-radius:17px;background:linear-gradient(115deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,0) 32%);z-index:55;pointer-events:none}
 #wall{position:absolute;inset:0;background:linear-gradient(160deg,#3a7bd5 0%,#7d5fd0 45%,#e2698a 100%)}
+#wall img{transition:filter .5s}
+#ipad.dark #wall img{filter:brightness(.68) saturate(.92)}
 #wallImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 #dim{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:5}
 #statusbar{position:absolute;top:0;left:0;right:0;height:26px;z-index:35;display:flex;align-items:center;justify-content:space-between;padding:2px 14px 0;color:#fff;font-size:12.5px;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.35);transition:opacity .25s}
@@ -78,11 +80,15 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 .libGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
 .libFolder{border:1px solid rgba(255,255,255,.3);cursor:pointer;border-radius:24px;background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.07) 55%,rgba(255,255,255,.13));backdrop-filter:blur(12px) saturate(185%);-webkit-backdrop-filter:blur(12px) saturate(185%);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 8px 22px rgba(0,0,0,.12);padding:12px 10px 9px;display:flex;flex-direction:column;gap:7px}
 .libIcons{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;min-height:20px}
+.libMini{display:inline-flex;cursor:pointer;transition:transform .15s}
+.libMini.prs{transform:scale(.82)}
+.libMini .ic{width:100%;aspect-ratio:1/1;pointer-events:none}
 .libIcons .ic{width:100%;aspect-ratio:1/1}
 .libName{font-size:12.5px;font-weight:600;color:#fff;text-align:center}
 .libCount{font-size:11px;color:rgba(255,255,255,.78);text-align:center}
 #libExpand{position:absolute;inset:0;z-index:70;display:none;flex-direction:column;background:rgba(18,18,20,.62);backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);padding:60px 18px 20px;color:#fff;overflow-y:auto}
-#libExpand.open{display:flex}
+#libExpand.open{display:flex;animation:libExpIn .32s cubic-bezier(.32,.72,0,1)}
+@keyframes libExpIn{from{opacity:0;transform:scale(.92)}}
 .lxHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .lxHead span{font-size:19px;font-weight:700}
 #libExpClose{border:none;background:rgba(255,255,255,.22);color:#fff;border-radius:14px;padding:8px 20px;font-size:14px;font-weight:600;font-family:inherit}
@@ -239,15 +245,15 @@ img{-webkit-user-drag:none}
 #switcher{position:absolute;inset:0;z-index:58;display:none;flex-direction:column;justify-content:center;background:rgba(15,17,22,.45);backdrop-filter:blur(18px) saturate(1.3)}
 #switcher.open{display:flex}
 #swTrack{display:flex;gap:14px;overflow-x:auto;padding:10px 18px;scroll-snap-type:x mandatory}
-.swCard{flex:0 0 66%;height:330px;max-height:62vh;background:#f7f7fa;border-radius:22px;overflow:hidden;scroll-snap-align:center;display:flex;flex-direction:column;box-shadow:0 16px 44px rgba(0,0,0,.4);transition:transform .25s,opacity .25s}
-.swHead{display:flex;align-items:center;gap:7px;padding:8px 10px;background:#fff}
-.swHead .ic{width:22px;height:22px;border-radius:6px}
-.swHead b{font-size:12.5px;flex:1;color:#111;white-space:nowrap;overflow:hidden}
-.swKill{border:none;background:#e9e9ee;color:#333;width:24px;height:24px;border-radius:50%;font-size:14px;line-height:1;cursor:pointer}
-.swPrev{flex:1;overflow:hidden;position:relative;background:linear-gradient(160deg,#dfe7f2,#b9c8dd)}
+.swCard{flex:0 0 68%;height:350px;max-height:64vh;scroll-snap-align:center;display:flex;flex-direction:column;align-items:center;gap:9px;touch-action:pan-x;cursor:pointer;animation:swIn .42s cubic-bezier(.32,.72,0,1) backwards;will-change:transform}
+@keyframes swIn{from{transform:translateY(30px) scale(.95);opacity:0}}
+.swPrev{width:100%;flex:1;border-radius:26px;overflow:hidden;position:relative;background:linear-gradient(160deg,#dfe7f2,#b9c8dd);box-shadow:0 20px 48px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.14)}
 .swSnap{position:absolute;top:0;left:0;width:150%;height:150%;transform:scale(.66);transform-origin:top left;pointer-events:none;background:#f2f2f7}
-.swBig{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#33415c}
-.swBig .ic{width:74px;height:74px;border-radius:18px}
+.swBig{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#33415c}
+.swBig .ic{width:84px;height:84px;border-radius:20px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.swLabel{display:flex;align-items:center;gap:7px;color:#fff}
+.swLabel .ic{width:27px;height:27px;border-radius:7px}
+.swLabel b{font-size:13.5px;font-weight:600;white-space:nowrap}
 body.appopen #homeBar{display:block}
 body.swopen #homeBar{display:block;opacity:.95}
 body.appopen #spotPill{display:none}
@@ -276,7 +282,6 @@ body{touch-action:manipulation}
 #ipad.dark .card{background:#1c1c1e;color:#f2f2f7}
 #ipad.dark .setrow{background:#1c1c1e;border-color:#2c2c2e;color:#f2f2f7}
 #ipad.dark .gcard{background:#1c1c1e;color:#f2f2f7}
-#ipad.dark .swHead{background:#1c1c1e;color:#f2f2f7}
 #ipad.dark #alarmCard{background:#1c1c1e;color:#f2f2f7}
 #ipad.dark .sheetActs button{background:#2c2c2e;border-color:#38383a;color:#fff}
 #ipad.dark .swBody{background:#141416}
@@ -300,8 +305,6 @@ body{touch-action:manipulation}
 #ipad.dark .libCat{background:rgba(28,28,30,.78);color:#fff}
 #ipad.dark #spot{background:rgba(16,16,18,.97);color:#fff}
 #ipad.dark .spotRes{background:#1c1c1e;color:#f2f2f7}
-#ipad.dark .swCard{background:rgba(28,28,30,.94)}
-#ipad.dark .swCard b,#ipad.dark .swCard .swT{color:#fff}
 #ipad.dark .sheetCard{background:linear-gradient(135deg,rgba(80,80,92,.5),rgba(40,40,46,.3) 60%,rgba(70,70,82,.42));border-color:rgba(255,255,255,.2);color:#f2f2f7}
 #ipad.dark .storeRow,#ipad.dark .storeCard{background:#1c1c1e;color:#f2f2f7}
 #ipad.dark .fcRow{background:#1c1c1e;color:#f2f2f7}
@@ -413,7 +416,7 @@ img,a{-webkit-user-drag:none!important}
         <div id="lockGlyph"></div>
         <div class="ldate" id="lockDate"></div>
         <div class="ltime" id="lockTime">9:41</div>
-        <div style="font-size:13px;opacity:.95;margin-top:6px">اسحب لفوق أو دوس حتى تفتح</div>
+        <div id="lockChg" style="font-size:13px;font-weight:700;margin-top:6px;color:#34c759;display:none"></div><div style="font-size:13px;opacity:.95;margin-top:6px">اسحب لفوق أو دوس حتى تفتح</div>
         <div class="lrow"><button class="lbtn" id="lockTorch"></button><button class="lbtn" id="lockCam"></button></div>
       </div>
       <div id="banner"></div>
@@ -970,7 +973,7 @@ if(rest.length)cats.push({n:'أخرى',items:rest});
 return cats}
 function renderLibPage(){
 const cats=libCats();
-const folders=cats.map((c,i)=>'<button class="libFolder" data-libcat="'+i+'"><span class="libIcons">'+c.items.slice(0,4).map(a=>icImg(ICONS[a.ic])).join('')+'</span><span class="libName">'+c.n+'</span><span class="libCount">'+arabNum(c.items.length)+' من التطبيقات</span></button>').join('');
+const folders=cats.map((c,i)=>'<div class="libFolder" data-libcat="'+i+'"><span class="libIcons">'+c.items.slice(0,4).map(a=>'<span class="libMini" data-libmini="'+a.id+'">'+icImg(ICONS[a.ic])+'</span>').join('')+'</span><span class="libName">'+c.n+'</span><span class="libCount">'+arabNum(c.items.length)+' من التطبيقات</span></div>').join('');
 return '<div class="hpage libPage"><input class="libSearch" id="libSearch" placeholder="مكتبة التطبيقات"><div class="libGrid" id="libGrid">'+folders+'</div><div class="lxGrid" id="libSearchRes" style="display:none;margin-top:4px"></div></div>'}
 function libLaunch(id){id.startsWith('x_')?openExtra(id.slice(2)):openApp(id)}
 function openLibCat(i){
@@ -989,6 +992,7 @@ r.innerHTML=list.length?list.map(a=>'<button class="lapp" data-libapp="'+a.id+'"
 r.querySelectorAll('[data-libapp]').forEach(b=>b.addEventListener('click',()=>libLaunch(b.dataset.libapp)))}
 function bindLib(){
 document.querySelectorAll('.libFolder').forEach(b=>b.addEventListener('click',()=>openLibCat(+b.dataset.libcat)));
+document.querySelectorAll('[data-libmini]').forEach(m=>{m.addEventListener('click',e=>{e.stopPropagation();libLaunch(m.dataset.libmini)});m.addEventListener('pointerdown',()=>m.classList.add('prs'));['pointerup','pointercancel','pointerleave'].forEach(ev=>m.addEventListener(ev,()=>m.classList.remove('prs')))});
 const ls=$('#libSearch');if(ls)ls.addEventListener('input',()=>libSearch(ls.value.trim()))}
 function raisePad(){if(!S.padOut)setPad(true)}
 function fmtTime(){const d=new Date();let h=d.getHours()%12;if(h===0)h=12;return h+':'+String(d.getMinutes()).padStart(2,'0')}
@@ -1019,7 +1023,7 @@ $('#sbIcons').innerHTML='<span style="display:inline-flex;align-items:center;gap
 $('#dim').style.opacity=String((80-S.set.bright)/100*0.55);
 const lt=$('#lockTime');if(lt){lt.textContent=fmtTime();
 const d=new Date(),days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],months=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-$('#lockDate').textContent=days[d.getDay()]+'، '+arabNum(d.getDate())+' '+months[d.getMonth()]}
+$('#lockDate').textContent=days[d.getDay()]+'، '+arabNum(d.getDate())+' '+months[d.getMonth()];const _lc=$('#lockChg');if(_lc){if(S.batt.charging){_lc.style.display='';_lc.textContent='⚡ '+arabNum(Math.round(S.batt.pct))+'٪ — جاي ينشحن'}else _lc.style.display='none'}}
 }
 function tickUse(name){const u=S.batt.usage;u[name]=(u[name]||0)+1;store.set('batt',S.batt)}
 setInterval(()=>{
@@ -1028,8 +1032,8 @@ const lowBoost=1+(100-S.batt.pct)/100*1.6;
 const lpmF=S.set.lpm?0.45:1;
 const capF=Math.pow(100/Math.max(72,S.batt.maxCap||100),1.5);
 const isGameApp=(function(){try{return !!(S.app&&typeof GAMES!=='undefined'&&GAMES.some(g=>'x_'+g.k===S.app))}catch(e){return false}})();
-const drainBase=0.028*(0.5+S.set.bright/100)*(S.app==='camera'||S.app==='x_youtube'?2.6:1)*(isGameApp?3.4:1)*(S.padOut?1.4:0.5)*lowBoost*lpmF*capF;
-if(S.batt.charging){S.batt.pct=Math.min(100,S.batt.pct+0.06)}
+const drainBase=0.028*(0.5+S.set.bright/100)*(S.app==='camera'||S.app==='x_youtube'?2.6:1)*(isGameApp?3.4:1)*(S.batt.pro?0.72:1)*(S.padOut?1.4:0.5)*lowBoost*lpmF*capF;
+if(S.batt.charging){S.batt.pct=Math.min(100,S.batt.pct+0.06*(S.chgRate||1))}
 else if(S.playing){S.batt.pct=Math.max(0,S.batt.pct-drainBase)}
 if(S.batt.pct<70){S._degT=(S._degT||0)+1;if(S._degT>=60){S._degT=0;if((S.batt.maxCap||100)>72){S.batt.maxCap=Math.max(72,(S.batt.maxCap||100)-1);store.set('batt',S.batt)}}}else S._degT=0
 if(S.app)tickUse(S.app);
@@ -1123,10 +1127,10 @@ function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.inne
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="pad.js?v=104"></script>
-<script src="social.js?v=104"></script>
-<script src="safari.js?v=104"></script>
-<script src="sys3.js?v=104"></script>
+<script src="pad.js?v=105"></script>
+<script src="social.js?v=105"></script>
+<script src="safari.js?v=105"></script>
+<script src="sys3.js?v=105"></script>
 <script>
 (function(){
 const actId=localStorage.getItem('rio-actlock');
