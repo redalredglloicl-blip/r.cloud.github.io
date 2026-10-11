@@ -12,19 +12,7 @@ function fmtDur(sec){sec=Math.round(sec||0);if(sec<60)return arabNum(sec)+' ثا
 function appName(id){if(!id)return id;if(id.startsWith('x_'))return (EXTRA[id.slice(2)]||{}).n||id;const a=APPS.find(x=>x.id===id);return a?a.n:id}
 let _ac=null;
 function tone(f,t0,dur,type,vol){try{if(!_ac)_ac=new (window.AudioContext||window.webkitAudioContext)();if(_ac.state==='suspended')_ac.resume();const t=_ac.currentTime+t0;const o=_ac.createOscillator(),gn=_ac.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);gn.gain.setValueAtTime(0.0001,t);gn.gain.exponentialRampToValueAtTime(Math.max(0.02,(S.set.vol/100)*0.22*(vol||1)),t+0.012);gn.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(gn);gn.connect(_ac.destination);o.start(t);o.stop(t+dur+0.05)}catch(e){}}
-function sfx(kind){
-if(S.set.vol<=0)return;
-const snd=S.fx.snd||{};
-if(kind==='lock'&&snd.lock===false)return;
-if(kind==='send'&&snd.send===false)return;
-if(kind==='click'&&snd.keys===false)return;
-if(kind==='unlock'){tone(587,0,.09,'sine');tone(880,.07,.12,'sine')}
-else if(kind==='lock'){tone(392,0,.1,'sine');tone(262,.06,.12,'sine')}
-else if(kind==='shutter'){tone(1250,0,.035,'square',.7);tone(760,.045,.05,'square',.7)}
-else if(kind==='send'){tone(740,0,.06,'sine');tone(1180,.05,.09,'sine')}
-else if(kind==='alarm'){tone(880,0,.16,'sine');tone(880,.22,.16,'sine');tone(1174,.44,.2,'sine')}
-else if(kind==='click'){tone(980,0,.04,'sine',.5)}
-}
+function sfx(kind){}
 const NICON={FaceTime:'facetime',Messages:'messages','App Store':'appstore','الإعدادات':'settings',WhatsApp:'whatsapp',Telegram:'telegram',Messenger:'messenger',Instagram:'instagram',Facebook:'facebook',Discord:'discord',AirDrop:'photos','وقت الشاشة':'settings','المنبه':'clock','المؤقت':'clock','ملخص الإشعارات':'settings'};
 function notify(app,title,text,fn,opts){
 opts=opts||{};
@@ -195,6 +183,26 @@ let x=$('#lockX');
 if(!x){x=document.createElement('div');x.id='lockX'}
 const _lt=document.querySelector('#lockTime');if(_lt)_lt.after(x);else L.appendChild(x)
 const pinAsk=S._pinAsk&&S.locked&&(S.fx.pass||S.fx.faceid);
+if(S.fx.ownerLock){
+const _olt=$('#lockTime'),_old=$('#lockDate');if(_olt)_olt.style.display='none';if(_old)_old.style.display='none';
+const _aid=(S.apple&&S.apple.id)||'';
+const _mask=_aid?_aid.slice(0,1)+'•••'+_aid.slice(_aid.indexOf('@')):'';
+x.innerHTML='<div id="ownLock" style="text-align:center;color:#fff;padding:40px 26px;animation:pinIn .35s">'+
+'<div style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">'+g('lock-closed','#fff',34)+'</div>'+
+'<div style="font-size:22px;font-weight:800;margin-bottom:10px">مقيد بالمالك</div>'+
+'<p style="font-size:13.5px;line-height:2;opacity:.85;margin:0 0 18px">هذا الآيباد تقيد بعد محاولات رمز دخول خاطئة كثيرة.<br>أدخل بريد iCloud الخاص بالمالك لفتحه.</p>'+
+(_aid?'<input id="ownMail" type="email" autocomplete="off" placeholder="بريد iCloud" dir="ltr" style="width:100%;padding:13px;border:none;border-radius:12px;font-size:15px;text-align:center;margin-bottom:10px;box-sizing:border-box"><button id="ownGo" style="width:100%;padding:13px;border:none;border-radius:12px;background:#0a84ff;color:#fff;font-size:16px;font-weight:700;cursor:pointer">فتح الآيباد</button><p class="mut2" style="margin-top:10px;font-size:12px">تلميح الحساب: '+escH(_mask)+'</p>'
+:'<div id="ownTimer" style="font-size:17px;font-weight:700"></div><p class="mut2" style="font-size:12.5px;margin-top:8px;line-height:1.8">لا يوجد حساب iCloud مسجل<br>انتظر ثم حاول مجدداً</p>')+
+'</div>';
+const _go=x.querySelector('#ownGo');
+if(_go)_go.addEventListener('click',()=>{
+const _v=(x.querySelector('#ownMail').value||'').trim().toLowerCase();
+if(_v&&_v===_aid.toLowerCase()){S.fx.ownerLock=false;S.fx.badPin=0;saveFx();_unlock0()}
+else toast('بريد iCloud غير صحيح — حاول مرة ثانية')});
+else{let _sec=60;const _tEl=x.querySelector('#ownTimer');const _tick=()=>{if(_tEl)_tEl.textContent='حاول بعد '+arabNum(_sec)+' ثانية'};_tick();
+const _iv=setInterval(()=>{if(!S.fx.ownerLock){clearInterval(_iv);return}_sec--;_tick();if(_sec<=0){clearInterval(_iv);S.fx.ownerLock=false;S.fx.badPin=0;saveFx();renderLockX()}},1000)}
+return}
+
 const nots=(S.notifs||[]).slice(0,(S.fx.pass||S.fx.faceid)?2:3);
 x.innerHTML=pinAsk?'':'<div class="lwidRow">'+lockWidHTML()+'</div>'+liveHTML()+
 (nots.length?'<div class="lnots">'+nots.map(n=>'<div class="lnot">'+notifIcon(n.app)+'<span style="flex:1;text-align:right"><b>'+escH(n.app)+'</b><br><span>'+escH(n.text)+'</span></span><span class="mut2">'+relTime(n.t)+'</span></div>').join('')+'</div>':'');
@@ -216,7 +224,7 @@ pz.querySelectorAll('[data-pin]').forEach(b=>b.addEventListener('click',e=>{e.st
 if(v==='\u232b')S._pin=(S._pin||'').slice(0,-1);else if(v!==''&&((S._pin||'').length<(S.fx.passLen||4)))S._pin=(S._pin||'')+v;
 const dots=$('#pinDots');if(dots)dots.textContent='\u25cf'.repeat((S._pin||'').length)+'\u25cb'.repeat(Math.max(0,(S.fx.passLen||4)-(S._pin||'').length));
 sfx('click');
-if((S._pin||'').length===(S.fx.passLen||4)){if(simpHash(S._pin)===S.fx.pass){S._pin='';S._pinAsk=false;_unlock0()}else{S._pin='';if(dots){dots.textContent='○'.repeat(S.fx.passLen||4);dots.classList.remove('shake');void dots.offsetWidth;dots.classList.add('shake');}toast('رمز غلط — حاول مرة ثانية');sfx('lock')}}
+if((S._pin||'').length===(S.fx.passLen||4)){if(simpHash(S._pin)===S.fx.pass){S._pin='';S._pinAsk=false;S.fx.badPin=0;saveFx();_unlock0()}else{S._pin='';S.fx.badPin=(S.fx.badPin||0)+1;if(S.fx.badPin>=5){S.fx.ownerLock=true;saveFx();renderLockX();return}if(dots){dots.textContent='○'.repeat(S.fx.passLen||4);dots.classList.remove('shake');void dots.offsetWidth;dots.classList.add('shake');}toast('رمز غلط — حاول مرة ثانية');sfx('lock')}}
 }));
 }
 }
@@ -600,7 +608,7 @@ grp(row2('إعادة تعيين إعدادات Rio','','<span class="mut">ترج
 '<p class="mut" style="margin:8px 2px;line-height:1.8">المسح الكامل يصفي صورك ونوتاتك وتطبيقاتك وحسابك من هذا المتصفح ويرجع الآيباد جديد.</p>';
 bk('general');
 $('#rstSet').addEventListener('click',()=>{if(confirm('متأكد؟ ترجع كل الإعدادات للافتراضي')){localStorage.removeItem('rioipad-fx3');location.reload()}});
-$('#rstAll').addEventListener('click',()=>{if(confirm('تحذير: ينمسح كل شي. متأكد؟')){Object.keys(localStorage).filter(k=>k.startsWith('rioipad-')||k==='rio-phmeta').forEach(k=>localStorage.removeItem(k));location.reload()}});
+$('#rstAll').addEventListener('click',()=>{if(confirm('تحذير: ينمسح كل شي. متأكد؟')){if(S.apple&&S.apple.id)localStorage.setItem('rio-actlock',S.apple.id);Object.keys(localStorage).filter(k=>k.startsWith('rioipad-')||k==='rio-phmeta').forEach(k=>localStorage.removeItem(k));location.reload()}});
 return}
 }
 
