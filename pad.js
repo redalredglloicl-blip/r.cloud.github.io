@@ -373,6 +373,42 @@ const freeFirst=!S.gameFree[g.k]&&!inst;
 return '<div class="card row" style="align-items:center"><span style="flex:0 0 auto">'+icImg(ICONS[g.k])+'</span><span style="flex:1;cursor:pointer" data-detail="'+g.k+'"><span class="big" style="font-size:15px">'+g.n+'</span><br><span class="mut">'+g.cat+' — '+g.dev+'</span><br>'+(freeFirst?'<span style="font-size:12px;color:#34c759;font-weight:700">مجاناً لأول مرة</span> <span class="mut" style="font-size:12px;text-decoration:line-through">$'+g.price+'</span>':'<b style="font-size:13px;color:#0a84ff">$'+g.price+'</b>')+'</span><button class="btn '+(inst?'gray':'')+'" data-get="'+g.k+'" style="border-radius:16px;padding:7px 18px">'+(inst?'فتح':(freeFirst?'مجاناً':'$'+g.price))+'</button></div>';
 }
 function anyRow(a){return a.price!=null?gameRow(a):storeRow(a)}
+function initSwitches(root){
+(root||document).querySelectorAll('.switch').forEach(sw=>{
+if(sw._asw)return;sw._asw=1;
+const inp=sw.querySelector('input'),track=sw.querySelector('i');
+if(!inp||!track)return;
+const RANGE=20;let sx=0,dragging=false,moved=false,lpT=0,pid=null;
+function baseX(){return inp.checked?RANGE:0}
+sw.addEventListener('pointerdown',e=>{
+if(dragging)return;dragging=true;moved=false;sx=e.clientX;pid=e.pointerId;
+try{sw.setPointerCapture(pid)}catch(_){}
+sw.classList.add('drag');clearTimeout(lpT);
+lpT=setTimeout(()=>{if(dragging&&!moved)sw.classList.add('hold')},380);
+e.preventDefault();
+});
+sw.addEventListener('pointermove',e=>{
+if(!dragging||e.pointerId!==pid)return;
+const dx=e.clientX-sx;
+if(!moved&&Math.abs(dx)>5){moved=true;clearTimeout(lpT);sw.classList.remove('hold')}
+if(moved){const x=Math.max(-5,Math.min(RANGE+5,baseX()+dx));sw.style.setProperty('--kx',x+'px');track.style.background=x>RANGE/2?'#34c759':''}
+});
+function end(e){
+if(!dragging||(e&&e.pointerId!==pid))return;
+dragging=false;clearTimeout(lpT);sw.classList.remove('hold','drag');
+sw.style.removeProperty('--kx');track.style.background='';
+if(moved){if(Math.abs(e.clientX-sx)>RANGE/2)inp.checked=!inp.checked}
+else inp.checked=!inp.checked;
+moved=false;
+inp.dispatchEvent(new Event('change',{bubbles:true}));
+}
+sw.addEventListener('pointerup',end);
+sw.addEventListener('pointercancel',end);
+});
+}
+let _swQ=false;
+new MutationObserver(()=>{if(_swQ)return;_swQ=true;requestAnimationFrame(()=>{_swQ=false;initSwitches(document)})}).observe(document.body,{childList:true,subtree:true});
+initSwitches(document);
 function lgTabs(bar,tabs,cur,onPick){
 const pill=bar.querySelector('.lg-pill'),btns=[...bar.querySelectorAll('.lg-tab')];
 function place(i,instant){const b=btns[i];if(!b)return;const br=b.getBoundingClientRect(),cr=bar.getBoundingClientRect();if(instant)pill.style.transition='none';pill.style.transform='translateX('+(br.left-cr.left)+'px)';pill.style.width=br.width+'px';if(instant)requestAnimationFrame(()=>{pill.style.transition=''})}
