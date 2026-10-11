@@ -375,6 +375,8 @@ function gptLogo(sz){sz=sz||30;let p='';for(let k=0;k<6;k++)p+='<path d="M50 14 
 function appChatGPT(){
 const el=document.querySelector('#appBody');
 S.gpt=S.gpt||[];
+S.gptHist=S.gptHist||store.get('gptHist',[]);
+window.closeGptDrawer=()=>{const d=document.querySelector('#gptDrawer');if(d)d.remove()};
 const mdLite=s=>{
 const lines2=escH(s||'').split('\n');let h='',inCode=false,cb='';
 const inl=t=>t.replace(/`([^`]+)`/g,'<code style="background:#ececf1;border-radius:6px;padding:1px 6px;font-size:12.5px">$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
@@ -384,60 +386,101 @@ if(inCode){cb+=ln+'\n';continue}
 let m;
 if(m=ln.match(/^#{1,3}\s+(.*)/))h+='<div style="font-weight:700;font-size:'+(ln.indexOf('###')===0?'15px':'16.5px')+';margin:8px 0 3px">'+inl(m[1])+'</div>';
 else if(m=ln.match(/^(\d+)[.)]\s+(.*)/))h+='<div style="margin:3px 0"><span style="font-weight:700">'+m[1]+'.</span> '+inl(m[2])+'</div>';
-else if(m=ln.match(/^[-*\u2022]\s+(.*)/))h+='<div style="margin:3px 0;padding-inline-start:18px;position:relative"><span style="position:absolute;inset-inline-start:5px">\u2022</span>'+inl(m[1])+'</div>';
+else if(m=ln.match(/^[-*•]\s+(.*)/))h+='<div style="margin:3px 0;padding-inline-start:18px;position:relative"><span style="position:absolute;inset-inline-start:5px">•</span>'+inl(m[1])+'</div>';
 else if(!ln.trim())h+='<div style="height:7px"></div>';
 else h+='<div style="margin:3px 0">'+inl(ln)+'</div>';
 }
 if(inCode)h+='<pre style="background:#1c1c1e;color:#f5f5f7;border-radius:12px;padding:12px;overflow-x:auto;font-size:12.5px;direction:ltr;text-align:left;margin:6px 0">'+cb+'</pre>';
 return h;
 };
+const saveHist=()=>{try{store.set('gptHist',S.gptHist||[])}catch(e){}};
+const newChat=()=>{if(S.gpt.length){const fu=S.gpt.find(m=>m.role==='user');S.gptHist.unshift({id:'c'+Date.now(),title:(fu?fu.t:'محادثة جديدة').slice(0,28),msgs:S.gpt,ts:Date.now()});S.gptHist=S.gptHist.slice(0,30);saveHist()}S.gpt=[];S.gptBusy=false;if(S._tw){clearInterval(S._tw);S._tw=null}render()};
+const openDrawer=()=>{
+window.closeGptDrawer();
+const d=document.createElement('div');d.id='gptDrawer';
+d.innerHTML='<div id="gptDrBg" style="position:absolute;inset:0;background:rgba(0,0,0,.35);z-index:40"></div>'+
+'<div style="position:absolute;top:0;bottom:0;right:0;width:272px;max-width:82%;background:#fff;z-index:41;display:flex;flex-direction:column;box-shadow:-4px 0 20px rgba(0,0,0,.15);animation:gptDrIn .28s cubic-bezier(.32,.72,.24,1)">'+
+'<div class="row" style="align-items:center;padding:15px 14px;border-bottom:1px solid #eee"><b style="flex:1;font-size:16px">المحادثات</b><span id="gptDrNew" style="color:#0a84ff;font-size:13px;font-weight:600;cursor:pointer">+ جديدة</span></div>'+
+'<div style="flex:1;overflow-y:auto;padding:8px">'+(S.gptHist.length?S.gptHist.map(c=>'<div class="row" data-gh="'+c.id+'" style="align-items:center;padding:12px 10px;border-radius:10px;cursor:pointer"><span style="flex:1;min-width:0"><b style="font-size:13.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escH(c.title)+'</b><span class="mut" style="font-size:11.5px">'+c.msgs.length+' رسائل</span></span><span data-ghdel="'+c.id+'" style="color:#ff3b30;padding:8px;font-size:13px">✕</span></div>').join(''):'<p class="mut" style="text-align:center;padding:30px 10px;font-size:13px;line-height:2">لا توجد محادثات محفوظة بعد<br>ابدأ محادثة وستظهر هنا</p>')+'</div></div>';
+document.querySelector('#appWin').appendChild(d);
+document.querySelector('#gptDrBg').addEventListener('click',window.closeGptDrawer);
+document.querySelector('#gptDrNew').addEventListener('click',()=>{window.closeGptDrawer();newChat();toast('محادثة جديدة')});
+d.querySelectorAll('[data-gh]').forEach(x=>x.addEventListener('click',e=>{
+if(e.target.closest('[data-ghdel]'))return;
+const c=S.gptHist.find(cc=>cc.id===x.dataset.gh);if(!c)return;
+if(S.gpt.length&&!S.gptHist.some(cc=>cc.msgs===S.gpt)){const fu=S.gpt.find(m=>m.role==='user');S.gptHist.unshift({id:'c'+Date.now(),title:(fu?fu.t:'محادثة').slice(0,28),msgs:S.gpt,ts:Date.now()});saveHist()}
+S.gpt=c.msgs;S.gptBusy=false;window.closeGptDrawer();render();
+}));
+d.querySelectorAll('[data-ghdel]').forEach(x=>x.addEventListener('click',e=>{e.stopPropagation();S.gptHist=S.gptHist.filter(cc=>cc.id!==x.dataset.ghdel);saveHist();openDrawer()}));
+};
 const render=()=>{
 const msgs=S.gpt;
-let h='<div class="row" style="align-items:center;margin:-12px -12px 0;padding:11px 14px 9px;position:sticky;top:-12px;background:#fff;z-index:5;border-bottom:1px solid #f0f0f2"><span style="display:inline-flex">'+si('menu',21)+'</span><b style="flex:1;text-align:center;font-size:16.5px">ChatGPT</b><span id="gptNew" style="display:inline-flex;cursor:pointer">'+si('edit',20)+'</span></div>';
-h+='<div style="text-align:center;margin:10px 0 4px"><span style="display:inline-block;background:#f4f4f5;border:1px solid #e4e4e7;border-radius:16px;padding:5px 14px;font-size:12.5px;color:#3f3f46">GPT-4o mini \u2014 \u0646\u0645\u0648\u0630\u062c \u0645\u062c\u0627\u0646\u064a</span></div>';
-h+='<div id="gptList" style="display:flex;flex-direction:column;gap:16px;padding:6px 2px 10px;min-height:280px">';
+let h='<div style="display:flex;flex-direction:column;min-height:100%">';
+h+='<div class="row" style="align-items:center;margin:-12px -12px 0;padding:11px 14px 9px;position:sticky;top:-12px;background:#fff;z-index:5;border-bottom:1px solid #f0f0f2"><span id="gptMenu" style="display:inline-flex;cursor:pointer;padding:4px">'+si('menu',21)+'</span><b style="flex:1;text-align:center;font-size:16.5px">ChatGPT</b><span id="gptNew" style="display:inline-flex;cursor:pointer;padding:4px">'+si('edit',20)+'</span></div>';
+h+='<div style="text-align:center;margin:10px 0 4px"><span style="display:inline-block;background:#f4f4f5;border:1px solid #e4e4e7;border-radius:16px;padding:5px 14px;font-size:12.5px;color:#3f3f46">GPT-4o mini — نموذج مجاني</span></div>';
+h+='<div id="gptList" style="flex:1;display:flex;flex-direction:column;gap:16px;padding:6px 2px 10px">';
 if(!msgs.length){
-h+='<div style="text-align:center;padding:30px 6px 8px"><div style="display:flex;justify-content:center;margin-bottom:14px">'+gptLogo(56)+'</div><b style="font-size:20px">\u0643\u064a\u0641 \u0623\u0642\u062f\u0631 \u0623\u0633\u0627\u0639\u062f\u0643 \u0627\u0644\u064a\u0648\u0645\u061f</b><p class="mut" style="font-size:13px;margin:8px 0 0">\u062c\u0631\u0651\u0628 \u0648\u0627\u062d\u062f \u0645\u0646 \u0627\u0644\u0627\u0642\u062a\u0631\u0627\u062d\u0627\u062a \u0623\u0648 \u0627\u0633\u0623\u0644 \u0623\u064a \u0634\u064a\u0621</p></div>';
-h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">'+['\u0627\u0643\u062a\u0628\u0644\u064a \u0646\u0643\u062a\u0629 \u062a\u0636\u062d\u0643','\u0627\u0634\u0631\u062d\u0644\u064a \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0628\u0628\u0633\u0627\u0637\u0629','\u0646\u0635\u064a\u062d\u0629 \u0644\u062a\u0639\u0644\u0645 \u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629 \u0628\u0633\u0631\u0639\u0629','\u0627\u0643\u062a\u0628\u0644\u064a \u0642\u0635\u0629 \u0642\u0635\u064a\u0631\u0629 \u0645\u0634\u0648\u0642\u0629'].map(s2=>'<div data-gptsug="'+s2+'" class="card" style="margin:0;padding:13px 12px;font-size:13px;cursor:pointer;line-height:1.7;border-radius:14px">'+s2+'</div>').join('')+'</div>';
+h+='<div style="text-align:center;padding:30px 6px 8px"><div style="display:flex;justify-content:center;margin-bottom:14px">'+gptLogo(56)+'</div><b style="font-size:20px">كيف أقدر أساعدك اليوم؟</b><p class="mut" style="font-size:13px;margin:8px 0 0">جرّب واحد من الاقتراحات أو اسأل أي شيء</p></div>';
+h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">'+['اكتبلي نكتة تضحك','اشرحلي الذكاء الاصطناعي ببساطة','نصيحة لتعلّم الإنجليزية بسرعة','اكتبلي قصة قصيرة مشوّقة'].map(s2=>'<div data-gptsug="'+s2+'" class="card" style="margin:0;padding:13px 12px;font-size:13px;cursor:pointer;line-height:1.7;border-radius:14px">'+s2+'</div>').join('')+'</div>';
 }else{
-h+=msgs.map((m,ix)=>m.role==='user'
-?'<div style="align-self:flex-end;max-width:85%;background:#f4f4f5;border-radius:20px;padding:10px 15px;font-size:14.5px;line-height:1.75;word-break:break-word">'+escH(m.t)+'</div>'
-:'<div style="display:flex;flex-direction:column;gap:4px"><div class="row" style="gap:10px;align-items:flex-start"><span style="flex:0 0 auto;margin-top:1px">'+gptLogo(26)+'</span><div style="flex:1;font-size:14.5px;line-height:1.9;word-break:break-word;min-width:0">'+mdLite(m.t)+'</div></div><div class="row" style="gap:4px;padding-inline-start:36px"><span data-gptcopy="'+ix+'" style="display:inline-flex;align-items:center;gap:5px;color:#8e8e93;font-size:12px;cursor:pointer;padding:5px 9px;border-radius:8px">'+si('copy',13)+' \u0646\u0633\u062e</span></div></div>'
-).join('');
-if(S.gptBusy)h+='<div class="row" style="gap:10px;align-items:center"><span>'+gptLogo(26)+'</span><span style="display:flex;gap:5px"><span class="tdot"></span><span class="tdot"></span><span class="tdot"></span></span></div>';
+h+=msgs.map((m,ix)=>{
+const isLast=ix===msgs.length-1,anim=isLast?' msgIn':'';
+if(m.role==='user')return '<div class="'+anim.trim()+'" style="align-self:flex-end;max-width:85%;background:#f4f4f5;border-radius:20px;padding:10px 15px;font-size:14.5px;line-height:1.75;word-break:break-word">'+escH(m.t)+'</div>';
+const body=m.typing?mdLite((m.t||'').split(/(\s+)/).slice(0,m.shown||0).join(''))+'<span class="gptCaret"></span>':mdLite(m.t);
+return '<div class="'+anim.trim()+'" style="display:flex;flex-direction:column;gap:4px"><div class="row" style="gap:10px;align-items:flex-start"><span style="flex:0 0 auto;margin-top:1px'+(m.typing?';animation:gptPulse 1.1s ease-in-out infinite':'')+'">'+gptLogo(26)+'</span><div id="'+(m.typing?'gptStream':'')+'" style="flex:1;font-size:14.5px;line-height:1.9;word-break:break-word;min-width:0">'+body+'</div></div>'+(m.typing?'':'<div class="row" style="gap:4px;padding-inline-start:36px"><span data-gptcopy="'+ix+'" style="display:inline-flex;align-items:center;gap:5px;color:#8e8e93;font-size:12px;cursor:pointer;padding:5px 9px;border-radius:8px">'+si('copy',13)+' نسخ</span></div>')+'</div>';
+}).join('');
+if(S.gptBusy)h+='<div class="row msgIn" style="gap:10px;align-items:center"><span style="animation:gptPulse 1.1s ease-in-out infinite">'+gptLogo(26)+'</span><span style="display:flex;gap:5px;align-items:center"><span class="tdot"></span><span class="tdot"></span><span class="tdot"></span></span></div>';
 }
 h+='</div>';
-h+='<div style="position:sticky;bottom:-12px;margin:12px -12px -12px;background:#fff;padding:10px 12px 16px"><div class="row" style="align-items:center;gap:6px;background:#f7f7f8;border:1px solid #e9e9ec;border-radius:28px;padding:6px 6px 6px 12px"><span style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;color:#3f3f46">'+si('plus',18)+'</span><input id="gptIn" placeholder="\u0627\u0633\u0623\u0644 \u0623\u064a \u0634\u064a\u0621\u2026" style="flex:1;border:none;background:none;outline:none;font-size:14px;font-family:inherit;min-width:0;padding:8px 0"><button id="gptSend" style="width:36px;height:36px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto">'+si('upRight',16,'#fff')+'</button></div></div>';
+h+='<div style="margin:auto -12px -12px;background:#fff;padding:10px 12px 16px;position:sticky;bottom:-12px;z-index:6"><div class="row" style="align-items:center;gap:6px;background:#f7f7f8;border:1px solid #e9e9ec;border-radius:28px;padding:6px 6px 6px 12px"><span style="width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;color:#3f3f46">'+si('plus',18)+'</span><input id="gptIn" placeholder="اسأل أي شيء…" style="flex:1;border:none;background:none;outline:none;font-size:14px;font-family:inherit;min-width:0;padding:8px 0"><button id="gptSend" style="width:36px;height:36px;border-radius:50%;background:#000;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto">'+si('upRight',16,'#fff')+'</button></div></div>';
+h+='</div>';
 el.innerHTML=h;
 requestAnimationFrame(()=>{try{el.scrollTop=el.scrollHeight}catch(e){}});
 const inp=document.querySelector('#gptIn');
 const send=async txt=>{
 const v=(txt||inp.value).trim();if(!v||S.gptBusy)return;
 S.gpt.push({role:'user',t:v});S.gptBusy=true;render();
-const SYS='\u0623\u0646\u062a \u0645\u0633\u0627\u0639\u062f \u0630\u0643\u064a \u0648\u062f\u0648\u062f \u0627\u0633\u0645\u0643 ChatGPT. \u0623\u062c\u0628 \u0628\u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u062f\u0627\u0626\u0645\u0627\u064b \u0648\u0628\u0623\u0633\u0644\u0648\u0628 \u0648\u0627\u0636\u062d \u0648\u0645\u0646\u0638\u0645: \u0627\u0633\u062a\u062e\u062f\u0645 \u0627\u0644\u0639\u0646\u0627\u0648\u064a\u0646 (##) \u0648\u0627\u0644\u0642\u0648\u0627\u0626\u0645 \u0627\u0644\u0645\u0631\u0642\u0645\u0629 \u0648\u0627\u0644\u0646\u0642\u0627\u0637 (-) \u0648\u0627\u0644\u062e\u0637 \u0627\u0644\u0639\u0631\u064a\u0636 (**) \u0644\u062a\u0646\u0638\u064a\u0645 \u0627\u0644\u0625\u062c\u0627\u0628\u0629.';
+const SYS='أنت مساعد ذكي ودود اسمك ChatGPT. أجب باللغة العربية دائماً وبأسلوب واضح ومنظم: استخدم العناوين والقوائم المرقمة والنقاط والخط العريض لتنظيم الإجابة.';
 const histMsgs=S.gpt.slice(0,-1).slice(-8).map(m=>({role:m.role==='ai'?'assistant':'user',content:m.t}));
-const body=JSON.stringify({model:'openai',messages:[{role:'system',content:SYS}].concat(histMsgs,[{role:'user',content:v}])});
 const isSrvErr=t=>{const s=(t||'').trim();return !s||(/^\s*\{/.test(s)&&/"(error|status)"/.test(s))};
 let ans='';
-for(let a=0;a<3&&!ans;a++){
 try{
-if(a)await new Promise(r=>setTimeout(r,1500));
-const r=await fetch('https://text.pollinations.ai/',{method:'POST',headers:{'Content-Type':'application/json'},body:body,signal:AbortSignal.timeout(25000)});
+const r=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:[{role:'system',content:SYS}].concat(histMsgs,[{role:'user',content:v}])}),signal:AbortSignal.timeout(30000)});
+if(r.ok){const jj=await r.json();const cc=jj&&jj.choices&&jj.choices[0]&&jj.choices[0].message&&jj.choices[0].message.content;if(cc&&cc.trim()&&!isSrvErr(cc))ans=cc.trim().slice(0,3000)}
+}catch(e){}
+for(let a=0;a<2&&!ans;a++){
+try{
+if(a)await new Promise(r=>setTimeout(r,1200));
+const r=await fetch('https://text.pollinations.ai/'+encodeURIComponent(v)+'?system='+encodeURIComponent(SYS),{signal:AbortSignal.timeout(30000)});
 const t=await r.text();
-if(r.ok&&!isSrvErr(t))ans=t.trim().slice(0,2500);
+if(r.ok&&t&&t.trim()&&!isSrvErr(t))ans=t.trim().slice(0,3000);
 }catch(e){}
 }
-if(ans)S.gpt.push({role:'ai',t:ans});
-else S.gpt.push({role:'ai',t:'\u0627\u0644\u062e\u062f\u0645\u0629 \u0645\u0634\u063a\u0648\u0644\u0629 \u062d\u0627\u0644\u064a\u0627\u064b \u2014 \u0627\u0646\u062a\u0638\u0631 \u0634\u0648\u064a \u0648\u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u062b\u0627\u0646\u064a\u0629.'});
-S.gptBusy=false;render();
+S.gptBusy=false;
+if(ans){
+const m={role:'ai',t:ans,shown:0,typing:true};S.gpt.push(m);render();
+const words=ans.split(/(\s+)/);
+if(S._tw)clearInterval(S._tw);
+S._tw=setInterval(()=>{
+const cur=S.gpt[S.gpt.length-1];
+if(!cur||cur!==m){clearInterval(S._tw);S._tw=null;return}
+m.shown=Math.min(words.length,(m.shown||0)+4);
+const t2=document.querySelector('#gptStream');
+if(t2){t2.innerHTML=mdLite(words.slice(0,m.shown).join(''))+'<span class="gptCaret"></span>';try{el.scrollTop=el.scrollHeight}catch(e){}}
+if(m.shown>=words.length){clearInterval(S._tw);S._tw=null;m.typing=false;render()}
+},45);
+}else{
+S.gpt.push({role:'ai',t:'الخدمة مشغولة حالياً — انتظر شوي وحاول مرة ثانية.'});
+render();
+}
 };
 document.querySelector('#gptSend').addEventListener('click',()=>send());
 inp.addEventListener('keydown',e=>{if(e.key==='Enter')send()});
 el.querySelectorAll('[data-gptsug]').forEach(c=>c.addEventListener('click',()=>send(c.dataset.gptsug)));
-el.querySelectorAll('[data-gptcopy]').forEach(c=>c.addEventListener('click',()=>{const m=S.gpt[+c.dataset.gptcopy];if(m&&m.t&&navigator.clipboard)navigator.clipboard.writeText(m.t).then(()=>toast('\u0627\u0646\u0646\u0633\u062e \u0627\u0644\u0646\u0635')).catch(()=>toast('\u0645\u0627 \u0627\u0646\u0646\u0633\u062e'));}));
-const nn=document.querySelector('#gptNew');if(nn)nn.addEventListener('click',()=>{S.gpt=[];S.gptBusy=false;render();toast('\u0645\u062d\u0627\u062f\u062b\u0629 \u062c\u062f\u064a\u062f\u0629')});
+el.querySelectorAll('[data-gptcopy]').forEach(c=>c.addEventListener('click',()=>{const m=S.gpt[+c.dataset.gptcopy];if(m&&m.t&&navigator.clipboard)navigator.clipboard.writeText(m.t).then(()=>toast('اننسخ النص')).catch(()=>toast('ما اننسخ'));}));
+const gm=document.querySelector('#gptMenu');if(gm)gm.addEventListener('click',openDrawer);
+const nn=document.querySelector('#gptNew');if(nn)nn.addEventListener('click',()=>{newChat();toast('محادثة جديدة')});
 setTimeout(()=>{const i2=document.querySelector('#gptIn');if(i2&&!S.gpt.length)i2.focus()},400);
 };
 render();
 }
-
