@@ -51,7 +51,8 @@ shield:'<path d="M12 3 5 5.8v6c0 4.4 2.9 7.6 7 9.2 4.1-1.6 7-4.8 7-9.2v-6L12 3z"
 flash:'<path d="M13 2.5 4.5 13.5H11l-1 8 8.5-11H12l1-8z"/>',
 nightlight:'<path d="M20 13.5A8 8 0 0 1 10.5 4 8 8 0 1 0 20 13.5z"/><path d="M17 4l.7 1.8L19.5 6.5l-1.8.7L17 9l-.7-1.8-1.8-.7 1.8-.7z"/>',
 'play-skip-forward':'<path d="M6 5l9 7-9 7z" fill="COLOR" stroke="none"/><path d="M17 5v14" stroke-width="2.4"/>',
-'play-skip-backward':'<path d="M18 5l-9 7 9 7z" fill="COLOR" stroke="none"/><path d="M7 5v14" stroke-width="2.4"/>'
+'play-skip-backward':'<path d="M18 5l-9 7 9 7z" fill="COLOR" stroke="none"/><path d="M7 5v14" stroke-width="2.4"/>',
+translate:'<path d="M4 5h9M8.5 3v2c0 3-2 5.5-4.5 7M6 9c1 2.5 3 4.5 5.5 5.5"/><path d="M13 21l4.5-9L22 21M14.8 17h5.4"/>'
 };
 const G_ALIAS={celldata:'celldata',airdrop:'airdrop',bt:'bt',darkmode:'darkmode',dnd:'dnd',hotspot:'hotspot',lowpower:'lowpower',mirror:'mirror',music:'music','musical-notes':'music',nshift:'nshift',screenrec:'screenrec',shazam:'shazam','copy-outline':'copy','document-text':'doc','lock-closed':'lock','volume-high':'volume','battery-charging':'battery','play-circle':'playcircle','qr-code':'qr','flashlight':'flashlight','bluetooth':'bt','notifications':'bell','options':'sliders','radio-outline':'radio','game-controller':'gamepad','settings':'gear','shield-checkmark':'shield'};
 function g(name,color,size){size=size||22;color=color||'#fff';const k=G_ALIAS[name]||name;return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto;vertical-align:middle;display:inline-block">'+(G_P[k]||'<circle cx="12" cy="12" r="8"/>').replace(/COLOR/g,color)+'</svg>'}
