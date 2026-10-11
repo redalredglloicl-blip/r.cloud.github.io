@@ -178,35 +178,39 @@ if(S.musicPlay){const a=ALBUMS[S.album||0];const dur=[231,212,354][S.album||0]||
 return '';
 }
 function wipeDevice(){if(!confirm('تخطي iCloud يمسح كل شي: تطبيقاتك المنزلة وصورك وملاحظاتك وحساباتك، ويرجع الآيباد جديد بتطبيقات النظام فقط. متأكد؟'))return;Object.keys(localStorage).filter(k=>k.startsWith('rioipad-')||k==='rio-phmeta'||k==='rio-actlock').forEach(k=>localStorage.removeItem(k));location.reload()}
+function renderOwnerLock(){
+let o=document.querySelector('#ownLockOverlay');
+if(!S.fx.ownerLock){if(o)o.remove();return}
+if(o)return;
+o=document.createElement('div');o.id='ownLockOverlay';
+o.style.cssText='position:fixed;inset:0;z-index:9999;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;font-family:inherit';
+const _aid=(S.apple&&S.apple.id)||'';
+const _mask=_aid?_aid.slice(0,1)+'\u2022\u2022\u2022'+_aid.slice(_aid.indexOf('@')):'';
+o.innerHTML='<div style="max-width:340px;width:100%;animation:pinIn .35s">'+
+'<div style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">'+g('lock-closed','#fff',34)+'</div>'+
+'<div style="font-size:22px;font-weight:800;margin-bottom:10px">\u0645\u0642\u064a\u062f \u0628\u0627\u0644\u0645\u0627\u0644\u0643</div>'+
+'<p style="font-size:13.5px;line-height:2;opacity:.8;margin:0 0 18px">\u0647\u0630\u0627 \u0627\u0644\u0622\u064a\u0628\u0627\u062f \u062a\u0642\u064a\u062f \u0628\u0639\u062f \u0645\u062d\u0627\u0648\u0644\u0627\u062a \u0631\u0645\u0632 \u062f\u062e\u0648\u0644 \u062e\u0627\u0637\u0626\u0629 \u0643\u062b\u064a\u0631\u0629.<br>\u0623\u062f\u062e\u0644 \u0628\u0631\u064a\u062f iCloud \u0627\u0644\u062e\u0627\u0635 \u0628\u0627\u0644\u0645\u0627\u0644\u0643 \u0644\u0641\u062a\u062d\u0647.</p>'+
+(_aid?'<input id="ownMail2" type="email" inputmode="email" autocomplete="off" autocapitalize="off" placeholder="\u0628\u0631\u064a\u062f iCloud" dir="ltr" style="width:100%;padding:13px;border:none;border-radius:12px;font-size:16px;text-align:center;margin-bottom:10px;box-sizing:border-box"><button id="ownGo2" style="width:100%;padding:13px;border:none;border-radius:12px;background:#0a84ff;color:#fff;font-size:16px;font-weight:700;cursor:pointer">\u0641\u062a\u062d \u0627\u0644\u0622\u064a\u0628\u0627\u062f</button><p style="margin-top:10px;font-size:12px;opacity:.55">\u062a\u0644\u0645\u064a\u062d \u0627\u0644\u062d\u0633\u0627\u0628: '+escH(_mask)+'</p>'
+:'<div id="ownTimer2" style="font-size:17px;font-weight:700"></div><p style="font-size:12.5px;margin-top:8px;line-height:1.8;opacity:.7">\u0644\u0627 \u064a\u0648\u062c\u062f \u062d\u0633\u0627\u0628 iCloud \u0645\u0633\u062c\u0644<br>\u0627\u0646\u062a\u0638\u0631 \u062b\u0645 \u062d\u0627\u0648\u0644 \u0645\u062c\u062f\u062f\u0627\u064b</p>')+
+'<button id="ownSkip2" style="background:none;border:none;color:#fff;opacity:.6;font-size:13px;margin-top:14px;cursor:pointer;text-decoration:underline">\u062a\u062e\u0637\u064a iCloud \u2014 \u0645\u0633\u062d \u0627\u0644\u062c\u0647\u0627\u0632 \u0648\u0627\u0644\u0628\u062f\u0621 \u0645\u0646 \u062c\u062f\u064a\u062f</button></div>';
+document.body.appendChild(o);
+const _go=o.querySelector('#ownGo2');
+if(_go)_go.addEventListener('click',()=>{
+const _v=(o.querySelector('#ownMail2').value||'').trim().toLowerCase();
+if(_v&&_v===_aid.toLowerCase()){S.fx.ownerLock=false;S.fx.badPin=0;saveFx();renderOwnerLock();_unlock0()}
+else toast('\u0628\u0631\u064a\u062f iCloud \u063a\u064a\u0631 \u0635\u062d\u064a\u062d \u2014 \u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u062b\u0627\u0646\u064a\u0629')});
+else{let _sec=60;const _tEl=o.querySelector('#ownTimer2');const _tick=()=>{if(_tEl)_tEl.textContent='\u062d\u0627\u0648\u0644 \u0628\u0639\u062f '+arabNum(_sec)+' \u062b\u0627\u0646\u064a\u0629'};_tick();
+const _iv=setInterval(()=>{if(!S.fx.ownerLock){clearInterval(_iv);return}_sec--;_tick();if(_sec<=0){clearInterval(_iv);S.fx.ownerLock=false;S.fx.badPin=0;saveFx();renderOwnerLock();renderLockX()}},1000)}
+o.querySelector('#ownSkip2').addEventListener('click',()=>wipeDevice());
+}
 function renderLockX(){
 const L=$('#lock');if(!L)return;
 let x=$('#lockX');
 if(!x){x=document.createElement('div');x.id='lockX'}
 const _lt=document.querySelector('#lockTime');if(_lt)_lt.after(x);else L.appendChild(x)
 const pinAsk=S._pinAsk&&S.locked&&(S.fx.pass||S.fx.faceid);
-const _L0=$('#lock');if(_L0&&!S.fx.ownerLock){_L0.style.backdropFilter='';_L0.style.webkitBackdropFilter='';_L0.style.background=''}
-if(S.fx.ownerLock){
-const _olt=$('#lockTime'),_old=$('#lockDate');if(_olt)_olt.style.display='none';if(_old)_old.style.display='none';
-const _Lb=$('#lock');if(_Lb){_Lb.style.backdropFilter='none';_Lb.style.webkitBackdropFilter='none';_Lb.style.background='rgba(0,0,0,.94)'}
-const _aid=(S.apple&&S.apple.id)||'';
-const _mask=_aid?_aid.slice(0,1)+'•••'+_aid.slice(_aid.indexOf('@')):'';
-x.innerHTML='<div id="ownLock" style="text-align:center;color:#fff;padding:40px 26px;animation:pinIn .35s">'+
-'<div style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">'+g('lock-closed','#fff',34)+'</div>'+
-'<div style="font-size:22px;font-weight:800;margin-bottom:10px">مقيد بالمالك</div>'+
-'<p style="font-size:13.5px;line-height:2;opacity:.85;margin:0 0 18px">هذا الآيباد تقيد بعد محاولات رمز دخول خاطئة كثيرة.<br>أدخل بريد iCloud الخاص بالمالك لفتحه.</p>'+
-(_aid?'<input id="ownMail" type="email" inputmode="email" autocomplete="off" autocapitalize="off" placeholder="بريد iCloud" dir="ltr" style="width:100%;padding:13px;border:none;border-radius:12px;font-size:16px;text-align:center;margin-bottom:10px;box-sizing:border-box"><button id="ownGo" style="width:100%;padding:13px;border:none;border-radius:12px;background:#0a84ff;color:#fff;font-size:16px;font-weight:700;cursor:pointer">فتح الآيباد</button><p class="mut2" style="margin-top:10px;font-size:12px">تلميح الحساب: '+escH(_mask)+'</p>'
-:'<div id="ownTimer" style="font-size:17px;font-weight:700"></div><p class="mut2" style="font-size:12.5px;margin-top:8px;line-height:1.8">لا يوجد حساب iCloud مسجل<br>انتظر ثم حاول مجدداً</p>')+
-'<button id="ownSkip" style="background:none;border:none;color:#fff;opacity:.65;font-size:13px;margin-top:14px;cursor:pointer;text-decoration:underline">تخطي iCloud — مسح الجهاز والبدء من جديد</button>'+
-'</div>';
-const _go=x.querySelector('#ownGo');
-if(_go)_go.addEventListener('click',()=>{
-const _v=(x.querySelector('#ownMail').value||'').trim().toLowerCase();
-if(_v&&_v===_aid.toLowerCase()){S.fx.ownerLock=false;S.fx.badPin=0;saveFx();_unlock0()}
-else toast('بريد iCloud غير صحيح — حاول مرة ثانية')});
-const _sk=x.querySelector('#ownSkip');if(_sk)_sk.addEventListener('click',()=>wipeDevice());
-else{let _sec=60;const _tEl=x.querySelector('#ownTimer');const _tick=()=>{if(_tEl)_tEl.textContent='حاول بعد '+arabNum(_sec)+' ثانية'};_tick();
-const _iv=setInterval(()=>{if(!S.fx.ownerLock){clearInterval(_iv);return}_sec--;_tick();if(_sec<=0){clearInterval(_iv);S.fx.ownerLock=false;S.fx.badPin=0;saveFx();renderLockX()}},1000)}
-return}
+renderOwnerLock();
+if(S.fx.ownerLock)return
 
 const nots=(S.notifs||[]).slice(0,(S.fx.pass||S.fx.faceid)?2:3);
 x.innerHTML=pinAsk?'':'<div class="lwidRow">'+lockWidHTML()+'</div>'+liveHTML()+
