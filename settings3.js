@@ -17,6 +17,7 @@ textsize:{t:'حجم النص',rows:[
 controlcenter:{t:'مركز التحكم',rows:[
  ['الوصول من التطبيقات','', 'sw','s3_cc_apps',true],
  ['إظهار مؤشر الرئيسية','', 'sw','s3_cc_home',true]]},
+wallpaper:{t:'الخلفية',rows:[]},
 display2:{t:'الشاشة والسطوع',rows:[
  ['السطوع التلقائي','', 'sw','s3_autobright',true],
  ['Night Shift','', 'sw','s3_nightshift',false],
@@ -62,6 +63,31 @@ function s3Render(el,page){
    if(k==='s3_textsize'){S.setPage='s3_textsize';window.appSettings(el);}
   });
  });
+ // Wallpaper picker
+ if(page==='wallpaper'){
+  const walls=[
+   ['الافتراضية','linear-gradient(180deg,#000,#1c1c1e)'],
+   ['غروب الشمس','linear-gradient(180deg,#ff9a5a,#ff5a7a,#7b2ff7)'],
+   ['المحيط','linear-gradient(180deg,#0a84ff,#30b0c7,#5ec98a)'],
+   ['الليل','linear-gradient(180deg,#0d1b2a,#1c1c1e,#000)'],
+   ['البنفسجي','linear-gradient(180deg,#7b2ff7,#b45aff,#e0aaff)'],
+   ['النار','linear-gradient(180deg,#ff3b30,#ff9f0a,#ffd60a)'],
+  ];
+  const cur=s3Get('s3_wall',0);
+  let wh='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px">';
+  walls.forEach((w,i)=>{
+   wh+='<div data-wall="'+i+'" style="cursor:pointer;border-radius:12px;overflow:hidden;border:'+(cur===i?'3px solid #0a84ff':'1px solid #ddd')+'"><div style="height:120px;background:'+w[1]+'"></div><div style="padding:8px;text-align:center;font-size:13px;background:#fff">'+w[0]+'</div></div>';
+  });
+  wh+='</div>';
+  el.querySelector('.setgroup').innerHTML=wh;
+  el.querySelectorAll('[data-wall]').forEach(d=>d.addEventListener('click',()=>{
+   const i=+d.dataset.wall;s3Set('s3_wall',i);
+   const scr=document.querySelector('#screen');
+   if(scr)scr.style.background=walls[i][1];
+   toast('تم تغيير الخلفية');
+   s3Render(el,page);
+  }));
+ }
 }
 
 // Inject new rows into main Settings list
@@ -75,7 +101,8 @@ function s3Inject(el){
   if(txt.includes('عام')&&!added){
    const div=document.createElement('div');
    div.innerHTML='<div class="setrow" data-s3main="access" style="cursor:pointer"><span style="display:flex;align-items:center;gap:9px;flex:1"><span class="sq" style="background:#0a84ff">'+g('accessibility','#fff',16)+'</span>تسهيلات الاستخدام</span><span class="mut">‹</span></div>'+
-   '<div class="setrow" data-s3main="controlcenter" style="cursor:pointer"><span style="display:flex;align-items:center;gap:9px;flex:1"><span class="sq" style="background:#8e8e93">'+g('sliders','#fff',16)+'</span>مركز التحكم</span><span class="mut">‹</span></div>';
+   '<div class="setrow" data-s3main="controlcenter" style="cursor:pointer"><span style="display:flex;align-items:center;gap:9px;flex:1"><span class="sq" style="background:#8e8e93">'+g('sliders','#fff',16)+'</span>مركز التحكم</span><span class="mut">‹</span></div>'+
+   '<div class="setrow" data-s3main="wallpaper" style="cursor:pointer"><span style="display:flex;align-items:center;gap:9px;flex:1"><span class="sq" style="background:#30b0c7">'+g('image','#fff',16)+'</span>الخلفية</span><span class="mut">‹</span></div>';
    r.parentNode.insertBefore(div.firstChild,r.nextSibling);
    r.parentNode.insertBefore(div.lastChild,r.nextSibling.nextSibling);
    added=true;
