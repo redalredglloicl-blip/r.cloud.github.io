@@ -10,16 +10,36 @@ window.appFreeform=function(el){
   ['#000','#ff3b30','#0a84ff','#34c759','#ff9f0a'].map((c,i)=>'<button data-ffc="'+c+'" style="width:36px;height:36px;border-radius:50%;background:'+c+';border:'+(i===0?'3px solid #0a84ff':'none')+';cursor:pointer"></button>').join('')+'</div>';
  el.innerHTML=h;
  const cv=el.querySelector('#ffCanvas'),ctx=cv.getContext('2d');
- const r=cv.getBoundingClientRect();cv.width=r.width;cv.height=r.height;
+ const setupCanvas=()=>{
+  const r=cv.getBoundingClientRect();
+  const dpr=window.devicePixelRatio||1;
+  cv.width=r.width*dpr;cv.height=r.height*dpr;
+  ctx.scale(dpr,dpr);
+  ctx.lineWidth=3;ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=color;
+ };
  let drawing=false,color='#000',last=null;
- ctx.lineWidth=3;ctx.lineCap='round';ctx.strokeStyle=color;
- const pos=e=>{const rr=cv.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-rr.left,y:t.clientY-rr.top};};
- cv.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;last=pos(e);},{passive:false});
- cv.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;const p=pos(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;},{passive:false});
- cv.addEventListener('touchend',()=>{drawing=false;});
- cv.addEventListener('mousedown',e=>{drawing=true;last=pos(e);});
- cv.addEventListener('mousemove',e=>{if(!drawing)return;const p=pos(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;});
- cv.addEventListener('mouseup',()=>{drawing=false;});
+ setupCanvas();
+ setTimeout(setupCanvas,100);
+ const pos=e=>{
+  const rr=cv.getBoundingClientRect();
+  let cx,cy;
+  if(e.touches&&e.touches.length){cx=e.touches[0].clientX;cy=e.touches[0].clientY;}
+  else if(e.changedTouches&&e.changedTouches.length){cx=e.changedTouches[0].clientX;cy=e.changedTouches[0].clientY;}
+  else{cx=e.clientX;cy=e.clientY;}
+  return{x:cx-rr.left,y:cy-rr.top};
+ };
+ const start=e=>{e.preventDefault();drawing=true;last=pos(e);ctx.beginPath();ctx.moveTo(last.x,last.y);};
+ const move=e=>{e.preventDefault();if(!drawing||!last)return;const p=pos(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;};
+ const end=e=>{if(e)e.preventDefault();drawing=false;last=null;};
+ cv.style.touchAction='none';cv.style.webkitUserSelect='none';cv.style.userSelect='none';
+ cv.addEventListener('touchstart',start,{passive:false});
+ cv.addEventListener('touchmove',move,{passive:false});
+ cv.addEventListener('touchend',end,{passive:false});
+ cv.addEventListener('touchcancel',end,{passive:false});
+ cv.addEventListener('mousedown',start);
+ cv.addEventListener('mousemove',move);
+ cv.addEventListener('mouseup',end);
+ cv.addEventListener('mouseleave',end);
  el.querySelectorAll('[data-ffc]').forEach(b=>b.addEventListener('click',()=>{
   color=b.dataset.ffc;ctx.strokeStyle=color;
   el.querySelectorAll('[data-ffc]').forEach(x=>x.style.border='none');
