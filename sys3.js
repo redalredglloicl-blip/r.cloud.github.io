@@ -31,19 +31,23 @@ b.classList.add('show');
 b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn();else showNC()};
 clearTimeout(b._h);b._h=setTimeout(()=>b.classList.remove('show'),6000);
 }
+const NC_OPEN={'الإعدادات':'settings','settings':'settings','وقت الشاشة':'settings','appstore':'appstore','التركيز':'settings','الاختصارات':'shortcuts','AirDrop':'settings','WhatsApp':'x_whatsapp','Telegram':'x_telegram','Instagram':'x_instagram','Messenger':'x_messenger','Discord':'x_discord','Facebook':'x_facebook','Snapchat':'x_snapchat','X':'x_x','TikTok':'x_tiktok','YouTube':'x_youtube','الصور':'photos','الكاميرا':'camera','الساعة':'clock'};
+function ncOpen(app){const id=NC_OPEN[app];hideNC();if(!id)return;setTimeout(()=>{id.startsWith('x_')?openExtra(id.slice(2),null):openApp(id)},120)}
 function renderNC(){
 const items=S.notifs||[];const st=S.fx.nstyle||'stack';
 let body='';
 if(!items.length)body='<div style="text-align:center;opacity:.75;padding:22px 6px">لا توجد إشعارات جديدة</div>';
 else if(st==='count')body='<div class="ncCard" style="align-items:center">'+notifIcon(items[0].app)+'<span style="flex:1"><b style="font-size:15px">'+arabNum(items.length)+' إشعارات</b><br><span style="font-size:12.5px;opacity:.85">آخر واحد: '+escH(items[0].app)+' — '+escH(items[0].text)+'</span></span></div>';
-else if(st==='list')body=items.map(n=>'<div class="ncCard">'+notifIcon(n.app)+'<span style="flex:1"><span style="display:flex;justify-content:space-between"><b style="font-size:13px">'+escH(n.app)+'</b><span style="font-size:11px;opacity:.75">'+relTime(n.t)+'</span></span><span style="font-size:13.5px;opacity:.95;line-height:1.5">'+escH(n.text)+'</span></span></div>').join('');
+else if(st==='list')body=items.map(n=>'<div class="ncCard" data-ncgo="'+escH(n.app)+'" style="cursor:pointer">'+notifIcon(n.app)+'<span style="flex:1"><span style="display:flex;justify-content:space-between"><b style="font-size:13px">'+escH(n.app)+'</b><span style="font-size:11px;opacity:.75">'+relTime(n.t)+'</span></span><span style="font-size:13.5px;opacity:.95;line-height:1.5">'+escH(n.text)+'</span></span></div>').join('');
 else{const byApp={};items.forEach(n=>{(byApp[n.app]=byApp[n.app]||[]).push(n)});
-body=Object.keys(byApp).map(a=>{const arr=byApp[a];return '<div class="ncCard">'+notifIcon(a)+'<span style="flex:1"><span style="display:flex;justify-content:space-between"><b style="font-size:13px">'+escH(a)+(arr.length>1?' <span style="background:rgba(255,255,255,.35);border-radius:9px;padding:0 7px;font-size:11px">'+arabNum(arr.length)+'</span>':'')+'</b><span style="font-size:11px;opacity:.75">'+relTime(arr[0].t)+'</span></span>'+arr.slice(0,3).map(n=>'<span style="display:block;font-size:13px;opacity:.95">'+escH(n.text)+'</span>').join('')+'</span></div>'}).join('')}
+body=Object.keys(byApp).map(a=>{const arr=byApp[a];return '<div class="ncCard" data-ncgo="'+escH(a)+'" style="cursor:pointer">'+notifIcon(a)+'<span style="flex:1;min-width:0"><span style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:13px">'+escH(a)+(arr.length>1?' <span style="background:rgba(255,255,255,.35);border-radius:9px;padding:0 7px;font-size:11px">'+arabNum(arr.length)+'</span>':'')+'</b><span style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;opacity:.75">'+relTime(arr[0].t)+'</span><button data-ncclr="'+escH(a)+'" style="background:rgba(255,255,255,.22);border:none;color:#fff;width:22px;height:22px;border-radius:50%;font-size:12px;line-height:1;cursor:pointer">×</button></span></span>'+arr.slice(0,3).map(n=>'<span style="display:block;font-size:13px;opacity:.95">'+escH(n.text)+'</span>').join('')+'</span></div>'}).join('')}
 $('#nc').innerHTML='<div style="text-align:center;margin-bottom:8px"><div style="font-size:15px;font-weight:600">'+$('#lockDate').textContent+'</div><div style="font-size:52px;font-weight:700;line-height:1.05">'+fmtTime()+'</div></div>'+
-'<div style="font-weight:700;font-size:15px;margin:10px 2px 2px">الإشعارات</div>'+body+
+'<div style="font-weight:700;font-size:15px;margin:10px 2px 2px">مركز الإشعارات</div>'+body+
 '<button id="ncClear" style="margin:14px auto 4px;display:block;background:rgba(255,255,255,.18);color:#fff;border:none;padding:9px 22px;border-radius:16px;font-weight:700;cursor:pointer">مسح الكل</button>'+
 '<div style="text-align:center;font-size:12px;opacity:.8;margin-top:8px">اضغط بره حتى تسكر</div>';
 const c=$('#ncClear');if(c)c.addEventListener('click',e=>{e.stopPropagation();S.notifs=[];store.set('notifs',[]);renderNC();renderLockX()});
+document.querySelectorAll('[data-ncgo]').forEach(cd=>cd.addEventListener('click',e=>{if(e.target.closest('[data-ncclr]'))return;ncOpen(cd.dataset.ncgo)}));
+document.querySelectorAll('[data-ncclr]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const a=b.dataset.ncclr;S.notifs=(S.notifs||[]).filter(n=>n.app!==a);store.set('notifs',S.notifs);renderNC();renderLockX()}));
 }
 S._wx=null;S._wxT=0;
 function wxFetch(){if(S._wx&&Date.now()-S._wxT<600000)return;fetch('https://api.open-meteo.com/v1/forecast?latitude=33.3152&longitude=44.3661&current=temperature_2m,weather_code&timezone=Asia%2FBaghdad').then(r=>r.json()).then(d=>{S._wx={t:Math.round(d.current.temperature_2m),c:d.current.weather_code};S._wxT=Date.now();updWidgets();renderLockX()}).catch(()=>{})}
@@ -570,7 +574,10 @@ el.innerHTML=head('سعة تخزين iPad','general')+
 grp(row2('النظام iPadOS','','<span class="mut">9.2 GB</span>')+
 row2('التطبيقات ('+arabNum(APPS.length+S.installed.length)+')','','<span class="mut">'+(2.1+S.installed.length*0.086).toFixed(1)+' GB</span>')+
 row2('الصور','','<span class="mut">'+(0.4+S.photos.length*0.0013).toFixed(2)+' GB</span>')+
-row2('بيانات Rيو','','<span class="mut">0.8 GB</span>'));
+row2('بيانات النظام','','<span class="mut">0.8 GB</span>'));
+const _sapps=(typeof APPS!=='undefined'?APPS.filter(a=>!S.hidden.includes(a.id)):[]).concat((S.installed||[]).filter(id=>id!=='tiktok').map(id=>({id:'x_'+id})));
+const _srows=_sapps.map(a=>({m:appMeta(a.id),mb:appSizeMB(a.id)})).sort((x,y)=>y.mb-x.mb).slice(0,12);
+el.innerHTML+='<div class="rbx-sec">التطبيقات حسب الحجم</div><div class="setgroup">'+_srows.map(r=>'<div class="setrow" style="align-items:center;gap:10px"><span style="width:32px;height:32px;flex:0 0 auto">'+icImg(ICONS[r.m.ic]||ICONS.settings)+'</span><span style="flex:1;font-size:14px;font-weight:600">'+r.m.n+'</span><span class="mut" style="font-size:13px">'+fmtSize(r.mb)+'</span></div>').join('')+'</div>';
 bk('general');return}
 if(p==='gairdrop'){
 el.innerHTML=head('AirDrop','general')+
