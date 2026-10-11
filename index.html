@@ -1100,14 +1100,18 @@ circ('hotspot','link',s.hotspot)+
 '<button class="ccTile" data-cc="camera">'+g('camera','#fff',24)+'<span>الكاميرا</span></button>'+
 '<button class="ccTile" data-cc="qr">'+g('qr-code','#fff',24)+'<span>ماسح QR</span></button>'+
 '<button class="ccTile" data-cc="shazam">'+g('musical-notes','#fff',24)+'<span>Shazam</span></button>'+
-'</div><div style="text-align:center;font-size:12px;opacity:.8;margin-top:12px">اضغط بره حتى تسكر مركز التحكم</div>';
+'</div><div style="text-align:center;font-size:12px;opacity:.8;margin-top:12px">اضغط بره حتى تسكر مركز التحكم · ضغطة مطولة على الكاميرا والحاسبة والمؤقت للفتح</div>';
 const tog=(k,fn)=>{const el=document.querySelector('[data-cc="'+k+'"]');if(el)el.addEventListener('click',e=>{e.stopPropagation();fn()})};
 const flip=k=>()=>{S.set[k]=!S.set[k];store.set('set',S.set);renderCC();renderStatus()};
 tog('airplane',flip('airplane'));tog('wifi',flip('wifi'));tog('bt',flip('bt'));tog('dnd',flip('dnd'));tog('flash',flip('flash'));
 tog('celldata',()=>toast(s.airplane?'بيانات الهاتف: Zain — طفي وضع الطيران أول':'بيانات الهاتف: Zain شغالة'));
 tog('airdrop',()=>{const order=['off','contacts','all'];S.fx.airdrop=order[(order.indexOf(S.fx.airdrop)+1)%3];saveFx();renderCC();toast('AirDrop: '+({off:'متوقف',contacts:'جهات الاتصال فقط',all:'الجميع'}[S.fx.airdrop]))});
 tog('hotspot',()=>{S.set.hotspot=!S.set.hotspot;store.set('set',S.set);renderCC();renderStatus();toast(S.set.hotspot?'نقطة الاتصال الشخصية شغالة':'نقطة الاتصال متوقفة')});
-tog('qr',()=>{hideCC();openApp('camera')});
+const lp=(k,fn)=>{const el=document.querySelector('[data-cc="'+k+'"]');if(!el)return;let t=null;el.addEventListener('pointerdown',()=>{t=setTimeout(()=>{t=null;fn()},550)});['pointerup','pointerleave','pointercancel'].forEach(ev=>el.addEventListener(ev,()=>{if(t){clearTimeout(t);t=null}}))};
+lp('qr',()=>{hideCC();setTimeout(()=>openApp('camera'),150)});
+lp('camera',()=>{hideCC();setTimeout(()=>openApp('camera'),150)});
+lp('calc',()=>{hideCC();setTimeout(()=>openApp('calc'),150)});
+lp('timer',()=>{hideCC();setTimeout(()=>openApp('clock'),150)});
 tog('shazam',()=>toast('Shazam يسمع… هاي «Shape of You»'));
 tog('mirror',()=>toast('انعكاس الشاشة: ماكو جهاز قريب'));
 tog('music',()=>{S.musicPlay=!S.musicPlay;renderCC()});
@@ -1115,9 +1119,7 @@ tog('darkmode',()=>{S.set.dark=!S.set.dark;store.set('set',S.set);applyTheme();r
 tog('nshift',()=>{S.fx.acc.night=!S.fx.acc.night;saveFx();renderCC();toast(S.fx.acc.night?'Night Shift يشتغل':'Night Shift متوقف')});
 tog('lowpower',()=>{S.set.lpm=!S.set.lpm;store.set('set',S.set);renderCC();renderStatus();toast(S.set.lpm?'نمط توفير الطاقة يشتغل':'انطفأ توفير الطاقة')});
 tog('screenrec',()=>{S.set.rec=!S.set.rec;store.set('set',S.set);renderCC();toast(S.set.rec?'بدأ تسجيل الشاشة':'توقف التسجيل — انحفظ بمقاطع الفيديو')});
-tog('camera',()=>{hideCC();openApp('camera')});
-tog('calc',()=>{hideCC();openApp('calc')});
-tog('timer',()=>{hideCC();openApp('clock')});
+
 const rl=document.querySelector('[data-cc="rotlock"]');if(rl)rl.addEventListener('click',e=>{e.stopPropagation();S._rl=!S._rl;renderCC();toast(S._rl?'انقفل الدوران':'انفتح الدوران')});
 $('#ccBright').addEventListener('input',e=>{S.set.bright=+e.target.value;store.set('set',S.set);e.target.closest('.ccVert').querySelector('.fill').style.height=S.set.bright+'%';renderStatus()});
 $('#ccVol').addEventListener('input',e=>{S.set.vol=+e.target.value;store.set('set',S.set);e.target.closest('.ccVert').querySelector('.fill').style.height=S.set.vol+'%'});
@@ -1133,10 +1135,10 @@ function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.inne
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="pad.js?v=109"></script>
-<script src="social.js?v=109"></script>
-<script src="safari.js?v=109"></script>
-<script src="sys3.js?v=109"></script>
+<script src="pad.js?v=110"></script>
+<script src="social.js?v=110"></script>
+<script src="safari.js?v=110"></script>
+<script src="sys3.js?v=110"></script>
 <script>
 (function(){
 const actId=localStorage.getItem('rio-actlock');
