@@ -1,5 +1,6 @@
 S.msgs=[];store.set('msgs',[]);
 S.notifs=store.get('notifs',[]);
+S.myPic=store.get('myPic','');
 S.locked=true;
 const IOS_EASE='cubic-bezier(.32,.72,.24,1)';
 const IOS_SPRING='cubic-bezier(.30,1.08,.36,1)';
@@ -311,8 +312,8 @@ el.querySelectorAll('[data-net]').forEach(r=>r.addEventListener('click',()=>{S.s
 }
 if(S.setPage&&S.setPage!=='main'){setSubPage(el);return}
 const prof=S.apple.id?
-'<div class="card" style="display:flex;gap:12px;align-items:center;padding:13px;cursor:pointer" id="profCard"><span style="width:52px;height:52px;border-radius:50%;background:linear-gradient(150deg,#8e8e93,#636366);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700">'+(S.apple.name||'R').slice(0,1).toUpperCase()+'</span><span style="flex:1"><b style="font-size:16px">'+S.apple.name+'</b><br><span class="mut">'+S.apple.id+' — iCloud</span></span></div>':
-'<div class="card" style="display:flex;gap:12px;align-items:center;padding:13px;cursor:pointer" id="profCard"><span style="width:52px;height:52px;border-radius:50%;background:#e9e9ee;display:flex;align-items:center;justify-content:center">'+g('person','#8e8e93',26)+'</span><span style="flex:1"><b style="font-size:15px">تسجيل الدخول إلى iPad</b><br><span class="mut">iCloud وApp Store والرسائل</span></span></div>';
+'<div class="card" style="display:flex;gap:12px;align-items:center;padding:13px;cursor:pointer" id="profCard"><span id="profAv" style="position:relative;flex:0 0 auto;cursor:pointer">'+meAv(52)+'<span style="position:absolute;bottom:-2px;right:-2px;width:20px;height:20px;border-radius:50%;background:#0a84ff;border:2px solid #fff;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700">+</span></span><span style="flex:1"><b style="font-size:16px">'+S.apple.name+'</b><br><span class="mut">'+S.apple.id+' — iCloud</span></span></div>':
+'<div class="card" style="display:flex;gap:12px;align-items:center;padding:13px;cursor:pointer" id="profCard"><span id="profAv" style="position:relative;flex:0 0 auto;cursor:pointer">'+meAv(52)+'<span style="position:absolute;bottom:-2px;right:-2px;width:20px;height:20px;border-radius:50%;background:#0a84ff;border:2px solid #fff;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700">+</span></span><span style="flex:1"><b style="font-size:15px">تسجيل الدخول إلى iPad</b><br><span class="mut">iCloud وApp Store والرسائل</span></span></div>';
 el.innerHTML=prof+
 '<div class="setgroup">'+
 row('وضع الطيران',sq('#ff9f0a','airplane',15),'<label class="switch"><input type="checkbox" id="swAir" '+(s.airplane?'checked':'')+'><i></i></label>')+
@@ -350,6 +351,7 @@ row('كلمات السر',sq('#8e8e93','key',15),arrow,'passwords')+'</div>'+
 row('التطبيقات',sq('#8e8e93','apps',15),arrow,'appshub')+'</div>'+
 (S.apple.id?'<button class="btn gray" id="signOutBtn" style="width:100%;margin-top:6px">تسجيل الخروج من Apple ID</button>':'');
 const pg=$('#profCard');if(pg)pg.addEventListener('click',()=>{if(!S.apple.id)appleSignInForm(el,()=>appSettings(el))});
+const pa=$('#profAv');if(pa)pa.addEventListener('click',e=>{e.stopPropagation();pickMyPic()});
 const so=$('#signOutBtn');if(so)so.addEventListener('click',()=>{signOutApple();appSettings(el)});
 const bind=(id,fn)=>{const e2=$(id);if(e2)e2.addEventListener('change',fn)};
 bind('#swAir',e=>{S.set.airplane=e.target.checked;store.set('set',S.set);renderStatus()});
@@ -509,6 +511,35 @@ function appMeta(id){try{const a=APPS.find(x=>x.id===id);if(a)return{n:a.n,ic:a.
 const APP_SIZES={safari:184,photos:96,camera:88,messages:142,music:210,clock:24,notes:38,calc:18,files:64,settings:52,appstore:176,weather:44,calendar:36,maps:288,tiktok:320,facetime:96,voicememos:42,shortcuts:58,maint:34,applestore:148};
 function appSizeMB(id){try{if(id&&id.startsWith('x_')){const gm=GAMES.find(x=>x.k===id.slice(2));if(gm&&gm.size){const m=gm.size.match(/([\d.]+)\s*GB/);if(m)return Math.round(parseFloat(m[1])*1000)}return 86}}catch(e){}return APP_SIZES[id]||64}
 function fmtSize(mb){return mb>=1000?(mb/1000).toFixed(1)+' GB':Math.round(mb)+' MB'}
+function meAv(sz){sz=sz||44;if(S.myPic)return '<img src="'+S.myPic+'" style="width:'+sz+'px;height:'+sz+'px;border-radius:50%;flex:0 0 auto;object-fit:cover">';return '<span style="width:'+sz+'px;height:'+sz+'px;border-radius:50%;flex:0 0 auto;background:linear-gradient(150deg,#8e8e93,#5a5a5e);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:'+Math.round(sz/2.4)+'px">'+escH((S.apple.name||'R').slice(0,1).toUpperCase())+'</span>'}
+function pickMyPic(){
+let inp=document.querySelector('#picPick');
+if(!inp){
+inp=document.createElement('input');inp.type='file';inp.id='picPick';inp.accept='image/*';inp.style.display='none';
+inp.addEventListener('change',()=>{
+const f=inp.files&&inp.files[0];inp.value='';if(!f)return;
+const rd=new FileReader();
+rd.onload=()=>{
+const img=new Image();
+img.onload=()=>{
+try{
+const mx=160,sc=Math.min(1,mx/Math.max(img.width,img.height));
+const c=document.createElement('canvas');
+c.width=Math.max(1,Math.round(img.width*sc));c.height=Math.max(1,Math.round(img.height*sc));
+c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+S.myPic=c.toDataURL('image/jpeg',.82);store.set('myPic',S.myPic);
+toast('انحفظت صورتك — تظهر بكل التطبيقات');
+if(S.app==='settings'&&document.querySelector('#appBody'))appSettings(document.querySelector('#appBody'));
+}catch(e){toast('ما انحفظت الصورة')}
+};
+img.src=rd.result;
+};
+rd.readAsDataURL(f);
+});
+document.body.appendChild(inp);
+}
+inp.click();
+}
 function appGame(k){
 const g=GAMES.find(x=>x.k===k);if(!g)return;
 const hh=$('#appHead');if(hh)hh.style.display='none';
