@@ -343,9 +343,9 @@ const STORE=[
 {k:'youtube',n:'YouTube',dev:'Google LLC',cat:'فيديو وموسيقى',ver:'20.11.3',size:'156 MB',desc:'شاهد الفيديوات، علق مباشرة، وشاهد مع أصدقائك بنفس اللحظة.'},
 ];
 const GAMES=[
-{k:'minecraft',n:'عالم المكعبات',rt:4.8,rc:'12.4K',age:'9+',dev:'Games',cat:'ألعاب',ver:'1.0',size:'1.4 GB',price:5,url:'https://vincent-p-essy.github.io/minecraft-clone/',desc:'عالم مكعبات لا نهائي بجرافيك ثلاثي الأبعاد — ابنِ، استكشف، وعيش مغامرتك الخاصة ليل ونهار.'},
-{k:'wembleguys',n:'Wemble Guys',rt:4.6,rc:'8.1K',age:'9+',dev:'Games',cat:'ألعاب',ver:'1.0',size:'2.1 GB',price:8,url:'https://grep-many.github.io/wemble-guys/',desc:'تحدَّ نفسك على منصات سداسية تنهار تحتك — لعبة منصات مرحة بجرافيك ثلاثي الأبعاد.'},
-{k:'moonrover',n:'روفر القمر',rt:4.7,rc:'5.3K',age:'4+',dev:'Games',cat:'ألعاب',ver:'1.0',size:'1.8 GB',price:5,url:'https://winchxyz.github.io/moon-rover/',desc:'قُد مركبة فضائية على سطح القمر — مهمات علمية واستكشاف بجرافيك ثلاثي الأبعاد.'},
+{k:'minecraft',n:'BlockCraft',rt:4.8,rc:'12.4K',age:'9+',dev:'Games',cat:'ألعاب',ver:'1.0',size:'1.4 GB',price:5,url:'https://vincent-p-essy.github.io/minecraft-clone/',desc:'عالم مكعبات لا نهائي بجرافيك ثلاثي الأبعاد — ابنِ، استكشف، وعيش مغامرتك الخاصة ليل ونهار.'},
+{k:'wembleguys',n:'HexFall',rt:4.6,rc:'8.1K',age:'9+',dev:'Games',cat:'ألعاب',ver:'1.0',size:'2.1 GB',price:8,url:'https://grep-many.github.io/wemble-guys/',desc:'تحدَّ نفسك على منصات سداسية تنهار تحتك — لعبة منصات مرحة بجرافيك ثلاثي الأبعاد.'},
+{k:'moonrover',n:'Moon Rover',rt:4.7,rc:'5.3K',age:'4+',dev:'Games',cat:'ألعاب',ver:'1.0',size:'1.8 GB',price:5,url:'https://winchxyz.github.io/moon-rover/',desc:'قُد مركبة فضائية على سطح القمر — مهمات علمية واستكشاف بجرافيك ثلاثي الأبعاد.'},
 {k:'bunny',n:'Bunny Runner',rt:4.9,rc:'21.7K',age:'4+',dev:'Games',cat:'ألعاب',ver:'1.0',size:'1.1 GB',price:9,url:'https://bunny.omsingh.me/',desc:'اقفز وانزلق مع الأرنب عبر 3 مسارات — لعبة ركض لطيفة بجرافيك ثلاثي الأبعاد.'},
 {k:'orbit',n:'ORBIT',rt:4.5,rc:'3.9K',age:'4+',dev:'Games',cat:'ألعاب',ver:'1.0',size:'2.6 GB',price:7,url:'https://jaydemks.github.io/orbit_game/',desc:'اثنِ الجاذبية ودحرج عبر 24 مرحلة ألغاز ثلاثية الأبعاد مصممة يدوياً.'},
 ];
