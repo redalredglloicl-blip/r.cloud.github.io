@@ -5,13 +5,15 @@ S.locked=true;
 const IOS_EASE='cubic-bezier(.32,.72,.24,1)';
 const IOS_SPRING='cubic-bezier(.30,1.08,.36,1)';
 function iconImgOf(el){if(!el)return null;const im=el.tagName==='IMG'?el:el.querySelector&&el.querySelector('img');if(!im)return null;return im.currentSrc||im.src}
+function _iconRect(el){try{const ic=el&&el.querySelector?el.querySelector('.ic'):null;const t=ic||el;return t&&t.getBoundingClientRect?t.getBoundingClientRect():null}catch(e){return null}}
 function showAppWin(fromEl){
-const win=$('#appWin');S._from=fromEl||null;const tok=(S._anim=(S._anim||0)+1);
+const win=$('#appWin');if(S._from&&S._from!==fromEl&&S._from.style){S._from.style.opacity='';S._from.style.transform=''}S._from=fromEl||null;const tok=(S._anim=(S._anim||0)+1);
 win.style.opacity='';win.style.borderRadius='';
 win.classList.add('open');document.body.classList.add('appopen');syncPill();
 $('#screen').classList.add('appzoom');
 const scr=$('#screen').getBoundingClientRect();
-const r=(fromEl&&fromEl.getBoundingClientRect)?fromEl.getBoundingClientRect():null;
+const r=_iconRect(fromEl);
+if(fromEl&&fromEl.style){fromEl.style.transition='opacity .22s ease,transform .22s ease';fromEl.style.opacity='0';fromEl.style.transform='scale(1.12)'}
 const hasIcon=r&&r.width>=8&&r.right>scr.left&&r.left<scr.right&&r.top<scr.bottom&&r.bottom>scr.top;
 win.style.transformOrigin='0 0';win.style.overflow='hidden';win.style.borderRadius='';win.style.boxShadow='';
 if(hasIcon){
@@ -45,7 +47,8 @@ snapCur();
 const tok=(S._anim=(S._anim||0)+1);
 S.app=null;stopCam();disarmHome();$('#screen').classList.remove('appzoom');
 const back=(S._from&&document.body.contains(S._from))?S._from:null;
-const scr=$('#screen').getBoundingClientRect();let r=back?back.getBoundingClientRect():null;
+const scr=$('#screen').getBoundingClientRect();let r=back?_iconRect(back):null;
+if(back&&back.style){back.style.transition='opacity .3s ease,transform .3s ease';back.style.opacity='';back.style.transform=''}
 if(!r||r.width<8||r.right<scr.left||r.left>scr.right||r.top>scr.bottom)r={left:scr.left+scr.width/2-26,top:scr.bottom-130,width:52,height:52};
 win.getBoundingClientRect();
 win.style.transformOrigin='0 0';
@@ -54,7 +57,7 @@ win.style.borderRadius=((19*scr.width/Math.max(1,r.width)).toFixed(0))+'px/'+((1
 win.style.transform='translate('+((r.left-scr.left)).toFixed(1)+'px,'+((r.top-scr.top)).toFixed(1)+'px) scale('+((r.width/scr.width)).toFixed(3)+','+((r.height/scr.height)).toFixed(3)+')';
 win.style.opacity='0';
 setTimeout(()=>{if(S._anim!==tok)return;
-win.classList.remove('open');document.body.classList.remove('appopen');$('#screen').classList.remove('appzoom');syncPill();win.style.transition='';win.style.transform='';win.style.opacity='';win.style.borderRadius='';win.style.boxShadow='';win.style.transformOrigin='';S._from=null;
+win.classList.remove('open');document.body.classList.remove('appopen');$('#screen').classList.remove('appzoom');syncPill();if(S._from&&S._from.style){S._from.style.opacity='';S._from.style.transform=''};win.style.transition='';win.style.transform='';win.style.opacity='';win.style.borderRadius='';win.style.boxShadow='';win.style.transformOrigin='';S._from=null;
 const land=back&&(back.closest?back.closest('.app'):null);if(land&&land.animate)land.animate([{transform:'scale(1)'},{transform:'scale(1.09)'},{transform:'scale(1)'}],{duration:200,easing:'ease-out'})},400);
 }
 function renderSwitcher(){
