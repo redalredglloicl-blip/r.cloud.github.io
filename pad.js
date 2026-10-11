@@ -157,7 +157,7 @@ if(k==='instagram')return appInsta();
 if(k==='youtube'){S.ytView='home';return appYouTubeX()}
 if(k==='chatgpt')return appChatGPT();
 
-$('#appBody').innerHTML='<div class="card" style="text-align:center;padding:28px 14px"><div style="display:flex;justify-content:center;margin-bottom:10px">'+IC[EXTRA[k].ic]()+'</div><div class="big">'+EXTRA[k].n+'</div><p class="mut" style="margin-top:6px">انثبت على الآيباد ويشتغل من الشاشة الرئيسية.</p><button class="btn" style="margin-top:12px" onclick="closeApp()">تمام</button></div>';
+$('#appBody').innerHTML='<div class="card" style="text-align:center;padding:28px 14px"><div style="display:flex;justify-content:center;margin-bottom:10px">'+IC[EXTRA[k].ic]()+'</div><div class="big">'+EXTRA[k].n+'</div><p class="mut" style="margin-top:6px">انثبت على الآيفون ويشتغل من الشاشة الرئيسية.</p><button class="btn" style="margin-top:12px" onclick="closeApp()">تمام</button></div>';
 }
 const FRIENDS=[['Eno','#e74c3c'],['Ahmad','#3498db'],['Sara','#e84393'],['Omar','#2ecc71'],['Lina','#f39c12'],['Yusuf','#9b59b6'],['Nora','#1abc9c'],['Khalid','#e67e22']];
 function playFakeGame(name){toast('انسحبت اللعبة الوهمية — ألعابنا الحقيقية جاية قريباً')}
@@ -228,7 +228,7 @@ return;
 }
 if(S.setPage==='about'){
 el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button><div class="setgroup">'+
-row('الاسم','', 'iPad')+row('طراز الجهاز','', 'iPhone 16 Pro')+row('نظام التشغيل','', 'iPadOS 26.2')+
+row('الاسم','', 'iPhone')+row('طراز الجهاز','', 'iPhone 16 Pro')+row('نظام التشغيل','', 'iOS 17')+
 row('السعة','', '128 GB')+row('المساحة المتوفرة','', '115.6 GB')+
 row('الرقم التسلسلي','', 'DMPX42LKDNQH')+row('المشغل','', 'Zain')+'</div>';
 $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});return;
@@ -457,7 +457,7 @@ function gameDetail(g,el){
 const inst=S.installed.includes(g.k);
 const freeFirst=!S.gameFree[g.k]&&!inst;
 const isDl=S.dl&&S.dl.k===g.k;
-const revs=[['أحمد ك.','لعبة رهيبة! الجرافيك قوي وتشتغل بسلاسة تامة على الآيباد.','قبل أسبوع'],['سارة م.','ممتعة جداً، بس أتمنى يضيفون مراحل أكثر بالتحديث الجاي.','قبل 3 أيام'],['محمد ع.','أحلى لعبة جربتها هالفترة، أنصح الكل يجربها.','قبل يومين']];
+const revs=[['أحمد ك.','لعبة رهيبة! الجرافيك قوي وتشتغل بسلاسة تامة على الآيفون.','قبل أسبوع'],['سارة م.','ممتعة جداً، بس أتمنى يضيفون مراحل أكثر بالتحديث الجاي.','قبل 3 أيام'],['محمد ع.','أحلى لعبة جربتها هالفترة، أنصح الكل يجربها.','قبل يومين']];
 let h='<button class="back" id="stBack" style="margin-bottom:10px">‹ رجوع</button>';
 h+='<div class="row" style="align-items:center;gap:14px">'+icImg(ICONS[g.k]).replace('class="ic"', 'class="ic" style="width:92px;height:92px"')+'<span style="flex:1;min-width:0"><b style="font-size:21px">'+g.n+'</b><br><span class="mut" style="font-size:13px">'+g.dev+'</span><br><span class="mut" style="font-size:12.5px">'+g.cat+' · '+g.size+'</span></span><button class="btn" id="stGet" style="border-radius:18px;padding:9px 26px;font-size:15px;font-weight:700;min-width:96px">'+(isDl?dlBtnHTML(g.k):(inst?'فتح':(freeFirst?'مجاناً':'$'+g.price)))+'</button></div>';
 if(freeFirst&&!inst)h+='<div style="margin-top:8px"><span style="font-size:12.5px;color:#34c759;font-weight:700">مجاناً لأول تحميل</span> <span class="mut" style="font-size:12.5px;text-decoration:line-through">$'+g.price+'</span></div>';
@@ -474,7 +474,7 @@ h+='<div class="rbx-sec">المعلومات</div><div class="setgroup">'
 +'<div class="setrow"><span style="flex:1">المطور</span><span class="mut">'+g.dev+'</span></div>'
 +'<div class="setrow"><span style="flex:1">الحجم</span><span class="mut">'+g.size+'</span></div>'
 +'<div class="setrow"><span style="flex:1">التصنيف</span><span class="mut">'+g.cat+'</span></div>'
-+'<div class="setrow"><span style="flex:1">التوافق</span><span class="mut">يتطلب iPadOS 16.0 أو أحدث</span></div>'
++'<div class="setrow"><span style="flex:1">التوافق</span><span class="mut">يتطلب iOS 17 أو أحدث</span></div>'
 +'<div class="setrow"><span style="flex:1">اللغات</span><span class="mut">العربية، الإنجليزية</span></div>'
 +'<div class="setrow"><span style="flex:1">حقوق النشر</span><span class="mut">© '+g.dev+'</span></div></div>';
 el.innerHTML=h;
@@ -724,7 +724,7 @@ let mode='email',em='',code='';
 const render=()=>{
 if(mode==='email'){
 el.innerHTML=sheet('<div class="big" style="font-size:20px;margin:10px 0 4px">تسجيل الدخول بـ<br>Apple ID</div>'+
-'<p class="mut" style="margin:0 0 16px;font-size:13px;line-height:1.8">سيتم تسجيل دخولك إلى iCloud وApp Store<br>وخدمات Apple على هذا الآيباد</p>'+
+'<p class="mut" style="margin:0 0 16px;font-size:13px;line-height:1.8">سيتم تسجيل دخولك إلى iCloud وApp Store<br>وخدمات Apple على هذا الآيفون</p>'+
 '<input id="aEmail" type="email" placeholder="البريد الإلكتروني" style="width:100%;padding:12px;border:1px solid #d9d9de;border-radius:12px;font-size:15px;font-family:inherit;text-align:center" value="'+escH(em)+'">'+
 '<button class="btn" id="aNext" style="width:100%;margin-top:12px;padding:12px">متابعة ←</button>'+
 '<p style="margin-top:14px;font-size:13px"><span class="mut">ليس لديك Apple ID؟</span> <a href="#" id="aCreate" style="color:#0a84ff">أنشئ حسابك الآن</a></p>'+
@@ -785,7 +785,7 @@ const nm=S._appleName||em.split('@')[0]||'Reda';
 S.apple={id:em,name:nm,created:Date.now()};store.set('apple',S.apple);
 S._applePw=null;S._appleName=null;
 toast('أهلاً '+nm+' — تم تسجيل الدخول ✓');
-notify('settings','Apple ID','تم تسجيل الدخول بنجاح على هذا الآيباد',null,{pop:false});
+notify('settings','Apple ID','تم تسجيل الدخول بنجاح على هذا الآيفون',null,{pop:false});
 if(done)done();
 };
 render();
