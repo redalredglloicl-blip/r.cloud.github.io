@@ -13,7 +13,7 @@ function appName(id){if(!id)return id;if(id.startsWith('x_'))return (EXTRA[id.sl
 let _ac=null;
 function tone(f,t0,dur,type,vol){try{if(!_ac)_ac=new (window.AudioContext||window.webkitAudioContext)();if(_ac.state==='suspended')_ac.resume();const t=_ac.currentTime+t0;const o=_ac.createOscillator(),gn=_ac.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);gn.gain.setValueAtTime(0.0001,t);gn.gain.exponentialRampToValueAtTime(Math.max(0.02,(S.set.vol/100)*0.22*(vol||1)),t+0.012);gn.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(gn);gn.connect(_ac.destination);o.start(t);o.stop(t+dur+0.05)}catch(e){}}
 function sfx(kind){}
-const NICON={FaceTime:'facetime',Messages:'messages','App Store':'appstore','الإعدادات':'settings',WhatsApp:'whatsapp',Telegram:'telegram',Messenger:'messenger',Instagram:'instagram',Facebook:'facebook',Discord:'discord',AirDrop:'photos','وقت الشاشة':'settings','المنبه':'clock','المؤقت':'clock','ملخص الإشعارات':'settings'};
+const NICON={FaceTime:'facetime',Messages:'messages','App Store':'appstore',appstore:'appstore','الإعدادات':'settings',WhatsApp:'whatsapp',Telegram:'telegram',Messenger:'messenger',Instagram:'instagram',Facebook:'facebook',Discord:'discord',AirDrop:'photos','وقت الشاشة':'settings','المنبه':'clock','المؤقت':'clock','ملخص الإشعارات':'settings'};
 function notify(app,title,text,fn,opts){
 opts=opts||{};
 pushNotif(app,(title&&title!==app?title+' — ':'')+text);
@@ -221,7 +221,7 @@ x.innerHTML=pinAsk?'':'<div class="lwidRow">'+lockWidHTML()+'</div>'+liveHTML()+
 const lt=$('#lockTime'),ld=$('#lockDate');
 if(lt){lt.style.color=S.fx.lock.wcol;lt.style.fontWeight=S.fx.lock.bold?'700':'300';lt.style.display=pinAsk?'none':''}
 if(ld){ld.style.color=S.fx.lock.wcol;ld.style.display=pinAsk?'none':''}
-const _lh=document.querySelector('#lockHint');if(_lh)_lh.style.display=pinAsk?'none':'';
+const _lh=document.querySelector('#lockHint');if(_lh)_lh.style.display='none';
 if(S.fx.lock.shuffle&&S.photos.length){L.style.backgroundImage='linear-gradient(rgba(10,12,18,.45),rgba(10,12,18,.45)),url("'+S.photos[0]+'")';L.style.backgroundSize='cover';L.style.backgroundPosition='center'}else{L.style.backgroundImage=''}
 const pb=x.querySelector('[data-lmus]');if(pb)pb.addEventListener('click',e=>{e.stopPropagation();S.musicPlay=false;renderLockX();updWidgets()});
 const pzOld=x.querySelector('#pinZone');if(pzOld)pzOld.remove();
