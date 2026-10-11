@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Rio iPad">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Rio iPad 9.6</title>
+<title>Rio iPad 9.7</title>
 <style>
 .glass{background:linear-gradient(135deg,rgba(255,255,255,.17),rgba(255,255,255,.06) 55%,rgba(255,255,255,.12));-webkit-backdrop-filter:blur(10px) saturate(185%) brightness(1.06);backdrop-filter:blur(10px) saturate(185%) brightness(1.06);border:1px solid rgba(255,255,255,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 1px 0 0 rgba(255,255,255,.13),inset -1px 0 0 rgba(255,255,255,.13),inset 0 -1px 0 rgba(255,255,255,.08),0 10px 28px rgba(0,0,0,.13)}
 #ipad.dark .glass{background:linear-gradient(135deg,rgba(88,88,100,.3),rgba(48,48,56,.15) 55%,rgba(78,78,90,.24));border-color:rgba(255,255,255,.17);box-shadow:inset 0 1px 0 rgba(255,255,255,.26),inset 1px 0 0 rgba(255,255,255,.08),inset -1px 0 0 rgba(255,255,255,.08),0 10px 28px rgba(0,0,0,.42)}
@@ -41,7 +41,7 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 .gbtn{width:58px;height:58px;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:rgba(10,20,40,.5);color:#fff;font-size:11px;font-weight:700;cursor:pointer;backdrop-filter:blur(3px)}
 .gbtn:active{transform:scale(.93)}
 #hint{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 8px);z-index:39;background:rgba(10,20,40,.55);color:#fff;font-size:12px;padding:6px 14px;border-radius:16px;white-space:nowrap}
-#padWrap{position:absolute;left:50%;top:50%;bottom:auto;transform:translate(-50%,-50%);z-index:35;width:min(94vw,430px,66vh);aspect-ratio:578/800;transition:all .45s cubic-bezier(.2,.9,.25,1);filter:drop-shadow(0 26px 34px rgba(0,0,0,.6))}
+#padWrap{position:absolute;left:50%;top:50%;bottom:auto;transform:translate(-50%,-50%);z-index:35;width:min(94vw,400px,45.7vh);aspect-ratio:389/800;transition:all .45s cubic-bezier(.2,.9,.25,1);filter:drop-shadow(0 26px 34px rgba(0,0,0,.6))}
 .homeWidget{grid-column:span 4}
 @media (orientation:landscape){
 #padWrap{width:min(86vw,740px);height:min(84vh,540px);bottom:calc(env(safe-area-inset-bottom,0px) + 10px)}
@@ -57,19 +57,19 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 #padWrap.away{opacity:0;pointer-events:none;transform:translate(-50%,-50%) translateY(60px)}
 #ipad{position:absolute;inset:0;background:transparent}
 #frameImg{position:absolute;inset:0;width:100%;height:100%;z-index:60;pointer-events:none}
-#screen{position:absolute;left:5.71%;top:4.25%;width:88.41%;height:91.75%;border-radius:5.6%;overflow:hidden;background:#000;direction:ltr}
+#screen{position:absolute;left:4.63%;top:1.75%;width:91%;height:96.5%;border-radius:4.2%;overflow:hidden;background:#000;direction:ltr}
 #sheen{position:absolute;inset:0;border-radius:17px;background:linear-gradient(115deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,0) 32%);z-index:55;pointer-events:none}
 #wall{position:absolute;inset:0;background:linear-gradient(160deg,#3a7bd5 0%,#7d5fd0 45%,#e2698a 100%)}
 #wall img{transition:filter .5s}
 #ipad.dark #wall img{filter:brightness(.68) saturate(.92)}
 #wallImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 #dim{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:5}
-#statusbar{position:absolute;top:0;left:0;right:0;height:26px;z-index:35;display:flex;align-items:center;justify-content:space-between;padding:2px 14px 0;color:#fff;font-size:12.5px;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.35);transition:opacity .25s}
+#statusbar{position:absolute;top:0;left:0;right:0;height:46px;z-index:35;display:flex;align-items:center;justify-content:space-between;padding:0 20px;color:#fff;font-size:12.5px;font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.35);transition:opacity .25s}
 #statusbar .sicons{display:flex;align-items:center;gap:5px}
 #homeApps{position:absolute;inset:0;z-index:10;overflow:hidden}
 #pagesTrack{display:flex;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 #pagesTrack::-webkit-scrollbar{display:none}
-.hpage{flex:0 0 100%;scroll-snap-align:start;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:min-content;gap:16px 8px;align-content:start;padding:38px 16px 70px;overflow:hidden}
+.hpage{flex:0 0 100%;scroll-snap-align:start;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:min-content;gap:16px 8px;align-content:start;padding:56px 16px 70px;overflow:hidden}
 #pageDots{position:absolute;left:0;right:0;bottom:64px;display:flex;justify-content:center;gap:7px;z-index:11}
 #pageDots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.45)}
 #pageDots i.on{background:#fff}
@@ -106,7 +106,7 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 #homeBar{position:absolute;left:50%;transform:translateX(-50%);bottom:3px;width:120px;height:4px;border-radius:2px;background:rgba(255,255,255,.85);z-index:60;cursor:pointer}
 #appWin{position:absolute;inset:0;z-index:30;background:#f2f2f7;display:none;flex-direction:column;will-change:transform,opacity;transform-origin:center center;overflow:hidden}
 #appWin.open{display:flex}
-#appHead{height:46px;flex:0 0 46px;display:flex;align-items:center;gap:8px;padding:26px 12px 6px;background:rgba(249,249,252,.92);border-bottom:1px solid #d9d9de;font-weight:700;font-size:16px;color:#111}
+#appHead{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:50px 12px 10px;background:rgba(249,249,252,.92);border-bottom:1px solid #d9d9de;font-weight:700;font-size:16px;color:#111}
 #appHead .back{margin-left:auto;background:none;border:none;color:#007aff;font-size:14px;cursor:pointer;font-weight:600}
 #appBody{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
 #cc{position:absolute;inset:0;z-index:50;background:rgba(22,24,30,.42);backdrop-filter:blur(26px) saturate(1.5);display:none;padding:30px 14px 14px;color:#fff;overflow-y:auto;animation:ccIn .34s cubic-bezier(.32,.72,.24,1)}
@@ -394,7 +394,7 @@ img,a{-webkit-user-drag:none!important}
 <body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="rio-liquid" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.02 0.032" numOctaves="1" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 9.6</div>
+  <div id="verTag">Rio iPad 9.7</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -429,7 +429,7 @@ img,a{-webkit-user-drag:none!important}
       <div id="lowBatt"><div class="box"><h3>البطارية منخفضة</h3><p id="lowBattTxt">20% of battery is remaining.</p><button id="lowBattOk">إغلاق</button></div></div>
       <div id="dead"><div style="font-size:52px;color:#fff;line-height:1.2"></div><svg width="76" height="36" viewBox="0 0 76 36"><rect x="2" y="2" width="66" height="32" rx="8" fill="none" stroke="#ff3b30" stroke-width="3"/><rect x="7" y="7" width="8" height="22" rx="3" fill="#ff3b30"/><path d="M70 13v10a5 5 0 0 0 0-10z" fill="#8e8e93"/></svg><div style="color:#8e8e93;font-size:13px">نفد شحن الآيباد</div><button id="btnCharge" class="ghostBtn"><span style="font-size:16px"></span> اشحن الآيباد</button></div>
     </div>
-      <img id="frameImg" src="assets/ipad-frame.png" alt=""></div>
+      <img id="frameImg" src="assets/iphone-frame.png" alt=""></div>
   </div>
 
   <!-- Roblox-style menu -->
@@ -447,7 +447,7 @@ img,a{-webkit-user-drag:none!important}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 9.6</div>
+    <div class="ver">Rio iPad 9.7</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -901,7 +901,8 @@ phone:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/b0/0f/2e/b00f2e0d-f
 candy:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/72/83/04/728304ea-32e2-1979-e845-e5f25dd731f6/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/512x512bb.jpg'
 };
 const IC_ZOOM={settings:1.18};
-function icImg(url){let z=1;try{for(const k in IC_ZOOM){if(ICONS[k]===url)z=IC_ZOOM[k]}}catch(e){}return '<span class="ic" style="background:none;box-shadow:0 2px 6px rgba(0,0,0,.18)"><img src="'+url+'" loading="lazy" style="width:100%;height:100%;display:block;border-radius:22.37%;transform:scale('+z+')"></span>'}
+const DICON='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%238e8e93%22/%3E%3Cstop offset=%221%22 stop-color=%22%235a5a5e%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22url(%23g)%22/%3E%3C/svg%3E';
+function icImg(url){if(!url)url=DICON;let z=1;try{for(const k in IC_ZOOM){if(ICONS[k]===url)z=IC_ZOOM[k]}}catch(e){}return '<span class="ic" style="background:none;box-shadow:0 2px 6px rgba(0,0,0,.18)"><img src="'+url+'" loading="lazy" onerror="this.onerror=null;this.src=DICON" style="width:100%;height:100%;display:block;border-radius:22.37%;transform:scale('+z+')"></span>'}
 const IC={};Object.keys(ICONS).forEach(k=>{IC[k]=()=>icImg(ICONS[k])});
 const EXTRA={
 tiktok:{n:'TikTok',ic:'tiktok'},
@@ -1199,11 +1200,11 @@ function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.inne
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="pad.js?v=119"></script>
-<script src="photos.js?v=119"></script>
-<script src="social.js?v=119"></script>
-<script src="safari.js?v=119"></script>
-<script src="sys3.js?v=119"></script>
+<script src="pad.js?v=120"></script>
+<script src="photos.js?v=120"></script>
+<script src="social.js?v=120"></script>
+<script src="safari.js?v=120"></script>
+<script src="sys3.js?v=120"></script>
 <script>
 (function(){
 const actId=localStorage.getItem('rio-actlock');
