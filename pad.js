@@ -54,16 +54,43 @@ setTimeout(()=>{if(S._anim!==tok)return;
 win.classList.remove('open');document.body.classList.remove('appopen');$('#screen').classList.remove('appzoom');syncPill();win.style.transition='';win.style.transform='';win.style.opacity='';win.style.borderRadius='';win.style.boxShadow='';win.style.transformOrigin='';S._from=null;
 const land=back&&(back.closest?back.closest('.app'):null);if(land&&land.animate)land.animate([{transform:'scale(1)'},{transform:'scale(1.09)'},{transform:'scale(1)'}],{duration:200,easing:'ease-out'})},400);
 }
+function flingClose(){
+clearInterval(S.poll);
+const sw=$('#switcher');if(sw.classList.contains('open'))dismissSw();
+const win=$('#appWin');if(!win.classList.contains('open')){S.app=null;return}
+snapCur();
+const tok=(S._anim=(S._anim||0)+1);
+S.app=null;try{stopCam()}catch(_){}disarmHome();$('#screen').classList.remove('appzoom');
+win.style.transition='transform .34s cubic-bezier(.32,.72,0,1),opacity .3s ease,border-radius .34s';
+win.style.transform='translateY(-72%) scale(.88)';
+win.style.borderRadius='26px';
+win.style.opacity='0';
+setTimeout(()=>{if(S._anim!==tok)return;
+win.classList.remove('open');document.body.classList.remove('appopen');$('#screen').classList.remove('appzoom');syncPill();
+win.style.transition='';win.style.transform='';win.style.opacity='';win.style.borderRadius='';win.style.boxShadow='';win.style.transformOrigin='';S._from=null},360);
+}
 function renderSwitcher(){
 const track=$('#swTrack');const list=S.running||[];
-track.innerHTML=list.length?list.map(r=>{const snap=(S.snaps||{})[r.id];
-return '<div class="swCard" data-sw="'+r.id+'"><div class="swHead">'+icImg(ICONS[r.ic]||'')+'<b>'+r.title+'</b><button class="swKill" data-kill="'+r.id+'">✕</button></div><div class="swPrev">'+(snap?'<div class="swSnap">'+snap+'</div>':'<div class="swBig">'+icImg(ICONS[r.ic]||'')+'<span style="font-size:13px;font-weight:600">'+r.title+'</span></div>')+'</div></div>'}).join(''):'<div style="color:#fff;text-align:center;width:100%;padding:40px 0;font-size:14px">لا تطبيقات شغالة بالخلفية</div>';
-track.querySelectorAll('[data-kill]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();killApp(b.dataset.kill)}));
+track.innerHTML=list.length?list.map((r,ix)=>{const snap=(S.snaps||{})[r.id];
+return '<div class="swCard" data-sw="'+r.id+'" style="animation-delay:'+(ix*55)+'ms"><div class="swPrev">'+(snap?'<div class="swSnap">'+snap+'</div>':'<div class="swBig">'+icImg(ICONS[r.ic]||'')+'</div>')+'</div><div class="swLabel">'+icImg(ICONS[r.ic]||'')+'<b>'+r.title+'</b></div></div>'}).join(''):'<div style="color:#fff;text-align:center;width:100%;padding:40px 0;font-size:14px">لا تطبيقات شغالة بالخلفية</div>';
 track.querySelectorAll('[data-sw]').forEach(c=>{
-let cy=null;
-c.addEventListener('touchstart',e=>{cy=e.touches[0].clientY},{passive:true});
-c.addEventListener('touchmove',e=>{if(cy===null)return;const dy=cy-e.touches[0].clientY;if(dy>55){cy=null;killApp(c.dataset.sw)}},{passive:true});
-c.addEventListener('click',()=>{const id=c.dataset.sw;dismissSw();if(id===S.app)return;id.startsWith('x_')?openExtra(id.slice(2),c.querySelector('.swHead .ic')):openApp(id,c.querySelector('.swHead .ic'))});
+let sy=null,dy=0,pid=null,moved=false;
+c.addEventListener('pointerdown',e=>{sy=e.clientY;dy=0;pid=e.pointerId;moved=false;try{c.setPointerCapture(pid)}catch(_){}});
+c.addEventListener('pointermove',e=>{
+if(sy===null||e.pointerId!==pid)return;
+dy=sy-e.clientY;
+if(dy>10)moved=true;
+if(moved){c.style.transition='none';c.style.transform='translateY('+Math.min(0,-dy)+'px) scale('+(1-Math.min(.1,dy/1100))+')';c.style.opacity=String(1-Math.min(.55,dy/560))}
+});
+function cend(e){
+if(sy===null||(e&&e.pointerId!==pid))return;
+const fdy=dy;sy=null;c.style.transition='';
+if(moved&&fdy>85){c.style.transform='translateY(-115%) scale(.86)';c.style.opacity='0';const id=c.dataset.sw;setTimeout(()=>killApp(id),170)}
+else{c.style.transform='';c.style.opacity='';if(!moved){const id=c.dataset.sw;const ic=c.querySelector('.swLabel .ic');dismissSw();if(id===S.app)return;id.startsWith('x_')?openExtra(id.slice(2),ic):openApp(id,ic)}}
+moved=false;dy=0;
+}
+c.addEventListener('pointerup',cend);
+c.addEventListener('pointercancel',cend);
 });
 }
 function dismissSw(){$('#switcher').classList.remove('open');document.body.classList.remove('swopen')}
@@ -99,24 +126,25 @@ _scr.addEventListener('touchstart',e=>{
 if(S.locked||$('#switcher').classList.contains('open')){G=null;return}
 const r=_scr.getBoundingClientRect(),tt=e.touches[0];
 if(tt.clientY<r.bottom-34){G=null;return}
-G={y0:tt.clientY,y:tt.clientY,timer:null};
+G={y0:tt.clientY,y:tt.clientY,t0:Date.now(),timer:null};
 G.timer=setTimeout(()=>{if(G&&G.y0-G.y>36){var _w=document.querySelector('#appWin');_w.style.transition='';_w.style.transform='';openSwitcher();G=null}},340);
 },{passive:true});
 _scr.addEventListener('touchmove',e=>{
 if(!G)return;G.y=e.touches[0].clientY;const dy=G.y0-G.y;
 const win=$('#appWin');
-if(win.classList.contains('open')&&dy>8)win.style.transform='translateY('+(-Math.min(dy,26)).toFixed(0)+'px) scale('+(1-Math.min(dy,260)/11000).toFixed(3)+')';
+if(win.classList.contains('open')&&dy>0){win.style.transition='none';const pp=Math.min(dy,340);win.style.transform='translateY('+(-pp)+'px) scale('+(1-pp/2600).toFixed(4)+')';win.style.borderRadius=Math.min(30,pp/11)+'px';win.style.opacity=String(1-pp/760)}
 },{passive:true});
 _scr.addEventListener('touchend',e=>{
 if(!G)return;clearTimeout(G.timer);
-const dy=G.y0-(e.changedTouches[0]?e.changedTouches[0].clientY:G.y);
+const endY=e.changedTouches[0]?e.changedTouches[0].clientY:G.y;
+const dy=G.y0-endY;const vel=dy/Math.max(1,Date.now()-(G.t0||Date.now()));
 const win=$('#appWin');G=null;
 if($('#switcher').classList.contains('open'))return;
 if(win.classList.contains('open')){
-if(dy>30){closeApp()}
+if(dy>110||vel>0.5){flingClose()}
 else{
-win.style.transition='transform .22s ease';win.style.transform='';
-const tkA=S._anim;setTimeout(()=>{if(S._anim===tkA)win.style.transition=''},240);
+win.style.transition='transform .42s cubic-bezier(.32,.72,0,1),border-radius .42s,opacity .32s';win.style.transform='';win.style.borderRadius='';win.style.opacity='';
+const tkA=S._anim;setTimeout(()=>{if(S._anim===tkA){win.style.transition='';win.style.transform='';win.style.borderRadius='';win.style.opacity=''}},440);
 }
 }else if(dy>55)openSwitcher();
 });
@@ -357,11 +385,11 @@ const STORE=[
 {k:'youtube',n:'YouTube',dev:'Google LLC',cat:'فيديو وموسيقى',ver:'20.11.3',size:'156 MB',desc:'شاهد الفيديوات، علق مباشرة، وشاهد مع أصدقائك بنفس اللحظة.'},
 ];
 const GAMES=[
-{k:'minecraft',n:'عالم المكعبات',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'24 MB',price:5,url:'https://vincent-p-essy.github.io/minecraft-clone/',desc:'عالم مكعبات لا نهائي بجرافيك ثلاثي الأبعاد — ابنِ، استكشف، وعيش مغامرتك الخاصة ليل ونهار.'},
-{k:'wembleguys',n:'Wemble Guys',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'18 MB',price:8,url:'https://grep-many.github.io/wemble-guys/',desc:'تحدَّ نفسك على منصات سداسية تنهار تحتك — لعبة منصات مرحة بجرافيك ثلاثي الأبعاد.'},
-{k:'moonrover',n:'روفر القمر',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'32 MB',price:5,url:'https://winchxyz.github.io/moon-rover/',desc:'قُد مركبة فضائية على سطح القمر — مهمات علمية واستكشاف بجرافيك ثلاثي الأبعاد.'},
-{k:'bunny',n:'Bunny Runner',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'15 MB',price:9,url:'https://bunny.omsingh.me/',desc:'اقفز وانزلق مع الأرنب عبر 3 مسارات — لعبة ركض لطيفة بجرافيك ثلاثي الأبعاد.'},
-{k:'orbit',n:'ORBIT',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'21 MB',price:7,url:'https://jaydemks.github.io/orbit_game/',desc:'اثنِ الجاذبية ودحرج عبر 24 مرحلة ألغاز ثلاثية الأبعاد مصممة يدوياً.'},
+{k:'minecraft',n:'عالم المكعبات',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'1.4 GB',price:5,url:'https://vincent-p-essy.github.io/minecraft-clone/',desc:'عالم مكعبات لا نهائي بجرافيك ثلاثي الأبعاد — ابنِ، استكشف، وعيش مغامرتك الخاصة ليل ونهار.'},
+{k:'wembleguys',n:'Wemble Guys',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'2.1 GB',price:8,url:'https://grep-many.github.io/wemble-guys/',desc:'تحدَّ نفسك على منصات سداسية تنهار تحتك — لعبة منصات مرحة بجرافيك ثلاثي الأبعاد.'},
+{k:'moonrover',n:'روفر القمر',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'1.8 GB',price:5,url:'https://winchxyz.github.io/moon-rover/',desc:'قُد مركبة فضائية على سطح القمر — مهمات علمية واستكشاف بجرافيك ثلاثي الأبعاد.'},
+{k:'bunny',n:'Bunny Runner',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'1.1 GB',price:9,url:'https://bunny.omsingh.me/',desc:'اقفز وانزلق مع الأرنب عبر 3 مسارات — لعبة ركض لطيفة بجرافيك ثلاثي الأبعاد.'},
+{k:'orbit',n:'ORBIT',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'2.6 GB',price:7,url:'https://jaydemks.github.io/orbit_game/',desc:'اثنِ الجاذبية ودحرج عبر 24 مرحلة ألغاز ثلاثية الأبعاد مصممة يدوياً.'},
 ];
 function storeRow(a){
 const inst=S.installed.includes(a.k),hiddenB=false;
@@ -370,7 +398,7 @@ return '<div class="card row" style="align-items:center"><span style="flex:0 0 a
 function gameRow(g){
 const inst=S.installed.includes(g.k);
 const freeFirst=!S.gameFree[g.k]&&!inst;
-return '<div class="card row" style="align-items:center"><span style="flex:0 0 auto">'+icImg(ICONS[g.k])+'</span><span style="flex:1;cursor:pointer" data-detail="'+g.k+'"><span class="big" style="font-size:15px">'+g.n+'</span><br><span class="mut">'+g.cat+' — '+g.dev+'</span><br>'+(freeFirst?'<span style="font-size:12px;color:#34c759;font-weight:700">مجاناً لأول مرة</span> <span class="mut" style="font-size:12px;text-decoration:line-through">$'+g.price+'</span>':'<b style="font-size:13px;color:#0a84ff">$'+g.price+'</b>')+'</span><button class="btn '+(inst?'gray':'')+'" data-get="'+g.k+'" style="border-radius:16px;padding:7px 18px">'+(inst?'فتح':(freeFirst?'مجاناً':'$'+g.price))+'</button></div>';
+return '<div class="card row" style="align-items:center"><span style="flex:0 0 auto">'+icImg(ICONS[g.k])+'</span><span style="flex:1;cursor:pointer" data-detail="'+g.k+'"><span class="big" style="font-size:15px">'+g.n+'</span><br><span class="mut">'+g.cat+' · '+g.size+' — '+g.dev+'</span><br>'+(freeFirst?'<span style="font-size:12px;color:#34c759;font-weight:700">مجاناً لأول مرة</span> <span class="mut" style="font-size:12px;text-decoration:line-through">$'+g.price+'</span>':'<b style="font-size:13px;color:#0a84ff">$'+g.price+'</b>')+'</span><button class="btn '+(inst?'gray':'')+'" data-get="'+g.k+'" style="border-radius:16px;padding:7px 18px">'+(inst?'فتح':(freeFirst?'مجاناً':'$'+g.price))+'</button></div>';
 }
 function anyRow(a){return a.price!=null?gameRow(a):storeRow(a)}
 function initSwitches(root){
@@ -825,21 +853,37 @@ renderHome();renderStatus();
 setInterval(renderStatus,20000);
 const BATT_IMG='<svg viewBox="0 0 120 76" width="100%" height="150" style="border-radius:12px;background:linear-gradient(140deg,#f2f2f7,#e4e4ea)"><rect x="8" y="24" width="8" height="20" rx="2.5" fill="#a9aeb6"/><rect x="18" y="14" width="86" height="44" rx="9" fill="#d8dce1" stroke="#a9aeb6" stroke-width="2"/><rect x="24" y="20" width="60" height="32" rx="5" fill="#34c759"/><path d="M58 22 L46 40 h8 L52 54 L66 34 h-8 Z" fill="#fff"/></svg>';
 const BATT_PRODS=[
+{id:'max',n:'بطارية ريو ماكس',d:'أقوى بطارية عندنا — سعة مضاعفة تدوم أطول بكثير وتدعم أسرع شحن.',pro:true,price:90},
 {id:'pro',n:'بطارية ريو برو',d:'أعلى جودة — تدوم أطول وتدعم الشحن السريع والأداء الكامل للجهاز.'},
 {id:'std',n:'بطارية ريو',d:'جودة ممتازة بسعر مناسب — تشتغل طبيعي وترجع القدرة ١٠٠٪.'}
 ];
+const CHG_IMG=w=>'<svg viewBox="0 0 120 76" width="100%" height="150" style="border-radius:12px;background:linear-gradient(140deg,#f2f2f7,#e4e4ea)"><rect x="44" y="10" width="32" height="26" rx="7" fill="#d8dce1" stroke="#a9aeb6" stroke-width="2"/><rect x="50" y="4" width="6" height="12" rx="3" fill="#a9aeb6"/><rect x="64" y="4" width="6" height="12" rx="3" fill="#a9aeb6"/><path d="M60 36 q0 12 -14 16 q14 2 14 14" stroke="#a9aeb6" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="60" cy="58" r="11" fill="#0a84ff"/><text x="60" y="63" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">'+w+'</text></svg>';
+const CHG_PRODS=[
+{id:'c20',n:'شاحن ريو السريع',w:'20W',rate:2,price:15,d:'شحن أسرع بمرتين من الشاحن العادي.'},
+{id:'c45',n:'شاحن ريو الترا',w:'45W',rate:3.5,price:29,d:'شحن فائق السرعة — فل شحن بوقت قصير.'},
+{id:'c65',n:'شاحن ريو ماكس',w:'65W',rate:5,price:45,d:'أسرع شاحن عندنا — خمس أضعاف السرعة العادية.'}
+];
 function appMaint(el){
-S.battBought=store.get('battBought',0);
+S.battBought=store.get('battBought',0);S.chgBought=store.get('chgBought',0);S.chgRate=store.get('chgRate',1);
 const free=S.battBought===0;
 const mc=Math.max(72,Math.round(S.batt.maxCap||100));
 el.innerHTML='<b style="font-size:20px">متجر البطارية</b>'+
 '<div class="card" style="margin-top:10px;text-align:center;padding:18px"><div class="mut" style="font-size:13px">الحد الأقصى للقدرة الحالي</div><div style="font-size:44px;font-weight:800;color:'+(mc<80?'#ff9f0a':'#34c759')+'">'+arabNum(mc)+'٪</div><div class="mut" style="font-size:12px;margin-top:4px;line-height:1.7">كل ما تنزل القدرة يصير صرف الشحن أكثر<br>اشترِ بطارية جديدة ورجعها ١٠٠٪</div></div>'+
-'<div class="rbx-sec">'+(free?'بطاريتك الأولى مجاناً':'البطاريات — $60')+'</div>'+
-BATT_PRODS.map(pr=>'<div class="card">'+BATT_IMG+'<div class="row" style="align-items:center;margin-top:10px"><span style="flex:1"><b style="font-size:15px">'+pr.n+'</b></span><b style="color:'+(free?'#34c759':'#0a84ff')+'">'+(free?'مجاني':'$60')+'</b></div><p class="mut" style="font-size:12.5px;line-height:1.8;margin-top:6px">'+pr.d+'</p><button class="btn" data-battbuy="'+pr.id+'" style="width:100%;margin-top:8px;padding:11px">تركيب البطارية — '+(free?'مجاني':'$60')+'</button></div>').join('');
+'<div class="rbx-sec">'+(free?'بطاريتك الأولى مجاناً':'البطاريات')+'</div>'+
+BATT_PRODS.map(pr=>{const prc=pr.price||60;return '<div class="card">'+BATT_IMG+'<div class="row" style="align-items:center;margin-top:10px"><span style="flex:1"><b style="font-size:15px">'+pr.n+'</b>'+(pr.pro?'<br><span style="font-size:11.5px;color:#ff9f0a;font-weight:700">الأقوى — تدوم أطول</span>':'')+'</span><b style="color:'+(free?'#34c759':'#0a84ff')+'">'+(free?'مجاني':'$'+prc)+'</b></div><p class="mut" style="font-size:12.5px;line-height:1.8;margin-top:6px">'+pr.d+'</p><button class="btn" data-battbuy="'+pr.id+'" style="width:100%;margin-top:8px;padding:11px">تركيب البطارية — '+(free?'مجاني':'$'+prc)+'</button></div>'}).join('')+
+'<div class="rbx-sec">الشواحن السريعة — '+(S.chgBought?'':'أول شاحن مجاني لأول مرة')+'</div>'+
+CHG_PRODS.map(cp=>{const cf=S.chgBought===0;const cur=(S.chgRate||1)===cp.rate;return '<div class="card">'+CHG_IMG(cp.w)+'<div class="row" style="align-items:center;margin-top:10px"><span style="flex:1"><b style="font-size:15px">'+cp.n+'</b><br><span class="mut" style="font-size:12px">'+cp.w+' — أسرع بـ '+cp.rate+'x</span>'+(cur?'<br><span style="font-size:11.5px;color:#34c759;font-weight:700">مستخدم حالياً</span>':'')+'</span><b style="color:'+(cf?'#34c759':'#0a84ff')+'">'+(cur?'✓':(cf?'مجاني':'$'+cp.price))+'</b></div><p class="mut" style="font-size:12.5px;line-height:1.8;margin-top:6px">'+cp.d+'</p>'+(cur?'':'<button class="btn" data-chgbuy="'+cp.id+'" style="width:100%;margin-top:8px;padding:11px">اشترِ الشاحن — '+(cf?'مجاني':'$'+cp.price)+'</button>')+'</div>'}).join('');
 el.querySelectorAll('[data-battbuy]').forEach(b=>b.addEventListener('click',()=>{
-S.batt.maxCap=100;S.batt.pct=Math.max(S.batt.pct,60);store.set('batt',S.batt);
+const pr=BATT_PRODS.find(x=>x.id===b.dataset.battbuy);
+S.batt.maxCap=100;S.batt.pct=Math.max(S.batt.pct,60);if(pr&&pr.pro)S.batt.pro=true;store.set('batt',S.batt);
 S.battBought++;store.set('battBought',S.battBought);
 toast(free?'انتركبت بطاريتك المجانية — القدرة رجعت ١٠٠٪':'انتركبت البطارية الجديدة — القدرة رجعت ١٠٠٪');
+appMaint(el)}));
+el.querySelectorAll('[data-chgbuy]').forEach(b=>b.addEventListener('click',()=>{
+const cp=CHG_PRODS.find(x=>x.id===b.dataset.chgbuy);if(!cp)return;
+const wasFree=S.chgBought===0;
+S.chgRate=cp.rate;S.chgBought=(S.chgBought||0)+1;store.set('chgBought',S.chgBought);store.set('chgRate',S.chgRate);
+toast(wasFree?'شاحنك الأول مجاني — الشحن صار أسرع بـ '+cp.rate+'x':'تم تفعيل '+cp.n+' — الشحن أسرع بـ '+cp.rate+'x');
 appMaint(el)}));
 }
 function appVoiceMemos(el){
