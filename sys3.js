@@ -183,22 +183,20 @@ let o=document.querySelector('#ownLockOverlay');
 if(!S.fx.ownerLock){if(o)o.remove();return}
 if(o)return;
 o=document.createElement('div');o.id='ownLockOverlay';
-o.style.cssText='position:fixed;inset:0;z-index:9999;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;font-family:inherit';
+o.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;font-family:inherit';
 const _aid=(S.apple&&S.apple.id)||'';
-const _mask=_aid?_aid.slice(0,1)+'\u2022\u2022\u2022'+_aid.slice(_aid.indexOf('@')):'';
-o.innerHTML='<div style="max-width:340px;width:100%;animation:pinIn .35s">'+
-'<div style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">'+g('lock-closed','#fff',34)+'</div>'+
-'<div style="font-size:22px;font-weight:800;margin-bottom:10px">\u0645\u0642\u064a\u062f \u0628\u0627\u0644\u0645\u0627\u0644\u0643</div>'+
-'<p style="font-size:13.5px;line-height:2;opacity:.8;margin:0 0 18px">\u0647\u0630\u0627 \u0627\u0644\u0622\u064a\u0628\u0627\u062f \u062a\u0642\u064a\u062f \u0628\u0639\u062f \u0645\u062d\u0627\u0648\u0644\u0627\u062a \u0631\u0645\u0632 \u062f\u062e\u0648\u0644 \u062e\u0627\u0637\u0626\u0629 \u0643\u062b\u064a\u0631\u0629.<br>\u0623\u062f\u062e\u0644 \u0628\u0631\u064a\u062f iCloud \u0627\u0644\u062e\u0627\u0635 \u0628\u0627\u0644\u0645\u0627\u0644\u0643 \u0644\u0641\u062a\u062d\u0647.</p>'+
-(_aid?'<input id="ownMail2" type="email" inputmode="email" autocomplete="off" autocapitalize="off" placeholder="\u0628\u0631\u064a\u062f iCloud" dir="ltr" style="width:100%;padding:13px;border:none;border-radius:12px;font-size:16px;text-align:center;margin-bottom:10px;box-sizing:border-box"><button id="ownGo2" style="width:100%;padding:13px;border:none;border-radius:12px;background:#0a84ff;color:#fff;font-size:16px;font-weight:700;cursor:pointer">\u0641\u062a\u062d \u0627\u0644\u0622\u064a\u0628\u0627\u062f</button><p style="margin-top:10px;font-size:12px;opacity:.55">\u062a\u0644\u0645\u064a\u062d \u0627\u0644\u062d\u0633\u0627\u0628: '+escH(_mask)+'</p>'
-:'<div id="ownTimer2" style="font-size:17px;font-weight:700"></div><p style="font-size:12.5px;margin-top:8px;line-height:1.8;opacity:.7">\u0644\u0627 \u064a\u0648\u062c\u062f \u062d\u0633\u0627\u0628 iCloud \u0645\u0633\u062c\u0644<br>\u0627\u0646\u062a\u0638\u0631 \u062b\u0645 \u062d\u0627\u0648\u0644 \u0645\u062c\u062f\u062f\u0627\u064b</p>')+
-'<button id="ownSkip2" style="background:none;border:none;color:#fff;opacity:.6;font-size:13px;margin-top:14px;cursor:pointer;text-decoration:underline">\u062a\u062e\u0637\u064a iCloud \u2014 \u0645\u0633\u062d \u0627\u0644\u062c\u0647\u0627\u0632 \u0648\u0627\u0644\u0628\u062f\u0621 \u0645\u0646 \u062c\u062f\u064a\u062f</button></div>';
+o.innerHTML='<div style="max-width:320px;width:100%">'+
+'<div style="margin:0 auto 18px;opacity:.95">'+g('lock-closed','#fff',30)+'</div>'+
+'<div style="font-size:21px;font-weight:700;margin-bottom:22px">\u0645\u0642\u064a\u062f \u0628\u0627\u0644\u0645\u0627\u0644\u0643</div>'+
+(_aid?'<input id="ownMail2" type="email" inputmode="email" autocomplete="off" autocapitalize="off" placeholder="\u0628\u0631\u064a\u062f iCloud" dir="ltr" style="width:100%;padding:14px;border:none;border-radius:12px;font-size:16px;text-align:center;margin-bottom:12px;box-sizing:border-box;background:rgba(255,255,255,.94);color:#111"><button id="ownGo2" style="width:100%;padding:14px;border:none;border-radius:12px;background:#0a84ff;color:#fff;font-size:16px;font-weight:700;cursor:pointer">\u0641\u062a\u062d</button>'
+:'<div id="ownTimer2" style="font-size:16px;font-weight:600"></div>')+
+'<button id="ownSkip2" style="background:none;border:none;color:#fff;opacity:.55;font-size:12.5px;margin-top:20px;cursor:pointer">\u062a\u062e\u0637\u064a \u2014 \u0645\u0633\u062d \u0627\u0644\u062c\u0647\u0627\u0632</button></div>';
 document.body.appendChild(o);
 const _go=o.querySelector('#ownGo2');
 if(_go)_go.addEventListener('click',()=>{
 const _v=(o.querySelector('#ownMail2').value||'').trim().toLowerCase();
 if(_v&&_v===_aid.toLowerCase()){S.fx.ownerLock=false;S.fx.badPin=0;saveFx();renderOwnerLock();_unlock0()}
-else toast('\u0628\u0631\u064a\u062f iCloud \u063a\u064a\u0631 \u0635\u062d\u064a\u062d \u2014 \u062d\u0627\u0648\u0644 \u0645\u0631\u0629 \u062b\u0627\u0646\u064a\u0629')});
+else toast('\u0628\u0631\u064a\u062f iCloud \u063a\u064a\u0631 \u0635\u062d\u064a\u062d')});
 else{let _sec=60;const _tEl=o.querySelector('#ownTimer2');const _tick=()=>{if(_tEl)_tEl.textContent='\u062d\u0627\u0648\u0644 \u0628\u0639\u062f '+arabNum(_sec)+' \u062b\u0627\u0646\u064a\u0629'};_tick();
 const _iv=setInterval(()=>{if(!S.fx.ownerLock){clearInterval(_iv);return}_sec--;_tick();if(_sec<=0){clearInterval(_iv);S.fx.ownerLock=false;S.fx.badPin=0;saveFx();renderOwnerLock();renderLockX()}},1000)}
 o.querySelector('#ownSkip2').addEventListener('click',()=>wipeDevice());
