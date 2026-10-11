@@ -273,7 +273,7 @@ closeShare();
 const d=document.createElement('div');d.id='shareSheet';
 const peers=(S.fx.peers||[]).slice(0,5);
 d.innerHTML='<div class="sheetCard"><div class="sheetGrab"></div><div class="big" style="font-size:16px">'+escH(o.title||'مشاركة')+'</div>'+
-'<div class="mut" style="margin:3px 0 10px">AirDrop — ابعث لأي لاعب Rio أونلاين قريب</div>'+
+'<div class="mut" style="margin:3px 0 10px">AirDrop — ابعث لأي شخص قريب</div>'+
 '<div class="airRow">'+peers.map(p=>'<button class="airP" data-air="'+escH(p.sid)+'"><span>'+escH((p.u||'R').slice(0,1).toUpperCase())+'</span><b>'+escH(p.u||'لاعب')+'</b></button>').join('')+
 '<button class="airP" data-air="all"><span style="font-size:15px">الكل</span><b>كل القريبين</b></button></div>'+
 '<div class="sheetActs"><button data-shact="copy">نسخ</button><button data-shact="insta">انشر بانستغرام Rio</button><button data-shact="cancel">إلغاء</button></div></div>';
@@ -558,15 +558,15 @@ row2('إعادة تعيين',sq2('#ff3b30','refresh'),arrow,'greset'));
 bk('main');bindGo();return}
 if(p==='gupdate'){
 el.innerHTML=head('تحديث البرنامج','general')+
-'<div class="card" style="text-align:center;padding:22px"><div class="big" style="font-size:18px">RioOS 26.0</div><p class="mut" style="margin:6px 0 14px">إصدار نظام Rio iPad الحالي — ريّو 3.2</p><button class="btn" id="updChk" style="padding:11px 22px">التحقق من تحديث</button><div id="updOut" class="mut" style="margin-top:12px"></div></div>';
+'<div class="card" style="text-align:center;padding:22px"><div class="big" style="font-size:18px">iPadOS 26.2</div><p class="mut" style="margin:6px 0 14px">إصدار نظام iPad الحالي</p><button class="btn" id="updChk" style="padding:11px 22px">التحقق من تحديث</button><div id="updOut" class="mut" style="margin-top:12px"></div></div>';
 bk('general');
-$('#updChk').addEventListener('click',()=>{const o=$('#updOut');o.textContent='جاي يتحقق من خوادم Rio…';setTimeout(()=>{o.textContent='نظامك محدّث — ماكو تحديث أجدد من RioOS 26.0';notify('الإعدادات','تحديث البرنامج','نظامك محدث بالكامل',null,{pop:false})},1100)});
+$('#updChk').addEventListener('click',()=>{const o=$('#updOut');o.textContent='جاي يتحقق من خوادم Apple…';setTimeout(()=>{o.textContent='نظامك محدّث — ماكو تحديث أجدد من iPadOS 26.2';notify('الإعدادات','تحديث البرنامج','نظامك محدث بالكامل',null,{pop:false})},1100)});
 return}
 if(p==='gstorage'){
 const used=(12400+S.photos.length*1.3+S.installed.length*86)/1000;
 el.innerHTML=head('سعة تخزين iPad','general')+
 '<div class="card"><div class="row" style="justify-content:space-between"><b>'+used.toFixed(1)+' GB</b><span class="mut">من 128 GB</span></div><div style="height:9px;background:#e9e9ee;border-radius:5px;margin-top:9px;overflow:hidden;display:flex"><span style="height:100%;width:'+(9.2/128*100).toFixed(1)+'%;background:#ff9f0a"></span><span style="height:100%;width:'+((2.1+S.installed.length*0.086)/128*100).toFixed(1)+'%;background:#0a84ff"></span><span style="height:100%;width:'+((0.4+S.photos.length*0.0013)/128*100).toFixed(1)+'%;background:#34c759"></span></div><div class="mut" style="font-size:11.5px;margin-top:8px">متاح: '+(128-used).toFixed(1)+' GB من 128 GB</div></div>'+
-grp(row2('النظام RioOS','','<span class="mut">9.2 GB</span>')+
+grp(row2('النظام iPadOS','','<span class="mut">9.2 GB</span>')+
 row2('التطبيقات ('+arabNum(APPS.length+S.installed.length)+')','','<span class="mut">'+(2.1+S.installed.length*0.086).toFixed(1)+' GB</span>')+
 row2('الصور','','<span class="mut">'+(0.4+S.photos.length*0.0013).toFixed(2)+' GB</span>')+
 row2('بيانات Rيو','','<span class="mut">0.8 GB</span>'));
