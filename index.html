@@ -1093,10 +1093,10 @@ function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.inne
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="pad.js?v=91"></script>
-<script src="social.js?v=91"></script>
-<script src="safari.js?v=91"></script>
-<script src="sys3.js?v=91"></script>
+<script src="pad.js?v=92"></script>
+<script src="social.js?v=92"></script>
+<script src="safari.js?v=92"></script>
+<script src="sys3.js?v=92"></script>
 <script>
 (function(){
 const actId=localStorage.getItem('rio-actlock');
@@ -1109,14 +1109,18 @@ d.innerHTML='<div style="max-width:340px;animation:pinIn .4s">'+
 '<div style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 18px">'+g('lock-closed','#fff',34)+'</div>'+
 '<div style="font-size:23px;font-weight:800;margin-bottom:10px">مقيد بالمالك</div>'+
 '<p style="font-size:13.5px;line-height:2;opacity:.8;margin:0 0 20px">انمسح هذا الآيباد وهو مرتبط بحساب iCloud.<br>أدخل بريد الحساب المرتبط للمتابعة.</p>'+
-'<input id="actMail" type="email" autocomplete="off" placeholder="بريد iCloud" dir="ltr" style="width:100%;padding:13px;border:none;border-radius:12px;font-size:15px;text-align:center;margin-bottom:10px;box-sizing:border-box">'+
+'<input id="actMail" type="email" autocomplete="off" placeholder="بريد iCloud" dir="ltr" style="width:100%;padding:13px;border:none;border-radius:12px;font-size:16px;text-align:center;margin-bottom:10px;box-sizing:border-box">'+
 '<button id="actGo" style="width:100%;padding:13px;border:none;border-radius:12px;background:#0a84ff;color:#fff;font-size:16px;font-weight:700;cursor:pointer">التالي</button>'+
-'<p style="margin-top:12px;font-size:12px;opacity:.55">تلميح الحساب: '+escH(mask)+'</p></div>';
+'<p style="margin-top:12px;font-size:12px;opacity:.55">تلميح الحساب: '+escH(mask)+'</p>'+
+'<button id="actSkip" style="background:none;border:none;color:#fff;opacity:.6;font-size:13px;margin-top:14px;cursor:pointer;text-decoration:underline">تخطي iCloud — مسح الجهاز والبدء من جديد</button></div>';
 document.body.appendChild(d);
 document.querySelector('#actGo').addEventListener('click',()=>{
 const v=(document.querySelector('#actMail').value||'').trim().toLowerCase();
 if(v&&v===actId.toLowerCase()){localStorage.removeItem('rio-actlock');d.remove()}
 else toast('بريد iCloud غير صحيح')});
+document.querySelector('#actSkip').addEventListener('click',()=>{
+if(!confirm('تخطي iCloud يمسح كل شي ويرجع الآيباد جديد بتطبيقات النظام فقط. متأكد؟'))return;
+Object.keys(localStorage).filter(k=>k.startsWith('rioipad-')||k==='rio-phmeta'||k==='rio-actlock').forEach(k=>localStorage.removeItem(k));location.reload()});
 })();
 </script>
 </body>
