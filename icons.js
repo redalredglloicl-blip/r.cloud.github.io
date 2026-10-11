@@ -1,6 +1,6 @@
 const G_P={
-wifi:'<path d="M2.5 9.5a14 14 0 0 1 19 0M5.5 13a10 10 0 0 1 13 0M8.6 16.4a6 6 0 0 1 6.8 0"/><circle cx="12" cy="19.2" r="1.4" fill="COLOR" stroke="none"/>',
-cellular:'<path d="M5 19v-5M9.7 19v-9M14.4 19V6.5M19.1 19V4" stroke-width="3.2"/>',
+wifi:'<path d="M2 9.8a15 15 0 0 1 20 0M5.2 13.4a10.5 10.5 0 0 1 13.6 0M8.4 16.8a6.3 6.3 0 0 1 7.2 0" stroke-width="2.9"/><circle cx="12" cy="19.4" r="1.7" fill="COLOR" stroke="none"/>',
+cellular:'<path d="M6 19v-4.5M10 19v-8.5M14 19V7M18 19V4.5" stroke-width="3.8"/>',
 celldata:'<path d="M5 19v-4M10 19v-8M15 19V7M20 19V4" stroke-width="2.6"/>',
 airplane:'<path d="M21 15.5v-2l-7.5-4.5V4.2a1.7 1.7 0 0 0-3.4 0V9L2.6 13.5v2l7.5-2.3v5.3l-2.3 1.7v1.5l3.9-1 3.9 1v-1.5l-2.3-1.7v-5.3z" fill="COLOR" stroke="none"/>',
 moon:'<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/>',
