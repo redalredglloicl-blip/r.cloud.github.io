@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Rio iPad">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Rio iPad 9.4</title>
+<title>Rio iPad 9.5</title>
 <style>
 .glass{background:linear-gradient(135deg,rgba(255,255,255,.17),rgba(255,255,255,.06) 55%,rgba(255,255,255,.12));-webkit-backdrop-filter:blur(10px) saturate(185%) brightness(1.06);backdrop-filter:blur(10px) saturate(185%) brightness(1.06);border:1px solid rgba(255,255,255,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 1px 0 0 rgba(255,255,255,.13),inset -1px 0 0 rgba(255,255,255,.13),inset 0 -1px 0 rgba(255,255,255,.08),0 10px 28px rgba(0,0,0,.13)}
 #ipad.dark .glass{background:linear-gradient(135deg,rgba(88,88,100,.3),rgba(48,48,56,.15) 55%,rgba(78,78,90,.24));border-color:rgba(255,255,255,.17);box-shadow:inset 0 1px 0 rgba(255,255,255,.26),inset 1px 0 0 rgba(255,255,255,.08),inset -1px 0 0 rgba(255,255,255,.08),0 10px 28px rgba(0,0,0,.42)}
@@ -397,7 +397,7 @@ img,a{-webkit-user-drag:none!important}
 <body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="rio-liquid" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.02 0.032" numOctaves="1" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 9.4</div>
+  <div id="verTag">Rio iPad 9.5</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -449,7 +449,7 @@ img,a{-webkit-user-drag:none!important}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 9.4</div>
+    <div class="ver">Rio iPad 9.5</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -940,6 +940,15 @@ function appIcon(a){
 const b=a.badge?a.badge():'';
 return '<button class="app" data-app="'+a.id+'">'+IC[a.ic]()+'<span class="nm">'+a.n+'</span>'+(b!==''&&b!==0?'<span style="position:relative"></span>':'')+'</button>'
 }
+function orderedApps(){
+const all=APPS.filter(a=>!S.hidden.includes(a.id)).concat(S.installed.filter(id=>id!=='tiktok'&&extraMeta(id)).map(id=>{const _m=extraMeta(id);return{id:'x_'+id,n:_m.n,ic:_m.ic}}));
+if(!S.order||!S.order.length)return all;
+const byId={};all.forEach(a=>byId[a.id]=a);const out=[];
+S.order.forEach(id=>{if(byId[id]){out.push(byId[id]);delete byId[id]}});
+Object.keys(byId).forEach(id=>out.push(byId[id]));
+return out;
+}
+function persistOrder(){try{store.set('homeOrder',S.order||[])}catch(e){}}
 function renderHome(){
 const d=new Date(),days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],months=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 const widget='<div class="homeWidget" style="grid-column:1/-1;display:flex;gap:10px">'+
@@ -952,7 +961,8 @@ const bv=a.badge?(typeof a.badge==='function'?a.badge():a.badge):'';
 const dl=S.dl&&a.id==='x_dl_'+S.dl.k?dlRing(S.dl.prog,S.dl.paused):'';
 return '<button class="app" data-app="'+a.id+'" style="position:relative">'+(a.id==='calendar'?icImg(ICONS[a.ic]).replace('</span>',ov+'</span>'):icImg(ICONS[a.ic]))+dl+'<span class="delX">✕</span><span class="nm">'+a.n+'</span>'+(bv!==''&&bv!==0?'<span class="badge">'+bv+'</span>':'')+'</button>';
 };
-const all=APPS.filter(a=>!S.hidden.includes(a.id)).concat(S.installed.filter(id=>id!=='tiktok'&&extraMeta(id)).map(id=>{const _m=extraMeta(id);return{id:'x_'+id,n:_m.n,ic:_m.ic}}));
+if(!('order' in S))S.order=store.get('homeOrder',null);
+const all=orderedApps();
 const pages=[];pages.push([widget,...all.slice(0,12).map(cell)]);
 for(let i=12;i<all.length;i+=18)pages.push(all.slice(i,i+18).map(cell));
 pages.push(['__LIB__']);
@@ -960,16 +970,65 @@ $('#homeApps').innerHTML='<div id="pagesTrack">'+pages.map(pg=>pg[0]==='__LIB__'
 $('#dock').innerHTML=['phone','safari','messages','music'].map(id=>{const a=APPS.find(x=>x.id===id)||{ic:id};return '<span data-app="'+id+'">'+icImg(ICONS[a.ic||id])+'</span>'}).join('');
 const track=$('#pagesTrack');
 track.addEventListener('scroll',()=>{const i=Math.round(track.scrollLeft/track.clientWidth);document.querySelectorAll('#pageDots i').forEach((dt,j)=>dt.classList.toggle('on',j===i));if(typeof syncPill==='function')syncPill()},{passive:true});
-document.querySelectorAll('#homeApps .app, #dock [data-app]').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();if(S.jiggle&&el.classList.contains('app')){showCtx(el);return}if(S.dl&&el.dataset.app==='x_dl_'+S.dl.k){toggleDl();return}openApp(el.dataset.app,el.querySelector('.ic')||el)}));
+document.querySelectorAll('#homeApps .app, #dock [data-app]').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();if(Date.now()-(S._dragEnd||0)<450)return;if(S.jiggle&&el.classList.contains('app')){showCtx(el);return}if(S.dl&&el.dataset.app==='x_dl_'+S.dl.k){toggleDl();return}openApp(el.dataset.app,el.querySelector('.ic')||el)}));
 document.querySelectorAll('#homeApps,#dock').forEach(w=>w.oncontextmenu=e=>e.preventDefault());
 bindLib();
 $('#libExpClose').addEventListener('click',()=>$('#libExpand').classList.remove('open'));
+let _drag=null;
+function _curPage(){const t=document.querySelector('#pagesTrack');if(!t||!t.children.length)return null;return t.children[Math.min(t.children.length-1,Math.round(t.scrollLeft/Math.max(1,t.clientWidth)))];}
+function _reorderTo(dragId,targetId){
+const apps=orderedApps();
+const from=apps.findIndex(a=>a.id===dragId),to=apps.findIndex(a=>a.id===targetId);
+if(from<0||to<0||from===to)return;
+const m=apps.splice(from,1)[0];apps.splice(to,0,m);
+S.order=apps.map(a=>a.id);
+renderHome();
+const el2=document.querySelector('#homeApps .app[data-app="'+dragId+'"]');
+if(el2&&_drag)el2.style.opacity='0.25';
+}
+function _startDrag(e,el){
+const id=el.dataset.app,r=el.getBoundingClientRect();
+const ghost=el.cloneNode(true);
+ghost.style.cssText+=';position:fixed;left:'+r.left+'px;top:'+r.top+'px;width:'+r.width+'px;height:'+r.height+'px;z-index:999;pointer-events:none;transform:scale(1.18);opacity:.96;margin:0;animation:none';
+document.body.appendChild(ghost);
+el.style.opacity='0.25';
+const track=document.querySelector('#pagesTrack');if(track)track.style.touchAction='none';
+_drag={id:id,ghost:ghost,w:r.width,h:r.height};
+if(navigator.vibrate)navigator.vibrate(12);
+const move=ev=>{
+if(!_drag)return;
+_drag.ghost.style.left=(ev.clientX-_drag.w/2)+'px';
+_drag.ghost.style.top=(ev.clientY-_drag.h/2)+'px';
+const page=_curPage();
+if(page){
+const cells=[...page.querySelectorAll('.app')].filter(c=>c.dataset.app!==_drag.id);
+let best=null,bestD=1e12;
+cells.forEach(c=>{const cr=c.getBoundingClientRect();const dx=ev.clientX-(cr.left+cr.width/2),dy=ev.clientY-(cr.top+cr.height/2);const d=dx*dx+dy*dy;if(d<bestD){bestD=d;best=c}});
+if(best&&bestD<95*95)_reorderTo(_drag.id,best.dataset.app);
+}
+if(ev.cancelable)ev.preventDefault();
+};
+const up=()=>{
+document.removeEventListener('pointermove',move);
+document.removeEventListener('pointerup',up);
+document.removeEventListener('pointercancel',up);
+const t2=document.querySelector('#pagesTrack');if(t2)t2.style.touchAction='';
+if(_drag){_drag.ghost.remove();_drag=null}
+S._dragEnd=Date.now();persistOrder();renderHome();
+};
+document.addEventListener('pointermove',move,{passive:false});
+document.addEventListener('pointerup',up);
+document.addEventListener('pointercancel',up);
+}
 document.querySelectorAll('#homeApps .app').forEach(el=>{
-let tm=null,sx=0,sy=0;
-el.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;tm=setTimeout(()=>enterJiggle(),500)});
+let tm=null,sx=0,sy=0,pd=null;
+el.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;pd={x:sx,y:sy};if(!S.jiggle)tm=setTimeout(()=>enterJiggle(),500)});
 const kill=()=>{if(tm)clearTimeout(tm);tm=null};
 el.addEventListener('pointerup',kill);el.addEventListener('pointercancel',kill);
-el.addEventListener('pointermove',e=>{if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>12)kill()});
+el.addEventListener('pointermove',e=>{
+if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>12)kill();
+if(S.jiggle&&!_drag&&pd&&(Math.abs(e.clientX-pd.x)+Math.abs(e.clientY-pd.y)>16))_startDrag(e,el);
+});
 });
 }
 function libCats(){
@@ -1142,10 +1201,11 @@ function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.inne
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="pad.js?v=117"></script>
-<script src="social.js?v=117"></script>
-<script src="safari.js?v=117"></script>
-<script src="sys3.js?v=117"></script>
+<script src="pad.js?v=118"></script>
+<script src="photos.js?v=118"></script>
+<script src="social.js?v=118"></script>
+<script src="safari.js?v=118"></script>
+<script src="sys3.js?v=118"></script>
 <script>
 (function(){
 const actId=localStorage.getItem('rio-actlock');
