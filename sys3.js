@@ -751,7 +751,7 @@ el.querySelectorAll('[data-vdel]').forEach(b=>b.addEventListener('click',()=>{fx
 $('#vwAdd').addEventListener('click',()=>{const st=$('#vwSite').value.trim(),us=$('#vwUser').value.trim(),pw=$('#vwPass').value;if(!st||!pw)return toast('اكتب الموقع وكلمة السر');fx.vault.push({site:st,user:us,pass:pw});saveFx();appSettings(el);toast('انحفظت كلمة السر')});
 return}
 if(p==='appshub'){
-const all=APPS.concat(S.installed.filter(id=>EXTRA[id]).map(id=>({id:'x_'+id,n:EXTRA[id].n,ic:id})));
+const all=APPS.concat(S.installed.filter(id=>extraMeta(id)).map(id=>{const _m=extraMeta(id);return{id:'x_'+id,n:_m.n,ic:id}}));
 el.innerHTML=head('التطبيقات')+'<div class="row" style="margin-bottom:10px"><input id="ahQ" type="text" placeholder="بحث بالتطبيقات…" style="flex:1;padding:11px 12px;border:1px solid #d9d9de;border-radius:12px;font-size:14px"></div><div id="ahList">'+
 all.map(a=>'<div class="card row" data-ah="'+a.id+'" style="cursor:pointer;padding:9px 12px"><span style="flex:0 0 auto">'+icImg(ICONS[a.ic])+'</span><span style="flex:1"><b style="font-size:14px">'+a.n+'</b><br><span class="mut">إعدادات التطبيق</span></span><span class="mut">‹</span></div>').join('')+'</div>';
 bk('main');
