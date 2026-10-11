@@ -182,7 +182,7 @@ if(S.timerEnd){const s=Math.max(0,Math.round((S.timerEnd-Date.now())/1000));retu
 if(S.musicPlay){const a=ALBUMS[S.album||0];const dur=[231,212,354][S.album||0]||231;return '<div class="liveCard"><img src="'+a[2]+'" alt=""><span style="flex:1;min-width:0"><b data-must>'+a[0]+' — '+a[1]+'</b><span class="lbar"><i data-musbar style="width:'+(S.musPos/dur*100)+'%"></i></span></span><button class="lplay" data-lmus>'+g('pause','#fff',20)+'</button></div>'}
 return '';
 }
-function wipeDevice(){if(!confirm('تخطي iCloud يمسح كل شي: تطبيقاتك المنزلة وصورك وملاحظاتك وحساباتك، ويرجع الآيباد جديد بتطبيقات النظام فقط. متأكد؟'))return;Object.keys(localStorage).filter(k=>k.startsWith('rioipad-')||k==='rio-phmeta'||k==='rio-actlock').forEach(k=>localStorage.removeItem(k));location.reload()}
+function wipeDevice(){if(!confirm('تخطي iCloud يمسح كل شي: تطبيقاتك المنزلة وصورك وملاحظاتك وحساباتك، ويرجع الآيفون جديد بتطبيقات النظام فقط. متأكد؟'))return;Object.keys(localStorage).filter(k=>k.startsWith('rioipad-')||k==='rio-phmeta'||k==='rio-actlock').forEach(k=>localStorage.removeItem(k));location.reload()}
 function renderOwnerLock(){
 let o=document.querySelector('#ownLockOverlay');
 if(!S.fx.ownerLock){if(o)o.remove();return}
@@ -430,7 +430,7 @@ el.innerHTML='<div class="big" style="font-size:20px;margin-bottom:8px">المل
 '<div class="card"><div class="row" style="justify-content:space-between"><b>iCloud Drive</b><span class="mut">'+used.toFixed(1)+' GB من 64 GB</span></div><div style="height:7px;background:#e9e9ee;border-radius:4px;margin-top:9px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.min(96,used/64*100)+'%;background:#0a84ff"></span></div></div>'+
 '<div class="row" style="margin-bottom:6px">'+[['all','الكل'],['img','الصور'],['note','النصوص']].map(t=>'<button class="btn '+(S.filesTab===t[0]?'':'gray')+'" data-ftab="'+t[0]+'" style="padding:7px 14px">'+t[1]+'</button>').join('')+'</div>'+
 '<div class="rbx-sec">الأخيرة</div>'+
-(show.length?show.map(i=>i.t==='img'?'<div class="card row" data-fopen="photos" style="cursor:pointer"><img src="'+i.src+'" style="width:46px;height:46px;object-fit:cover;border-radius:9px" alt=""><span style="flex:1"><b style="font-size:13.5px">'+i.label+'</b><br><span class="mut">صور — على هذا الآيباد</span></span></div>':'<div class="card row" data-fopen="notes" style="cursor:pointer"><span class="sq" style="background:#ffcc00">'+g('document-text','#fff',16)+'</span><span style="flex:1"><b style="font-size:13.5px">'+i.label+'</b><br><span class="mut">'+escH(i.sub)+'</span></span></div>').join(''):'<div class="mut" style="text-align:center;padding:20px">لا ملفات من هذا النوع بعد</div>')+
+(show.length?show.map(i=>i.t==='img'?'<div class="card row" data-fopen="photos" style="cursor:pointer"><img src="'+i.src+'" style="width:46px;height:46px;object-fit:cover;border-radius:9px" alt=""><span style="flex:1"><b style="font-size:13.5px">'+i.label+'</b><br><span class="mut">صور — على هذا الآيفون</span></span></div>':'<div class="card row" data-fopen="notes" style="cursor:pointer"><span class="sq" style="background:#ffcc00">'+g('document-text','#fff',16)+'</span><span style="flex:1"><b style="font-size:13.5px">'+i.label+'</b><br><span class="mut">'+escH(i.sub)+'</span></span></div>').join(''):'<div class="mut" style="text-align:center;padding:20px">لا ملفات من هذا النوع بعد</div>')+
 '<div class="rbx-sec">المجلدات</div><div class="setgroup">'+
 '<div class="setrow" data-fopen="photos" style="cursor:pointer"><span style="display:flex;gap:9px;align-items:center;flex:1">'+g('folder','#0a84ff',18)+'الصور</span><span class="mut">'+arabNum(phCount+8)+' عناصر</span></div>'+
 '<div class="setrow" data-fopen="notes" style="cursor:pointer"><span style="display:flex;gap:9px;align-items:center;flex:1">'+g('folder','#ff9f0a',18)+'المستندات</span><span class="mut">'+arabNum(notePrev?1:0)+' عناصر</span></div>'+
@@ -440,7 +440,7 @@ el.querySelectorAll('[data-fopen]').forEach(r=>r.addEventListener('click',()=>op
 }
 function autoDesc(a){
 const w=a.when==='battery'?'من البطارية تنزل لـ '+a.val+'٪':a.when==='time'?'الساعة '+a.val:'من أفتح '+appName(a.val);
-const t={focusOn:'يشغّل التركيز',focusOff:'يطفئ التركيز',wall:'يبدل الخلفية',bright:'يغير السطوع',openapp:'يفتح تطبيق ثاني',lockpad:'يرجع الآيباد للجيب'}[a.then]||a.then;
+const t={focusOn:'يشغّل التركيز',focusOff:'يطفئ التركيز',wall:'يبدل الخلفية',bright:'يغير السطوع',openapp:'يفتح تطبيق ثاني',lockpad:'يرجع الآيفون للجيب'}[a.then]||a.then;
 return w+' ← '+t;
 }
 function appShortcuts(el){
@@ -451,10 +451,10 @@ el.innerHTML='<div class="big" style="font-size:20px;margin-bottom:8px">الاخ
 '<input id="auName" type="text" placeholder="اسم الاختصار" style="width:100%;padding:10px;border:1px solid #d9d9de;border-radius:10px;margin-bottom:8px">'+
 '<label class="mut">من يصير…</label><select id="auWhen" style="width:100%;padding:10px;border-radius:10px;margin:4px 0 8px"><option value="battery">البطارية تنزل لقيمة</option><option value="time">يوصل وقت معين</option><option value="appopen">أفتح تطبيق معين</option></select>'+
 '<input id="auVal" type="text" placeholder="القيمة: 20 أو 21:30 أو youtube" style="width:100%;padding:10px;border:1px solid #d9d9de;border-radius:10px;margin-bottom:8px">'+
-'<label class="mut">سوّي…</label><select id="auThen" style="width:100%;padding:10px;border-radius:10px;margin:4px 0 8px"><option value="focusOn">شغّل التركيز</option><option value="focusOff">طفّي التركيز</option><option value="wall">بدّل الخلفية (رقم 0–3 بالقيمة الثانية)</option><option value="bright">غيّر السطوع (القيمة الثانية)</option><option value="openapp">افتح تطبيق (معرّفه بالقيمة الثانية)</option><option value="lockpad">رجّع الآيباد للجيب</option></select>'+
+'<label class="mut">سوّي…</label><select id="auThen" style="width:100%;padding:10px;border-radius:10px;margin:4px 0 8px"><option value="focusOn">شغّل التركيز</option><option value="focusOff">طفّي التركيز</option><option value="wall">بدّل الخلفية (رقم 0–3 بالقيمة الثانية)</option><option value="bright">غيّر السطوع (القيمة الثانية)</option><option value="openapp">افتح تطبيق (معرّفه بالقيمة الثانية)</option><option value="lockpad">رجّع الآيفون للجيب</option></select>'+
 '<input id="auVal2" type="text" placeholder="قيمة ثانية (اختياري)" style="width:100%;padding:10px;border:1px solid #d9d9de;border-radius:10px;margin-bottom:8px">'+
 '<button class="btn" id="auAdd" style="width:100%;padding:11px">إضافة الاختصار</button>'+
-'<p class="mut" style="margin-top:8px;line-height:1.8">أمثلة: «من البطارية 20 ← شغّل التركيز»، «الساعة 22:00 ← بدّل الخلفية 2»، «من أفتح youtube ← رجّع الآيباد للجيب».</p></div>';
+'<p class="mut" style="margin-top:8px;line-height:1.8">أمثلة: «من البطارية 20 ← شغّل التركيز»، «الساعة 22:00 ← بدّل الخلفية 2»، «من أفتح youtube ← رجّع الآيفون للجيب».</p></div>';
 el.querySelectorAll('[data-autot]').forEach(c=>c.addEventListener('change',()=>{S.fx.autos[+c.dataset.autot].on=c.checked;saveFx()}));
 el.querySelectorAll('[data-autod]').forEach(b=>b.addEventListener('click',()=>{S.fx.autos.splice(+b.dataset.autod,1);saveFx();appShortcuts(el)}));
 $('#auAdd').addEventListener('click',()=>{
@@ -543,7 +543,7 @@ el.innerHTML=head('الأصوات والحس اللمسي')+
 '<div class="rbx-sec">أصوات النظام</div>'+grp(row2('صوت القفل',sq2('#111','lock-closed'),sw('sndLock',fx.snd.lock!==false))+
 row2('نقرات لوحة المفاتيح',sq2('#8e8e93','text'),sw('sndKeys',fx.snd.keys!==false))+
 row2('صوت الإرسال',sq2('#34c759','send'),sw('sndSend',fx.snd.send!==false)))+
-'<p class="mut" style="margin:4px 2px">كلها تنحكم بأصوات النظام الحقيقية باللعبة — جرّب تقفل وتفتح الآيباد.</p>';
+'<p class="mut" style="margin:4px 2px">كلها تنحكم بأصوات النظام الحقيقية باللعبة — جرّب تقفل وتفتح الآيفون.</p>';
 bk('main');
 el.querySelectorAll('[data-ring]').forEach(r=>r.addEventListener('click',()=>{fx.snd.ring=r.dataset.ring;saveFx();playRing(fx.snd.ring);appSettings(el)}));
 $('#sndVol').addEventListener('input',e=>{s.vol=+e.target.value;store.set('set',s);sfx('click')});
@@ -564,7 +564,7 @@ row2('إعادة تعيين',sq2('#ff3b30','refresh'),arrow,'greset'));
 bk('main');bindGo();return}
 if(p==='gupdate'){
 el.innerHTML=head('تحديث البرنامج','general')+
-'<div class="card" style="text-align:center;padding:22px"><div class="big" style="font-size:18px">iPadOS 26.2</div><p class="mut" style="margin:6px 0 14px">إصدار نظام iPad الحالي</p><button class="btn" id="updChk" style="padding:11px 22px">التحقق من تحديث</button><div id="updOut" class="mut" style="margin-top:12px"></div></div>';
+'<div class="card" style="text-align:center;padding:22px"><div class="big" style="font-size:18px">iOS 17</div><p class="mut" style="margin:6px 0 14px">إصدار نظام iOS الحالي</p><button class="btn" id="updChk" style="padding:11px 22px">التحقق من تحديث</button><div id="updOut" class="mut" style="margin-top:12px"></div></div>';
 bk('general');
 $('#updChk').addEventListener('click',()=>{const o=$('#updOut');o.textContent='جاي يتحقق من خوادم Apple…';setTimeout(()=>{o.textContent='نظامك محدّث — ماكو تحديث أجدد من iPadOS 26.2';notify('الإعدادات','تحديث البرنامج','نظامك محدث بالكامل',null,{pop:false})},1100)});
 return}
