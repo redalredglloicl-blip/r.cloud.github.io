@@ -213,10 +213,40 @@ window.appFaceTime=function(el){
   try{if(typeof saveFx==='function')saveFx();}catch(e){}
   window.appFaceTime(el);
  }));
- const doCall=(name)=>{
+ const doCall=(name,phone)=>{
   S.ftRecents=S.ftRecents||[];S.ftRecents.unshift({n:name,t:'\u0635\u0627\u062f\u0631\u0629',d:'\u0627\u0644\u0622\u0646'});
   try{if(typeof saveFx==='function')saveFx();}catch(e){}
-  toast('\u062c\u0627\u0631\u064a \u0627\u0644\u0627\u062a\u0635\u0627\u0644 \u0628\u0640 '+name+'...');
+  // iOS call screen
+  const ov=document.createElement('div');
+  ov.id='callScreen';
+  ov.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#1c1c1e,#000);z-index:9999;display:flex;flex-direction:column;align-items:center;color:#fff;direction:rtl';
+  const btnStyle='width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.15);border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#fff;font-size:10px';
+  const ic=(p)=>'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round">'+p+'</svg>';
+  ov.innerHTML=
+   '<div style="margin-top:70px;text-align:center"><div style="width:90px;height:90px;border-radius:50%;background:#8e8e93;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:600;margin:0 auto 14px">'+escH((name||'?')[0])+'</div>'+
+   '<div style="font-size:28px;font-weight:600">'+escH(name)+'</div>'+
+   '<div id="callStatus" class="mut" style="font-size:15px;margin-top:6px;color:#aaa">\u062c\u0627\u0631\u064a \u0627\u0644\u0627\u062a\u0635\u0627\u0644...</div></div>'+
+   '<div style="flex:1"></div>'+
+   '<div style="display:grid;grid-template-columns:repeat(3,72px);gap:18px;margin-bottom:30px">'+
+    '<button data-cb="mute" style="'+btnStyle+'">'+ic('<path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/>')+'<span>\u0643\u062a\u0645</span></button>'+
+    '<button data-cb="keypad" style="'+btnStyle+'">'+ic('<circle cx="8" cy="8" r="1.2" fill="#fff"/><circle cx="12" cy="8" r="1.2" fill="#fff"/><circle cx="16" cy="8" r="1.2" fill="#fff"/><circle cx="8" cy="12" r="1.2" fill="#fff"/><circle cx="12" cy="12" r="1.2" fill="#fff"/><circle cx="16" cy="12" r="1.2" fill="#fff"/><circle cx="8" cy="16" r="1.2" fill="#fff"/><circle cx="12" cy="16" r="1.2" fill="#fff"/><circle cx="16" cy="16" r="1.2" fill="#fff"/>')+'<span>\u0644\u0648\u062d\u0629</span></button>'+
+    '<button data-cb="speaker" style="'+btnStyle+'">'+ic('<path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5H4z" fill="#fff" stroke="none"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/>')+'<span>\u0633\u0628\u064a\u0643\u0631</span></button>'+
+   '</div>'+
+   '<button id="endCall" style="width:72px;height:72px;border-radius:50%;background:#ff3b30;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-bottom:60px;transform:rotate(135deg)"><svg width="32" height="32" viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg></button>';
+  document.body.appendChild(ov);
+  let secs=0,connected=false,muted=false,speaker=false;
+  const st=ov.querySelector('#callStatus');
+  const timer=setInterval(()=>{secs++;const m=String(Math.floor(secs/60)).padStart(2,'0'),s=String(secs%60).padStart(2,'0');if(st)st.textContent=m+':'+s;},1000);
+  setTimeout(()=>{connected=true;if(st)st.textContent='00:00';},2000);
+  ov.querySelectorAll('[data-cb]').forEach(b=>b.addEventListener('click',()=>{
+   const k=b.dataset.cb;
+   if(k==='mute'){muted=!muted;b.style.background=muted?'#fff':'';b.style.color=muted?'#000':'#fff';}
+   if(k==='speaker'){speaker=!speaker;b.style.background=speaker?'#fff':'';b.style.color=speaker?'#000':'#fff';}
+   if(k==='keypad'){toast('\u0644\u0648\u062d\u0629 \u0627\u0644\u0645\u0641\u0627\u062a\u064a\u062d');}
+  }));
+  ov.querySelector('#endCall').addEventListener('click',()=>{
+   clearInterval(timer);ov.remove();
+  });
  };
  el.querySelectorAll('[data-ftcall]').forEach(b=>b.addEventListener('click',()=>{
   const c=S.myContacts[+b.dataset.ftcall];doCall(c.n);
