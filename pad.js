@@ -214,7 +214,7 @@ ui.querySelector('.callBtns').innerHTML='<button class="callBtn" style="backgrou
 $('#callEnd').addEventListener('click',()=>{clearInterval(S.callTimer);ui.classList.remove('show');toast('انتهت المكالمة')});
 });
 }
-const IM_THREADS=[['أحمد','i1'],['سارة','i2'],['عائلة Rio','i3']];
+const IM_THREADS=[['أحمد','i1'],['سارة','i2'],['العائلة','i3']];
 function appMessages(el){
 if(S.imT==null)S.imT=-1;
 if(S.imT<0){
@@ -265,9 +265,9 @@ return;
 }
 if(S.setPage==='about'){
 el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button><div class="setgroup">'+
-row('الاسم','',"Rio's iPad")+row('طراز الجهاز','', 'iPad Pro 11')+row('نظام التشغيل','', 'RioOS 26.0')+
-row('إصدار اللعبة','', 'Rio iPad 7.0')+row('السعة','', '64 GB')+row('المساحة المتوفرة','', '51.2 GB')+
-row('الرقم التسلسلي','', 'RGX2IPAD2026')+row('المشغل','', 'Zain — 4.5G+')+'</div>';
+row('الاسم','', 'iPad')+row('طراز الجهاز','', 'iPad Pro 11')+row('نظام التشغيل','', 'iPadOS 26.2')+
+row('السعة','', '128 GB')+row('المساحة المتوفرة','', '115.6 GB')+
+row('الرقم التسلسلي','', 'DMPX42LKDNQH')+row('المشغل','', 'Zain')+'</div>';
 $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});return;
 }
 if(S.setPage==='batteryhealth'){
@@ -389,7 +389,7 @@ return '<div class="card row" style="align-items:center"><span style="flex:0 0 a
 function gameRow(g){
 const inst=S.installed.includes(g.k);
 const freeFirst=!S.gameFree[g.k]&&!inst;
-return '<div class="card row" style="align-items:center"><span style="flex:0 0 auto">'+icImg(ICONS[g.k])+'</span><span style="flex:1;cursor:pointer" data-detail="'+g.k+'"><span class="big" style="font-size:15px">'+g.n+'</span><br><span class="mut">'+g.cat+' · '+g.size+' — '+g.dev+'</span><br>'+(freeFirst?'<span style="font-size:12px;color:#34c759;font-weight:700">مجاناً لأول مرة</span> <span class="mut" style="font-size:12px;text-decoration:line-through">$'+g.price+'</span>':'<b style="font-size:13px;color:#0a84ff">$'+g.price+'</b>')+'</span><button class="btn '+(inst?'gray':'')+'" data-get="'+g.k+'" style="border-radius:16px;padding:7px 18px">'+(inst?'فتح':(freeFirst?'مجاناً':'$'+g.price))+'</button></div>';
+return '<div class="card row" style="align-items:center"><span style="flex:0 0 auto">'+icImg(ICONS[g.k])+'</span><span style="flex:1;cursor:pointer" data-detail="'+g.k+'"><span class="big" style="font-size:15px">'+g.n+'</span><br><span class="mut">'+g.cat+' · '+g.size+'</span><br>'+(freeFirst?'<span style="font-size:12px;color:#34c759;font-weight:700">مجاناً لأول مرة</span> <span class="mut" style="font-size:12px;text-decoration:line-through">$'+g.price+'</span>':'<b style="font-size:13px;color:#0a84ff">$'+g.price+'</b>')+'</span><button class="btn '+(inst?'gray':'')+'" data-get="'+g.k+'" style="border-radius:16px;padding:7px 18px">'+(inst?'فتح':(freeFirst?'مجاناً':'$'+g.price))+'</button></div>';
 }
 function anyRow(a){return a.price!=null?gameRow(a):storeRow(a)}
 function initSwitches(root){
@@ -465,7 +465,7 @@ const acct=S.apple.id?
 '<button class="btn" id="stSign" style="padding:8px 14px">تسجيل الدخول بـ Apple ID</button>';
 let body='';
 if(tab==='games'){
-body='<div class="rbx-sec" style="margin-top:2px">ألعاب Rio — حمّل والعب</div>'+GAMES.map(gameRow).join('');
+body='<div class="rbx-sec" style="margin-top:2px">الألعاب — حمّل والعب</div>'+GAMES.map(gameRow).join('');
 } else if(tab==='today'){
 const f=STORE[0];
 body='<div class="card" style="padding:0;overflow:hidden"><div style="background:linear-gradient(140deg,'+SOCIAL[f.k].c+',#0c1520);height:150px;display:flex;align-items:center;justify-content:center;gap:12px"><span style="background:#fff;border-radius:24px;padding:8px;display:inline-flex">'+icImg(ICONS[f.k])+'</span></div><div style="padding:12px"><span class="mut">تطبيق اليوم</span><div class="big" style="font-size:17px">'+f.n+'</div><p class="mut" style="margin:4px 0 10px">'+f.desc+'</p><button class="btn" data-get="'+f.k+'" style="border-radius:16px;padding:7px 18px">'+(S.installed.includes(f.k)?'فتح':'احصل')+'</button></div></div>'+
@@ -729,16 +729,16 @@ el.innerHTML='<div style="background:'+headBg+';color:#fff;border-radius:14px;pa
 '<div id="chatList" style="background:'+bg+';border-radius:14px;padding:8px 6px;min-height:180px;margin-top:8px"><div class="mut" style="text-align:center;padding:16px">جاي يحمل…</div></div>'+
 '<div class="row" style="position:sticky;bottom:0;background:#f2f2f7;padding-top:8px"><input type="text" id="chatIn" placeholder="اكتب رسالة…" style="flex:1;padding:10px 12px;border:1px solid #d9d9de;border-radius:20px;font-size:14px"><button class="btn" id="chatSend">إرسال</button></div>';
 }
-const WA_THREADS=[['whatsapp','Rio العام — كل اللاعبين','group'],['whatsapp-dm-ahmad','أحمد','dm'],['whatsapp-dm-mohammad','محمد','dm'],['whatsapp-grp','عائلة Rio','group']];
+const WA_THREADS=[['whatsapp','المجموعة العامة','group'],['whatsapp-dm-ahmad','أحمد','dm'],['whatsapp-dm-mohammad','محمد','dm'],['whatsapp-grp','العائلة','group']];
 function appWhatsApp(){
 const el=$('#appBody');
 el.innerHTML='<div style="background:#075e54;color:#fff;border-radius:14px 14px 0 0;padding:12px"><b style="font-size:16px">WhatsApp</b><span style="display:block;font-size:12px;opacity:.85">متصل كـ '+escH(myName())+'</span></div>'+
 '<div style="display:flex;background:#075e54;color:#fff;padding:0 8px 8px;gap:4px">'+['الدردشات','المجموعات','المكالمات'].map((t,i)=>'<span style="flex:1;text-align:center;font-size:12.5px;padding:6px;border-bottom:'+(i===0?'3px solid #fff':'3px solid transparent')+'">'+t+'</span>').join('')+'</div>'+
 WA_THREADS.map((t,i)=>'<div class="card row" data-wa="'+t[0]+'" style="cursor:pointer;margin-top:8px;align-items:center"><img src="https://i.pravatar.cc/90?img='+(15+i*11)+'" style="width:46px;height:46px;border-radius:50%"><span style="flex:1"><b style="font-size:14px">'+t[1]+'</b><br><span class="mut">اضغط لفتح المحادثة — أونلاين</span></span><span class="mut">الآن</span></div>').join('')+
-'<p class="mut" style="text-align:center;margin-top:12px;font-size:12px">محادثات حقيقية عبر Firebase — أي لاعب Rio يدخل يشوف رسائلك</p>';
+'<p class="mut" style="text-align:center;margin-top:12px;font-size:12px">محادثات حقيقية عبر Firebase — أي شخص يدخل يشوف رسائلك</p>';
 el.querySelectorAll('[data-wa]').forEach(c=>c.addEventListener('click',()=>{
 const room='/rooms/'+c.dataset.wa;
-chatChrome('#075e54',c.dataset.wa==='whatsapp'?'Rio العام':(WA_THREADS.find(t=>t[0]===c.dataset.wa)||[])[1]||'محادثة','WhatsApp','#ece5dd');
+chatChrome('#075e54',c.dataset.wa==='whatsapp'?'المجموعة العامة':(WA_THREADS.find(t=>t[0]===c.dataset.wa)||[])[1]||'محادثة','WhatsApp','#ece5dd');
 chatThread(room,{own:'#dcf8c6',ownTx:'#111',other:'#ffffff',otherTx:'#111'});
 }));
 }
@@ -762,7 +762,7 @@ function appDiscord(){
 const el=$('#appBody');
 el.innerHTML='<div style="display:flex;gap:0;background:#1e1f22;border-radius:14px;overflow:hidden;color:#dbdee1">'+
 '<div style="width:56px;background:#121214;display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:10px"><span style="width:44px;height:44px;border-radius:16px;background:#5865F2;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff">Rio</span><span style="width:44px;height:44px;border-radius:50%;background:#2b2d31;display:flex;align-items:center;justify-content:center;font-weight:700">G</span></div>'+
-'<div style="flex:1;padding:10px"><b style="color:#fff">Rio Server</b><div style="margin:8px 0;font-size:13px"><div style="background:#35373c;border-radius:8px;padding:6px 9px"># عام</div><div style="padding:6px 9px;opacity:.75"># إعلانات</div><div style="padding:6px 9px;opacity:.75"># صور-اللاعبين</div></div></div></div>'+
+'<div style="flex:1;padding:10px"><b style="color:#fff">السيرفر العام</b><div style="margin:8px 0;font-size:13px"><div style="background:#35373c;border-radius:8px;padding:6px 9px"># عام</div><div style="padding:6px 9px;opacity:.75"># إعلانات</div><div style="padding:6px 9px;opacity:.75"># صور-اللاعبين</div></div></div></div>'+
 '<div id="chatList" style="background:#313338;border-radius:12px;padding:8px 6px;min-height:160px;margin-top:8px;color:#dbdee1"></div>'+
 '<div class="row" style="position:sticky;bottom:0;background:#f2f2f7;padding-top:8px"><input type="text" id="chatIn" placeholder="راسل #عام…" style="flex:1;padding:10px 12px;border:1px solid #d9d9de;border-radius:20px;font-size:14px"><button class="btn" id="chatSend">إرسال</button></div>';
 chatThread('/rooms/discord',{own:'#5865F2',ownTx:'#fff',other:'#2b2d31',otherTx:'#dbdee1'});
@@ -844,26 +844,33 @@ renderHome();renderStatus();
 setInterval(renderStatus,20000);
 const BATT_IMG='<svg viewBox="0 0 120 76" width="100%" height="150" style="border-radius:12px;background:linear-gradient(140deg,#f2f2f7,#e4e4ea)"><rect x="8" y="24" width="8" height="20" rx="2.5" fill="#a9aeb6"/><rect x="18" y="14" width="86" height="44" rx="9" fill="#d8dce1" stroke="#a9aeb6" stroke-width="2"/><rect x="24" y="20" width="60" height="32" rx="5" fill="#34c759"/><path d="M58 22 L46 40 h8 L52 54 L66 34 h-8 Z" fill="#fff"/></svg>';
 const BATT_PRODS=[
-{id:'max',n:'بطارية ريو ماكس',d:'أقوى بطارية عندنا — سعة مضاعفة تدوم أطول بكثير وتدعم أسرع شحن.',pro:true,price:90},
-{id:'pro',n:'بطارية ريو برو',d:'أعلى جودة — تدوم أطول وتدعم الشحن السريع والأداء الكامل للجهاز.'},
-{id:'std',n:'بطارية ريو',d:'جودة ممتازة بسعر مناسب — تشتغل طبيعي وترجع القدرة ١٠٠٪.'}
+{id:'max',n:'بطارية ماكس',d:'أقوى بطارية — سعة مضاعفة تدوم أطول بكثير وتدعم أسرع شحن.',pro:true,price:90},
+{id:'pro',n:'بطارية أصلية',d:'أعلى جودة — تدوم أطول وتدعم الشحن السريع والأداء الكامل للجهاز.'},
+{id:'std',n:'بطارية بديلة',d:'جودة ممتازة بسعر مناسب — تشتغل طبيعي وترجع القدرة ١٠٠٪.'}
 ];
 const CHG_IMG=w=>'<svg viewBox="0 0 120 76" width="100%" height="150" style="border-radius:12px;background:linear-gradient(140deg,#f2f2f7,#e4e4ea)"><rect x="44" y="10" width="32" height="26" rx="7" fill="#d8dce1" stroke="#a9aeb6" stroke-width="2"/><rect x="50" y="4" width="6" height="12" rx="3" fill="#a9aeb6"/><rect x="64" y="4" width="6" height="12" rx="3" fill="#a9aeb6"/><path d="M60 36 q0 12 -14 16 q14 2 14 14" stroke="#a9aeb6" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="60" cy="58" r="11" fill="#0a84ff"/><text x="60" y="63" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">'+w+'</text></svg>';
 const CHG_PRODS=[
-{id:'c20',n:'شاحن ريو السريع',w:'20W',rate:2,price:15,d:'شحن أسرع بمرتين من الشاحن العادي.'},
-{id:'c45',n:'شاحن ريو الترا',w:'45W',rate:3.5,price:29,d:'شحن فائق السرعة — فل شحن بوقت قصير.'},
-{id:'c65',n:'شاحن ريو ماكس',w:'65W',rate:5,price:45,d:'أسرع شاحن عندنا — خمس أضعاف السرعة العادية.'}
+{id:'c20',n:'شاحن سريع',w:'20W',rate:2,price:15,d:'شحن أسرع بمرتين من الشاحن العادي.'},
+{id:'c45',n:'شاحن ألترا',w:'45W',rate:3.5,price:29,d:'شحن فائق السرعة — فل شحن بوقت قصير.'},
+{id:'c65',n:'شاحن ماكس',w:'65W',rate:5,price:45,d:'أسرع شاحن عندنا — خمس أضعاف السرعة العادية.'}
 ];
 function appMaint(el){
 S.battBought=store.get('battBought',0);S.chgBought=store.get('chgBought',0);S.chgRate=store.get('chgRate',1);
+S.maintTab=S.maintTab||'batt';
 const free=S.battBought===0;
 const mc=Math.max(72,Math.round(S.batt.maxCap||100));
-el.innerHTML='<b style="font-size:20px">متجر البطارية</b>'+
+let h='<b style="font-size:20px">البطارية والشحن</b>'+
 '<div class="card" style="margin-top:10px;text-align:center;padding:18px"><div class="mut" style="font-size:13px">الحد الأقصى للقدرة الحالي</div><div style="font-size:44px;font-weight:800;color:'+(mc<80?'#ff9f0a':'#34c759')+'">'+arabNum(mc)+'٪</div><div class="mut" style="font-size:12px;margin-top:4px;line-height:1.7">كل ما تنزل القدرة يصير صرف الشحن أكثر<br>اشترِ بطارية جديدة ورجعها ١٠٠٪</div></div>'+
-'<div class="rbx-sec">'+(free?'بطاريتك الأولى مجاناً':'البطاريات')+'</div>'+
-BATT_PRODS.map(pr=>{const prc=pr.price||60;return '<div class="card">'+BATT_IMG+'<div class="row" style="align-items:center;margin-top:10px"><span style="flex:1"><b style="font-size:15px">'+pr.n+'</b>'+(pr.pro?'<br><span style="font-size:11.5px;color:#ff9f0a;font-weight:700">الأقوى — تدوم أطول</span>':'')+'</span><b style="color:'+(free?'#34c759':'#0a84ff')+'">'+(free?'مجاني':'$'+prc)+'</b></div><p class="mut" style="font-size:12.5px;line-height:1.8;margin-top:6px">'+pr.d+'</p><button class="btn" data-battbuy="'+pr.id+'" style="width:100%;margin-top:8px;padding:11px">تركيب البطارية — '+(free?'مجاني':'$'+prc)+'</button></div>'}).join('')+
-'<div class="rbx-sec">الشواحن السريعة — '+(S.chgBought?'':'أول شاحن مجاني لأول مرة')+'</div>'+
+'<div class="segRow" style="margin:12px 0"><button data-mtab="batt" class="'+(S.maintTab==='batt'?'on':'')+'">البطاريات</button><button data-mtab="chg" class="'+(S.maintTab==='chg'?'on':'')+'">الشواحن</button></div>';
+if(S.maintTab==='batt'){
+h+='<div class="rbx-sec">'+(free?'بطاريتك الأولى مجاناً':'البطاريات')+'</div>'+
+BATT_PRODS.map(pr=>{const prc=pr.price||60;return '<div class="card">'+BATT_IMG+'<div class="row" style="align-items:center;margin-top:10px"><span style="flex:1"><b style="font-size:15px">'+pr.n+'</b>'+(pr.pro?'<br><span style="font-size:11.5px;color:#ff9f0a;font-weight:700">الأقوى — تدوم أطول</span>':'')+'</span><b style="color:'+(free?'#34c759':'#0a84ff')+'">'+(free?'مجاني':'$'+prc)+'</b></div><p class="mut" style="font-size:12.5px;line-height:1.8;margin-top:6px">'+pr.d+'</p><button class="btn" data-battbuy="'+pr.id+'" style="width:100%;margin-top:8px;padding:11px">تركيب البطارية — '+(free?'مجاني':'$'+prc)+'</button></div>'}).join('');
+}else{
+h+='<div class="rbx-sec">'+(S.chgBought?'الشواحن السريعة':'أول شاحن مجاني لأول مرة')+'</div>'+
 CHG_PRODS.map(cp=>{const cf=S.chgBought===0;const cur=(S.chgRate||1)===cp.rate;return '<div class="card">'+CHG_IMG(cp.w)+'<div class="row" style="align-items:center;margin-top:10px"><span style="flex:1"><b style="font-size:15px">'+cp.n+'</b><br><span class="mut" style="font-size:12px">'+cp.w+' — أسرع بـ '+cp.rate+'x</span>'+(cur?'<br><span style="font-size:11.5px;color:#34c759;font-weight:700">مستخدم حالياً</span>':'')+'</span><b style="color:'+(cf?'#34c759':'#0a84ff')+'">'+(cur?'✓':(cf?'مجاني':'$'+cp.price))+'</b></div><p class="mut" style="font-size:12.5px;line-height:1.8;margin-top:6px">'+cp.d+'</p>'+(cur?'':'<button class="btn" data-chgbuy="'+cp.id+'" style="width:100%;margin-top:8px;padding:11px">اشترِ الشاحن — '+(cf?'مجاني':'$'+cp.price)+'</button>')+'</div>'}).join('');
+}
+el.innerHTML=h;
+el.querySelectorAll('[data-mtab]').forEach(b=>b.addEventListener('click',()=>{S.maintTab=b.dataset.mtab;appMaint(el)}));
 el.querySelectorAll('[data-battbuy]').forEach(b=>b.addEventListener('click',()=>{
 const pr=BATT_PRODS.find(x=>x.id===b.dataset.battbuy);
 S.batt.maxCap=100;S.batt.pct=Math.max(S.batt.pct,60);if(pr&&pr.pro)S.batt.pro=true;store.set('batt',S.batt);
