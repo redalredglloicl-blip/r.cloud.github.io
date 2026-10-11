@@ -36,7 +36,7 @@ function snapCur(){if(!S.app)return;try{S.snaps=S.snaps||{};S.snaps[S.app]=$('#a
 function noteRunning(id,title,ic){if(!id)return;S.running=S.running||[];S.running=S.running.filter(r=>r.id!==id);S.running.unshift({id,title,ic})}
 function armHome(){S._armUntil=Date.now()+4000;const hb=$('#homeBar');hb.classList.add('armed');setTimeout(()=>{if(Date.now()>(S._armUntil||0))hb.classList.remove('armed')},4100)}
 function disarmHome(){S._armUntil=0;$('#homeBar').classList.remove('armed')}
-function closeApp(){
+function closeApp(){try{window.closeGptDrawer&&window.closeGptDrawer()}catch(e){}
 appHeadReset();
 clearInterval(S.poll);
 const sw=$('#switcher');if(sw.classList.contains('open'))dismissSw();
@@ -93,7 +93,7 @@ let _swY=null;
 $('#switcher').addEventListener('touchstart',e=>{_swY=e.touches[0].clientY},{passive:true});
 $('#switcher').addEventListener('touchend',e=>{if(_swY===null)return;const dy=e.changedTouches[0].clientY-_swY;_swY=null;if(dy>45)dismissSw()});
 function killApp(id){S.running=(S.running||[]).filter(r=>r.id!==id);if(S.snaps)delete S.snaps[id];if(S.app===id){dismissSw();closeApp()}else renderSwitcher();toast('انقتل التطبيق من الخلفية')}
-function openApp(id,fromEl){
+function openApp(id,fromEl){try{window.closeGptDrawer&&window.closeGptDrawer()}catch(e){}
 appHeadReset();hideCC();clearInterval(S.poll);
 if(gateBlock(id))return;
 runAutos('appopen',id);
@@ -141,7 +141,7 @@ const tkA=S._anim;setTimeout(()=>{if(S._anim===tkA){win.style.transition='';win.
 }
 }else if(dy>55)openSwitcher();
 });
-function extraMeta(k){try{if(typeof EXTRA!=='undefined'&&EXTRA[k])return{n:EXTRA[k].n,ic:EXTRA[k].ic}}catch(e){}try{if(typeof GAMES!=='undefined'){const _g=GAMES.find(x=>x.k===k);if(_g)return{n:_g.n,ic:k}}}catch(e){}return null}
+function extraMeta(k){try{if(typeof EXTRA!=='undefined'&&EXTRA[k])return{n:EXTRA[k].n,ic:EXTRA[k].ic}}catch(e){}try{if(typeof GAMES!=='undefined'){const kk=String(k).replace(/^dl_/,'');const _g=GAMES.find(x=>x.k===kk);if(_g)return{n:_g.n,ic:kk}}}catch(e){}return null}
 function openExtra(k,fromEl){
 appHeadReset();
 const _gg=GAMES.find(x=>x.k===k);
@@ -221,18 +221,7 @@ function emptyChats(title,head){const el=document.querySelector('#appBody');el.i
 const IM_THREADS=[];
 function appMessages(el){
 if(S.imT==null)S.imT=-1;
-if(S.imT<0){emptyChats('رسائل','<div class="row" style="align-items:center;margin-bottom:8px"><b style="font-size:22px;flex:1">رسائل</b></div>');return}else{
-const t=IM_THREADS[S.imT];
-el.innerHTML='<div class="row" style="align-items:center;margin-bottom:8px"><span id="imBack" style="color:#0a84ff;font-size:16px;cursor:pointer">‹ رجوع</span><b style="flex:1;text-align:center;font-size:16px">'+t[0]+'</b><span style="width:52px"></span></div>'+
-'<div id="imList" style="display:flex;flex-direction:column;gap:6px;padding:6px 2px;min-height:220px"></div>'+
-'<div class="row" style="position:sticky;bottom:0;background:#fff;padding:8px 0;gap:8px"><input id="imIn" placeholder="iMessage" style="flex:1;padding:10px 14px;border:1px solid #d9d9de;border-radius:20px;font-size:14px;font-family:inherit"><button class="btn" id="imSend" style="border-radius:50%;width:38px;height:38px;padding:0;font-size:16px;flex:0 0 auto">↑</button></div>';
-const load=async()=>{const m=await fbGet('/rooms/imessage/'+t[1]+'/msgs');const l=document.querySelector('#imList');if(!l){clearInterval(S.poll);return}const a=m?Object.values(m).sort((x,y)=>(x.ts||0)-(y.ts||0)):[];l.innerHTML=a.length?a.map(x=>'<div style="max-width:78%;padding:9px 13px;border-radius:18px;font-size:14.5px;line-height:1.6;word-break:break-word;'+(x.me?'align-self:flex-start;background:#0a84ff;color:#fff;border-bottom-right-radius:6px':'align-self:flex-end;background:#e9e9eb;color:#111;border-bottom-left-radius:6px')+'">'+escH(String(x.t))+'</div>').join(''):'<div class="mut" style="text-align:center;padding:30px">لا رسائل بعد — ابعث أول وحدة</div>';l.scrollTop=1e6};
-load();clearInterval(S.poll);S.poll=setInterval(load,3500);
-document.querySelector('#imBack').addEventListener('click',()=>{S.imT=-1;appMessages(el)});
-const send=async()=>{const inp=document.querySelector('#imIn'),v=inp.value.trim();if(!v)return;inp.value='';sfx('send');await fbPost('/rooms/imessage/'+t[1]+'/msgs',{t:v,me:true,by:S.apple.name||'Rio',ts:Date.now()});load()};
-document.querySelector('#imSend').addEventListener('click',send);
-document.querySelector('#imIn').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
-}
+if(S.imT<0){emptyChats('رسائل','<div class="row" style="align-items:center;margin-bottom:8px"><b style="font-size:22px;flex:1">رسائل</b></div>');return}
 }
 
 function appSettings(el){
@@ -374,11 +363,11 @@ const STORE=[
 {k:'youtube',n:'YouTube',dev:'Google LLC',cat:'فيديو وموسيقى',ver:'20.11.3',size:'156 MB',desc:'شاهد الفيديوات، علق مباشرة، وشاهد مع أصدقائك بنفس اللحظة.'},
 ];
 const GAMES=[
-{k:'minecraft',n:'عالم المكعبات',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'1.4 GB',price:5,url:'https://vincent-p-essy.github.io/minecraft-clone/',desc:'عالم مكعبات لا نهائي بجرافيك ثلاثي الأبعاد — ابنِ، استكشف، وعيش مغامرتك الخاصة ليل ونهار.'},
-{k:'wembleguys',n:'Wemble Guys',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'2.1 GB',price:8,url:'https://grep-many.github.io/wemble-guys/',desc:'تحدَّ نفسك على منصات سداسية تنهار تحتك — لعبة منصات مرحة بجرافيك ثلاثي الأبعاد.'},
-{k:'moonrover',n:'روفر القمر',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'1.8 GB',price:5,url:'https://winchxyz.github.io/moon-rover/',desc:'قُد مركبة فضائية على سطح القمر — مهمات علمية واستكشاف بجرافيك ثلاثي الأبعاد.'},
-{k:'bunny',n:'Bunny Runner',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'1.1 GB',price:9,url:'https://bunny.omsingh.me/',desc:'اقفز وانزلق مع الأرنب عبر 3 مسارات — لعبة ركض لطيفة بجرافيك ثلاثي الأبعاد.'},
-{k:'orbit',n:'ORBIT',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'2.6 GB',price:7,url:'https://jaydemks.github.io/orbit_game/',desc:'اثنِ الجاذبية ودحرج عبر 24 مرحلة ألغاز ثلاثية الأبعاد مصممة يدوياً.'},
+{k:'minecraft',n:'عالم المكعبات',rt:4.8,rc:'12.4K',age:'9+',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'1.4 GB',price:5,url:'https://vincent-p-essy.github.io/minecraft-clone/',desc:'عالم مكعبات لا نهائي بجرافيك ثلاثي الأبعاد — ابنِ، استكشف، وعيش مغامرتك الخاصة ليل ونهار.'},
+{k:'wembleguys',n:'Wemble Guys',rt:4.6,rc:'8.1K',age:'9+',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'2.1 GB',price:8,url:'https://grep-many.github.io/wemble-guys/',desc:'تحدَّ نفسك على منصات سداسية تنهار تحتك — لعبة منصات مرحة بجرافيك ثلاثي الأبعاد.'},
+{k:'moonrover',n:'روفر القمر',rt:4.7,rc:'5.3K',age:'4+',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'1.8 GB',price:5,url:'https://winchxyz.github.io/moon-rover/',desc:'قُد مركبة فضائية على سطح القمر — مهمات علمية واستكشاف بجرافيك ثلاثي الأبعاد.'},
+{k:'bunny',n:'Bunny Runner',rt:4.9,rc:'21.7K',age:'4+',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'1.1 GB',price:9,url:'https://bunny.omsingh.me/',desc:'اقفز وانزلق مع الأرنب عبر 3 مسارات — لعبة ركض لطيفة بجرافيك ثلاثي الأبعاد.'},
+{k:'orbit',n:'ORBIT',rt:4.5,rc:'3.9K',age:'4+',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'2.6 GB',price:7,url:'https://jaydemks.github.io/orbit_game/',desc:'اثنِ الجاذبية ودحرج عبر 24 مرحلة ألغاز ثلاثية الأبعاد مصممة يدوياً.'},
 ];
 function storeRow(a){
 const inst=S.installed.includes(a.k),hiddenB=false;
@@ -387,7 +376,8 @@ return '<div class="card row" style="align-items:center"><span style="flex:0 0 a
 function gameRow(g){
 const inst=S.installed.includes(g.k);
 const freeFirst=!S.gameFree[g.k]&&!inst;
-return '<div class="card row" style="align-items:center"><span style="flex:0 0 auto">'+icImg(ICONS[g.k])+'</span><span style="flex:1;cursor:pointer" data-detail="'+g.k+'"><span class="big" style="font-size:15px">'+g.n+'</span><br><span class="mut">'+g.cat+' · '+g.size+'</span><br>'+(freeFirst?'<span style="font-size:12px;color:#34c759;font-weight:700">مجاناً لأول مرة</span> <span class="mut" style="font-size:12px;text-decoration:line-through">$'+g.price+'</span>':'<b style="font-size:13px;color:#0a84ff">$'+g.price+'</b>')+'</span><button class="btn '+(inst?'gray':'')+'" data-get="'+g.k+'" style="border-radius:16px;padding:7px 18px">'+(inst?'فتح':(freeFirst?'مجاناً':'$'+g.price))+'</button></div>';
+const isDl=S.dl&&S.dl.k===g.k;
+return '<div class="card row" style="align-items:center"><span style="flex:0 0 auto">'+icImg(ICONS[g.k])+'</span><span style="flex:1;cursor:pointer" data-detail="'+g.k+'"><span class="big" style="font-size:15px">'+g.n+'</span><br><span class="mut">'+g.cat+' · '+g.size+'</span><br>'+(freeFirst?'<span style="font-size:12px;color:#34c759;font-weight:700">مجاناً لأول مرة</span> <span class="mut" style="font-size:12px;text-decoration:line-through">$'+g.price+'</span>':'<b style="font-size:13px;color:#0a84ff">$'+g.price+'</b>')+'</span><button class="btn '+(inst?'gray':'')+'" data-get="'+g.k+'" style="border-radius:16px;padding:7px 18px;min-width:88px">'+(isDl?dlBtnHTML(g.k):(inst?'فتح':(freeFirst?'مجاناً':'$'+g.price)))+'</button></div>';
 }
 function anyRow(a){return a.price!=null?gameRow(a):storeRow(a)}
 function initSwitches(root){
@@ -444,6 +434,7 @@ S.gameFree=store.get('gameFree',{});
 if(!S.storeTab)S.storeTab='games';
 const tab=S.storeTab;
 if(S.storeDetail){const a=STORE.concat(GAMES).find(x=>x.k===S.storeDetail);if(a){
+if(a.price!=null){gameDetail(a,el);return}
 const _isG=a.price!=null,_inst=S.installed.includes(a.k),_ff=_isG&&!S.gameFree[a.k]&&!_inst;
 const inst=S.installed.includes(a.k);
 el.innerHTML='<button class="back" id="stBack" style="margin-bottom:8px">‹ رجوع</button>'+
@@ -483,21 +474,87 @@ const q=$('#stQ');if(q)q.addEventListener('input',()=>{const v=q.value.trim();$(
 el.querySelectorAll('[data-unhide]').forEach(b=>b.addEventListener('click',()=>{S.hidden=S.hidden.filter(x=>x!==b.dataset.unhide);store.set('hidden',S.hidden);renderHome();appStore(el);toast('رجع التطبيق للشاشة الرئيسية')}));
 bindGets(el);
 }
+function gameStars(rt){rt=rt||4.5;let s='';for(let i=1;i<=5;i++)s+='<span style="color:'+(i<=Math.round(rt)?'#ff9f0a':'#d9d9de')+';font-size:13px">★</span>';return s}
+function gameDetail(g,el){
+const inst=S.installed.includes(g.k);
+const freeFirst=!S.gameFree[g.k]&&!inst;
+const isDl=S.dl&&S.dl.k===g.k;
+const revs=[['أحمد ك.','لعبة رهيبة! الجرافيك قوي وتشتغل بسلاسة تامة على الآيباد.','قبل أسبوع'],['سارة م.','ممتعة جداً، بس أتمنى يضيفون مراحل أكثر بالتحديث الجاي.','قبل 3 أيام'],['محمد ع.','أحلى لعبة جربتها هالفترة، أنصح الكل يجربها.','قبل يومين']];
+let h='<button class="back" id="stBack" style="margin-bottom:10px">‹ رجوع</button>';
+h+='<div class="row" style="align-items:center;gap:14px">'+icImg(ICONS[g.k]).replace('class="ic"', 'class="ic" style="width:92px;height:92px"')+'<span style="flex:1;min-width:0"><b style="font-size:21px">'+g.n+'</b><br><span class="mut" style="font-size:13px">'+g.dev+'</span><br><span class="mut" style="font-size:12.5px">'+g.cat+' · '+g.size+'</span></span><button class="btn" id="stGet" style="border-radius:18px;padding:9px 26px;font-size:15px;font-weight:700;min-width:96px">'+(isDl?dlBtnHTML(g.k):(inst?'فتح':(freeFirst?'مجاناً':'$'+g.price)))+'</button></div>';
+if(freeFirst&&!inst)h+='<div style="margin-top:8px"><span style="font-size:12.5px;color:#34c759;font-weight:700">مجاناً لأول تحميل</span> <span class="mut" style="font-size:12.5px;text-decoration:line-through">$'+g.price+'</span></div>';
+h+='<div class="row" style="margin-top:16px;padding:12px 0;border-top:1px solid #e8e8ec;border-bottom:1px solid #e8e8ec;text-align:center">'
++'<span style="flex:1"><b style="font-size:15px">'+g.rt+'</b><br>'+gameStars(g.rt)+'<br><span class="mut" style="font-size:11px">'+g.rc+' تقييم</span></span>'
++'<span style="flex:1;border-inline-start:1px solid #e8e8ec"><b style="font-size:15px">'+g.age+'</b><br><span class="mut" style="font-size:11px">العمر</span></span>'
++'<span style="flex:1;border-inline-start:1px solid #e8e8ec"><b style="font-size:15px">'+g.size+'</b><br><span class="mut" style="font-size:11px">الحجم</span></span></div>';
+h+='<div class="rbx-sec">لمحات</div><div class="row" style="gap:10px;overflow-x:auto;padding:4px 2px">'
++[0,1,2].map(i=>'<div style="flex:0 0 168px;height:300px;border-radius:14px;overflow:hidden;position:relative;background:linear-gradient(160deg,#23232f,#0d0d14)"><img src="'+ICONS[g.k]+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;opacity:.92"><span style="position:absolute;bottom:0;right:0;left:0;padding:26px 10px 10px;background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;font-weight:700;font-size:13.5px">'+g.n+'</span></div>').join('')+'</div>';
+h+='<div class="rbx-sec">الوصف</div><p style="line-height:1.9;font-size:14px">'+g.desc+'</p>';
+h+='<div class="rbx-sec">التقييمات والمراجعات</div><div class="row" style="align-items:center;gap:12px;margin-bottom:8px"><b style="font-size:34px">'+g.rt+'</b><span><span style="font-size:13px">'+gameStars(g.rt)+'</span><br><span class="mut" style="font-size:12px">'+g.rc+' تقييم</span></span></div>'
++revs.map(r=>'<div class="card"><div class="row" style="align-items:center"><span style="width:36px;height:36px;border-radius:50%;background:linear-gradient(150deg,#8e8e93,#636366);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:0 0 auto">'+r[0].charAt(0)+'</span><span style="flex:1;margin-inline-start:10px"><b style="font-size:13.5px">'+r[0]+'</b><br><span class="mut" style="font-size:11.5px">'+r[2]+'</span></span><span style="color:#ff9f0a;font-size:12px">★★★★★</span></div><p style="font-size:13.5px;line-height:1.8;margin:8px 0 0">'+r[1]+'</p></div>').join('');
+h+='<div class="rbx-sec">المعلومات</div><div class="setgroup">'
++'<div class="setrow"><span style="flex:1">المطور</span><span class="mut">'+g.dev+'</span></div>'
++'<div class="setrow"><span style="flex:1">الحجم</span><span class="mut">'+g.size+'</span></div>'
++'<div class="setrow"><span style="flex:1">التصنيف</span><span class="mut">'+g.cat+'</span></div>'
++'<div class="setrow"><span style="flex:1">التوافق</span><span class="mut">يتطلب iPadOS 16.0 أو أحدث</span></div>'
++'<div class="setrow"><span style="flex:1">اللغات</span><span class="mut">العربية، الإنجليزية</span></div>'
++'<div class="setrow"><span style="flex:1">حقوق النشر</span><span class="mut">© '+g.dev+'</span></div></div>';
+el.innerHTML=h;
+document.querySelector('#stBack').addEventListener('click',()=>{S.storeDetail=null;appStore(el)});
+document.querySelector('#stGet').addEventListener('click',e=>doGet(g.k,e.currentTarget,el));
+}
 function bindGets(el){
 el.querySelectorAll('[data-get]').forEach(b=>b.addEventListener('click',()=>doGet(b.dataset.get,b,el)));
 el.querySelectorAll('[data-detail]').forEach(d=>d.addEventListener('click',()=>{S.storeDetail=d.dataset.detail;appStore(el)}));
 }
+function dlRing(pr,paused){const c=2*Math.PI*20,off=(c*(1-(pr||0))).toFixed(1);
+return '<span class="dlring" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none"><span style="position:absolute;inset:0;background:rgba(10,10,14,.38);border-radius:22.37%"></span><svg width="36" height="36" viewBox="0 0 44 44" style="position:relative"><circle cx="22" cy="22" r="20" fill="rgba(18,18,22,.72)"/><circle cx="22" cy="22" r="20" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="3.5"/><circle class="dlfg" cx="22" cy="22" r="20" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off+'" transform="rotate(-90 22 22)"/>'+(paused?'<path d="M18.5 15.5l9 6.5-9 6.5z" fill="#fff"/>':'<rect x="18.6" y="15" width="2.7" height="14" rx="1.35" fill="#fff"/><rect x="22.7" y="15" width="2.7" height="14" rx="1.35" fill="#fff"/>')+'</svg></span>'}
+function dlPause(){if(!S.dl||S.dl.paused)return;S.dl.paused=true;renderHome()}
+function dlResume(){if(!S.dl||!S.dl.paused)return;S.dl.paused=false;S.dl.t0=Date.now()-S.dl.prog*S.dl.total;renderHome()}
+function toggleDl(){if(!S.dl)return;if(S.dl.paused)dlResume();else dlPause()}
+function finishDl(k,g,freeFirst,el){
+clearInterval(S.dlT);S.dl=null;
+if(!S.installed.includes(k))S.installed.push(k);store.set('installed',S.installed);
+if(g){S.gameFree=S.gameFree||{};S.gameFree[k]=true;store.set('gameFree',S.gameFree)}
+renderHome();S.storeDetail=null;appStore(el);
+const nm=(g||{}).n||k;
+toast('انثبت '+nm+' على الشاشة الرئيسية'+(freeFirst?' \u2014 مجاناً':''));
+try{notify('appstore','تم التثبيت','انثبت '+nm+' \u2014 اضغط للعب')}catch(e){}
+}
 function doGet(k,btn,el){
-if(!S.apple.id){toast('سجل دخولك بـ Apple ID حتى تنزل — روح للإعدادات أو اضغط تسجيل الدخول');appleSignInForm(el,()=>appStore(el));return}
+if(!S.apple.id){toast('سجل دخولك بـ Apple ID حتى تنزل \u2014 روح للإعدادات أو اضغط تسجيل الدخول');appleSignInForm(el,()=>appStore(el));return}
 if(S.installed.includes(k)){S.storeDetail=null;openApp('x_'+k,null);return}
 S.gameFree=S.gameFree||store.get('gameFree',{});
 const g=GAMES.find(x=>x.k===k);
 const freeFirst=g&&!S.gameFree[k];
-btn.textContent='...';
-setTimeout(()=>{S.installed.push(k);store.set('installed',S.installed);if(g){S.gameFree[k]=true;store.set('gameFree',S.gameFree)}
-const nm=(g||STORE.find(a=>a.k===k)).n;
-renderHome();S.storeDetail=null;appStore(el);toast('انثبت '+nm+' على الشاشة الرئيسية'+(freeFirst?' — مجاناً':''));notify('appstore','App Store','اكتمل تثبيت '+nm,null,{pop:false})},750);
+if(S.dl&&S.dl.k===k){toggleDl();if(btn)btn.innerHTML=dlBtnHTML(k);return}
+if(S.dl){toast('انتظر يخلص التحميل الحالي');return}
+S.dl={k:k,prog:0,paused:false};
+const sizeGB=parseFloat(String((g&&g.size)||'1 GB').replace(/[^\d.]/g,''))||1;
+S.dl.total=Math.max(4000,sizeGB*4500);S.dl.t0=Date.now();
+S.installed.push('dl_'+k);store.set('installed',S.installed);
+renderHome();
+if(btn)btn.innerHTML=dlBtnHTML(k);
+clearInterval(S.dlT);
+S.dlT=setInterval(()=>{
+if(!S.dl||S.dl.paused)return;
+S.dl.prog=Math.min(1,(Date.now()-S.dl.t0)/S.dl.total);
+const fg=document.querySelector('[data-app="x_dl_'+k+'"] .dlfg');
+if(fg){const c=2*Math.PI*20;fg.setAttribute('stroke-dashoffset',(c*(1-S.dl.prog)).toFixed(1))}
+document.querySelectorAll('[data-get="'+k+'"]').forEach(b=>{b.innerHTML=dlBtnHTML(k)});
+const sb=document.querySelector('#stGet');
+if(sb&&S.storeDetail===k)sb.innerHTML=dlBtnHTML(k);
+if(S.dl.prog>=1){
+S.installed=S.installed.filter(x=>x!=='dl_'+k);store.set('installed',S.installed);
+finishDl(k,g,freeFirst,el);
 }
+},200);
+}
+function dlBtnHTML(k){
+if(S.dl&&S.dl.k===k){const pc=Math.round(S.dl.prog*100);return '<span style="display:inline-flex;align-items:center;gap:7px"><svg width="17" height="17" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="none" stroke="rgba(0,122,255,.25)" stroke-width="6"/><circle cx="22" cy="22" r="20" fill="none" stroke="#0a84ff" stroke-width="6" stroke-linecap="round" stroke-dasharray="'+(2*Math.PI*20).toFixed(1)+'" stroke-dashoffset="'+(2*Math.PI*20*(1-S.dl.prog)).toFixed(1)+'" transform="rotate(-90 22 22)"/></svg>'+pc+'٪</span>'}
+return 'تحميل';
+}
+
 function isGameOpen(){const id=S.app||'';if(!id.startsWith('x_'))return false;try{return!!GAMES.find(x=>x.k===id.slice(2))}catch(e){return false}}
 function appHeadReset(){const hh=$('#appHead');if(hh)hh.style.display='';const ab=$('#appBody');if(ab){ab.style.position='';ab.style.padding='';ab.style.overflow=''}}
 function appMeta(id){try{const a=APPS.find(x=>x.id===id);if(a)return{n:a.n,ic:a.ic};if(id&&id.startsWith('x_')){const m=extraMeta(id.slice(2));if(m)return m}}catch(e){}return{n:id||'تطبيق',ic:'settings'}}
