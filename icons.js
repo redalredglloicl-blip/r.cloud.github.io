@@ -1,4 +1,11 @@
 const G_P={
+'information-circle':'<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1" fill="COLOR" stroke="none"/>',
+'arrow-down-circle':'<circle cx="12" cy="12" r="9"/><path d="M12 7v10M8 12l4 4 4-4"/>',
+server:'<rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><circle cx="7" cy="7.5" r="1" fill="COLOR" stroke="none"/><circle cx="7" cy="16.5" r="1" fill="COLOR" stroke="none"/>',
+time:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z"/>',
+text:'<path d="M5 6h14M5 10h14M5 14h9M5 18h6"/>',
+refresh:'<path d="M20 12a8 8 0 1 1-2.3-5.6M20 3v4h-4"/>',
 wifi:'<path d="M2 9.8a15 15 0 0 1 20 0M5.2 13.4a10.5 10.5 0 0 1 13.6 0M8.4 16.8a6.3 6.3 0 0 1 7.2 0" stroke-width="2.9"/><circle cx="12" cy="19.4" r="1.7" fill="COLOR" stroke="none"/>',
 cellular:'<rect x="3.5" y="4" width="4" height="15" rx="2" fill="COLOR" stroke="none"/><rect x="8.5" y="7.5" width="4" height="11.5" rx="2" fill="COLOR" stroke="none"/><rect x="13.5" y="11" width="4" height="8" rx="2" fill="COLOR" stroke="none"/><rect x="18.5" y="14.5" width="4" height="4.5" rx="2" fill="COLOR" stroke="none"/>',
 celldata:'<path d="M5 19v-4M10 19v-8M15 19V7M20 19V4" stroke-width="2.6"/>',
