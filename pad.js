@@ -228,7 +228,7 @@ return;
 }
 if(S.setPage==='about'){
 el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button><div class="setgroup">'+
-row('الاسم','', 'iPad')+row('طراز الجهاز','', 'iPad Pro 11')+row('نظام التشغيل','', 'iPadOS 26.2')+
+row('الاسم','', 'iPad')+row('طراز الجهاز','', 'iPhone 16 Pro')+row('نظام التشغيل','', 'iPadOS 26.2')+
 row('السعة','', '128 GB')+row('المساحة المتوفرة','', '115.6 GB')+
 row('الرقم التسلسلي','', 'DMPX42LKDNQH')+row('المشغل','', 'Zain')+'</div>';
 $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});return;
