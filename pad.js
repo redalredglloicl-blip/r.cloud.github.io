@@ -131,10 +131,10 @@ if(k==='snapchat')return appSnapchat();
 if(k==='instagram')return appInsta();
 if(k==='youtube'){S.ytView='home';return appYouTubeX()}
 if(k==='chatgpt')return appChatGPT();
+if(k==='minecraft'||k==='wembleguys')return appGame(k);
 $('#appBody').innerHTML='<div class="card" style="text-align:center;padding:28px 14px"><div style="display:flex;justify-content:center;margin-bottom:10px">'+IC[EXTRA[k].ic]()+'</div><div class="big">'+EXTRA[k].n+'</div><p class="mut" style="margin-top:6px">انثبت على الآيباد ويشتغل من الشاشة الرئيسية.</p><button class="btn" style="margin-top:12px" onclick="closeApp()">تمام</button></div>';
 }
 const FRIENDS=[['Eno','#e74c3c'],['Ahmad','#3498db'],['Sara','#e84393'],['Omar','#2ecc71'],['Lina','#f39c12'],['Yusuf','#9b59b6'],['Nora','#1abc9c'],['Khalid','#e67e22']];
-const GAMES=[['Adopt Me!','2.1M','#ff9ff3'],['Escape Obby!','845K','#54a0ff'],['Tower of Fun','1.3M','#5f27cd'],['Pet Simulator','976K','#ff9f43'],['Brook Village RP','3.4M','#1dd1a1'],['Hide and Seek','512K','#ee5253'],['Speed Run 4','689K','#48dbfb'],['Natural Disaster','1.1M','#fca311']];
 function playFakeGame(name){toast('انسحبت اللعبة الوهمية — ألعابنا الحقيقية جاية قريباً')}
 let selfieMode=false;
 let camStream=null;
@@ -353,23 +353,35 @@ const STORE=[
 {k:'chatgpt',n:'ChatGPT',dev:'OpenAI',cat:'إنتاجية',ver:'1.2026.1',size:'48 MB',desc:'مساعد ذكي حقيقي يجاوبك فوراً — مربوط بنموذج مجاني بدون حساب.'},
 {k:'youtube',n:'YouTube',dev:'Google LLC',cat:'فيديو وموسيقى',ver:'20.11.3',size:'156 MB',desc:'شاهد الفيديوات، علق مباشرة، وشاهد مع أصدقائك بنفس اللحظة.'},
 ];
+const GAMES=[
+{k:'minecraft',n:'عالم المكعبات',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'24 MB',price:5,url:'https://vincent-p-essy.github.io/minecraft-clone/',desc:'عالم مكعبات لا نهائي بجرافيك ثلاثي الأبعاد — ابنِ، استكشف، وعيش مغامرتك الخاصة ليل ونهار.'},
+{k:'wembleguys',n:'Wemble Guys',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'18 MB',price:8,url:'https://grep-many.github.io/wemble-guys/',desc:'تحدَّ نفسك على منصات سداسية تنهار تحتك — لعبة منصات مرحة بجرافيك ثلاثي الأبعاد.'},
+];
 function storeRow(a){
 const inst=S.installed.includes(a.k),hiddenB=false;
 return '<div class="card row" style="align-items:center"><span style="flex:0 0 auto">'+icImg(ICONS[a.k])+'</span><span style="flex:1;cursor:pointer" data-detail="'+a.k+'"><span class="big" style="font-size:15px">'+a.n+'</span><br><span class="mut">'+a.cat+' — '+a.dev+'</span></span><button class="btn '+(inst?'gray':'')+'" data-get="'+a.k+'" style="border-radius:16px;padding:7px 18px">'+(inst?'فتح':'احصل')+'</button></div>';
 }
+function gameRow(g){
+const inst=S.installed.includes(g.k);
+const freeFirst=!S.gameFree[g.k]&&!inst;
+return '<div class="card row" style="align-items:center"><span style="flex:0 0 auto">'+icImg(ICONS[g.k])+'</span><span style="flex:1;cursor:pointer" data-detail="'+g.k+'"><span class="big" style="font-size:15px">'+g.n+'</span><br><span class="mut">'+g.cat+' — '+g.dev+'</span><br>'+(freeFirst?'<span style="font-size:12px;color:#34c759;font-weight:700">مجاناً لأول مرة</span> <span class="mut" style="font-size:12px;text-decoration:line-through">$'+g.price+'</span>':'<b style="font-size:13px;color:#0a84ff">$'+g.price+'</b>')+'</span><button class="btn '+(inst?'gray':'')+'" data-get="'+g.k+'" style="border-radius:16px;padding:7px 18px">'+(inst?'فتح':(freeFirst?'مجاناً':'$'+g.price))+'</button></div>';
+}
+function anyRow(a){return a.price!=null?gameRow(a):storeRow(a)}
 function appStore(el){
-if(S.storeTab==='games')S.storeTab='apps';
+S.gameFree=store.get('gameFree',{});
+if(!S.storeTab)S.storeTab='games';
 const tab=S.storeTab;
-if(S.storeDetail){const a=STORE.find(x=>x.k===S.storeDetail);if(a){
+if(S.storeDetail){const a=STORE.concat(GAMES).find(x=>x.k===S.storeDetail);if(a){
+const _isG=a.price!=null,_inst=S.installed.includes(a.k),_ff=_isG&&!S.gameFree[a.k]&&!_inst;
 const inst=S.installed.includes(a.k);
 el.innerHTML='<button class="back" id="stBack" style="margin-bottom:8px">‹ رجوع</button>'+
-'<div class="row" style="align-items:center;gap:12px"><span>'+icImg(ICONS[a.k])+'</span><span style="flex:1"><span class="big" style="font-size:18px">'+a.n+'</span><br><span class="mut">'+a.dev+'</span></span><button class="btn" id="stGet" style="border-radius:16px;padding:8px 20px">'+(inst?'فتح':'احصل')+'</button></div>'+
+'<div class="row" style="align-items:center;gap:12px"><span>'+icImg(ICONS[a.k])+'</span><span style="flex:1"><span class="big" style="font-size:18px">'+a.n+'</span><br><span class="mut">'+a.dev+'</span></span><button class="btn" id="stGet" style="border-radius:16px;padding:8px 20px">'+(_inst?'فتح':(_isG?(_ff?'مجاناً':'$'+a.price):'احصل'))+'</button></div>'+
 '<div class="rbx-sec">الوصف</div><p style="line-height:1.8">'+a.desc+'</p>'+
 '<div class="rbx-sec">المعلومات</div><div class="setgroup">'+
 '<div class="setrow"><span style="flex:1">الإصدار</span><span class="mut">'+a.ver+'</span></div>'+
 '<div class="setrow"><span style="flex:1">الحجم</span><span class="mut">'+a.size+'</span></div>'+
 '<div class="setrow"><span style="flex:1">المطور</span><span class="mut">'+a.dev+'</span></div>'+
-'<div class="setrow"><span style="flex:1">التصنيف</span><span class="mut">'+a.cat+'</span></div></div>';
+'<div class="setrow"><span style="flex:1">التصنيف</span><span class="mut">'+a.cat+'</span></div>'+(_isG?'<div class="setrow"><span style="flex:1">السعر</span><span>'+(_ff?'<b style="color:#34c759">مجاناً لأول مرة</b> <span class="mut" style="text-decoration:line-through">$'+a.price+'</span>':'<b>$'+a.price+'</b>')+'</span></div>':'')+'</div>';
 $('#stBack').addEventListener('click',()=>{S.storeDetail=null;appStore(el)});
 $('#stGet').addEventListener('click',e=>doGet(a.k,e.target,el));
 return;
@@ -378,7 +390,9 @@ const acct=S.apple.id?
 '<span style="display:flex;align-items:center;gap:9px"><span style="width:38px;height:38px;border-radius:50%;background:linear-gradient(150deg,#8e8e93,#636366);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">'+S.apple.name.slice(0,1).toUpperCase()+'</span><b>'+S.apple.name+'</b></span>':
 '<button class="btn" id="stSign" style="padding:8px 14px">تسجيل الدخول بـ Apple ID</button>';
 let body='';
-if(tab==='today'){
+if(tab==='games'){
+body='<div class="rbx-sec" style="margin-top:2px">ألعاب Rio — حمّل والعب</div>'+GAMES.map(gameRow).join('');
+} else if(tab==='today'){
 const f=STORE[0];
 body='<div class="card" style="padding:0;overflow:hidden"><div style="background:linear-gradient(140deg,'+SOCIAL[f.k].c+',#0c1520);height:150px;display:flex;align-items:center;justify-content:center;gap:12px"><span style="background:#fff;border-radius:24px;padding:8px;display:inline-flex">'+icImg(ICONS[f.k])+'</span></div><div style="padding:12px"><span class="mut">تطبيق اليوم</span><div class="big" style="font-size:17px">'+f.n+'</div><p class="mut" style="margin:4px 0 10px">'+f.desc+'</p><button class="btn" data-get="'+f.k+'" style="border-radius:16px;padding:7px 18px">'+(S.installed.includes(f.k)?'فتح':'احصل')+'</button></div></div>'+
 STORE.slice(1,4).map(storeRow).join('');
@@ -386,14 +400,14 @@ STORE.slice(1,4).map(storeRow).join('');
 body='<div class="rbx-sec" style="margin-top:2px">تواصل اجتماعي — أونلاين</div>'+STORE.filter(a=>SOCIAL[a.k]).map(storeRow).join('')+'<div class="rbx-sec">تطبيقات جديدة</div>'+STORE.filter(a=>!SOCIAL[a.k]).map(storeRow).join('')+
 (S.hidden.length?'<div class="rbx-sec">تطبيقات حذفتها — استرجعها</div>'+S.hidden.map(id=>{const pa=APPS.find(x=>x.id===id);return pa?'<div class="card row" style="align-items:center"><span>'+icImg(ICONS[pa.ic])+'</span><span style="flex:1"><span class="big" style="font-size:15px">'+pa.n+'</span><br><span class="mut">تطبيق نظام</span></span><button class="btn" data-unhide="'+id+'" style="border-radius:16px;padding:7px 18px">احصل</button></div>':''}).join(''):'');
 } else {
-body='<div class="row" style="margin-bottom:10px"><input id="stQ" type="text" placeholder="ابحث عن تطبيقات وألعاب…" style="flex:1;padding:11px 13px;border:1px solid #d9d9de;border-radius:14px;font-size:14px"></div><div id="stRes">'+STORE.map(storeRow).join('')+'</div>';
+body='<div class="row" style="margin-bottom:10px"><input id="stQ" type="text" placeholder="ابحث عن تطبيقات وألعاب…" style="flex:1;padding:11px 13px;border:1px solid #d9d9de;border-radius:14px;font-size:14px"></div><div id="stRes">'+GAMES.map(gameRow).join('')+STORE.map(storeRow).join('')+'</div>';
 }
 el.innerHTML='<div class="row" style="align-items:center;margin-bottom:12px"><span class="big" style="font-size:21px;flex:1">App Store</span>'+acct+'</div>'+body+
 '<div style="display:flex;gap:6px;margin-top:14px;background:#e9e9ee;border-radius:14px;padding:4px">'+
-[['today','اليوم'],['apps','التطبيقات'],['search','بحث']].map(t=>'<button data-tab="'+t[0]+'" style="flex:1;padding:8px;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:12.5px;'+(tab===t[0]?'background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15)':'background:none;color:#555')+'">'+t[1]+'</button>').join('')+'</div>';
+[['games','الألعاب'],['today','اليوم'],['apps','التطبيقات'],['search','بحث']].map(t=>'<button data-tab="'+t[0]+'" style="flex:1;padding:8px;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:12.5px;'+(tab===t[0]?'background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15)':'background:none;color:#555')+'">'+t[1]+'</button>').join('')+'</div>';
 el.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{S.storeTab=b.dataset.tab;S.storeDetail=null;appStore(el)}));
 const sg=$('#stSign');if(sg)sg.addEventListener('click',()=>appleSignInForm(el,()=>appStore(el)));
-const q=$('#stQ');if(q)q.addEventListener('input',()=>{const v=q.value.trim();$('#stRes').innerHTML=STORE.filter(a=>!v||a.n.includes(v)||a.cat.includes(v)).map(storeRow).join('')||'<p class="mut" style="text-align:center;padding:16px">لا نتائج</p>';bindGets(el)});
+const q=$('#stQ');if(q)q.addEventListener('input',()=>{const v=q.value.trim();$('#stRes').innerHTML=STORE.concat(GAMES).filter(a=>!v||a.n.includes(v)||a.cat.includes(v)).map(anyRow).join('')||'<p class="mut" style="text-align:center;padding:16px">لا نتائج</p>';bindGets(el)});
 el.querySelectorAll('[data-unhide]').forEach(b=>b.addEventListener('click',()=>{S.hidden=S.hidden.filter(x=>x!==b.dataset.unhide);store.set('hidden',S.hidden);renderHome();appStore(el);toast('رجع التطبيق للشاشة الرئيسية')}));
 bindGets(el);
 }
@@ -404,8 +418,17 @@ el.querySelectorAll('[data-detail]').forEach(d=>d.addEventListener('click',()=>{
 function doGet(k,btn,el){
 if(!S.apple.id){toast('سجل دخولك بـ Apple ID حتى تنزل — روح للإعدادات أو اضغط تسجيل الدخول');appleSignInForm(el,()=>appStore(el));return}
 if(S.installed.includes(k)){S.storeDetail=null;openApp('x_'+k,null);return}
+S.gameFree=S.gameFree||store.get('gameFree',{});
+const g=GAMES.find(x=>x.k===k);
+const freeFirst=g&&!S.gameFree[k];
 btn.textContent='...';
-setTimeout(()=>{S.installed.push(k);store.set('installed',S.installed);renderHome();S.storeDetail=null;appStore(el);toast('انثبت '+STORE.find(a=>a.k===k).n+' على الشاشة الرئيسية');notify('appstore','App Store','اكتمل تثبيت '+STORE.find(a=>a.k===k).n,null,{pop:false})},750);
+setTimeout(()=>{S.installed.push(k);store.set('installed',S.installed);if(g){S.gameFree[k]=true;store.set('gameFree',S.gameFree)}
+const nm=(g||STORE.find(a=>a.k===k)).n;
+renderHome();S.storeDetail=null;appStore(el);toast('انثبت '+nm+' على الشاشة الرئيسية'+(freeFirst?' — مجاناً':''));notify('appstore','App Store','اكتمل تثبيت '+nm,null,{pop:false})},750);
+}
+function appGame(k){
+const g=GAMES.find(x=>x.k===k);if(!g)return;
+$('#appBody').innerHTML='<div style="margin:-12px;height:calc(100% + 24px)"><iframe src="'+g.url+'" style="width:100%;height:100%;border:0;display:block" allow="autoplay;fullscreen;gamepad" allowfullscreen scrolling="no"></iframe></div>';
 }
 const ALBUMS=[
 ['Shape of You','Ed Sheeran','https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/15/e6/e8/15e6e8a4-4190-6a8b-86c3-ab4a51b88288/190295851286.jpg/400x400bb.jpg'],
