@@ -102,10 +102,10 @@ runAutos('appopen',id);
 if(id==='phone'){toast('المكالمات داخل FaceTime هنا');id='facetime'}
 if(id&&id.startsWith('x_')){const k=id.slice(2);return openExtra(k,fromEl)}
 snapCur();S.app=id; tickUse(id);noteRunning(id,(APPS.find(a=>a.id===id)||{}).n||id,(APPS.find(a=>a.id===id)||{}).ic||id);
-const names={facetime:'FaceTime',camera:'Camera',photos:'Photos',messages:'Messages',appstore:'App Store',safari:'Safari',tiktok:'TikTok',maps:'Maps',weather:'Weather',calendar:'Calendar',music:'Music',clock:'Clock',notes:'Notes',calc:'Calculator',maint:'الصيانة',voicememos:'Voice Memos',settings:'Settings',files:'Files',shortcuts:'Shortcuts'};
+const names={facetime:'FaceTime',camera:'Camera',photos:'Photos',messages:'Messages',appstore:'App Store',safari:'Safari',tiktok:'TikTok',maps:'Maps',weather:'Weather',calendar:'Calendar',music:'Music',clock:'Clock',notes:'Notes',calc:'Calculator',maint:'الصيانة',voicememos:'Voice Memos',settings:'Settings',files:'Files',shortcuts:'Shortcuts',freeform:'Freeform',journal:'Journal'};
 $('#appTitle').textContent=names[id]||id;
 showAppWin(fromEl);
-({facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,tiktok:appTikTok,maps:appMaps,weather:appWeather,calendar:appCalendar,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,maint:appMaint,voicememos:appVoiceMemos,settings:appSettings,files:appFiles,shortcuts:appShortcuts}[id]||(()=>{}))($('#appBody'));
+({facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,tiktok:appTikTok,maps:appMaps,weather:appWeather,calendar:appCalendar,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,maint:appMaint,voicememos:appVoiceMemos,settings:appSettings,files:appFiles,shortcuts:appShortcuts,freeform:appFreeform,journal:appJournal}[id]||(()=>{}))($('#appBody'));
 }
 const _ab=$('#appBack');if(_ab)_ab.addEventListener('click',e=>{e.stopPropagation();closeApp()});
 function syncPill(){const pill=$('#spotPill');if(!pill)return;const lockOn=$('#lock').classList.contains('show');const tr=$('#pagesTrack');let onLib=false;if(tr&&tr.children.length>1){onLib=Math.round(tr.scrollLeft/tr.clientWidth)>=tr.children.length-1}pill.style.display=($('#appWin').classList.contains('open')||lockOn||onLib)?'none':'flex'}
