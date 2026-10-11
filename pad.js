@@ -36,6 +36,7 @@ function noteRunning(id,title,ic){if(!id)return;S.running=S.running||[];S.runnin
 function armHome(){S._armUntil=Date.now()+4000;const hb=$('#homeBar');hb.classList.add('armed');setTimeout(()=>{if(Date.now()>(S._armUntil||0))hb.classList.remove('armed')},4100)}
 function disarmHome(){S._armUntil=0;$('#homeBar').classList.remove('armed')}
 function closeApp(){
+appHeadReset();
 clearInterval(S.poll);
 const sw=$('#switcher');if(sw.classList.contains('open'))dismissSw();
 const win=$('#appWin');if(!win.classList.contains('open')){S.app=null;return}
@@ -92,7 +93,7 @@ $('#switcher').addEventListener('touchstart',e=>{_swY=e.touches[0].clientY},{pas
 $('#switcher').addEventListener('touchend',e=>{if(_swY===null)return;const dy=e.changedTouches[0].clientY-_swY;_swY=null;if(dy>45)dismissSw()});
 function killApp(id){S.running=(S.running||[]).filter(r=>r.id!==id);if(S.snaps)delete S.snaps[id];if(S.app===id){dismissSw();closeApp()}else renderSwitcher();toast('انقتل التطبيق من الخلفية')}
 function openApp(id,fromEl){
-hideCC();clearInterval(S.poll);
+appHeadReset();hideCC();clearInterval(S.poll);
 if(gateBlock(id))return;
 runAutos('appopen',id);
 if(id==='phone'){toast('المكالمات داخل FaceTime هنا');id='facetime'}
@@ -141,6 +142,7 @@ const tkA=S._anim;setTimeout(()=>{if(S._anim===tkA){win.style.transition='';win.
 });
 function extraMeta(k){try{if(typeof EXTRA!=='undefined'&&EXTRA[k])return{n:EXTRA[k].n,ic:EXTRA[k].ic}}catch(e){}try{if(typeof GAMES!=='undefined'){const _g=GAMES.find(x=>x.k===k);if(_g)return{n:_g.n,ic:k}}}catch(e){}return null}
 function openExtra(k,fromEl){
+appHeadReset();
 const _gg=GAMES.find(x=>x.k===k);
 if(_gg){snapCur();S.app='x_'+k;noteRunning('x_'+k,_gg.n,k);$('#appTitle').textContent=_gg.n;showAppWin(fromEl);return appGame(k)}
 snapCur();S.app='x_'+k;noteRunning('x_'+k,EXTRA[k].n,EXTRA[k].ic);$('#appTitle').textContent=EXTRA[k].n;showAppWin(fromEl);
@@ -500,9 +502,13 @@ setTimeout(()=>{S.installed.push(k);store.set('installed',S.installed);if(g){S.g
 const nm=(g||STORE.find(a=>a.k===k)).n;
 renderHome();S.storeDetail=null;appStore(el);toast('انثبت '+nm+' على الشاشة الرئيسية'+(freeFirst?' — مجاناً':''));notify('appstore','App Store','اكتمل تثبيت '+nm,null,{pop:false})},750);
 }
+function isGameOpen(){const id=S.app||'';if(!id.startsWith('x_'))return false;try{return!!GAMES.find(x=>x.k===id.slice(2))}catch(e){return false}}
+function appHeadReset(){const hh=$('#appHead');if(hh)hh.style.display='';const ab=$('#appBody');if(ab){ab.style.position='';ab.style.padding='';ab.style.overflow=''}}
 function appGame(k){
 const g=GAMES.find(x=>x.k===k);if(!g)return;
-$('#appBody').innerHTML='<div style="margin:-12px;height:calc(100% + 24px)"><iframe src="'+g.url+'" style="width:100%;height:100%;border:0;display:block" allow="autoplay;fullscreen;gamepad" allowfullscreen scrolling="no"></iframe></div>';
+const hh=$('#appHead');if(hh)hh.style.display='none';
+const ab=$('#appBody');ab.style.position='relative';ab.style.padding='0';ab.style.overflow='hidden';
+ab.innerHTML='<div style="position:absolute;inset:0;contain:strict"><iframe src="'+g.url+'" style="width:100%;height:100%;border:0;display:block;transform:translateZ(0);-webkit-transform:translateZ(0)" allow="autoplay;fullscreen;gamepad" allowfullscreen scrolling="no"></iframe></div>';
 }
 const ALBUMS=[
 ['Shape of You','Ed Sheeran','https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/15/e6/e8/15e6e8a4-4190-6a8b-86c3-ab4a51b88288/190295851286.jpg/400x400bb.jpg'],
