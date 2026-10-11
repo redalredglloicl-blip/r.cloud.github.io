@@ -11,11 +11,15 @@
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
 <title>Rio iPad 9.0</title>
 <style>
-.lg-bar{position:relative;display:flex;margin-top:14px;padding:4px;border-radius:24px;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(255,255,255,.38);-webkit-backdrop-filter:blur(20px) saturate(170%);backdrop-filter:blur(20px) saturate(170%);border:1px solid rgba(255,255,255,.4);box-shadow:inset 0 1px 1px rgba(255,255,255,.6),inset 0 -1px 1px rgba(0,0,0,.05),0 8px 22px rgba(0,0,0,.12)}
-.lg-bar.dk{background:rgba(44,44,48,.55);border-color:rgba(255,255,255,.14);box-shadow:inset 0 1px 1px rgba(255,255,255,.16),0 8px 22px rgba(0,0,0,.4)}
-.lg-pill{position:absolute;top:4px;bottom:4px;left:0;width:70px;border-radius:20px;pointer-events:none;background:radial-gradient(130% 160% at 25% 12%,rgba(255,255,255,.55),rgba(255,255,255,.14) 55%,rgba(110,130,170,.14));-webkit-backdrop-filter:blur(2px) saturate(160%) contrast(1.04);backdrop-filter:blur(2px) saturate(160%) contrast(1.04);box-shadow:inset 0 1px 1px rgba(255,255,255,.7),inset 0 -1px 2px rgba(255,255,255,.14),0 5px 16px rgba(0,0,0,.16);transition:transform .55s cubic-bezier(.32,.72,0,1),width .55s cubic-bezier(.32,.72,0,1);will-change:transform,width}
-@supports (backdrop-filter:url("#rio-liquid")){.lg-pill{backdrop-filter:url("#rio-liquid") blur(2px) saturate(160%) contrast(1.04)}}
-.lg-pill::after{content:'';position:absolute;left:12px;right:12px;top:5px;height:15px;border-radius:999px;opacity:0;transition:opacity .25s;background:linear-gradient(115deg,rgba(255,255,255,.6),rgba(255,255,255,.05) 78%)}
+.glass{background:linear-gradient(135deg,rgba(255,255,255,.17),rgba(255,255,255,.06) 55%,rgba(255,255,255,.12));-webkit-backdrop-filter:blur(10px) saturate(185%) brightness(1.06);backdrop-filter:blur(10px) saturate(185%) brightness(1.06);border:1px solid rgba(255,255,255,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 1px 0 0 rgba(255,255,255,.13),inset -1px 0 0 rgba(255,255,255,.13),inset 0 -1px 0 rgba(255,255,255,.08),0 10px 28px rgba(0,0,0,.13)}
+#ipad.dark .glass{background:linear-gradient(135deg,rgba(88,88,100,.3),rgba(48,48,56,.15) 55%,rgba(78,78,90,.24));border-color:rgba(255,255,255,.17);box-shadow:inset 0 1px 0 rgba(255,255,255,.26),inset 1px 0 0 rgba(255,255,255,.08),inset -1px 0 0 rgba(255,255,255,.08),0 10px 28px rgba(0,0,0,.42)}
+.lg-bar{position:relative;display:flex;margin-top:14px;padding:4px;border-radius:24px;touch-action:none;user-select:none;-webkit-user-select:none;background:linear-gradient(135deg,rgba(255,255,255,.13),rgba(255,255,255,.05) 60%,rgba(255,255,255,.1));-webkit-backdrop-filter:blur(12px) saturate(190%) brightness(1.06);backdrop-filter:blur(12px) saturate(190%) brightness(1.06);border:1px solid rgba(255,255,255,.34);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 0 0 1px rgba(255,255,255,.07),0 10px 26px rgba(0,0,0,.12)}
+.lg-bar.dk{background:linear-gradient(135deg,rgba(80,80,90,.26),rgba(42,42,48,.12) 60%,rgba(70,70,80,.2));border-color:rgba(255,255,255,.17);box-shadow:inset 0 1px 0 rgba(255,255,255,.26),0 10px 26px rgba(0,0,0,.4)}
+.lg-pill{position:absolute;top:4px;bottom:4px;left:0;width:70px;border-radius:20px;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.24),rgba(255,255,255,.06) 58%,rgba(255,255,255,.15));-webkit-backdrop-filter:blur(6px) saturate(190%) brightness(1.09);backdrop-filter:blur(6px) saturate(190%) brightness(1.09);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),inset 1px 0 0 rgba(255,255,255,.22),inset -1px 0 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(255,255,255,.14),0 4px 14px rgba(0,0,0,.12);transition:transform .55s cubic-bezier(.32,.72,0,1),width .55s cubic-bezier(.32,.72,0,1);will-change:transform,width}
+.lg-bar.dk .lg-pill{background:linear-gradient(135deg,rgba(150,150,165,.4),rgba(90,90,102,.14) 58%,rgba(130,130,145,.26));box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 1px 0 0 rgba(255,255,255,.12),inset -1px 0 0 rgba(255,255,255,.12),0 4px 14px rgba(0,0,0,.3)}
+@supports (backdrop-filter:url("#rio-liquid")){.lg-pill{backdrop-filter:url("#rio-liquid") blur(6px) saturate(190%) brightness(1.09)}}
+.lg-pill::before{content:'';position:absolute;left:16px;right:16px;top:4px;height:11px;border-radius:999px;opacity:.5;background:linear-gradient(115deg,rgba(255,255,255,.5),rgba(255,255,255,.03) 80%)}
+.lg-pill::after{content:'';position:absolute;left:14px;right:14px;top:4px;height:13px;border-radius:999px;opacity:0;transition:opacity .25s;background:linear-gradient(115deg,rgba(255,255,255,.65),rgba(255,255,255,.04) 78%)}
 .lg-pill.bloom::after{opacity:1}
 .lg-tab{position:relative;z-index:1;flex:1;border:none;background:none;padding:10px 4px;font-size:12.5px;font-weight:700;color:#6b6b70;cursor:pointer;border-radius:18px;font-family:inherit}
 .lg-tab.on{color:#111}
@@ -72,7 +76,7 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 .libSearch{width:100%;border:none;border-radius:14px;background:rgba(255,255,255,.28);color:#fff;font-size:14px;padding:11px 14px;margin-bottom:14px;font-family:inherit;outline:none}
 .libSearch::placeholder{color:rgba(255,255,255,.8)}
 .libGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.libFolder{border:none;cursor:pointer;border-radius:22px;background:rgba(255,255,255,.32);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:12px 10px 9px;display:flex;flex-direction:column;gap:7px}
+.libFolder{border:1px solid rgba(255,255,255,.3);cursor:pointer;border-radius:24px;background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.07) 55%,rgba(255,255,255,.13));backdrop-filter:blur(12px) saturate(185%);-webkit-backdrop-filter:blur(12px) saturate(185%);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 8px 22px rgba(0,0,0,.12);padding:12px 10px 9px;display:flex;flex-direction:column;gap:7px}
 .libIcons{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;min-height:20px}
 .libIcons .ic{width:100%;aspect-ratio:1/1}
 .libName{font-size:12.5px;font-weight:600;color:#fff;text-align:center}
@@ -92,7 +96,7 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 .app .ic{width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;transition:transform .12s;box-shadow:0 3px 8px rgba(0,0,0,.25);position:relative}
 .app .nm{color:#fff;font-size:10.5px;font-weight:500;text-shadow:0 1px 3px rgba(0,0,0,.5);max-width:64px;text-align:center;line-height:1.1}
 .badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;border-radius:9px;background:#ff3b30;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;border:1.5px solid #fff}
-#dock{position:absolute;left:10px;right:10px;bottom:8px;z-index:10;background:rgba(255,255,255,.22);backdrop-filter:blur(10px);border-radius:22px;padding:7px 10px;display:flex;justify-content:space-around}
+#dock{position:absolute;left:10px;right:10px;bottom:8px;z-index:10;background:linear-gradient(135deg,rgba(255,255,255,.17),rgba(255,255,255,.06) 55%,rgba(255,255,255,.12));-webkit-backdrop-filter:blur(12px) saturate(185%) brightness(1.06);backdrop-filter:blur(12px) saturate(185%) brightness(1.06);border:1px solid rgba(255,255,255,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 10px 28px rgba(0,0,0,.13);border-radius:24px;padding:7px 10px;display:flex;justify-content:space-around}
 #dock .ic{width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,.25)}
 #homeBar{position:absolute;left:50%;transform:translateX(-50%);bottom:3px;width:120px;height:4px;border-radius:2px;background:rgba(255,255,255,.85);z-index:60;cursor:pointer}
 #appWin{position:absolute;inset:0;z-index:30;background:#f2f2f7;display:none;flex-direction:column;will-change:transform,opacity;transform-origin:center center;overflow:hidden}
@@ -112,7 +116,7 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 .ccCirc{width:min(100%,64px);aspect-ratio:1;border-radius:50%;background:rgba(255,255,255,.21);border:1px solid rgba(255,255,255,.20);display:flex;align-items:center;justify-content:center;cursor:pointer;justify-self:center;align-self:start}
 .ccCirc.on{background:#0a84ff}
 .ccCirc.big{grid-row:span 1}
-.ccTile{background:rgba(255,255,255,.21);border:1px solid rgba(255,255,255,.20);border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#fff;cursor:pointer;padding:8px 5px;font-size:10.5px;min-height:58px}
+.ccTile{background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.07) 55%,rgba(255,255,255,.14));-webkit-backdrop-filter:blur(8px) saturate(185%) brightness(1.05);backdrop-filter:blur(8px) saturate(185%) brightness(1.05);border:1px solid rgba(255,255,255,.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 1px 0 0 rgba(255,255,255,.12),inset -1px 0 0 rgba(255,255,255,.12),0 6px 18px rgba(0,0,0,.18);border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#fff;cursor:pointer;padding:8px 5px;font-size:10.5px;min-height:58px}
 .ccTile.on{background:#0a84ff}
 .ccTile.white{background:#fff;color:#111}
 .ccVert{position:relative;background:rgba(255,255,255,.21);border:1px solid rgba(255,255,255,.20);border-radius:22px;grid-row:span 2;min-height:122px;overflow:hidden}
@@ -213,7 +217,7 @@ input[type=text],textarea{font-family:inherit}
 #menuOverlay .mbox h3{margin-bottom:14px;font-size:17px}
 #menuOverlay .mbox button{width:100%;padding:12px;margin-bottom:9px;border:none;border-radius:12px;background:#2c2f36;color:#fff;font-size:15px;font-weight:600;cursor:pointer}
 #menuOverlay .mbox button.leave{background:#3a2226;color:#ff6b62}
-#toast{position:absolute;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 62px);z-index:90;background:rgba(10,20,40,.85);color:#fff;font-size:13px;padding:8px 16px;border-radius:16px;display:none;max-width:86%;text-align:center}
+#toast{position:absolute;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 62px);z-index:90;background:linear-gradient(135deg,rgba(50,52,62,.55),rgba(28,30,38,.4) 60%,rgba(44,46,56,.5));-webkit-backdrop-filter:blur(12px) saturate(185%);backdrop-filter:blur(12px) saturate(185%);border:1px solid rgba(255,255,255,.26);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 22px rgba(0,0,0,.3);color:#fff;font-size:13px;padding:8px 16px;border-radius:18px;display:none;max-width:86%;text-align:center}
 canvas#camView{width:100%;border-radius:12px;background:#000}
 .app{transition:transform .16s ease}
 .app .ic{position:relative}
@@ -252,7 +256,7 @@ body{touch-action:manipulation}
 .jiggling .app .delX{display:flex}
 #editBar{position:absolute;top:30px;left:10px;z-index:26;display:none}
 #editBar button{background:rgba(245,245,247,.92);border:none;padding:6px 16px;border-radius:15px;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
-#ctxMenu{position:absolute;z-index:60;display:none;background:rgba(250,250,252,.94);backdrop-filter:blur(14px);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);min-width:178px;overflow:hidden;color:#111}
+#ctxMenu{position:absolute;z-index:60;display:none;background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(255,255,255,.28) 60%,rgba(255,255,255,.4));-webkit-backdrop-filter:blur(14px) saturate(185%);backdrop-filter:blur(14px) saturate(185%);border:1px solid rgba(255,255,255,.5);border-radius:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 12px 34px rgba(0,0,0,.28);min-width:178px;overflow:hidden;color:#111}
 #ctxMenu button{display:block;width:100%;text-align:right;padding:11px 14px;background:none;border:none;border-bottom:1px solid rgba(0,0,0,.06);font-size:13.5px;cursor:pointer}
 #ctxMenu button.danger{color:#ff3b30;font-weight:700}
 #ipad{background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,0) 22%),linear-gradient(150deg,#3b3e45,#14161a 42%,#1d1f24);box-shadow:inset 0 0 0 2px #43464e,inset 0 1px 0 rgba(255,255,255,.28),0 24px 44px rgba(0,15,40,.45)}
@@ -284,7 +288,7 @@ body{touch-action:manipulation}
 #ipad.dark input[type=range]{background:transparent!important}
 #ipad.dark input[type=checkbox]{background:transparent!important}
 #ipad.dark #appSheet{background:#0d0d0f}
-#ipad.dark #dock{background:rgba(28,28,32,.62)}
+#ipad.dark #dock{background:linear-gradient(135deg,rgba(88,88,100,.3),rgba(48,48,56,.15) 55%,rgba(78,78,90,.24));border-color:rgba(255,255,255,.17)}
 #ipad.dark #wCal{background:#1c1c1e!important;color:#fff!important}
 #ipad.dark #wCalS{color:#98989f!important}
 #ipad.dark .chip{background:#2c2c2e;color:#e5e5ea}
@@ -294,11 +298,11 @@ body{touch-action:manipulation}
 #ipad.dark .spotRes{background:#1c1c1e;color:#f2f2f7}
 #ipad.dark .swCard{background:rgba(28,28,30,.94)}
 #ipad.dark .swCard b,#ipad.dark .swCard .swT{color:#fff}
-#ipad.dark .sheetCard{background:#1c1c1e;color:#f2f2f7}
+#ipad.dark .sheetCard{background:linear-gradient(135deg,rgba(80,80,92,.5),rgba(40,40,46,.3) 60%,rgba(70,70,82,.42));border-color:rgba(255,255,255,.2);color:#f2f2f7}
 #ipad.dark .storeRow,#ipad.dark .storeCard{background:#1c1c1e;color:#f2f2f7}
 #ipad.dark .fcRow{background:#1c1c1e;color:#f2f2f7}
 #ipad.dark .msgIn{background:#26262a;color:#f2f2f7}
-#spotPill{position:absolute;bottom:118px;left:50%;transform:translateX(-50%);z-index:40;background:rgba(30,30,32,.55);backdrop-filter:blur(10px);color:#fff;border:none;border-radius:16px;padding:7px 18px;font-size:13px;display:flex;align-items:center;gap:6px;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+#spotPill{position:absolute;bottom:118px;left:50%;transform:translateX(-50%);z-index:40;background:linear-gradient(135deg,rgba(70,70,80,.42),rgba(40,40,46,.24) 60%,rgba(60,60,70,.34));-webkit-backdrop-filter:blur(10px) saturate(185%);backdrop-filter:blur(10px) saturate(185%);color:#fff;border:1px solid rgba(255,255,255,.24);border-radius:18px;padding:7px 18px;font-size:13px;display:flex;align-items:center;gap:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 6px 18px rgba(0,0,0,.3)}
 #spot{position:absolute;inset:0;z-index:65;display:none;flex-direction:column;background:rgba(18,18,20,.55);backdrop-filter:blur(22px) saturate(1.4);padding:56px 16px 14px;color:#fff;overflow-y:auto}
 #spot.open{display:flex}
 #spotInp{width:100%;padding:12px 14px;border-radius:14px;border:none;background:rgba(255,255,255,.16);color:#fff;font-size:15px;outline:none}
@@ -355,7 +359,7 @@ body{touch-action:manipulation}
 #screen.icons-tinted .app .ic img,#screen.icons-tinted #dock img{filter:sepia(.55) hue-rotate(185deg) saturate(2.2) brightness(.92)}
 #screen.acc-rm *{animation-duration:.01s!important}
 #shareSheet{position:absolute;inset:0;z-index:75;background:rgba(10,10,12,.4);display:flex;align-items:flex-end;justify-content:center}
-.sheetCard{background:#f7f7fa;color:#111;border-radius:22px 22px 0 0;width:100%;padding:12px 16px 20px;animation:ccIn .28s ease;max-height:78%;overflow-y:auto}
+.sheetCard{background:linear-gradient(135deg,rgba(255,255,255,.55),rgba(245,245,248,.32) 60%,rgba(255,255,255,.45));-webkit-backdrop-filter:blur(16px) saturate(185%);backdrop-filter:blur(16px) saturate(185%);border:1px solid rgba(255,255,255,.5);border-bottom:none;color:#111;border-radius:24px 24px 0 0;width:100%;padding:12px 16px 20px;animation:ccIn .28s ease;max-height:78%;overflow-y:auto;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
 .sheetGrab{width:38px;height:5px;border-radius:3px;background:#c7c7cc;margin:0 auto 12px}
 .airRow{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 10px}
 .airP{background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:#111;flex:0 0 auto}
@@ -364,7 +368,7 @@ body{touch-action:manipulation}
 .sheetActs button{background:#fff;border:1px solid #e3e3e8;border-radius:13px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;color:#111}
 .spotRes{background:rgba(255,255,255,.14);border-radius:14px;padding:10px 12px;margin-top:9px;cursor:pointer;display:flex;flex-direction:column;gap:2px;font-size:13px;text-align:right}
 .spotRes span{opacity:.8;font-size:12px}
-.segRow{display:flex;gap:6px;background:#e9e9ee;border-radius:12px;padding:3px}
+.segRow{display:flex;gap:6px;background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,.05) 60%,rgba(255,255,255,.1));-webkit-backdrop-filter:blur(10px) saturate(185%);backdrop-filter:blur(10px) saturate(185%);border:1px solid rgba(255,255,255,.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.5);border-radius:14px;padding:3px}
 .segRow button{flex:1;padding:8px;border:none;border-radius:9px;background:none;font-weight:700;font-size:12.5px;cursor:pointer;color:#333}
 .segRow button.on{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.18);color:#111}
 .chip{padding:7px 12px;border-radius:16px;border:1px solid #d9d9de;background:#fff;font-size:12.5px;cursor:pointer;color:#111}
@@ -1115,10 +1119,10 @@ function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.inne
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="pad.js?v=101"></script>
-<script src="social.js?v=101"></script>
-<script src="safari.js?v=101"></script>
-<script src="sys3.js?v=101"></script>
+<script src="pad.js?v=102"></script>
+<script src="social.js?v=102"></script>
+<script src="safari.js?v=102"></script>
+<script src="sys3.js?v=102"></script>
 <script>
 (function(){
 const actId=localStorage.getItem('rio-actlock');
