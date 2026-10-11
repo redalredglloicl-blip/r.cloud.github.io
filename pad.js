@@ -379,7 +379,7 @@ function place(i,instant){const b=btns[i];if(!b)return;const br=b.getBoundingCli
 function setOn(i){btns.forEach((b,j)=>b.classList.toggle('on',j===i))}
 place(cur,true);setOn(cur);
 let drag=false,pid=null,pend=cur;
-function moveTo(x){const cr=bar.getBoundingClientRect(),cx=Math.max(cr.left,Math.min(cr.right,x)),bw=btns[cur].offsetWidth;pill.style.transform='translateX('+(cx-cr.left-bw/2)+'px)';pill.style.width=bw+'px';let best=cur,bd=1e9;btns.forEach((b,j)=>{const r=b.getBoundingClientRect(),d=Math.abs(cx-(r.left+r.width/2));if(d<bd){bd=d;best=j}});if(best!==pend){pend=best;setOn(best)}}
+function moveTo(x){const cr=bar.getBoundingClientRect(),cx=Math.max(cr.left,Math.min(cr.right,x)),bw=btns[cur].offsetWidth;const px=Math.max(0,Math.min(cr.width-bw,cx-cr.left-bw/2));pill.style.transform='translateX('+px+'px)';pill.style.width=bw+'px';let best=cur,bd=1e9;btns.forEach((b,j)=>{const r=b.getBoundingClientRect(),d=Math.abs(cx-(r.left+r.width/2));if(d<bd){bd=d;best=j}});if(best!==pend){pend=best;setOn(best)}}
 bar.addEventListener('pointerdown',e=>{const t=e.target.closest('.lg-tab');if(!t||drag)return;drag=true;pid=e.pointerId;pend=btns.indexOf(t);try{bar.setPointerCapture(pid)}catch(_){}pill.classList.add('bloom');pill.style.transition='none';setOn(pend);moveTo(e.clientX);e.preventDefault()});
 bar.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==pid)return;moveTo(e.clientX)});
 function end(e){if(!drag||(e&&e.pointerId!==pid))return;drag=false;pill.classList.remove('bloom');pill.style.transition='';cur=pend;place(cur,false);setOn(cur);onPick(tabs[cur])}
