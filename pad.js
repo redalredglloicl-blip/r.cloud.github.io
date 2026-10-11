@@ -168,29 +168,7 @@ el.innerHTML='<div style="text-align:center;padding:60px 20px"><div style="font-
 }
 function stopCam(){if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null}}
 function phMeta(){try{return JSON.parse(localStorage.getItem('rio-phmeta')||'{}')}catch(e){return{}}}
-function appPhotos(el){
-el.innerHTML='<div class="rbx-sec" style="margin-top:2px">المعرض</div><div class="row" style="margin-bottom:10px">'+[['all','الكل'],['fav','المفضلة']].map(t=>'<button class="btn '+(S.phTab===t[0]?'':'gray')+'" data-phtab="'+t[0]+'" style="padding:7px 16px">'+t[1]+'</button>').join('')+'</div><div id="phGrid"></div>';
-S.phTab=S.phTab||'all';
-const draw=()=>{
-const meta=phMeta();
-const builtIn=[];for(let i=1;i<=8;i++)builtIn.push({src:'https://picsum.photos/seed/riophoto'+i+'/400/400',own:false});
-let items=S.photos.map(p=>({src:p,own:true,fav:!!meta[p.slice(-26)]&&!!meta[p.slice(-26)].fav})).concat(builtIn.map(x=>({...x,fav:false})));
-if(S.phTab==='fav')items=items.filter(x=>x.fav);
-const g=$('#phGrid');if(!g)return;
-g.innerHTML=items.length?'<div class="pgrid">'+items.map((p,i)=>'<img src="'+p.src+'" data-ph="'+i+'" loading="lazy" style="'+(p.fav?'outline:2.5px solid #ff2d55;outline-offset:-2.5px':'')+'">').join('')+'</div>':'<div class="mut" style="text-align:center;padding:26px">لا صور هنا بعد</div>';
-g.querySelectorAll('[data-ph]').forEach(im=>im.addEventListener('click',()=>{
-const p=items[+im.dataset.ph],key=p.src.slice(-26);
-el.innerHTML='<img src="'+p.src+'" style="width:100%;border-radius:12px">'+
-'<div class="row" style="margin-top:12px;flex-wrap:wrap;gap:8px"><button class="btn gray" id="phBack">رجوع</button>'+(p.own?'<button class="btn '+(p.fav?'red':'gray')+'" id="phFav">'+(p.fav?'إزالة من المفضلة':'أضف للمفضلة ♥')+'</button><button class="btn gray" id="phShare">مشاركة</button><button class="btn red" id="phDel">حذف</button>':'')+'</div>';
-$('#phBack').addEventListener('click',()=>appPhotos(el));
-const fb=$('#phFav');if(fb)fb.addEventListener('click',()=>{const m=phMeta();m[key]={fav:!p.fav};localStorage.setItem('rio-phmeta',JSON.stringify(m));appPhotos(el);toast(p.fav?'انشالت من المفضلة':'انضافت للمفضلة')});
-const sh=$('#phShare');if(sh)sh.addEventListener('click',()=>showShare({img:p.src,title:'صورة من Rio iPad'}));
-const del=$('#phDel');if(del)del.addEventListener('click',()=>{S.photos=S.photos.filter(x=>x!==p.src);store.set('photos',S.photos);renderHome();appPhotos(el);toast('انحذفت الصورة')});
-}));
-};
-el.querySelectorAll('[data-phtab]').forEach(b=>b.addEventListener('click',()=>{S.phTab=b.dataset.phtab;appPhotos(el)}));
-draw();
-}
+
 function appFaceTime(el){
 el.innerHTML=(S.missedCall?'<div class="card row" style="background:#e8f8ee"><span style="flex:1"><span class="big">مكالمة واردة من Eno</span><br><span class="mut">FaceTime</span></span><button class="btn" id="ftAnswer">رد</button><button class="btn red" id="ftDecline">رفض</button></div>':'')+'<div class="rbx-sec" style="margin-top:2px">جهات الاتصال</div>'+
 ((S.missedCall)?'':''); // placeholder replaced below
@@ -640,10 +618,26 @@ $('#swLap').addEventListener('click',()=>{const l=$('#swLaps');if(l)l.innerHTML=
 $('#swReset').addEventListener('click',()=>{swOn=false;swAcc=0;clearInterval(swIv);const b=$('#swStart');if(b)b.textContent='ابدأ';const l=$('#swLaps');if(l)l.innerHTML='';swDraw()});
 }
 function appNotes(el){
-el.innerHTML='<textarea id="noteTxt" placeholder="اكتب ملاحظة…" style="width:100%;height:230px;border:none;border-radius:12px;padding:12px;font-size:15px;background:#fff">'+S.notes.replace(/</g,'&lt;')+'</textarea><p class="mut" style="margin-top:8px">تنحفظ الملاحظة بالآيباد.</p><button class="btn gray" id="noteShare" style="margin-top:6px">مشاركة الملاحظة</button>';
-$('#noteTxt').addEventListener('input',e=>{S.notes=e.target.value;store.set('notes',S.notes)});
-$('#noteShare').addEventListener('click',()=>showShare({text:S.notes||'ملاحظة فارغة',title:'ملاحظة من Rio iPad'}));
+if(!store.get('notesList',null)&&S.notes){try{store.set('notesList',[{t:S.notes,ts:Date.now()}])}catch(e){}}
+S.notesList=S.notesList||store.get('notesList',[]);
+const save=()=>{try{store.set('notesList',S.notesList)}catch(e){}};
+const fmt=ts=>{const d=new Date(ts);return d.getDate()+'/'+(d.getMonth()+1)+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+if(S.noteEdit==null||!S.notesList[S.noteEdit]){
+let h='<div class="row" style="align-items:center;margin-bottom:8px"><b style="font-size:22px;flex:1">الملاحظات</b><span id="noteNew" style="color:#0a84ff;font-size:28px;cursor:pointer;line-height:1">+</span></div>';
+h+=S.notesList.length?S.notesList.map((n,ix)=>{const t=String(n.t||'').split('\n');return '<div class="card row" data-note="'+ix+'" style="align-items:center;cursor:pointer;padding:10px 12px"><span style="flex:1"><b style="font-size:15px">'+escH(t[0]||'ملاحظة جديدة')+'</b><br><span class="mut" style="font-size:12.5px">'+fmt(n.ts)+'  '+escH((t[1]||'').slice(0,42))+'</span></span><span style="color:#c7c7cc;font-size:18px">‹</span></div>'}).join(''):'<p class="mut" style="text-align:center;padding:44px;line-height:2">لا توجد ملاحظات<br>اضغط + لإنشاء ملاحظة جديدة</p>';
+el.innerHTML=h;
+document.querySelector('#noteNew').addEventListener('click',()=>{S.notesList.unshift({t:'',ts:Date.now()});save();S.noteEdit=0;appNotes(el)});
+el.querySelectorAll('[data-note]').forEach(r=>r.addEventListener('click',()=>{S.noteEdit=+r.dataset.note;appNotes(el)}));
+}else{
+const n=S.notesList[S.noteEdit];
+el.innerHTML='<div class="row" style="align-items:center;margin-bottom:8px"><span id="noteBack" style="color:#0a84ff;font-size:16px;cursor:pointer">‹ الملاحظات</span><b style="flex:1;text-align:center;font-size:12px" class="mut">'+fmt(n.ts)+'</b><span id="noteDel" style="cursor:pointer">'+si('trash',20,'#ff3b30')+'</span></div><textarea id="noteEd" placeholder="اكتب هنا…" style="width:100%;height:62vh;border:none;font-size:16px;line-height:1.9;outline:none;resize:none;background:transparent;color:#111"></textarea>';
+const ta=document.querySelector('#noteEd');ta.value=n.t||'';
+ta.addEventListener('input',()=>{n.t=ta.value;n.ts=Date.now();save()});
+document.querySelector('#noteBack').addEventListener('click',()=>{if(!String(n.t||'').trim()){S.notesList.splice(S.noteEdit,1);save()}S.noteEdit=null;appNotes(el)});
+document.querySelector('#noteDel').addEventListener('click',()=>{S.notesList.splice(S.noteEdit,1);save();S.noteEdit=null;appNotes(el);toast('انحذفت الملاحظة')});
 }
+}
+
 function appCalc(el){
 let expr='';
 el.innerHTML='<div class="card"><div id="calcOut" style="text-align:left;font-size:30px;font-weight:700;padding:8px;min-height:44px">0</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">'+
