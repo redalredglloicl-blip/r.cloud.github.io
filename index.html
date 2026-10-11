@@ -6,10 +6,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Rio iPad">
+<meta name="apple-mobile-web-app-title" content="iPhone">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Rio iPad 9.11</title>
+<title>Update 9.12</title>
 <style>
 .glass{background:linear-gradient(135deg,rgba(255,255,255,.17),rgba(255,255,255,.06) 55%,rgba(255,255,255,.12));-webkit-backdrop-filter:blur(10px) saturate(185%) brightness(1.06);backdrop-filter:blur(10px) saturate(185%) brightness(1.06);border:1px solid rgba(255,255,255,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 1px 0 0 rgba(255,255,255,.13),inset -1px 0 0 rgba(255,255,255,.13),inset 0 -1px 0 rgba(255,255,255,.08),0 10px 28px rgba(0,0,0,.13)}
 #ipad.dark .glass{background:linear-gradient(135deg,rgba(88,88,100,.3),rgba(48,48,56,.15) 55%,rgba(78,78,90,.24));border-color:rgba(255,255,255,.17);box-shadow:inset 0 1px 0 rgba(255,255,255,.26),inset 1px 0 0 rgba(255,255,255,.08),inset -1px 0 0 rgba(255,255,255,.08),0 10px 28px rgba(0,0,0,.42)}
@@ -394,7 +394,7 @@ img,a{-webkit-user-drag:none!important}
 <body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="rio-liquid" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.02 0.032" numOctaves="1" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Rio iPad 9.11</div>
+  <div id="verTag">Update 9.12</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -434,7 +434,7 @@ img,a{-webkit-user-drag:none!important}
 
   <!-- Roblox-style menu -->
   <div id="menuOverlay"><div class="mbox">
-    <h3>Rio iPad</h3>
+    <h3>iPhone</h3>
     <button id="mResume">متابعة اللعب</button>
     <button id="mReset">إعادة الشخصية</button>
     <button class="leave" id="mLeave">مغادرة اللعبة</button>
@@ -443,11 +443,11 @@ img,a{-webkit-user-drag:none!important}
   <!-- Start -->
   <div id="startScreen">
     <svg width="86" height="64" viewBox="0 0 86 64"><rect x="3" y="3" width="80" height="58" rx="9" fill="#111318"/><rect x="8" y="8" width="70" height="48" rx="5" fill="#3a7bd5"/><rect x="14" y="14" width="12" height="12" rx="3" fill="#191b1e"/><rect x="30" y="14" width="12" height="12" rx="3" fill="#19b845"/><rect x="46" y="14" width="12" height="12" rx="3" fill="#fff"/><rect x="14" y="30" width="12" height="12" rx="3" fill="#0a84ff"/><rect x="30" y="30" width="12" height="12" rx="3" fill="#f92c4c"/><rect x="46" y="30" width="12" height="12" rx="3" fill="#ffd93b"/></svg>
-    <h1>Rio iPad</h1>
+    <h1>iPhone</h1>
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Rio iPad 9.11</div>
+    <div class="ver">Update 9.12</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -1200,12 +1200,12 @@ function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.inne
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="icons.js?v=124"></script>
-<script src="pad.js?v=124"></script>
-<script src="photos.js?v=124"></script>
-<script src="social.js?v=124"></script>
-<script src="safari.js?v=124"></script>
-<script src="sys3.js?v=124"></script>
+<script src="icons.js?v=125"></script>
+<script src="pad.js?v=125"></script>
+<script src="photos.js?v=125"></script>
+<script src="social.js?v=125"></script>
+<script src="safari.js?v=125"></script>
+<script src="sys3.js?v=125"></script>
 <script>
 (function(){
 const actId=localStorage.getItem('rio-actlock');
