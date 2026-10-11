@@ -463,12 +463,21 @@ const inp=document.querySelector('#gptIn');
 const send=async txt=>{
 const v=(txt||inp.value).trim();if(!v||S.gptBusy)return;
 S.gpt.push({role:'user',t:v});S.gptBusy=true;render();
+const SYS='أنت مساعد ذكي ودود اسمك ChatGPT. أجب باللغة العربية دائماً وبأسلوب واضح ومختصر ومفيد.';
+const histMsgs=S.gpt.slice(0,-1).slice(-8).map(m=>({role:m.role==='ai'?'assistant':'user',content:m.t}));
+const body=JSON.stringify({model:'openai',messages:[{role:'system',content:SYS}].concat(histMsgs,[{role:'user',content:v}])});
+const isSrvErr=t=>{const s=(t||'').trim();return !s||(/^\s*\{/.test(s)&&/"(error|status)"/.test(s))};
+let ans='';
+for(let a=0;a<3&&!ans;a++){
 try{
-const hist=S.gpt.slice(-8).map(m=>({role:m.role==='ai'?'assistant':'user',content:m.t}));
-const r=await fetch('https://text.pollinations.ai/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:[{role:'system',content:'أنت مساعد ذكي ودود اسمك ChatGPT. أجب باللغة العربية دائماً وبأسلوب واضح ومختصر ومفيد.'}].concat(hist,[{role:'user',content:v}])}),signal:AbortSignal.timeout(60000)});
-let t=await r.text();t=(t||'').trim().slice(0,2500)||'ما وصلني رد — حاول مرة ثانية.';
-S.gpt.push({role:'ai',t:t,html:escH(t).replace(/\n/g,'<br>')});
-}catch(e){S.gpt.push({role:'ai',t:'err',html:'ماكو اتصال بالإنترنت — تأكد من الشبكة وحاول مرة ثانية.'})}
+if(a)await new Promise(r=>setTimeout(r,1500));
+const r=await fetch('https://text.pollinations.ai/',{method:'POST',headers:{'Content-Type':'application/json'},body:body,signal:AbortSignal.timeout(25000)});
+const t=await r.text();
+if(r.ok&&!isSrvErr(t))ans=t.trim().slice(0,2500);
+}catch(e){}
+}
+if(ans)S.gpt.push({role:'ai',t:ans,html:escH(ans).replace(/\n/g,'<br>')});
+else S.gpt.push({role:'ai',t:'err',html:'الخدمة مشغولة حالياً — انتظر شوي وحاول مرة ثانية.'});
 S.gptBusy=false;render();
 };
 document.querySelector('#gptSend').addEventListener('click',()=>send());
