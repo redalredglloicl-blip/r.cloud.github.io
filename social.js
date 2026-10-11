@@ -278,8 +278,29 @@ function appYouTubeX(){
 const el=document.querySelector('#appBody');
 S.ytView=S.ytView||'home';
 if(S.ytView==='home')return ytHome(el);
+if(S.ytView==='shorts')return ytShortsTab(el);
+if(S.ytView==='subs')return ytSubsTab(el);
+if(S.ytView==='you')return ytYouTab(el);
 if(S.ytView==='search')return ytSearchV(el);
 return ytWatch(el,S.ytVidV);
+}
+// YouTube bottom tab bar (iOS-exact)
+function ytTabs(active){
+ const tabs=[['home','الرئيسية','M3 10l9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'],['shorts','Shorts','M13 2L4.5 13.5H11L9.5 22 19 10.5h-6.5z'],['subs','الاشتراكات','M4 6h16M4 12h16M4 18h10'],['you','أنت','M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4 3.6-6 8-6s8 2 8 6']];
+ return '<div style="position:sticky;bottom:0;background:#fff;border-top:1px solid #e5e5ea;display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));margin:12px -12px -12px;z-index:10">'+tabs.map(t=>'<div data-yttab="'+t[0]+'" style="flex:1;text-align:center;cursor:pointer;color:'+(active===t[0]?'#0f0f0f':'#606060')+'"><svg width="24" height="24" viewBox="0 0 24 24" fill="'+(active===t[0]?'#0f0f0f':'none')+'" stroke="'+(active===t[0]?'#0f0f0f':'#606060')+'" stroke-width="1.8"><path d="'+t[2]+'"/></svg><div style="font-size:10px;margin-top:2px">'+t[1]+'</div></div>').join('')+'</div>';
+}
+function ytBindTabs(el){
+ el.querySelectorAll('[data-yttab]').forEach(t=>t.addEventListener('click',()=>{S.ytView=t.dataset.yttab;appYouTubeX();}));
+}
+// Track watch history
+function ytAddHistory(v){
+ try{
+  let hst=JSON.parse(localStorage.getItem('rio-ythist')||'[]');
+  hst=hst.filter(x=>x.id!==v.id);
+  hst.unshift({id:v.id,title:v.title,ch:v.ch,views:v.views,time:v.time,at:Date.now()});
+  hst=hst.slice(0,50);
+  localStorage.setItem('rio-ythist',JSON.stringify(hst));
+ }catch(e){}
 }
 function ytHome(el){
 let h='<div class="row" style="align-items:center;margin:-12px -12px 0;padding:11px 14px 9px;position:sticky;top:-12px;background:#fff;z-index:5;border-bottom:1px solid #f0f0f2"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:30px;height:22px;background:#ff0033;border-radius:6px;display:inline-flex;align-items:center;justify-content:center"><span style="width:0;height:0;border-left:9px solid #fff;border-top:6px solid transparent;border-bottom:6px solid transparent;margin-inline-start:2px"></span></span><b style="font-size:19px;letter-spacing:-.5px">YouTube</b></span><span style="margin-inline-start:auto;display:flex;gap:16px;align-items:center"><span data-ytgo="search" style="display:inline-flex;cursor:pointer">'+si('search',21)+'</span><span style="display:inline-flex">'+si('bell',21)+'</span><span style="display:inline-flex">'+meAv(30)+'</span></span></div>';
@@ -293,6 +314,45 @@ el.innerHTML=h;
 el.querySelectorAll('[data-ytgo]').forEach(x=>x.addEventListener('click',()=>{S.ytView=x.dataset.ytgo;appYouTubeX()}));
 el.querySelectorAll('[data-ytcat]').forEach(x=>x.addEventListener('click',()=>{S.ytCat=x.dataset.ytcat;appYouTubeX()}));
 el.querySelectorAll('[data-ytv]').forEach(c=>c.addEventListener('click',()=>{const v=YT_VIDS.find(x=>x[0]===c.dataset.ytv);S.ytView='watch';S.ytVidV={id:v[0],title:v[1],ch:v[2],subs:v[3],views:v[4],cat:v[5],dur:v[6],time:v[7]};appYouTubeX()}));
+}
+// Shorts tab: vertical feed
+function ytShortsTab(el){
+ let h='<div class="row" style="align-items:center;margin:-12px -12px 0;padding:11px 14px 9px;position:sticky;top:-12px;background:#fff;z-index:5;border-bottom:1px solid #f0f0f2"><b style="font-size:19px">Shorts</b></div>';
+ h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">'+YT_VIDS.slice(0,10).map(v=>'<div data-ytv="'+v[0]+'" style="cursor:pointer;position:relative"><img src="https://img.youtube.com/vi/'+v[0]+'/hqdefault.jpg" loading="lazy" style="width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:10px;background:#111;display:block"><div style="position:absolute;bottom:8px;right:8px;left:8px;color:#fff;font-size:12px;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,.7);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+v[1]+'</div></div>').join('')+'</div>';
+ h+=ytTabs('shorts');
+ el.innerHTML=h;ytBindTabs(el);
+ el.querySelectorAll('[data-ytv]').forEach(c=>c.addEventListener('click',()=>{const v=YT_VIDS.find(x=>x[0]===c.dataset.ytv);S.ytView='watch';S.ytVidV={id:v[0],title:v[1],ch:v[2],subs:v[3],views:v[4],cat:v[5],dur:v[6],time:v[7]};appYouTubeX();}));
+}
+// Subscriptions tab
+async function ytSubsTab(el){
+ let h='<div class="row" style="align-items:center;margin:-12px -12px 0;padding:11px 14px 9px;position:sticky;top:-12px;background:#fff;z-index:5;border-bottom:1px solid #f0f0f2"><b style="font-size:19px">الاشتراكات</b></div>';
+ h+='<div id="ytSubsList"><p class="mut" style="text-align:center;padding:30px">جاري التحميل...</p></div>';
+ h+=ytTabs('subs');
+ el.innerHTML=h;ytBindTabs(el);
+ // Get subscribed channels from Firebase
+ try{
+  const me=ytUid();let subs=[];
+  for(const v of YT_VIDS){
+   const chId='ch'+simpHash(v[2]);
+   const d=await fbGet('/channels/'+chId+'/subs');
+   if(d&&d.u&&d.u[me])subs.push(v);
+  }
+  const list=el.querySelector('#ytSubsList');
+  if(list)list.innerHTML=subs.length?subs.map(ytCard).join(''):'<div style="text-align:center;padding:50px 20px"><p class="mut">لم تشترك بأي قناة بعد<br>اضغط "اشتراك" في أي فيديو</p></div>';
+  el.querySelectorAll('[data-ytv]').forEach(c=>c.addEventListener('click',()=>{const v=YT_VIDS.find(x=>x[0]===c.dataset.ytv);S.ytView='watch';S.ytVidV={id:v[0],title:v[1],ch:v[2],subs:v[3],views:v[4],cat:v[5],dur:v[6],time:v[7]};appYouTubeX();}));
+ }catch(e){}
+}
+// You/Library tab with history
+function ytYouTab(el){
+ let hst=[];try{hst=JSON.parse(localStorage.getItem('rio-ythist')||'[]')}catch(e){}
+ let h='<div class="row" style="align-items:center;margin:-12px -12px 0;padding:11px 14px 9px;position:sticky;top:-12px;background:#fff;z-index:5;border-bottom:1px solid #f0f0f2"><b style="font-size:19px;flex:1">أنت</b>'+meAv(32)+'</div>';
+ h+='<div class="card" style="margin-top:12px"><b style="font-size:15px">السجل</b>'+(hst.length?'<div style="margin-top:8px">'+hst.slice(0,10).map(v=>ytMini([v.id,v.title,v.ch,'',v.views,'','',v.time])).join('')+'</div><button id="ytClearHist" class="btn gray" style="width:100%;margin-top:10px;font-size:13px">مسح السجل</button>':'<p class="mut" style="font-size:13px;margin:8px 0 0">لا توجد فيديوات مشاهدة بعد</p>')+'</div>';
+ h+='<div class="card"><div class="setrow"><span>المشاهدة لاحقاً</span><span class="mut">0</span></div><div class="setrow"><span>قوائم التشغيل</span><span class="mut">0</span></div><div class="setrow"><span>فيديواتي</span><span class="mut">0</span></div></div>';
+ h+=ytTabs('you');
+ el.innerHTML=h;ytBindTabs(el);
+ el.querySelectorAll('[data-ytv]').forEach(c=>c.addEventListener('click',()=>{const v=YT_VIDS.find(x=>x[0]===c.dataset.ytv)||hst.find(x=>x.id===c.dataset.ytv);if(!v)return;S.ytView='watch';S.ytVidV={id:v.id||v[0],title:v.title||v[1],ch:v.ch||v[2],subs:v.subs||v[3]||'—',views:v.views||v[4],cat:v.cat||v[5],dur:v.dur||v[6],time:v.time||v[7]};appYouTubeX();}));
+ const ch=el.querySelector('#ytClearHist');
+ if(ch)ch.addEventListener('click',()=>{try{localStorage.removeItem('rio-ythist')}catch(e){}appYouTubeX();toast('تم مسح السجل');});
 }
 function ytSearchV(el){
 el.innerHTML='<div class="row" style="align-items:center;margin-bottom:10px"><span data-ytgo="home" style="color:#0a84ff;cursor:pointer">‹ رجوع</span><b style="flex:1;text-align:center">بحث</b><span style="width:50px"></span></div>'+
@@ -311,6 +371,7 @@ S.ytView='watch';S.ytVidV={id:id,title:'فيديو من الرابط',ch:'YouTub
 });
 }
 function ytWatch(el,v){
+ytAddHistory(v);
 S.ytVid=v.id;S.ytPos={t:0,at:Date.now(),playing:false};S.ytLastSync=0;S.ytApplying=false;
 if(!S._ytMsg){S._ytMsg=1;window.addEventListener('message',e=>{try{
 const d=typeof e.data==='string'?JSON.parse(e.data):e.data;
@@ -327,7 +388,7 @@ h+='<div class="row" style="gap:10px;justify-content:center;margin:12px 0 2px"><
 h+='<b style="font-size:15.5px;margin-top:10px;display:block;line-height:1.6">'+v.title+'</b>';
 h+='<div class="row" style="align-items:center;margin-top:10px;gap:10px"><span style="width:40px;height:40px;border-radius:50%;background:linear-gradient(150deg,#ff0033,#7a0018);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:0 0 auto">'+v.ch.slice(0,1)+'</span><span style="flex:1;min-width:0"><b style="font-size:14px">'+v.ch+'</b><br><span class="mut" style="font-size:12px"><span id="ytSubN">…</span> مشترك</span></span><button class="btn" id="ytSubB" style="border-radius:18px;padding:8px 18px;font-size:13px">اشتراك</button></div>';
 h+='<div class="card" style="margin-top:14px;padding:0;overflow:hidden"><div style="text-align:center;padding:9px 0 0"><span style="display:inline-block;width:38px;height:4.5px;border-radius:3px;background:#d9d9de"></span></div><div class="row" style="align-items:center;padding:8px 14px 4px"><b style="font-size:14.5px;flex:1">التعليقات <span class="mut" id="ytCN" style="font-weight:400"></span></b><span id="ytViewers" class="mut" style="font-size:11px"></span></div><div class="row" style="gap:8px;align-items:center;padding:10px 14px;background:#fafafc;border-bottom:1px solid #f0f0f2">'+meAv(34)+'<input id="ytCIn" placeholder="أضف تعليقاً…" style="flex:1;padding:10px 14px;border:1px solid #e4e4e7;border-radius:20px;font-size:13.5px;font-family:inherit;background:#fff;min-width:0"><button class="btn" id="ytCSend" style="border-radius:50%;width:38px;height:38px;padding:0;flex:0 0 auto;font-size:16px">↑</button></div><div class="row" style="gap:6px;padding:8px 14px;justify-content:center" id="ytReactBar">'+['❤️','😂','👏','🔥','👍'].map(e=>'<button data-ytr="'+e+'" style="background:#f0f0f2;border:none;border-radius:16px;padding:6px 12px;font-size:16px;cursor:pointer">'+e+'</button>').join('')+'</div><div id="ytCList" style="display:flex;flex-direction:column;gap:10px;padding:10px 14px;max-height:320px;overflow-y:auto"></div><div id="ytReactFloat" style="position:absolute;pointer-events:none"></div></div>';
-h+='<div class="row" style="gap:8px;margin-top:12px"><button class="btn gray" id="ytLikeB" style="flex:1;border-radius:18px;padding:9px;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:6px">'+si('thumb',15)+' <span id="ytLikeN">…</span></button><button class="btn gray" id="ytShareB" style="flex:1;border-radius:18px;padding:9px;font-size:13px">مشاركة</button></div>';
+h+='<div class="row" style="gap:8px;margin-top:12px;overflow-x:auto"><div style="display:flex;background:#f2f2f2;border-radius:18px;overflow:hidden;flex:0 0 auto"><button id="ytLikeB" style="border:none;background:none;padding:9px 16px;font-size:13px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;border-right:1px solid #e0e0e0">'+si('thumb',15)+' <span id="ytLikeN">…</span></button><button id="ytDislikeB" style="border:none;background:none;padding:9px 16px;cursor:pointer;transform:scaleX(-1)">'+si('thumb',15)+'</button></div><button class="btn gray" id="ytShareB" style="border-radius:18px;padding:9px 16px;font-size:13px;flex:0 0 auto">مشاركة</button><button class="btn gray" id="ytSaveB" style="border-radius:18px;padding:9px 16px;font-size:13px;flex:0 0 auto">حفظ</button></div>';
 h+='<div class="card" style="margin-top:12px;background:#f2f2f2"><b style="font-size:13px">'+(v.views||'')+' مشاهدة • '+(v.time||'')+'</b><p class="mut" style="font-size:12.5px;margin:6px 0 0;line-height:1.8">'+escH(v.title||'')+' — شاهد المقطع كاملاً مع المشاهدة المشتركة والتعليقات المباشرة.</p></div>';
 h+='<div class="card" id="ytParty" style="margin-top:12px;background:#f6f6fa"><div class="row" style="align-items:center"><b style="font-size:13.5px;flex:1">مشاهدة مشتركة — نفس اللحظة</b><span style="width:9px;height:9px;border-radius:50%;background:#34c759;display:inline-block"></span></div><p class="mut" style="font-size:12px;margin:4px 0 0;line-height:1.8">أي واحد يشغّل أو يوقف أو يقدّم — يصير عند الكل بنفس اللحظة. افتح نفس المقطع بجهاز صديقك.</p><div id="ytWatchers" class="mut" style="font-size:12px;margin-top:6px"></div></div>';
 h+='<b style="font-size:15px;display:block;margin:18px 0 2px">فيديوات مقترحة</b>'+YT_VIDS.filter(x=>x[0]!==v.id).slice(0,6).map(ytMini).join('');
@@ -345,6 +406,10 @@ const refreshSubs=async()=>{let d=await fbGet(subKey);if(!d){d={c:ytNum(v.subs),
 const refreshLike=async()=>{const d=(await fbGet(likeKey))||{c:0,u:{}};const n=document.querySelector('#ytLikeN');if(n)n.textContent=ytFmt(d.c);const b=document.querySelector('#ytLikeB');if(b)b.style.opacity=(d.u&&d.u[me])?1:.75;return d};
 document.querySelector('#ytSubB').addEventListener('click',async()=>{let d=(await fbGet(subKey))||{c:ytNum(v.subs),u:{}};d.u=d.u||{};if(d.u[me]){d.c=Math.max(0,d.c-1);delete d.u[me];toast('ألغيت الاشتراك')}else{d.c++;d.u[me]=1;toast('اشتركت بالقناة ✓')}await fbPut(subKey,d);refreshSubs()});
 document.querySelector('#ytLikeB').addEventListener('click',async()=>{const d=await refreshLike();d.u=d.u||{};if(d.u[me]){d.c=Math.max(0,d.c-1);delete d.u[me]}else{d.c++;d.u[me]=1;sfx('like')}await fbPut(likeKey,d);refreshLike()});
+const disBtn=document.querySelector('#ytDislikeB');
+if(disBtn)disBtn.addEventListener('click',()=>{toast('تم تسجيل عدم الإعجاب');disBtn.style.opacity=disBtn.style.opacity==='0.4'?'1':'0.4';});
+const saveBtn=document.querySelector('#ytSaveB');
+if(saveBtn)saveBtn.addEventListener('click',()=>{toast('تم الحفظ في "المشاهدة لاحقاً" ✓');});
 document.querySelector('#ytShareB').addEventListener('click',()=>{toast('اننسخ رابط المقطع — الصقه بأي مكان')});
 let _cSig='';
 const loadC=async()=>{const c=await fbGet(room+'/comments');const l=document.querySelector('#ytCList');if(!l)return;
