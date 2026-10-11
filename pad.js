@@ -100,10 +100,10 @@ runAutos('appopen',id);
 if(id==='phone'){toast('المكالمات داخل FaceTime هنا');id='facetime'}
 if(id&&id.startsWith('x_')){const k=id.slice(2);return openExtra(k,fromEl)}
 snapCur();S.app=id; tickUse(id);noteRunning(id,(APPS.find(a=>a.id===id)||{}).n||id,(APPS.find(a=>a.id===id)||{}).ic||id);
-const names={facetime:'FaceTime',camera:'Camera',photos:'Photos',messages:'Messages',appstore:'App Store',safari:'Safari',tiktok:'TikTok',maps:'Maps',weather:'Weather',calendar:'Calendar',music:'Music',clock:'Clock',notes:'Notes',calc:'Calculator',maint:'الصيانة',voicememos:'Voice Memos',settings:'Settings',files:'Files',shortcuts:'Shortcuts',applestore:'Apple Store'};
+const names={facetime:'FaceTime',camera:'Camera',photos:'Photos',messages:'Messages',appstore:'App Store',safari:'Safari',tiktok:'TikTok',maps:'Maps',weather:'Weather',calendar:'Calendar',music:'Music',clock:'Clock',notes:'Notes',calc:'Calculator',maint:'الصيانة',voicememos:'Voice Memos',settings:'Settings',files:'Files',shortcuts:'Shortcuts'};
 $('#appTitle').textContent=names[id]||id;
 showAppWin(fromEl);
-({facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,tiktok:appTikTok,maps:appMaps,weather:appWeather,calendar:appCalendar,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,maint:appMaint,voicememos:appVoiceMemos,settings:appSettings,files:appFiles,shortcuts:appShortcuts,applestore:appAppleStore}[id]||(()=>{}))($('#appBody'));
+({facetime:appFaceTime,camera:appCamera,photos:appPhotos,messages:appMessages,appstore:appStore,safari:appSafari,tiktok:appTikTok,maps:appMaps,weather:appWeather,calendar:appCalendar,music:appMusic,clock:appClock,notes:appNotes,calc:appCalc,maint:appMaint,voicememos:appVoiceMemos,settings:appSettings,files:appFiles,shortcuts:appShortcuts}[id]||(()=>{}))($('#appBody'));
 }
 const _ab=$('#appBack');if(_ab)_ab.addEventListener('click',e=>{e.stopPropagation();closeApp()});
 function syncPill(){const pill=$('#spotPill');if(!pill)return;const lockOn=$('#lock').classList.contains('show');const tr=$('#pagesTrack');let onLib=false;if(tr&&tr.children.length>1){onLib=Math.round(tr.scrollLeft/tr.clientWidth)>=tr.children.length-1}pill.style.display=($('#appWin').classList.contains('open')||lockOn||onLib)?'none':'flex'}
@@ -217,18 +217,11 @@ ui.querySelector('.callBtns').innerHTML='<button class="callBtn" style="backgrou
 $('#callEnd').addEventListener('click',()=>{clearInterval(S.callTimer);ui.classList.remove('show');toast('انتهت المكالمة')});
 });
 }
-const IM_THREADS=[['أحمد','i1'],['سارة','i2'],['العائلة','i3']];
+function emptyChats(title,head){const el=document.querySelector('#appBody');el.innerHTML=head+'<div style="text-align:center;padding:64px 22px"><div style="width:76px;height:76px;border-radius:24px;background:#f1f1f4;display:flex;align-items:center;justify-content:center;margin:0 auto 18px">'+si('comment',30,'#8e8e93')+'</div><b style="font-size:18px">'+title+'</b><p class="mut" style="font-size:13.5px;line-height:2.1;margin:10px 0 0">لا توجد محادثات بعد<br>قريباً: ابحث باليوزر وابدأ محادثة</p></div>';}
+const IM_THREADS=[];
 function appMessages(el){
 if(S.imT==null)S.imT=-1;
-if(S.imT<0){
-let h='<div class="row" style="align-items:center;margin-bottom:8px"><b style="font-size:22px;flex:1">رسائل</b><span id="imNew" style="font-size:20px;color:#0a84ff;cursor:pointer;display:inline-flex">'+si('edit',20,'#0a84ff')+'</span></div>';
-h+='<div id="imThreads">'+IM_THREADS.map((t,i)=>'<div class="card row" data-imth="'+i+'" style="align-items:center;cursor:pointer"><span style="width:46px;height:46px;border-radius:50%;background:linear-gradient(150deg,#aeb3ba,#7c828a);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex:0 0 auto">'+t[0].slice(0,1)+'</span><span style="flex:1;margin-inline-start:10px;min-width:0"><b>'+t[0]+'</b><br><span class="mut" id="imPrev'+i+'" style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">…</span></span><span class="mut">‹</span></div>').join('')+'</div>';
-h+='<p class="mut" style="text-align:center;font-size:11.5px;margin-top:10px;line-height:1.8">رسائل حقيقية — أي جهاز يفتح نفس المحادثة<br>يقدر يراسلك هسه</p>';
-el.innerHTML=h;
-IM_THREADS.forEach((t,i)=>{fbGet('/rooms/imessage/'+t[1]+'/msgs').then(m=>{const a=m?Object.values(m).sort((x,y)=>(x.ts||0)-(y.ts||0)):[];const p=document.querySelector('#imPrev'+i);if(p)p.textContent=a.length?String(a[a.length-1].t).slice(0,36):'لا رسائل بعد'})});
-el.querySelectorAll('[data-imth]').forEach(c=>c.addEventListener('click',()=>{S.imT=+c.dataset.imth;appMessages(el)}));
-const nn=document.querySelector('#imNew');if(nn)nn.addEventListener('click',()=>toast('اختر محادثة حتى تبدأ'));
-}else{
+if(S.imT<0){emptyChats('رسائل','<div class="row" style="align-items:center;margin-bottom:8px"><b style="font-size:22px;flex:1">رسائل</b></div>');return}else{
 const t=IM_THREADS[S.imT];
 el.innerHTML='<div class="row" style="align-items:center;margin-bottom:8px"><span id="imBack" style="color:#0a84ff;font-size:16px;cursor:pointer">‹ رجوع</span><b style="flex:1;text-align:center;font-size:16px">'+t[0]+'</b><span style="width:52px"></span></div>'+
 '<div id="imList" style="display:flex;flex-direction:column;gap:6px;padding:6px 2px;min-height:220px"></div>'+
@@ -508,7 +501,7 @@ renderHome();S.storeDetail=null;appStore(el);toast('انثبت '+nm+' على ا�
 function isGameOpen(){const id=S.app||'';if(!id.startsWith('x_'))return false;try{return!!GAMES.find(x=>x.k===id.slice(2))}catch(e){return false}}
 function appHeadReset(){const hh=$('#appHead');if(hh)hh.style.display='';const ab=$('#appBody');if(ab){ab.style.position='';ab.style.padding='';ab.style.overflow=''}}
 function appMeta(id){try{const a=APPS.find(x=>x.id===id);if(a)return{n:a.n,ic:a.ic};if(id&&id.startsWith('x_')){const m=extraMeta(id.slice(2));if(m)return m}}catch(e){}return{n:id||'تطبيق',ic:'settings'}}
-const APP_SIZES={safari:184,photos:96,camera:88,messages:142,music:210,clock:24,notes:38,calc:18,files:64,settings:52,appstore:176,weather:44,calendar:36,maps:288,tiktok:320,facetime:96,voicememos:42,shortcuts:58,maint:34,applestore:148};
+const APP_SIZES={safari:184,photos:96,camera:88,messages:142,music:210,clock:24,notes:38,calc:18,files:64,settings:52,appstore:176,weather:44,calendar:36,maps:288,tiktok:320,facetime:96,voicememos:42,shortcuts:58,maint:34};
 function appSizeMB(id){try{if(id&&id.startsWith('x_')){const gm=GAMES.find(x=>x.k===id.slice(2));if(gm&&gm.size){const m=gm.size.match(/([\d.]+)\s*GB/);if(m)return Math.round(parseFloat(m[1])*1000)}return 86}}catch(e){}return APP_SIZES[id]||64}
 function fmtSize(mb){return mb>=1000?(mb/1000).toFixed(1)+' GB':Math.round(mb)+' MB'}
 function meAv(sz){sz=sz||44;if(S.myPic)return '<img src="'+S.myPic+'" style="width:'+sz+'px;height:'+sz+'px;border-radius:50%;flex:0 0 auto;object-fit:cover">';return '<span style="width:'+sz+'px;height:'+sz+'px;border-radius:50%;flex:0 0 auto;background:linear-gradient(150deg,#8e8e93,#5a5a5e);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:'+Math.round(sz/2.4)+'px">'+escH((S.apple.name||'R').slice(0,1).toUpperCase())+'</span>'}
@@ -772,43 +765,15 @@ el.innerHTML='<div style="background:'+headBg+';color:#fff;border-radius:14px;pa
 '<div class="row" style="position:sticky;bottom:0;background:#f2f2f7;padding-top:8px"><input type="text" id="chatIn" placeholder="اكتب رسالة…" style="flex:1;padding:10px 12px;border:1px solid #d9d9de;border-radius:20px;font-size:14px"><button class="btn" id="chatSend">إرسال</button></div>';
 }
 const WA_THREADS=[['whatsapp','المجموعة العامة','group'],['whatsapp-dm-ahmad','أحمد','dm'],['whatsapp-dm-mohammad','محمد','dm'],['whatsapp-grp','العائلة','group']];
-function appWhatsApp(){
-const el=$('#appBody');
-el.innerHTML='<div style="background:#075e54;color:#fff;border-radius:14px 14px 0 0;padding:12px"><b style="font-size:16px">WhatsApp</b><span style="display:block;font-size:12px;opacity:.85">متصل كـ '+escH(myName())+'</span></div>'+
-'<div style="display:flex;background:#075e54;color:#fff;padding:0 8px 8px;gap:4px">'+['الدردشات','المجموعات','المكالمات'].map((t,i)=>'<span style="flex:1;text-align:center;font-size:12.5px;padding:6px;border-bottom:'+(i===0?'3px solid #fff':'3px solid transparent')+'">'+t+'</span>').join('')+'</div>'+
-WA_THREADS.map((t,i)=>'<div class="card row" data-wa="'+t[0]+'" style="cursor:pointer;margin-top:8px;align-items:center"><img src="https://i.pravatar.cc/90?img='+(15+i*11)+'" style="width:46px;height:46px;border-radius:50%"><span style="flex:1"><b style="font-size:14px">'+t[1]+'</b><br><span class="mut">اضغط لفتح المحادثة — أونلاين</span></span><span class="mut">الآن</span></div>').join('')+
-'<p class="mut" style="text-align:center;margin-top:12px;font-size:12px">محادثات حقيقية عبر Firebase — أي شخص يدخل يشوف رسائلك</p>';
-el.querySelectorAll('[data-wa]').forEach(c=>c.addEventListener('click',()=>{
-const room='/rooms/'+c.dataset.wa;
-chatChrome('#075e54',c.dataset.wa==='whatsapp'?'المجموعة العامة':(WA_THREADS.find(t=>t[0]===c.dataset.wa)||[])[1]||'محادثة','WhatsApp','#ece5dd');
-chatThread(room,{own:'#dcf8c6',ownTx:'#111',other:'#ffffff',otherTx:'#111'});
-}));
-}
+function appWhatsApp(){emptyChats('WhatsApp','<div style="background:#075e54;color:#fff;border-radius:14px;padding:12px"><b style="font-size:16px">WhatsApp</b><span style="display:block;font-size:12px;opacity:.85">متصل \u2014 بانتظار ميزة اليوزر</span></div>')}
+
 function miniChat(el,head,bg,room,theme){el.innerHTML=head+'<div id="chatList" style="background:'+bg+';border-radius:12px;padding:8px 6px;min-height:170px;margin-top:8px"></div>'+chatInputHTML();chatThread(room,theme)}
-function appTelegram(){
-const el=$('#appBody');
-el.innerHTML='<div style="background:#2AABEE;color:#fff;border-radius:14px;padding:12px"><b style="font-size:16px">Telegram</b><span style="display:block;font-size:12px;opacity:.85">'+escH(myName())+'</span></div>'+
-'<div class="card row" style="margin-top:8px;align-items:center"><span style="flex:1"><b>قناة Rio الرسمية + المجموعة</b><br><span class="mut">محادثة عامة أونلاين</span></span></div>'+
-'<div id="chatList" style="background:#e7edf2;border-radius:12px;padding:8px 6px;min-height:170px;margin-top:8px"></div>'+
-''+chatInputHTML()+'';
-chatThread('/rooms/telegram',{own:'#effdde',ownTx:'#111',other:'#ffffff',otherTx:'#111'});
-}
-function appMessenger(){
-const el=$('#appBody');
-el.innerHTML='<div style="background:linear-gradient(90deg,#0084ff,#9b30d9);color:#fff;border-radius:14px;padding:12px"><b style="font-size:16px">Messenger</b><span style="display:block;font-size:12px;opacity:.88">'+escH(myName())+'</span></div>'+
-'<div id="chatList" style="background:#f0f2f5;border-radius:12px;padding:8px 6px;min-height:170px;margin-top:8px"></div>'+
-'<div class="row" style="position:sticky;bottom:0;background:#f2f2f7;padding-top:8px"><input type="text" id="chatIn" placeholder="Aa…" style="flex:1;padding:10px 12px;border:1px solid #d9d9de;border-radius:20px;font-size:14px"><button class="btn" id="chatSend">إرسال</button></div>';
-chatThread('/rooms/messenger',{own:'#0084ff',ownTx:'#fff',other:'#e4e6eb',otherTx:'#111'});
-}
-function appDiscord(){
-const el=$('#appBody');
-el.innerHTML='<div style="display:flex;gap:0;background:#1e1f22;border-radius:14px;overflow:hidden;color:#dbdee1">'+
-'<div style="width:56px;background:#121214;display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:10px"><span style="width:44px;height:44px;border-radius:16px;background:#5865F2;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff">Rio</span><span style="width:44px;height:44px;border-radius:50%;background:#2b2d31;display:flex;align-items:center;justify-content:center;font-weight:700">G</span></div>'+
-'<div style="flex:1;padding:10px"><b style="color:#fff">السيرفر العام</b><div style="margin:8px 0;font-size:13px"><div style="background:#35373c;border-radius:8px;padding:6px 9px"># عام</div><div style="padding:6px 9px;opacity:.75"># إعلانات</div><div style="padding:6px 9px;opacity:.75"># صور-اللاعبين</div></div></div></div>'+
-'<div id="chatList" style="background:#313338;border-radius:12px;padding:8px 6px;min-height:160px;margin-top:8px;color:#dbdee1"></div>'+
-'<div class="row" style="position:sticky;bottom:0;background:#f2f2f7;padding-top:8px"><input type="text" id="chatIn" placeholder="راسل #عام…" style="flex:1;padding:10px 12px;border:1px solid #d9d9de;border-radius:20px;font-size:14px"><button class="btn" id="chatSend">إرسال</button></div>';
-chatThread('/rooms/discord',{own:'#5865F2',ownTx:'#fff',other:'#2b2d31',otherTx:'#dbdee1'});
-}
+function appTelegram(){emptyChats('Telegram','<div style="background:#2AABEE;color:#fff;border-radius:14px;padding:12px"><b style="font-size:16px">Telegram</b></div>')}
+
+function appMessenger(){emptyChats('Messenger','<div style="background:linear-gradient(90deg,#0084ff,#9b30d9);color:#fff;border-radius:14px;padding:12px"><b style="font-size:16px">Messenger</b></div>')}
+
+function appDiscord(){emptyChats('Discord','<div style="background:#1e1f22;color:#fff;border-radius:14px;padding:12px"><b style="font-size:16px">Discord</b></div>')}
+
 function appFeedNet(k){
 const el=$('#appBody'),isX=k==='x';
 el.innerHTML='<div style="background:'+(isX?'#000':'#1877F2')+';color:#fff;border-radius:14px;padding:12px"><b style="font-size:16px">'+(isX?'X':'Facebook')+'</b><span style="display:block;font-size:12px;opacity:.85">'+escH(myName())+'</span></div>'+
@@ -822,10 +787,8 @@ l.innerHTML=arr.length?arr.map(x=>'<div class="card"><div class="row" style="ali
 load();clearInterval(S.poll);S.poll=setInterval(load,4000);
 $('#fdPost').addEventListener('click',async()=>{const v=$('#fdIn').value.trim();if(!v)return;await fbPost('/rooms/'+k+'/posts',{u:myName(),t:v,ts:Date.now()});$('#fdIn').value='';load()});
 }
-function appSnapchat(){
-chatChrome('#e8c832','Snapchat','أصدقاء وقصص','#fffbe8');
-chatThread('/rooms/snapchat',{own:'#fffc00',ownTx:'#111',other:'#ffffff',otherTx:'#111'});
-}
+function appSnapchat(){emptyChats('Snapchat','<div style="background:#e8c832;color:#111;border-radius:14px;padding:12px"><b style="font-size:16px">Snapchat</b></div>')}
+
 function appInsta(){
 const el=$('#appBody');
 const seeds=['rioinsta1','rioinsta2','rioinsta3','rioinsta4'];
@@ -856,7 +819,7 @@ const lw=$('#lockWall');if(lw){const li=(S.set.lockWp==null?-1:S.set.lockWp);lw.
 const ltm=$('#lockTime');if(ltm){const lc=(S.set.lockClock==null?0:S.set.lockClock);ltm.style.fontWeight=lc===1?'800':(lc===2?'200':'700');ltm.style.fontSize=lc===1?'80px':(lc===2?'64px':'72px')}
 $('#ipad').classList.toggle('dark',!!S.set.dark);
 }
-const LIBCATS=[['التواصل الاجتماعي',['whatsapp','telegram','messenger','instagram','facebook','snapchat','x','discord','messages','phone','facetime']],['الترفيه',['x_youtube','tiktok','music','photos','camera']],['الأدوات والإنتاجية',['settings','appstore','applestore','safari','maps','weather','clock','calendar','calc','notes','files','shortcuts','voicememos','maint','chatgpt']]];
+const LIBCATS=[['التواصل الاجتماعي',['whatsapp','telegram','messenger','instagram','facebook','snapchat','x','discord','messages','phone','facetime']],['الترفيه',['x_youtube','tiktok','music','photos','camera']],['الأدوات والإنتاجية',['settings','appstore','safari','maps','weather','clock','calendar','calc','notes','files','shortcuts','voicememos','maint','chatgpt']]];
 function spotRender(q){
 const allA=APPS.concat(S.installed.filter(id=>extraMeta(id)).map(id=>{const _m=extraMeta(id);return{id:'x_'+id,n:_m.n,ic:_m.ic,extra:id}})).filter(a=>!S.fx||!S.fx.searchApps||S.fx.searchApps[a.id]!==false);
 const name=a=>a.extra?EXTRA[a.extra].n:a.n;
