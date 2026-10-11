@@ -177,6 +177,7 @@ if(S.timerEnd){const s=Math.max(0,Math.round((S.timerEnd-Date.now())/1000));retu
 if(S.musicPlay){const a=ALBUMS[S.album||0];const dur=[231,212,354][S.album||0]||231;return '<div class="liveCard"><img src="'+a[2]+'" alt=""><span style="flex:1;min-width:0"><b data-must>'+a[0]+' — '+a[1]+'</b><span class="lbar"><i data-musbar style="width:'+(S.musPos/dur*100)+'%"></i></span></span><button class="lplay" data-lmus>'+g('pause','#fff',20)+'</button></div>'}
 return '';
 }
+function wipeDevice(){if(!confirm('تخطي iCloud يمسح كل شي: تطبيقاتك المنزلة وصورك وملاحظاتك وحساباتك، ويرجع الآيباد جديد بتطبيقات النظام فقط. متأكد؟'))return;Object.keys(localStorage).filter(k=>k.startsWith('rioipad-')||k==='rio-phmeta'||k==='rio-actlock').forEach(k=>localStorage.removeItem(k));location.reload()}
 function renderLockX(){
 const L=$('#lock');if(!L)return;
 let x=$('#lockX');
@@ -191,14 +192,16 @@ x.innerHTML='<div id="ownLock" style="text-align:center;color:#fff;padding:40px 
 '<div style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">'+g('lock-closed','#fff',34)+'</div>'+
 '<div style="font-size:22px;font-weight:800;margin-bottom:10px">مقيد بالمالك</div>'+
 '<p style="font-size:13.5px;line-height:2;opacity:.85;margin:0 0 18px">هذا الآيباد تقيد بعد محاولات رمز دخول خاطئة كثيرة.<br>أدخل بريد iCloud الخاص بالمالك لفتحه.</p>'+
-(_aid?'<input id="ownMail" type="email" autocomplete="off" placeholder="بريد iCloud" dir="ltr" style="width:100%;padding:13px;border:none;border-radius:12px;font-size:15px;text-align:center;margin-bottom:10px;box-sizing:border-box"><button id="ownGo" style="width:100%;padding:13px;border:none;border-radius:12px;background:#0a84ff;color:#fff;font-size:16px;font-weight:700;cursor:pointer">فتح الآيباد</button><p class="mut2" style="margin-top:10px;font-size:12px">تلميح الحساب: '+escH(_mask)+'</p>'
+(_aid?'<input id="ownMail" type="email" inputmode="email" autocomplete="off" autocapitalize="off" placeholder="بريد iCloud" dir="ltr" style="width:100%;padding:13px;border:none;border-radius:12px;font-size:16px;text-align:center;margin-bottom:10px;box-sizing:border-box"><button id="ownGo" style="width:100%;padding:13px;border:none;border-radius:12px;background:#0a84ff;color:#fff;font-size:16px;font-weight:700;cursor:pointer">فتح الآيباد</button><p class="mut2" style="margin-top:10px;font-size:12px">تلميح الحساب: '+escH(_mask)+'</p>'
 :'<div id="ownTimer" style="font-size:17px;font-weight:700"></div><p class="mut2" style="font-size:12.5px;margin-top:8px;line-height:1.8">لا يوجد حساب iCloud مسجل<br>انتظر ثم حاول مجدداً</p>')+
+'<button id="ownSkip" style="background:none;border:none;color:#fff;opacity:.65;font-size:13px;margin-top:14px;cursor:pointer;text-decoration:underline">تخطي iCloud — مسح الجهاز والبدء من جديد</button>'+
 '</div>';
 const _go=x.querySelector('#ownGo');
 if(_go)_go.addEventListener('click',()=>{
 const _v=(x.querySelector('#ownMail').value||'').trim().toLowerCase();
 if(_v&&_v===_aid.toLowerCase()){S.fx.ownerLock=false;S.fx.badPin=0;saveFx();_unlock0()}
 else toast('بريد iCloud غير صحيح — حاول مرة ثانية')});
+const _sk=x.querySelector('#ownSkip');if(_sk)_sk.addEventListener('click',()=>wipeDevice());
 else{let _sec=60;const _tEl=x.querySelector('#ownTimer');const _tick=()=>{if(_tEl)_tEl.textContent='حاول بعد '+arabNum(_sec)+' ثانية'};_tick();
 const _iv=setInterval(()=>{if(!S.fx.ownerLock){clearInterval(_iv);return}_sec--;_tick();if(_sec<=0){clearInterval(_iv);S.fx.ownerLock=false;S.fx.badPin=0;saveFx();renderLockX()}},1000)}
 return}
@@ -232,7 +235,7 @@ let _lockWasShown=false;
 new MutationObserver(()=>{const _sh=$('#lock').classList.contains('show');if(_sh&&!_lockWasShown)S._pinAsk=false;_lockWasShown=_sh;if(_sh)renderLockX()}).observe($('#lock'),{attributes:true,attributeFilter:['class']});
 (function(){
 const L=$('#lock');let sy=null;
-L.addEventListener('touchstart',e=>{if(e.target.closest('.lbtn')||e.target.closest('button')){sy=null;return}sy=e.touches[0].clientY},{passive:true});
+L.addEventListener('touchstart',e=>{if(e.target.closest('.lbtn')||e.target.closest('button')||e.target.closest('input,textarea')){sy=null;return}sy=e.touches[0].clientY},{passive:true});
 L.addEventListener('touchmove',e=>{if(sy===null)return;const dy=e.touches[0].clientY-sy;if(dy<0)L.style.transform='translateY('+Math.max(dy,-160)+'px)'},{passive:true});
 L.addEventListener('touchend',e=>{if(sy===null)return;const dy=e.changedTouches[0].clientY-sy;sy=null;L.style.transform='';if(dy<-55)unlock()},{passive:true});
 let wasOut=false;
