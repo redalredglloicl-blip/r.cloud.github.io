@@ -132,6 +132,7 @@ if(k==='instagram')return appInsta();
 if(k==='youtube'){S.ytView='home';return appYouTubeX()}
 if(k==='chatgpt')return appChatGPT();
 if(k==='minecraft'||k==='wembleguys')return appGame(k);
+if(k==='moonrover'||k==='bunny'||k==='orbit')return appGame(k);
 $('#appBody').innerHTML='<div class="card" style="text-align:center;padding:28px 14px"><div style="display:flex;justify-content:center;margin-bottom:10px">'+IC[EXTRA[k].ic]()+'</div><div class="big">'+EXTRA[k].n+'</div><p class="mut" style="margin-top:6px">انثبت على الآيباد ويشتغل من الشاشة الرئيسية.</p><button class="btn" style="margin-top:12px" onclick="closeApp()">تمام</button></div>';
 }
 const FRIENDS=[['Eno','#e74c3c'],['Ahmad','#3498db'],['Sara','#e84393'],['Omar','#2ecc71'],['Lina','#f39c12'],['Yusuf','#9b59b6'],['Nora','#1abc9c'],['Khalid','#e67e22']];
@@ -356,6 +357,9 @@ const STORE=[
 const GAMES=[
 {k:'minecraft',n:'عالم المكعبات',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'24 MB',price:5,url:'https://vincent-p-essy.github.io/minecraft-clone/',desc:'عالم مكعبات لا نهائي بجرافيك ثلاثي الأبعاد — ابنِ، استكشف، وعيش مغامرتك الخاصة ليل ونهار.'},
 {k:'wembleguys',n:'Wemble Guys',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'18 MB',price:8,url:'https://grep-many.github.io/wemble-guys/',desc:'تحدَّ نفسك على منصات سداسية تنهار تحتك — لعبة منصات مرحة بجرافيك ثلاثي الأبعاد.'},
+{k:'moonrover',n:'روفر القمر',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'32 MB',price:5,url:'https://winchxyz.github.io/moon-rover/',desc:'قُد مركبة فضائية على سطح القمر — مهمات علمية واستكشاف بجرافيك ثلاثي الأبعاد.'},
+{k:'bunny',n:'Bunny Runner',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'15 MB',price:9,url:'https://bunny.omsingh.me/',desc:'اقفز وانزلق مع الأرنب عبر 3 مسارات — لعبة ركض لطيفة بجرافيك ثلاثي الأبعاد.'},
+{k:'orbit',n:'ORBIT',dev:'Rio Games',cat:'ألعاب',ver:'1.0',size:'21 MB',price:7,url:'https://jaydemks.github.io/orbit_game/',desc:'اثنِ الجاذبية ودحرج عبر 24 مرحلة ألغاز ثلاثية الأبعاد مصممة يدوياً.'},
 ];
 function storeRow(a){
 const inst=S.installed.includes(a.k),hiddenB=false;
