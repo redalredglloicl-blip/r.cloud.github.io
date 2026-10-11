@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="iPhone">
 <meta name="theme-color" content="#79b5ff">
 <link rel="apple-touch-icon" href="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/96/a9/a5/96a9a586-952f-c5b2-4898-085555d49d52/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/180x180bb.jpg">
-<title>Update 9.18</title>
+<title>Update 9.19</title>
 <style>
 .glass{background:linear-gradient(135deg,rgba(255,255,255,.17),rgba(255,255,255,.06) 55%,rgba(255,255,255,.12));-webkit-backdrop-filter:blur(10px) saturate(185%) brightness(1.06);backdrop-filter:blur(10px) saturate(185%) brightness(1.06);border:1px solid rgba(255,255,255,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 1px 0 0 rgba(255,255,255,.13),inset -1px 0 0 rgba(255,255,255,.13),inset 0 -1px 0 rgba(255,255,255,.08),0 10px 28px rgba(0,0,0,.13)}
 #ipad.dark .glass{background:linear-gradient(135deg,rgba(88,88,100,.3),rgba(48,48,56,.15) 55%,rgba(78,78,90,.24));border-color:rgba(255,255,255,.17);box-shadow:inset 0 1px 0 rgba(255,255,255,.26),inset 1px 0 0 rgba(255,255,255,.08),inset -1px 0 0 rgba(255,255,255,.08),0 10px 28px rgba(0,0,0,.42)}
@@ -178,6 +178,8 @@ body.padopen #joy,body.padopen #btnMenu,body.padopen #btnJump{opacity:0;pointer-
 #lowBatt .box button{width:100%;background:none;border:none;border-top:1px solid #ddd;padding:11px;color:#007aff;font-size:15px;font-weight:600;cursor:pointer}
 #dead{position:absolute;inset:0;z-index:58;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;color:#fff;gap:14px;text-align:center;padding:20px}
 #dead.show{display:flex}
+#boot{position:absolute;inset:0;z-index:200;background:#000;display:flex;align-items:center;justify-content:center;transition:opacity .7s ease}
+#boot.hide{opacity:0;pointer-events:none}
 #dead .ghostBtn{background:transparent;border:1.5px solid rgba(255,255,255,.55);color:#fff;border-radius:26px;padding:13px 30px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:9px;cursor:pointer;font-family:inherit}
 .card{background:#fff;border-radius:14px;padding:12px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .row{display:flex;align-items:center;gap:10px}
@@ -394,7 +396,7 @@ img,a{-webkit-user-drag:none!important}
 <body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="rio-liquid" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.02 0.032" numOctaves="1" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
 <div id="game">
   <canvas id="world"></canvas>
-  <div id="verTag">Update 9.18</div>
+  <div id="verTag">Update 9.19</div>
   <button id="btnMenu" aria-label="القائمة"><span></span><span></span><span></span></button>
   <div id="joy"><div id="joyKnob"></div></div>
   <div id="sideBtns">
@@ -428,6 +430,7 @@ img,a{-webkit-user-drag:none!important}
       <div id="callUI"></div>
       <div id="lowBatt"><div class="box"><h3>البطارية منخفضة</h3><p id="lowBattTxt">20% of battery is remaining.</p><button id="lowBattOk">إغلاق</button></div></div>
       <div id="dead"><div style="font-size:52px;color:#fff;line-height:1.2"></div><svg width="76" height="36" viewBox="0 0 76 36"><rect x="2" y="2" width="66" height="32" rx="8" fill="none" stroke="#ff3b30" stroke-width="3"/><rect x="7" y="7" width="8" height="22" rx="3" fill="#ff3b30"/><path d="M70 13v10a5 5 0 0 0 0-10z" fill="#ff3b30"/></svg><div style="color:#8e8e93;font-size:13px">نفد شحن الآيفون</div><button id="btnCharge" class="ghostBtn"><span style="font-size:16px"></span> اشحن الايفون</button></div>
+      <div id="boot"><div style="font-size:72px;color:#fff;line-height:1"></div></div>
     </div>
       <img id="frameImg" src="assets/iphone-frame.png" alt=""></div>
   </div>
@@ -447,7 +450,7 @@ img,a{-webkit-user-drag:none!important}
     <div class="sub">منظور شخص أول: امشِ بحرية، وطلّع الآيباد من جيبك بضغطة زر واستعمله مثل الحقيقي — يوتيوب وروبلوكس ومكالمات وكاميرا ومعرض — وبعدها شيله من إيدك وكمل مشي.</div>
     <div class="sub" style="margin-top:8px;font-size:13px;opacity:.92">حتى تنزّلها كتطبيق على آيفونك: من سفاري دوس زر المشاركة ⬆ ثم «إضافة إلى الشاشة الرئيسية» — تصير أيقونة بصفحتك وتفتح ملء الشاشة مثل أي برنامج.</div>
     <button id="btnPlay">▶ العب</button>
-    <div class="ver">Update 9.18</div>
+    <div class="ver">Update 9.19</div>
   </div>
   <div id="toast"></div>
 </div>
@@ -856,6 +859,7 @@ if(p>=1){clearInterval(iv);S.cam.x=0.5;S.cam.z=4.0;S.yaw=-0.55;S.pitch=0;S.yawT=
 $('#mLeave').addEventListener('click',()=>{$('#menuOverlay').classList.remove('show');S.playing=false;$('#rotateHint').classList.remove('on');$('#startScreen').style.display='flex'});
 window.addEventListener('load',()=>{
 $('#startScreen').style.display='none';S.playing=true;lastT=performance.now();setPad(true);
+setTimeout(()=>{const b=$('#boot');if(b)b.classList.add('hide')},2300);
 });</script>
 <script>const APPS=[
 {id:'facetime',n:'FaceTime',ic:'facetime'},
@@ -1110,7 +1114,7 @@ if(S.batt.pct<=0&&S.playing){$('#dead').classList.add('show');closeApp();hideCC(
 store.set('batt',S.batt);
 },1000);
 $('#lowBattOk').addEventListener('click',()=>$('#lowBatt').classList.remove('show'));
-$('#btnCharge').addEventListener('click',()=>{S.batt.charging=true;S.batt.pct=Math.max(S.batt.pct,6);$('#dead').classList.remove('show');toast('الآيفون جاي ينشحن');renderStatus()});
+$('#btnCharge').addEventListener('click',()=>{S.batt.charging=true;S.batt.pct=Math.max(S.batt.pct,6);S.warned10=false;S.warned20=false;$('#dead').classList.remove('show');const b=$('#boot');b.classList.remove('hide');setTimeout(()=>{b.classList.add('hide');renderStatus();toast('الآيفون جاي ينشحن')},2300)});
 function pushNotif(app,text){
 S.notifs=S.notifs||[];
 S.notifs.unshift({app,text,t:Date.now()});
@@ -1200,12 +1204,12 @@ function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.inne
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
 function updBadges(){renderHome()}</script>
-<script src="icons.js?v=131"></script>
-<script src="pad.js?v=131"></script>
-<script src="photos.js?v=131"></script>
-<script src="social.js?v=131"></script>
-<script src="safari.js?v=131"></script>
-<script src="sys3.js?v=131"></script>
+<script src="icons.js?v=132"></script>
+<script src="pad.js?v=132"></script>
+<script src="photos.js?v=132"></script>
+<script src="social.js?v=132"></script>
+<script src="safari.js?v=132"></script>
+<script src="sys3.js?v=132"></script>
 <script>
 (function(){
 const actId=localStorage.getItem('rio-actlock');
