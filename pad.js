@@ -120,7 +120,10 @@ const tkA=S._anim;setTimeout(()=>{if(S._anim===tkA)win.style.transition=''},240)
 }
 }else if(dy>55)openSwitcher();
 });
+function extraMeta(k){try{if(typeof EXTRA!=='undefined'&&EXTRA[k])return{n:EXTRA[k].n,ic:EXTRA[k].ic}}catch(e){}try{if(typeof GAMES!=='undefined'){const _g=GAMES.find(x=>x.k===k);if(_g)return{n:_g.n,ic:k}}}catch(e){}return null}
 function openExtra(k,fromEl){
+const _gg=GAMES.find(x=>x.k===k);
+if(_gg){snapCur();S.app='x_'+k;noteRunning('x_'+k,_gg.n,k);$('#appTitle').textContent=_gg.n;showAppWin(fromEl);return appGame(k)}
 snapCur();S.app='x_'+k;noteRunning('x_'+k,EXTRA[k].n,EXTRA[k].ic);$('#appTitle').textContent=EXTRA[k].n;showAppWin(fromEl);
 if(k==='whatsapp')return appWhatsApp();
 if(k==='telegram')return appTelegram();
@@ -131,8 +134,7 @@ if(k==='snapchat')return appSnapchat();
 if(k==='instagram')return appInsta();
 if(k==='youtube'){S.ytView='home';return appYouTubeX()}
 if(k==='chatgpt')return appChatGPT();
-if(k==='minecraft'||k==='wembleguys')return appGame(k);
-if(k==='moonrover'||k==='bunny'||k==='orbit')return appGame(k);
+
 $('#appBody').innerHTML='<div class="card" style="text-align:center;padding:28px 14px"><div style="display:flex;justify-content:center;margin-bottom:10px">'+IC[EXTRA[k].ic]()+'</div><div class="big">'+EXTRA[k].n+'</div><p class="mut" style="margin-top:6px">انثبت على الآيباد ويشتغل من الشاشة الرئيسية.</p><button class="btn" style="margin-top:12px" onclick="closeApp()">تمام</button></div>';
 }
 const FRIENDS=[['Eno','#e74c3c'],['Ahmad','#3498db'],['Sara','#e84393'],['Omar','#2ecc71'],['Lina','#f39c12'],['Yusuf','#9b59b6'],['Nora','#1abc9c'],['Khalid','#e67e22']];
@@ -746,7 +748,7 @@ $('#ipad').classList.toggle('dark',!!S.set.dark);
 }
 const LIBCATS=[['التواصل الاجتماعي',['whatsapp','telegram','messenger','instagram','facebook','snapchat','x','discord','messages','phone','facetime']],['الترفيه',['x_youtube','tiktok','music','photos','camera']],['الأدوات والإنتاجية',['settings','appstore','applestore','safari','maps','weather','clock','calendar','calc','notes','files','shortcuts','voicememos','maint','chatgpt']]];
 function spotRender(q){
-const allA=APPS.concat(S.installed.filter(id=>EXTRA[id]).map(id=>({id:'x_'+id,n:EXTRA[id].n,ic:EXTRA[id].ic,extra:id}))).filter(a=>!S.fx||!S.fx.searchApps||S.fx.searchApps[a.id]!==false);
+const allA=APPS.concat(S.installed.filter(id=>extraMeta(id)).map(id=>{const _m=extraMeta(id);return{id:'x_'+id,n:_m.n,ic:_m.ic,extra:id}})).filter(a=>!S.fx||!S.fx.searchApps||S.fx.searchApps[a.id]!==false);
 const name=a=>a.extra?EXTRA[a.extra].n:a.n;
 const cell=a=>'<button class="app" data-spotapp="'+a.id+'" style="background:none;border:none;cursor:pointer">'+icImg(ICONS[a.ic])+'<span class="nm">'+name(a)+'</span></button>';
 let h='';
