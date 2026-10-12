@@ -1,7 +1,7 @@
 // New App Store apps - Version 12 (runtime patching)
 (function(){
 if(window._storeNewLoaded)return;window._storeNewLoaded=true;
-try{document.title='13';var vt=document.getElementById('verTag');if(vt)vt.textContent='13';}catch(e){}
+try{document.title='14';var vt=document.getElementById('verTag');if(vt)vt.textContent='14';}catch(e){}
 
 // Icons
 Object.assign(ICONS,{
@@ -32,13 +32,14 @@ window.COMING_SOON=[
 {k:'facebook',n:'Facebook',dev:'Meta Platforms',cat:'تواصل اجتماعي',desc:'تواصل مع الأصدقاء.',comingSoon:true},
 {k:'x',n:'X',dev:'X Corp.',cat:'أخبار وتواصل',desc:'تابع الترندات.',comingSoon:true},
 {k:'camera',n:'Camera',dev:'Apple',cat:'صور وفيديو',desc:'التقط صور وفيديوهات.',comingSoon:true},
+{k:'tiktok',n:'TikTok',dev:'TikTok Ltd.',cat:'صور وفيديو',desc:'فيديوهات قصيرة.',comingSoon:true},
 ];
 
 // Mark original STORE Instagram/Facebook/X as coming soon (not downloadable)
 try{
 if(typeof STORE!=='undefined'){
 STORE.forEach(function(a){
-if(['instagram','facebook','x'].indexOf(a.k)!==-1){a.comingSoon=true;}
+if(['instagram','facebook','x','telegram','messenger','snapchat','discord'].indexOf(a.k)!==-1){a.comingSoon=true;}
 });
 }
 }catch(e){}
@@ -59,17 +60,20 @@ return _doGet(k,btn,el);
 // Remove from installed if present
 try{
 if(typeof S!=='undefined'&&S.installed){
-var rm=['instagram','facebook','x','camera','spotify','netflix','uber','shahid','capcut','picsart'];
+var rm=['instagram','facebook','x','camera','spotify','netflix','uber','shahid','capcut','picsart','tiktok','telegram','messenger','snapchat','discord'];
 S.installed=S.installed.filter(function(k){return rm.indexOf(k)===-1;});
 if(typeof store!=='undefined')store.set('installed',S.installed);
 }
 }catch(e){}
 
-// Hide Camera from home screen
+// Hide Camera and TikTok from home screen
 try{
 if(typeof APPS!=='undefined'&&!window._camHidden){
-var ci=APPS.findIndex(function(a){return a.id==='camera';});
-if(ci!==-1){window._camHidden=true;APPS.splice(ci,1);}
+window._camHidden=true;
+['camera','tiktok'].forEach(function(id){
+var ci=APPS.findIndex(function(a){return a.id===id;});
+if(ci!==-1)APPS.splice(ci,1);
+});
 }
 }catch(e){}
 
