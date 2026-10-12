@@ -48,7 +48,7 @@ function sTicks(){return '<span style="font-size:10.5px;color:#34b7f1">✓✓</s
 /* ================= WhatsApp — REAL ================= */
 const WA_LIST=[
 ['whatsapp','Rio العام','group',3,'كرار: تمام نلتقي بالليل','١٢:٤٥ م',3],
-['whatsapp-dm-ahmad','أحمد','dm',12,'هلا رضا، شلونك؟','١١:٢٠ ص',1],
+['whatsapp-dm-ahmad','أحمد','dm',12,'هلا، شلونك؟','١١:٢٠ ص',1],
 ['whatsapp-dm-sara','سارة','dm',47,'دزيتلك الصور شوفهن','أمس',0],
 ['whatsapp-grp','عائلة Rio','group',32,'أمي: الغده جاهز','أمس',5],
 ['whatsapp-dm-omar','عمر','dm',59,'شفت المباراة البارحة؟','الثلاثاء',0]];
@@ -81,7 +81,7 @@ h+='<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px">'+Arra
 }else{
 h+='<div class="row" style="align-items:center;padding:8px 2px"><b style="font-size:15px">rio_photos</b><span style="margin-inline-start:auto;display:inline-flex">'+si('menu',20)+'</span></div>';
 h+='<div class="row" style="align-items:center;gap:14px;padding:6px 2px">'+sAv(12,64)+[['منشور',arabNum(128)],['متابِع',arabNum(4520)],['يتابع',arabNum(312)]].map(s=>'<span style="text-align:center;flex:1"><b style="font-size:15px">'+s[1]+'</b><br><span class="mut" style="font-size:12px">'+s[0]+'</span></span>').join('')+'</div>';
-h+='<div style="padding:4px 2px;font-size:13px"><b>رضا</b> · مصور 📸 بغداد</div>';
+h+='<div style="padding:4px 2px;font-size:13px"><b>مستخدم</b></div>';
 h+='<div class="row" style="gap:8px;padding:8px 2px"><button class="btn" style="flex:1">تعديل الملف</button><button class="btn gray" style="flex:1">مشاركة الملف</button></div>';
 h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:6px">'+IG_SEEDS.concat(['rioinsta5','rioinsta6']).map(sd=>'<img src="https://picsum.photos/seed/'+sd+'/300/300" style="width:100%;aspect-ratio:1;object-fit:cover;display:block" loading="lazy">').join('')+'</div>';
 }
