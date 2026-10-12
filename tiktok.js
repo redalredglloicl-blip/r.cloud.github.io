@@ -1,7 +1,7 @@
 // TikTok - realistic vertical video app - 11
 (function(){
 if(window._ttLoaded)return;window._ttLoaded=true;
-try{document.title='15';var vt=document.getElementById('verTag');if(vt)vt.textContent='15';}catch(e){}
+try{document.title='16';var vt=document.getElementById('verTag');if(vt)vt.textContent='16';}catch(e){}
 
 // My account (neutral, verified)
 const ME={u:'rio.creator',n:'Rio Creator',verified:true,following:'1,284',followers:'2.4M',likes:'48.2M',bio:'صانع محتوى 🎬 | يوميات وأفكار',av:'https://i.pravatar.cc/150?img=13'};

@@ -2,7 +2,7 @@
 (function(){
 if(window._storeNewLoaded)return;window._storeNewLoaded=true;
 try{
-var _setV=function(){try{document.title='15';var vt=document.getElementById('verTag');if(vt)vt.textContent='15';var v2=document.querySelector('.ver');if(v2)v2.textContent='15';}catch(e){}};
+var _setV=function(){try{document.title='16';var vt=document.getElementById('verTag');if(vt)vt.textContent='16';var v2=document.querySelector('.ver');if(v2)v2.textContent='16';}catch(e){}};
 _setV();setTimeout(_setV,500);setTimeout(_setV,1500);setTimeout(_setV,3000);
 }catch(e){}
 
