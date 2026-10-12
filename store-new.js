@@ -1,8 +1,8 @@
-// New App Store apps - Update 9.95 (runtime patching)
+// New App Store apps - 11 (runtime patching)
 (function(){
 if(window._storeNewLoaded)return;window._storeNewLoaded=true;
 // Update version to 9.95
-try{document.title='Update 9.95';var vt=document.getElementById('verTag');if(vt)vt.textContent='Update 9.95';}catch(e){}
+try{document.title='11';var vt=document.getElementById('verTag');if(vt)vt.textContent='11';}catch(e){}
 
 // Icons
 Object.assign(ICONS,{

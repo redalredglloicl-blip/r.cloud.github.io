@@ -1,10 +1,10 @@
-// Improved app open/close animations - Update 9.96
+// Improved app open/close animations - 11
 // Overrides showAppWin/closeApp with iPhone-like timing, no transparency on close
 (function(){
 if(window._animLoaded)return;window._animLoaded=true;
 
 // Version bump
-try{document.title='Update 9.96';var vt=document.getElementById('verTag');if(vt)vt.textContent='Update 9.96';}catch(e){}
+try{document.title='11';var vt=document.getElementById('verTag');if(vt)vt.textContent='11';}catch(e){}
 
 window.showAppWin=function(fromEl){
 const win=$('#appWin');if(S._from&&S._from!==fromEl&&S._from.style){S._from.style.opacity='';S._from.style.transform=''}S._from=fromEl||null;const tok=(S._anim=(S._anim||0)+1);
