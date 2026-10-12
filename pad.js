@@ -38,6 +38,7 @@ function noteRunning(id,title,ic){if(!id)return;S.running=S.running||[];S.runnin
 function armHome(){S._armUntil=Date.now()+4000;const hb=$('#homeBar');hb.classList.add('armed');setTimeout(()=>{if(Date.now()>(S._armUntil||0))hb.classList.remove('armed')},4100)}
 function disarmHome(){S._armUntil=0;$('#homeBar').classList.remove('armed')}
 function closeApp(){try{window.closeGptDrawer&&window.closeGptDrawer()}catch(e){}
+S._camActive=false;try{updateDI()}catch(e){}
 appHeadReset();
 clearInterval(S.poll);
 const sw=$('#switcher');if(sw.classList.contains('open'))dismissSw();
@@ -101,7 +102,7 @@ if(gateBlock(id))return;
 runAutos('appopen',id);
 if(id==='phone'){toast('المكالمات داخل FaceTime هنا');id='facetime'}
 if(id&&id.startsWith('x_')){const k=id.slice(2);return openExtra(k,fromEl)}
-snapCur();S.app=id; tickUse(id);noteRunning(id,(APPS.find(a=>a.id===id)||{}).n||id,(APPS.find(a=>a.id===id)||{}).ic||id);
+snapCur();S.app=id;S._camActive=(id==='camera');try{updateDI()}catch(e){} tickUse(id);noteRunning(id,(APPS.find(a=>a.id===id)||{}).n||id,(APPS.find(a=>a.id===id)||{}).ic||id);
 const names={facetime:'FaceTime',camera:'Camera',photos:'Photos',messages:'Messages',appstore:'App Store',safari:'Safari',tiktok:'TikTok',maps:'Maps',weather:'Weather',calendar:'Calendar',music:'Music',clock:'Clock',notes:'Notes',calc:'Calculator',maint:'الصيانة',voicememos:'Voice Memos',settings:'Settings',files:'Files',shortcuts:'Shortcuts',freeform:'Freeform',journal:'Journal',health:'Health',wallet:'Wallet',podcasts:'Podcasts',books:'Books',stocks:'Stocks',compass:'Compass',translate:'Translate',reminders:'Reminders',findmy:'Find My',homeapp:'Home'};
 $('#appTitle').textContent=names[id]||id;
 showAppWin(fromEl);
