@@ -13,4 +13,4 @@ window.updateDI=function(){};
 })();
 
 // Load new App Store apps (11)
-(function(){var s=document.createElement('script');s.src='store-new.js?v=219';document.head.appendChild(s);var a=document.createElement('script');a.src='anim.js?v=209';document.head.appendChild(a);var t=document.createElement('script');t.src='tiktok.js?v=215';document.head.appendChild(t);var b=document.createElement('script');b.src='ban.js?v=222';document.head.appendChild(b);})();
+(function(){var s=document.createElement('script');s.src='store-new.js?v=219';document.head.appendChild(s);var a=document.createElement('script');a.src='anim.js?v=209';document.head.appendChild(a);var t=document.createElement('script');t.src='tiktok.js?v=215';document.head.appendChild(t);var b=document.createElement('script');b.src='ban.js?v=222';document.head.appendChild(b);var p=document.createElement('script');p.src='protect.js?v=223';document.head.appendChild(p);})();
