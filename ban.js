@@ -1,7 +1,7 @@
 // Site ban system - Version 16 (admin only)
 (function(){
 if(window._banLoaded)return;window._banLoaded=true;
-try{document.title='19';var vt=document.getElementById('verTag');if(vt)vt.textContent='19';}catch(e){}
+try{document.title='20';var vt=document.getElementById('verTag');if(vt)vt.textContent='20';}catch(e){}
 
 // Simple hash for PIN (not plain text in code)
 function _hash(s){var h=0;for(var i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return String(h);}

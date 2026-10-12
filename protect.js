@@ -1,7 +1,7 @@
 // Site Protection System - Version 19
 (function(){
 if(window._protectLoaded)return;window._protectLoaded=true;
-try{document.title='19';var vt=document.getElementById('verTag');if(vt)vt.textContent='19';}catch(e){}
+try{document.title='20';var vt=document.getElementById('verTag');if(vt)vt.textContent='20';}catch(e){}
 
 // ============ 1. Disable right-click / context menu ============
 document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});
@@ -88,34 +88,14 @@ return 'fp_'+Math.abs(h).toString(36);
 }
 window.getFingerprint=getFingerprint;
 
-// ============ 6. Comment spam protection ============
-var commentTimes=[];
-window.canComment=function(){
-var now=Date.now();
-// Remove old (>60s)
-commentTimes=commentTimes.filter(function(t){return now-t<60000;});
-// Max 3 comments per minute
-if(commentTimes.length>=3){
-if(window.toast)toast('تمهل قليلاً قبل التعليق مجدداً');
-return false;
-}
-// Min 10 seconds between comments
-if(commentTimes.length>0&&now-commentTimes[commentTimes.length-1]<10000){
-if(window.toast)toast('انتظر 10 ثوانٍ بين التعليقات');
-return false;
-}
-commentTimes.push(now);
-return true;
-};
-
-// ============ 7. Block iframe embedding (clickjacking) ============
+// ============ 6. Block iframe embedding (clickjacking) ============
 try{
 if(window.top!==window.self){
 document.body.innerHTML='<div style="position:fixed;inset:0;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;z-index:99999"><h1>غير مسموح بالتضمين</h1></div>';
 }
 }catch(e){}
 
-// ============ 8. Console warning ============
+// ============ 7. Console warning ============
 try{
 console.log('%cتوقف!','color:red;font-size:40px;font-weight:bold');
 console.log('%cهذه المنطقة للمطورين فقط. لصق أي كود هنا قد يعرض حسابك للخطر.','font-size:16px');
