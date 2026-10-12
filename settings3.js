@@ -18,6 +18,26 @@ controlcenter:{t:'مركز التحكم',rows:[
  ['الوصول من التطبيقات','', 'sw','s3_cc_apps',true],
  ['إظهار مؤشر الرئيسية','', 'sw','s3_cc_home',true]]},
 wallpaper:{t:'الخلفية',rows:[]},
+sounds:{t:'الأصوات والحس اللمسي',rows:[
+ ['النغمة','Reflection', 'link','s3_ringtone'],
+ ['الاهتزاز','', 'sw','s3_vibrate',true],
+ ['نقرة لوحة المفاتيح','', 'sw','s3_kbclick',false],
+ ['قفل الصوت','', 'sw','s3_locksound',true]]},
+siri:{t:'سيري والبحث',rows:[
+ ['استمع إلى "يا سيري"','', 'sw','s3_heysiri',true],
+ ['اضغط زر الرئيسية لسيري','', 'sw','s3_siribtn',true],
+ ['اللغة','العربية', 'link','s3_sirilang'],
+ ['صوت سيري','صوت 2', 'link','s3_sirivoice']]},
+privacy:{t:'الخصوصية والأمان',rows:[
+ ['خدمات الموقع','', 'sw','s3_location',true],
+ ['التتبع','', 'sw','s3_tracking',false],
+ ['الكاميرا','', 'sw','s3_campriv',true],
+ ['الميكروفون','', 'sw','s3_micpriv',true],
+ ['الصور','', 'sw','s3_photopriv',true]]},
+notifications:{t:'الإشعارات',rows:[
+ ['إظهار المعاينات','دائماً', 'link','s3_notifprev'],
+ ['تجميع الإشعارات','تلقائي', 'link','s3_notifgroup'],
+ ['الإشعارات المجدولة','', 'sw','s3_notifsched',false]]},
 display2:{t:'الشاشة والسطوع',rows:[
  ['السطوع التلقائي','', 'sw','s3_autobright',true],
  ['Night Shift','', 'sw','s3_nightshift',false],
@@ -100,7 +120,11 @@ function s3Inject(el){
   // Add after General (عام)
   if(txt.includes('عام')&&!added){
    const div=document.createElement('div');
-   div.innerHTML='<div class="setrow" data-s3main="access" style="cursor:pointer"><span style="display:flex;align-items:center;gap:9px;flex:1"><span class="sq" style="background:#0a84ff">'+g('accessibility','#fff',16)+'</span>تسهيلات الاستخدام</span><span class="mut">‹</span></div>'+
+   div.innerHTML='<div class="setrow" data-s3main="sounds" style="cursor:pointer"><span style="display:flex;align-items:center;gap:9px;flex:1"><span class="sq" style="background:#ff375f">'+g('speaker','#fff',16)+'</span>الأصوات والحس اللمسي</span><span class="mut">‹</span></div>'+
+   '<div class="setrow" data-s3main="siri" style="cursor:pointer"><span style="display:flex;align-items:center;gap:9px;flex:1"><span class="sq" style="background:#7d2eff">'+g('mic','#fff',16)+'</span>سيري والبحث</span><span class="mut">‹</span></div>'+
+   '<div class="setrow" data-s3main="privacy" style="cursor:pointer"><span style="display:flex;align-items:center;gap:9px;flex:1"><span class="sq" style="background:#0a84ff">'+g('lock','#fff',16)+'</span>الخصوصية والأمان</span><span class="mut">‹</span></div>'+
+   '<div class="setrow" data-s3main="notifications" style="cursor:pointer"><span style="display:flex;align-items:center;gap:9px;flex:1"><span class="sq" style="background:#ff3b30">'+g('bell','#fff',16)+'</span>الإشعارات</span><span class="mut">‹</span></div>'+
+   '<div class="setrow" data-s3main="access" style="cursor:pointer"><span style="display:flex;align-items:center;gap:9px;flex:1"><span class="sq" style="background:#0a84ff">'+g('accessibility','#fff',16)+'</span>تسهيلات الاستخدام</span><span class="mut">‹</span></div>'+
    '<div class="setrow" data-s3main="controlcenter" style="cursor:pointer"><span style="display:flex;align-items:center;gap:9px;flex:1"><span class="sq" style="background:#8e8e93">'+g('sliders','#fff',16)+'</span>مركز التحكم</span><span class="mut">‹</span></div>'+
    '<div class="setrow" data-s3main="wallpaper" style="cursor:pointer"><span style="display:flex;align-items:center;gap:9px;flex:1"><span class="sq" style="background:#30b0c7">'+g('image','#fff',16)+'</span>الخلفية</span><span class="mut">‹</span></div>';
    r.parentNode.insertBefore(div.firstChild,r.nextSibling);
