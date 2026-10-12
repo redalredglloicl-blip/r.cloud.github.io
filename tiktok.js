@@ -1,4 +1,4 @@
-// TikTok - realistic vertical video app - Update 9.98
+// TikTok - realistic vertical video app - Update 9.99
 (function(){
 if(window._ttLoaded)return;window._ttLoaded=true;
 try{document.title='Update 9.98';var vt=document.getElementById('verTag');if(vt)vt.textContent='Update 9.98';}catch(e){}
@@ -8,16 +8,11 @@ const ME={u:'rio.creator',n:'Rio Creator',verified:true,following:'1,284',follow
 
 // TikTok feed data - creators with videos
 const TT_FEED=[
-{id:'aqz-KE-bpKQ',u:'blender.studio',n:'Blender Studio',v:true,cap:'أرنب عملاق ينتقم بطريقته الخاصة 🐰🔥 #فيلم_قصير #أنيميشن',music:'الصوت الأصلي - blender.studio',likes:'1.2M',comments:'8,432',shares:'45.1K',av:'https://i.pravatar.cc/150?img=59'},
-{id:'jfKfPfyJRdk',u:'lofigirl',n:'Lofi Girl',v:true,cap:'موسيقى هادئة للمذاكرة والاسترخاء 🎧 #lofi #موسيقى',music:'lofi hip hop radio 📚 beats to relax',likes:'856K',comments:'12.1K',shares:'23.4K',av:'https://i.pravatar.cc/150?img=47'},
-{id:'dQw4w9WgXcQ',u:'rickastley',n:'Rick Astley',v:true,cap:'Never gonna give you up! 🕺 #كلاسيك #ثمانينات',music:'Never Gonna Give You Up - Rick Astley',likes:'2.1M',comments:'45K',shares:'189K',av:'https://i.pravatar.cc/150?img=12'},
-{id:'kJQP7kiw5Fk',u:'luisfonsi',n:'Luis Fonsi',v:true,cap:'Despacito 🌎🎶 #موسيقى #لاتين',music:'Despacito ft. Daddy Yankee',likes:'3.4M',comments:'67K',shares:'234K',av:'https://i.pravatar.cc/150?img=33'},
-{id:'JGwWNGJdvx8',u:'edsheeran',n:'Ed Sheeran',v:true,cap:'Shape of you ❤️ #موسيقى',music:'Shape of You - Ed Sheeran',likes:'2.8M',comments:'34K',shares:'156K',av:'https://i.pravatar.cc/150?img=51'},
-{id:'60ItHLz5WEA',u:'alanwalker',n:'Alan Walker',v:true,cap:'Faded... where are you now? 🎭 #موسيقى_إلكترونية',music:'Faded - Alan Walker',likes:'1.9M',comments:'28K',shares:'98K',av:'https://i.pravatar.cc/150?img=15'},
-{id:'9bZkp7q19f0',u:'psy.oppa',n:'PSY',v:true,cap:'GANGNAM STYLE! 🐴 #كبوب #رقص',music:'GANGNAM STYLE - PSY',likes:'4.2M',comments:'89K',shares:'312K',av:'https://i.pravatar.cc/150?img=25'},
-{id:'RgKAFK5djSk',u:'wizkhalifa',n:'Wiz Khalifa',v:true,cap:'See you again 🕊️ #ذكريات',music:'See You Again ft. Charlie Puth',likes:'2.3M',comments:'41K',shares:'178K',av:'https://i.pravatar.cc/150?img=53'},
-{id:'MmB9b5njVbA',u:'minecraft',n:'Minecraft',v:true,cap:'عالم لا نهائي من المكعبات ⛏️ #ألعاب #minecraft',music:'الصوت الأصلي - minecraft',likes:'987K',comments:'15K',shares:'67K',av:'https://i.pravatar.cc/150?img=8'},
-{id:'CevxZvSJLk8',u:'katyperry',n:'Katy Perry',v:true,cap:'Roar! 🦁 #موسيقى #بوب',music:'Roar - Katy Perry',likes:'1.7M',comments:'22K',shares:'89K',av:'https://i.pravatar.cc/150?img=44'},
+{v:'https://videos.pexels.com/video-files/13736637/13736637-sd_360_640_24fps.mp4',u:'urban.vibes',n:'Urban Vibes',v:true,cap:'أجواء المدينة بالليل 🌃✨ #مدينة #ليل',music:'الصوت الأصلي - urban.vibes',likes:'1.2M',comments:'8,432',shares:'45.1K',av:'https://i.pravatar.cc/150?img=59'},
+{v:'https://videos.pexels.com/video-files/17379882/17379882-sd_360_640_30fps.mp4',u:'nature.lover',n:'Nature Lover',v:true,cap:'الطبيعة تشفي الروح 🌿💚 #طبيعة #هدوء',music:'أصوات الطبيعة 🌲',likes:'856K',comments:'12.1K',shares:'23.4K',av:'https://i.pravatar.cc/150?img=47'},
+{v:'https://videos.pexels.com/video-files/6332469/6332469-sd_506_960_25fps.mp4',u:'city.explorer',n:'City Explorer',v:false,cap:'اكتشف زوايا جديدة كل يوم 🏙️ #سفر #استكشاف',music:'الصوت الأصلي - city.explorer',likes:'2.1M',comments:'45K',shares:'189K',av:'https://i.pravatar.cc/150?img=12'},
+{v:'https://videos.pexels.com/video-files/8371243/8371243-sd_506_960_25fps.mp4',u:'fit.life',n:'Fit Life',v:true,cap:'تمرين اليوم 💪🔥 #رياضة #لياقة',music:'موسيقى حماسية 🎵',likes:'3.4M',comments:'67K',shares:'234K',av:'https://i.pravatar.cc/150?img=33'},
+{v:'https://videos.pexels.com/video-files/8371241/8371241-sd_506_960_25fps.mp4',u:'foodie.adventures',n:'Foodie',v:false,cap:'أطيب أكلة جربتها هالأسبوع 😋🍕 #أكل #طبخ',music:'الصوت الأصلي - foodie.adventures',likes:'1.9M',comments:'28K',shares:'98K',av:'https://i.pravatar.cc/150?img=51'},
 ];
 
 const TT_COMMENTS=[
@@ -47,7 +42,7 @@ return '<svg width="32" height="32" viewBox="0 0 24 24" fill="#fff"><path d="M14
 function ttVideoHTML(v,idx){
 const liked=ttLiked[idx];
 return '<div class="tt-slide" data-idx="'+idx+'" style="position:absolute;inset:0;background:#000">'
-+'<iframe src="https://www.youtube.com/embed/'+v.id+'?autoplay='+(idx===0?'1':'0')+'&mute=1&loop=1&playlist='+v.id+'&controls=0&rel=0&playsinline=1" style="position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;object-fit:cover;transform:scale(1.35)" allow="autoplay;encrypted-media" allowfullscreen></iframe>'
++'<video src="'+v.v+'" '+(idx===0?'autoplay':'')+' muted loop playsinline webkit-playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" data-vid="'+idx+'"></video>'
 +'<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55) 0%,transparent 30%,transparent 70%,rgba(0,0,0,.35) 100%);pointer-events:none"></div>'
 // Right action bar
 +'<div style="position:absolute;right:8px;bottom:110px;display:flex;flex-direction:column;align-items:center;gap:18px;z-index:5">'
@@ -101,7 +96,7 @@ el.innerHTML='<div style="position:absolute;inset:0;background:#fff;overflow-y:a
 +'</div>'
 +'<div style="display:flex;border-bottom:1px solid #eee"><div style="flex:1;text-align:center;padding:12px;border-bottom:2px solid #000"><svg width="22" height="22" viewBox="0 0 24 24" fill="#000"><path d="M4 4h16v16H4z" opacity=".3"/><path d="M4 4h7v7H4zm9 0h7v7h-7zM4 13h7v7H4zm9 0h7v7h-7z"/></svg></div><div style="flex:1;text-align:center;padding:12px;opacity:.4"><svg width="22" height="22" viewBox="0 0 24 24" fill="#000"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div></div>'
 +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:#eee">'
-+TT_FEED.slice(0,6).map((v,i)=>'<div style="position:relative;aspect-ratio:3/4;background:#000"><img src="https://i.ytimg.com/vi/'+v.id+'/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover"><div style="position:absolute;bottom:6px;left:6px;color:#fff;font-size:12px;display:flex;align-items:center;gap:4px"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>'+v.likes+'</div></div>').join('')
++TT_FEED.map((v,i)=>'<div style="position:relative;aspect-ratio:3/4;background:#000"><video src="'+v.v+'" preload="metadata" style="width:100%;height:100%;object-fit:cover" muted playsinline></video><div style="position:absolute;bottom:6px;left:6px;color:#fff;font-size:12px;display:flex;align-items:center;gap:4px"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>'+v.likes+'</div></div>').join('')
 +'</div>'
 +'<div style="height:90px"></div>'
 +'</div>'
@@ -206,14 +201,9 @@ h.style.transition='all .45s cubic-bezier(.17,.89,.32,1.28)';h.style.transform='
 }
 
 function ttUpdateIframes(){
-// Reload iframes to switch autoplay
-document.querySelectorAll('.tt-slide iframe').forEach((f,i)=>{
-const v=TT_FEED[i];
-const shouldPlay=i===ttIdx;
-const cur=f.src.includes('autoplay=1');
-if(shouldPlay!==cur){
-f.src='https://www.youtube.com/embed/'+v.id+'?autoplay='+(shouldPlay?'1':'0')+'&mute=1&loop=1&playlist='+v.id+'&controls=0&rel=0&playsinline=1';
-}
+document.querySelectorAll('.tt-slide video').forEach((vd,i)=>{
+if(i===ttIdx){vd.play().catch(()=>{});}
+else{vd.pause();}
 });
 }
 
