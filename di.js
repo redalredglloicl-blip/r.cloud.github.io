@@ -1,4 +1,4 @@
-// Dynamic Island (Update 9.82)
+// Dynamic Island (Update 9.85)
 (function(){
 if(window._diLoaded)return;window._diLoaded=true;
 const css=document.createElement('style');
