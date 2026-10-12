@@ -1,7 +1,7 @@
 // Site ban system - Version 16 (admin only)
 (function(){
 if(window._banLoaded)return;window._banLoaded=true;
-try{document.title='17';var vt=document.getElementById('verTag');if(vt)vt.textContent='17';}catch(e){}
+try{document.title='18';var vt=document.getElementById('verTag');if(vt)vt.textContent='18';}catch(e){}
 
 // Simple hash for PIN (not plain text in code)
 function _hash(s){var h=0;for(var i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return String(h);}
@@ -157,6 +157,8 @@ b.addEventListener('click',function(){unbanDevice(b.dataset.unban);setTimeout(lo
 // Init
 checkBan();
 saveVisitor();
+// Re-check ban every 5 seconds (real-time ban)
+setInterval(checkBan,5000);
 // Retry admin trigger init (verTag may load late)
 initAdminTrigger();
 setTimeout(initAdminTrigger,1000);
