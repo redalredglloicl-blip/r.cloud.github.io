@@ -1,7 +1,7 @@
 // TikTok - realistic vertical video app - 11
 (function(){
 if(window._ttLoaded)return;window._ttLoaded=true;
-try{document.title='12';var vt=document.getElementById('verTag');if(vt)vt.textContent='12';}catch(e){}
+try{document.title='14';var vt=document.getElementById('verTag');if(vt)vt.textContent='14';}catch(e){}
 
 // My account (neutral, verified)
 const ME={u:'rio.creator',n:'Rio Creator',verified:true,following:'1,284',followers:'2.4M',likes:'48.2M',bio:'صانع محتوى 🎬 | يوميات وأفكار',av:'https://i.pravatar.cc/150?img=13'};
@@ -96,7 +96,7 @@ el.innerHTML='<div style="position:absolute;inset:0;background:#fff;overflow-y:a
 +'</div>'
 +'<div style="display:flex;border-bottom:1px solid #eee"><div style="flex:1;text-align:center;padding:12px;border-bottom:2px solid #000"><svg width="22" height="22" viewBox="0 0 24 24" fill="#000"><path d="M4 4h16v16H4z" opacity=".3"/><path d="M4 4h7v7H4zm9 0h7v7h-7zM4 13h7v7H4zm9 0h7v7h-7z"/></svg></div><div style="flex:1;text-align:center;padding:12px;opacity:.4"><svg width="22" height="22" viewBox="0 0 24 24" fill="#000"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div></div>'
 +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:#eee">'
-+TT_FEED.map((v,i)=>'<div style="position:relative;aspect-ratio:3/4;background:#000"><video src="'+v.v+'" preload="metadata" style="width:100%;height:100%;object-fit:cover" muted playsinline></video><div style="position:absolute;bottom:6px;left:6px;color:#fff;font-size:12px;display:flex;align-items:center;gap:4px"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>'+v.likes+'</div></div>').join('')
++TT_FEED.map((v,i)=>'<div style="position:relative;aspect-ratio:3/4;background:#000"><video src="'+v.v+'" preload="metadata" style="width:100%;height:100%;object-fit:cover" muted playsinline></video><div style="position:absolute;bottom:6px;left:6px;color:#fff;font-size:12px;display:flex;align-items:center;gap:4px"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>'+v.likes+'</div></div>').join('')
 +'</div>'
 +'<div style="height:90px"></div>'
 +'</div>'
@@ -108,7 +108,7 @@ function ttNavHTML(active){
 const item=(id,svg,label)=>'<div data-ttnav="'+id+'" style="flex:1;text-align:center;color:'+(active===id?'#000':'#888')+'">'+svg+'<div style="font-size:10px;margin-top:2px">'+label+'</div></div>';
 return '<div style="position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #eee;display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:35">'
 +item('home','<svg width="26" height="26" viewBox="0 0 24 24" fill="'+(active==='home'?'#000':'none')+'" stroke="'+(active==='home'?'#000':'#888')+'" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>','الرئيسية')
-+item('discover','<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="'+(active==='discover'?'#000':'#888')+'" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>','اكتشف')
++item('discover','<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="'+(active==='discover'?'#000':'#888')+'" stroke-width="2"><circle cx="14" cy="14" r="8"/><path d="M21 21l-4.35-4.35"/></svg>','اكتشف')
 +'<div style="flex:1;text-align:center"><div style="width:48px;height:32px;background:#000;border-radius:8px;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;position:relative"><span style="position:absolute;left:6px;color:#25f4ee">+</span><span style="position:absolute;right:6px;color:#fe2c55">+</span><span style="z-index:1">+</span></div></div>'
 +item('inbox','<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="'+(active==='inbox'?'#000':'#888')+'" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>','البريد')
 +item('me','<img src="'+ME.av+'" style="width:26px;height:26px;border-radius:50%;margin:0 auto;display:block;object-fit:cover;border:'+(active==='me'?'2px solid #000':'0')+'">','أنا')
