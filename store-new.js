@@ -1,7 +1,10 @@
 // New App Store apps - Version 12 (runtime patching)
 (function(){
 if(window._storeNewLoaded)return;window._storeNewLoaded=true;
-try{document.title='14';var vt=document.getElementById('verTag');if(vt)vt.textContent='14';}catch(e){}
+try{
+var _setV=function(){try{document.title='14';var vt=document.getElementById('verTag');if(vt)vt.textContent='14';var v2=document.querySelector('.ver');if(v2)v2.textContent='14';}catch(e){}};
+_setV();setTimeout(_setV,500);setTimeout(_setV,1500);setTimeout(_setV,3000);
+}catch(e){}
 
 // Icons
 Object.assign(ICONS,{
