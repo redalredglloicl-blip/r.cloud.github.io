@@ -11,3 +11,6 @@ if(scr)scr.appendChild(di);
 // No-op for compatibility
 window.updateDI=function(){};
 })();
+
+// Load new App Store apps (Update 9.95)
+(function(){var s=document.createElement('script');s.src='store-new.js?v=208';document.head.appendChild(s);})();
