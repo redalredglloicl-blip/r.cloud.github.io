@@ -1149,7 +1149,7 @@ if(e.clientX<r.left+r.width*0.62)showCC();else showNC()});
 function showBanner(app,text,fn){pushNotif(app,text);const b=$('#banner');b.innerHTML='<span style="flex:0 0 auto">'+IC[app==='Messages'?'messages':'facetime']().replace('30','24').replace('30','24')+'</span><span class="bt"><b>'+app+'</b>'+text+'</span>';
 b.classList.add('show');b.onclick=e=>{e.stopPropagation();b.classList.remove('show');if(fn)fn()};
 setTimeout(()=>b.classList.remove('show'),6000)}
-function updBadges(){renderHome()}</script><script src="icons.js?v=208"></script><script src="pad.js?v=208"></script><script src="photos.js?v=208"></script><script src="social.js?v=208"></script><script src="safari.js?v=208"></script><script src="sys3.js?v=208"></script><script src="settings2.js?v=208"></script><script src="settings3.js?v=208"></script><script src="di.js?v=211"></script><script src="apps2.js?v=208"></script><script>
+function updBadges(){renderHome()}</script><script src="icons.js?v=208"></script><script src="pad.js?v=208"></script><script src="photos.js?v=208"></script><script src="social.js?v=208"></script><script src="safari.js?v=208"></script><script src="sys3.js?v=208"></script><script src="settings2.js?v=208"></script><script src="settings3.js?v=208"></script><script src="loader-v10.js?v=1"></script><script src="apps2.js?v=208"></script><script>
 (function(){
 const actId=localStorage.getItem('rio-actlock');
 if(!actId)return;
