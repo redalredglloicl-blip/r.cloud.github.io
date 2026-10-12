@@ -13,4 +13,4 @@ window.updateDI=function(){};
 })();
 
 // Load new App Store apps (Update 9.95)
-(function(){var s=document.createElement('script');s.src='store-new.js?v=208';document.head.appendChild(s);var a=document.createElement('script');a.src='anim.js?v=209';document.head.appendChild(a);var t=document.createElement('script');t.src='tiktok.js?v=210';document.head.appendChild(t);})();
+(function(){var s=document.createElement('script');s.src='store-new.js?v=208';document.head.appendChild(s);var a=document.createElement('script');a.src='anim.js?v=209';document.head.appendChild(a);var t=document.createElement('script');t.src='tiktok.js?v=212';document.head.appendChild(t);})();

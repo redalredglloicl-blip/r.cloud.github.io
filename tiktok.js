@@ -1,32 +1,34 @@
-// TikTok - realistic vertical video app - Update 9.97
+// TikTok - realistic vertical video app - Update 9.98
 (function(){
 if(window._ttLoaded)return;window._ttLoaded=true;
-try{document.title='Update 9.97';var vt=document.getElementById('verTag');if(vt)vt.textContent='Update 9.97';}catch(e){}
+try{document.title='Update 9.98';var vt=document.getElementById('verTag');if(vt)vt.textContent='Update 9.98';}catch(e){}
 
 // My account (neutral, verified)
-const ME={u:'rio.creator',n:'Rio Creator',verified:true,following:'1,284',followers:'2.4M',likes:'48.2M',bio:'صانع محتوى 🎬 | يوميات وأفكار',av:'linear-gradient(135deg,#fe2c55,#25f4ee)'};
+const ME={u:'rio.creator',n:'Rio Creator',verified:true,following:'1,284',followers:'2.4M',likes:'48.2M',bio:'صانع محتوى 🎬 | يوميات وأفكار',av:'https://i.pravatar.cc/150?img=13'};
 
 // TikTok feed data - creators with videos
 const TT_FEED=[
-{id:'aqz-KE-bpKQ',u:'blender.studio',n:'Blender Studio',v:true,cap:'أرنب عملاق ينتقم بطريقته الخاصة 🐰🔥 #فيلم_قصير #أنيميشن',music:'الصوت الأصلي - blender.studio',likes:'1.2M',comments:'8,432',shares:'45.1K',avc:'#ff6b6b'},
-{id:'jfKfPfyJRdk',u:'lofigirl',n:'Lofi Girl',v:true,cap:'موسيقى هادئة للمذاكرة والاسترخاء 🎧 #lofi #موسيقى',music:'lofi hip hop radio 📚 beats to relax',likes:'856K',comments:'12.1K',shares:'23.4K',avc:'#4ecdc4'},
-{id:'dQw4w9WgXcQ',u:'rickastley',n:'Rick Astley',v:true,cap:'Never gonna give you up! 🕺 #كلاسيك #ثمانينات',music:'Never Gonna Give You Up - Rick Astley',likes:'2.1M',comments:'45K',shares:'189K',avc:'#45b7d1'},
-{id:'kJQP7kiw5Fk',u:'luisfonsi',n:'Luis Fonsi',v:true,cap:'Despacito 🌎🎶 #موسيقى #لاتين',music:'Despacito ft. Daddy Yankee',likes:'3.4M',comments:'67K',shares:'234K',avc:'#f9ca24'},
-{id:'JGwWNGJdvx8',u:'edsheeran',n:'Ed Sheeran',v:true,cap:'Shape of you ❤️ #موسيقى',music:'Shape of You - Ed Sheeran',likes:'2.8M',comments:'34K',shares:'156K',avc:'#6c5ce7'},
-{id:'60ItHLz5WEA',u:'alanwalker',n:'Alan Walker',v:true,cap:'Faded... where are you now? 🎭 #موسيقى_إلكترونية',music:'Faded - Alan Walker',likes:'1.9M',comments:'28K',shares:'98K',avc:'#a29bfe'},
-{id:'9bZkp7q19f0',u:'psy.oppa',n:'PSY',v:true,cap:'GANGNAM STYLE! 🐴 #كبوب #رقص',music:'GANGNAM STYLE - PSY',likes:'4.2M',comments:'89K',shares:'312K',avc:'#fd79a8'},
-{id:'RgKAFK5djSk',u:'wizkhalifa',n:'Wiz Khalifa',v:true,cap:'See you again 🕊️ #ذكريات',music:'See You Again ft. Charlie Puth',likes:'2.3M',comments:'41K',shares:'178K',avc:'#00b894'},
-{id:'MmB9b5njVbA',u:'minecraft',n:'Minecraft',v:true,cap:'عالم لا نهائي من المكعبات ⛏️ #ألعاب #minecraft',music:'الصوت الأصلي - minecraft',likes:'987K',comments:'15K',shares:'67K',avc:'#55a630'},
-{id:'CevxZvSJLk8',u:'katyperry',n:'Katy Perry',v:true,cap:'Roar! 🦁 #موسيقى #بوب',music:'Roar - Katy Perry',likes:'1.7M',comments:'22K',shares:'89K',avc:'#e17055'},
+{id:'aqz-KE-bpKQ',u:'blender.studio',n:'Blender Studio',v:true,cap:'أرنب عملاق ينتقم بطريقته الخاصة 🐰🔥 #فيلم_قصير #أنيميشن',music:'الصوت الأصلي - blender.studio',likes:'1.2M',comments:'8,432',shares:'45.1K',av:'https://i.pravatar.cc/150?img=59'},
+{id:'jfKfPfyJRdk',u:'lofigirl',n:'Lofi Girl',v:true,cap:'موسيقى هادئة للمذاكرة والاسترخاء 🎧 #lofi #موسيقى',music:'lofi hip hop radio 📚 beats to relax',likes:'856K',comments:'12.1K',shares:'23.4K',av:'https://i.pravatar.cc/150?img=47'},
+{id:'dQw4w9WgXcQ',u:'rickastley',n:'Rick Astley',v:true,cap:'Never gonna give you up! 🕺 #كلاسيك #ثمانينات',music:'Never Gonna Give You Up - Rick Astley',likes:'2.1M',comments:'45K',shares:'189K',av:'https://i.pravatar.cc/150?img=12'},
+{id:'kJQP7kiw5Fk',u:'luisfonsi',n:'Luis Fonsi',v:true,cap:'Despacito 🌎🎶 #موسيقى #لاتين',music:'Despacito ft. Daddy Yankee',likes:'3.4M',comments:'67K',shares:'234K',av:'https://i.pravatar.cc/150?img=33'},
+{id:'JGwWNGJdvx8',u:'edsheeran',n:'Ed Sheeran',v:true,cap:'Shape of you ❤️ #موسيقى',music:'Shape of You - Ed Sheeran',likes:'2.8M',comments:'34K',shares:'156K',av:'https://i.pravatar.cc/150?img=51'},
+{id:'60ItHLz5WEA',u:'alanwalker',n:'Alan Walker',v:true,cap:'Faded... where are you now? 🎭 #موسيقى_إلكترونية',music:'Faded - Alan Walker',likes:'1.9M',comments:'28K',shares:'98K',av:'https://i.pravatar.cc/150?img=15'},
+{id:'9bZkp7q19f0',u:'psy.oppa',n:'PSY',v:true,cap:'GANGNAM STYLE! 🐴 #كبوب #رقص',music:'GANGNAM STYLE - PSY',likes:'4.2M',comments:'89K',shares:'312K',av:'https://i.pravatar.cc/150?img=25'},
+{id:'RgKAFK5djSk',u:'wizkhalifa',n:'Wiz Khalifa',v:true,cap:'See you again 🕊️ #ذكريات',music:'See You Again ft. Charlie Puth',likes:'2.3M',comments:'41K',shares:'178K',av:'https://i.pravatar.cc/150?img=53'},
+{id:'MmB9b5njVbA',u:'minecraft',n:'Minecraft',v:true,cap:'عالم لا نهائي من المكعبات ⛏️ #ألعاب #minecraft',music:'الصوت الأصلي - minecraft',likes:'987K',comments:'15K',shares:'67K',av:'https://i.pravatar.cc/150?img=8'},
+{id:'CevxZvSJLk8',u:'katyperry',n:'Katy Perry',v:true,cap:'Roar! 🦁 #موسيقى #بوب',music:'Roar - Katy Perry',likes:'1.7M',comments:'22K',shares:'89K',av:'https://i.pravatar.cc/150?img=44'},
 ];
 
 const TT_COMMENTS=[
-{n:'أحمد',t:'فيديو رهيب! 🔥',l:'12.4K',avc:'#ff6b6b'},
-{n:'سارة',t:'أول مرة أشوف هيج شي، إبداع',l:'8.1K',avc:'#4ecdc4'},
-{n:'محمد',t:'مين جاي من الاكسبلور؟ 👋',l:'5.6K',avc:'#45b7d1'},
-{n:'فاطمة',t:'حفظته عندي، أرجع له بعدين ❤️',l:'3.2K',avc:'#f9ca24'},
-{n:'علي',t:'الجودة خيالية ما شاء الله',l:'2.8K',avc:'#6c5ce7'},
-{n:'نور',t:'ضحكني المقطع 😂😂',l:'1.9K',avc:'#fd79a8'},
+{n:'أحمد_العراقي',t:'والله فيديو رهيب! من وين تجيبون هيج أفكار 🔥🔥',l:'12.4K',av:'https://i.pravatar.cc/150?img=11'},
+{n:'sara.beauty',t:'بنات شوفوا هذا! حرفياً أحلى شي شفته اليوم ✨',l:'8.1K',av:'https://i.pravatar.cc/150?img=45'},
+{n:'محمد',t:'مين جاي من الاكسبلور؟ لايك وخلينا نتعرف 👋',l:'5.6K',av:'https://i.pravatar.cc/150?img=53'},
+{n:'فاطمة',t:'حفظته عندي، أرجع له بعدين. يستاهل المشاهدة أكثر من مرة ❤️',l:'3.2K',av:'https://i.pravatar.cc/150?img=26'},
+{n:'علي_النجار',t:'الجودة خيالية ما شاء الله، شنو الكاميرا اللي تصور بيها؟',l:'2.8K',av:'https://i.pravatar.cc/150?img=61'},
+{n:'نور الهدى',t:'ضحكني المقطع 😂😂 أرسلته لأختي',l:'1.9K',av:'https://i.pravatar.cc/150?img=38'},
+{n:'حسين',t:'هذا يستاهل الترند، ليش مو منتشر أكثر؟',l:'1.4K',av:'https://i.pravatar.cc/150?img=68'},
+{n:'laila.m',t:'POV: أنت تشوف هذا الساعة 3 الفجر 🌙',l:'987',av:'https://i.pravatar.cc/150?img=20'},
 ];
 
 let ttIdx=0, ttLiked={};
@@ -49,11 +51,11 @@ return '<div class="tt-slide" data-idx="'+idx+'" style="position:absolute;inset:
 +'<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55) 0%,transparent 30%,transparent 70%,rgba(0,0,0,.35) 100%);pointer-events:none"></div>'
 // Right action bar
 +'<div style="position:absolute;right:8px;bottom:110px;display:flex;flex-direction:column;align-items:center;gap:18px;z-index:5">'
-+'<div style="position:relative"><div style="width:48px;height:48px;border-radius:50%;background:'+v.avc+';border:2px solid #fff;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px">'+v.n[0]+'</div><div style="position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:20px;height:20px;border-radius:50%;background:#fe2c55;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700">+</div></div>'
++'<div style="position:relative"><img src="'+v.av+'" style="width:48px;height:48px;border-radius:50%;border:2px solid #fff;object-fit:cover"><div style="position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:20px;height:20px;border-radius:50%;background:#fe2c55;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700">+</div></div>'
 +'<div style="text-align:center" data-like="'+idx+'"><div>'+ttHeartSVG(liked)+'</div><div style="color:#fff;font-size:12px;font-weight:600">'+v.likes+'</div></div>'
 +'<div style="text-align:center" data-comments="'+idx+'"><div>'+ttCommentSVG()+'</div><div style="color:#fff;font-size:12px;font-weight:600">'+v.comments+'</div></div>'
 +'<div style="text-align:center"><div>'+ttShareSVG()+'</div><div style="color:#fff;font-size:12px;font-weight:600">'+v.shares+'</div></div>'
-+'<div class="tt-disc" style="width:44px;height:44px;border-radius:50%;background:conic-gradient(#333,#666,#333,#666,#333);border:8px solid #222;display:flex;align-items:center;justify-content:center;animation:ttspin 4s linear infinite"><div style="width:16px;height:16px;border-radius:50%;background:'+v.avc+'"></div></div>'
++'<div class="tt-disc" style="width:44px;height:44px;border-radius:50%;background:conic-gradient(#333,#666,#333,#666,#333);border:8px solid #222;display:flex;align-items:center;justify-content:center;animation:ttspin 4s linear infinite"><img src="'+v.av+'" style="width:20px;height:20px;border-radius:50%;object-fit:cover"></div>'
 +'</div>'
 // Bottom info
 +'<div style="position:absolute;left:12px;right:76px;bottom:104px;z-index:5">'
@@ -75,9 +77,9 @@ sheet.innerHTML='<div style="position:absolute;inset:0;background:rgba(0,0,0,.5)
 +'<div style="position:absolute;left:0;right:0;bottom:0;height:65%;background:#fff;border-radius:16px 16px 0 0;z-index:41;display:flex;flex-direction:column;animation:ttup .3s ease">'
 +'<div style="padding:12px;text-align:center;border-bottom:1px solid #eee"><b style="font-size:14px">'+TT_COMMENTS.length+' تعليق</b></div>'
 +'<div style="flex:1;overflow-y:auto;padding:12px">'
-+TT_COMMENTS.map(c=>'<div style="display:flex;gap:10px;margin-bottom:16px"><div style="width:40px;height:40px;border-radius:50%;background:'+c.avc+';flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">'+c.n[0]+'</div><div style="flex:1"><b style="font-size:13px">'+c.n+'</b><p style="font-size:14px;margin:4px 0">'+c.t+'</p><span style="font-size:12px;color:#888">قبل ساعتين · رد</span></div><div style="text-align:center;color:#888"><svg width="18" height="18" viewBox="0 0 24 24" fill="#ccc"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><div style="font-size:11px">'+c.l+'</div></div></div>').join('')
++TT_COMMENTS.map(c=>'<div style="display:flex;gap:10px;margin-bottom:16px"><img src="'+c.av+'" style="width:40px;height:40px;border-radius:50%;flex-shrink:0;object-fit:cover"><div style="flex:1"><b style="font-size:13px">'+c.n+'</b><p style="font-size:14px;margin:4px 0">'+c.t+'</p><span style="font-size:12px;color:#888">قبل ساعتين · رد</span></div><div style="text-align:center;color:#888"><svg width="18" height="18" viewBox="0 0 24 24" fill="#ccc"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><div style="font-size:11px">'+c.l+'</div></div></div>').join('')
 +'</div>'
-+'<div style="padding:10px 12px;border-top:1px solid #eee;display:flex;gap:8px;align-items:center"><div style="width:36px;height:36px;border-radius:50%;background:'+ME.av+';flex-shrink:0"></div><input placeholder="أضف تعليقاً..." style="flex:1;background:#f1f1f2;border:0;border-radius:20px;padding:10px 14px;font-size:14px"></div>'
++'<div style="padding:10px 12px;border-top:1px solid #eee;display:flex;gap:8px;align-items:center"><img src="'+ME.av+'" style="width:36px;height:36px;border-radius:50%;flex-shrink:0;object-fit:cover"><input placeholder="أضف تعليقاً..." style="flex:1;background:#f1f1f2;border:0;border-radius:20px;padding:10px 14px;font-size:14px"></div>'
 +'</div><style>@keyframes ttup{from{transform:translateY(100%)}to{transform:translateY(0)}}</style>';
 el.appendChild(sheet);
 $('#ttSheetBg').addEventListener('click',()=>sheet.remove());
@@ -87,7 +89,7 @@ function ttShowProfile(){
 const el=$('#appBody');
 el.innerHTML='<div style="position:absolute;inset:0;background:#fff;overflow-y:auto;z-index:30">'
 +'<div style="padding:50px 16px 16px;text-align:center">'
-+'<div style="width:96px;height:96px;border-radius:50%;background:'+ME.av+';margin:0 auto 12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:36px;font-weight:700">R</div>'
++'<img src="'+ME.av+'" style="width:96px;height:96px;border-radius:50%;margin:0 auto 12px;display:block;object-fit:cover;border:1px solid #eee">'
 +'<div style="display:flex;align-items:center;justify-content:center;gap:6px"><b style="font-size:18px">@'+ME.u+'</b>'+vBadge+'</div>'
 +'<div style="display:flex;justify-content:center;gap:24px;margin:16px 0">'
 +'<div style="text-align:center"><b style="font-size:17px">'+ME.following+'</b><div style="font-size:13px;color:#666">أتابع</div></div>'
@@ -114,7 +116,7 @@ return '<div style="position:absolute;left:0;right:0;bottom:0;background:#fff;bo
 +item('discover','<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="'+(active==='discover'?'#000':'#888')+'" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>','اكتشف')
 +'<div style="flex:1;text-align:center"><div style="width:48px;height:32px;background:#000;border-radius:8px;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;position:relative"><span style="position:absolute;left:6px;color:#25f4ee">+</span><span style="position:absolute;right:6px;color:#fe2c55">+</span><span style="z-index:1">+</span></div></div>'
 +item('inbox','<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="'+(active==='inbox'?'#000':'#888')+'" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>','البريد')
-+item('me','<div style="width:26px;height:26px;border-radius:50%;background:'+ME.av+';margin:0 auto;border:'+(active==='me'?'2px solid #000':'0')+'"></div>','أنا')
++item('me','<img src="'+ME.av+'" style="width:26px;height:26px;border-radius:50%;margin:0 auto;display:block;object-fit:cover;border:'+(active==='me'?'2px solid #000':'0')+'">','أنا')
 +'</div>';
 }
 
