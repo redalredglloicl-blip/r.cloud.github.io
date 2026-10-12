@@ -149,6 +149,6 @@ window.appHomeapp=function(el){
 };
 
 // Live Clock icon
-function liveClockSVG(){const d=new Date(),a=d.getHours()%12*30+d.getMinutes()*.5,b=d.getMinutes()*6+d.getSeconds()*.1,c=d.getSeconds()*6;
-return '<span class="ic" style="background:#fff;border-radius:22%;display:block"><svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="29" fill="#fff"/><g stroke="#1c1c1e" stroke-linecap="round"><line x1="30" y1="30" x2="30" y2="17" stroke-width="3.5" transform="rotate('+a+' 30 30)"/><line x1="30" y1="30" x2="30" y2="11" stroke-width="2.5" transform="rotate('+b+' 30 30)"/></g><line x1="30" y1="34" x2="30" y2="10" stroke="#ff9f0a" stroke-width="1.5" stroke-linecap="round" transform="rotate('+c+' 30 30)"/></svg></span>';}
-setInterval(()=>{const t=liveClockSVG();document.querySelectorAll('[data-app="clock"] .ic').forEach(e=>{const d=document.createElement('div');d.innerHTML=t;e.replaceWith(d.firstChild)});},1000);
+window.liveClockSVG=function(){const d=new Date(),a=d.getHours()%12*30+d.getMinutes()*.5,b=d.getMinutes()*6+d.getSeconds()*.1,c=d.getSeconds()*6;
+return '<span class="ic" style="background:#fff;border-radius:22%;display:block"><svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="29" fill="#fff"/><g stroke="#1c1c1e" stroke-linecap="round"><line x1="30" y1="30" x2="30" y2="17" stroke-width="3.5" transform="rotate('+a+' 30 30)"/><line x1="30" y1="30" x2="30" y2="11" stroke-width="2.5" transform="rotate('+b+' 30 30)"/></g><line x1="30" y1="34" x2="30" y2="10" stroke="#ff9f0a" stroke-width="1.5" stroke-linecap="round" transform="rotate('+c+' 30 30)"/></svg></span>';};
+setInterval(()=>{const t=window.liveClockSVG();document.querySelectorAll('[data-app="clock"] .ic').forEach(e=>{const d=document.createElement('div');d.innerHTML=t;e.replaceWith(d.firstChild)});},1000);
