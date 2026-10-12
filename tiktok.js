@@ -1,4 +1,4 @@
-// TikTok - realistic vertical video app - Update 9.99
+// TikTok - realistic vertical video app - Update 10.0
 (function(){
 if(window._ttLoaded)return;window._ttLoaded=true;
 try{document.title='Update 9.98';var vt=document.getElementById('verTag');if(vt)vt.textContent='Update 9.98';}catch(e){}
@@ -27,16 +27,16 @@ const TT_COMMENTS=[
 ];
 
 let ttIdx=0, ttLiked={};
-const vBadge='<svg width="14" height="14" viewBox="0 0 24 24" fill="#20d5ec"><path d="M12 2l2.4 2.4 3.4-.5.9 3.3 3.3.9-.5 3.4L23 12l-2.4 2.4.5 3.4-3.3.9-.9 3.3-3.4-.5L12 23l-2.4-2.4-3.4.5-.9-3.3-3.3-.9.5-3.4L1 12l2.4-2.4-.5-3.4 3.3-.9.9-3.3 3.4.5z"/><path d="M10.6 14.6l-2.1-2.1-1.4 1.4 3.5 3.5 7-7-1.4-1.4z" fill="#fff"/></svg>';
+const vBadge='<img src="https://img.icons8.com/ios-filled/100/20d5ec/verified-badge.png" width="16" height="16" style="display:inline-block;vertical-align:-3px">';
 
 function ttHeartSVG(filled){
-return '<svg width="32" height="32" viewBox="0 0 24 24" fill="'+(filled?'#fe2c55':'#fff')+'"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+return '<img src="https://img.icons8.com/ios-filled/100/'+(filled?'fe2c55':'ffffff')+'/like.png" width="32" height="32" style="display:block">';
 }
 function ttCommentSVG(){
-return '<svg width="32" height="32" viewBox="0 0 24 24" fill="#fff"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>';
+return '<img src="https://img.icons8.com/ios-filled/100/ffffff/comments.png" width="32" height="32" style="display:block">';
 }
 function ttShareSVG(){
-return '<svg width="32" height="32" viewBox="0 0 24 24" fill="#fff"><path d="M14 9V5l7 7-7 7v-4.1c-5 0-8.5 1.6-11 5.1 1-5 4-10 11-11z"/></svg>';
+return '<img src="https://img.icons8.com/ios-filled/100/ffffff/share-2.png" width="32" height="32" style="display:block">';
 }
 
 function ttVideoHTML(v,idx){
@@ -56,10 +56,10 @@ return '<div class="tt-slide" data-idx="'+idx+'" style="position:absolute;inset:
 +'<div style="position:absolute;left:12px;right:76px;bottom:104px;z-index:5">'
 +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><b style="color:#fff;font-size:17px">@'+v.u+'</b>'+(v.v?vBadge:'')+'</div>'
 +'<p style="color:#fff;font-size:14px;line-height:1.5;margin-bottom:10px">'+v.cap+'</p>'
-+'<div style="display:flex;align-items:center;gap:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg><div style="overflow:hidden;flex:1"><div style="color:#fff;font-size:13px;white-space:nowrap;animation:ttmarquee 8s linear infinite">'+v.music+' ♪ '+v.music+'</div></div></div>'
++'<div style="display:flex;align-items:center;gap:8px"><img src="https://img.icons8.com/ios-filled/100/ffffff/music.png" width="14" height="14"><div style="overflow:hidden;flex:1"><div style="color:#fff;font-size:13px;white-space:nowrap;animation:ttmarquee 8s linear infinite">'+v.music+' ♪ '+v.music+'</div></div></div>'
 +'</div>'
 // Double-tap heart overlay
-+'<div class="tt-bigheart" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;z-index:6"><svg width="110" height="110" viewBox="0 0 24 24" fill="#fe2c55" style="filter:drop-shadow(0 4px 20px rgba(254,44,85,.6))"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>'
++'<div class="tt-bigheart" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;z-index:6"><img src="https://img.icons8.com/ios-filled/100/fe2c55/like.png" width="110" height="110" style="filter:drop-shadow(0 4px 20px rgba(254,44,85,.6))"></div>'
 +'<style>@keyframes ttspin{to{transform:rotate(360deg)}}@keyframes ttmarquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}</style>'
 +'</div>';
 }
@@ -173,7 +173,7 @@ el.querySelectorAll('[data-like]').forEach(b=>b.addEventListener('click',e=>{
 e.stopPropagation();
 const idx=+b.dataset.like;
 ttLiked[idx]=!ttLiked[idx];
-b.querySelector('svg path').setAttribute('fill',ttLiked[idx]?'#fe2c55':'#fff');
+var img=b.querySelector('img');if(img)img.src='https://img.icons8.com/ios-filled/100/'+(ttLiked[idx]?'fe2c55':'ffffff')+'/like.png';
 if(ttLiked[idx])ttBigHeart(b.closest('.tt-slide'));
 }));
 // Comments
@@ -185,7 +185,7 @@ s.addEventListener('click',()=>{
 const now=Date.now();
 if(now-lastTap<300){
 const idx=+s.dataset.idx;
-if(!ttLiked[idx]){ttLiked[idx]=true;const lb=s.querySelector('[data-like] svg path');if(lb)lb.setAttribute('fill','#fe2c55');}
+if(!ttLiked[idx]){ttLiked[idx]=true;const lb=s.querySelector('[data-like] img');if(lb)lb.src='https://img.icons8.com/ios-filled/100/fe2c55/like.png';}
 ttBigHeart(s);
 }
 lastTap=now;
