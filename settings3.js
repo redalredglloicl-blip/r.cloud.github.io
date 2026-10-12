@@ -92,6 +92,11 @@ function s3Render(el,page){
    ['الليل','linear-gradient(180deg,#0d1b2a,#1c1c1e,#000)'],
    ['البنفسجي','linear-gradient(180deg,#7b2ff7,#b45aff,#e0aaff)'],
    ['النار','linear-gradient(180deg,#ff3b30,#ff9f0a,#ffd60a)'],
+   ['الشفق القطبي','linear-gradient(180deg,#0a0a2e,#1a5f7a,#57cc99)'],
+   ['الصحراء','linear-gradient(180deg,#f4a261,#e76f51,#2a9d8f)'],
+   ['الوردي','linear-gradient(180deg,#ff70a6,#ff9770,#ffd670)'],
+   ['الأخضر الداكن','linear-gradient(180deg,#081c15,#1b4332,#52b788)'],
+   ['الأزرق الملكي','linear-gradient(180deg,#03045e,#0077b6,#90e0ef)'],
   ];
   const cur=s3Get('s3_wall',0);
   let wh='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px">';
