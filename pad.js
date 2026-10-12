@@ -80,7 +80,7 @@ function cend(e){
 if(sx===null||(e&&e.pointerId!==pid))return;
 const dx=e.clientX-sx,dy=sy-e.clientY,wasKill=mode==='kill';
 sx=null;sy=null;mode=null;c.style.transition='';
-if(wasKill&&dy>85){c.style.transform='translateY(-115%) scale(.86)';c.style.opacity='0';const id=c.dataset.sw;setTimeout(()=>killApp(id),170)}
+if(wasKill&&dy>85){c.classList.add('killing');c.style.transform='translateY(-120%) scale(.85)';c.style.opacity='0';const id=c.dataset.sw;setTimeout(()=>killApp(id),280)}
 else if(wasKill){c.style.transform='';c.style.opacity=''}
 else if(Math.abs(dx)<12&&Math.abs(dy)<12){const id=c.dataset.sw;const ic=c.querySelector('.swLabel .ic');dismissSw();if(id!==S.app){id.startsWith('x_')?openExtra(id.slice(2),ic):openApp(id,ic)}}
 else{c.style.transform='';c.style.opacity=''}
