@@ -1,7 +1,7 @@
 // Site ban system - Version 16 (admin only)
 (function(){
 if(window._banLoaded)return;window._banLoaded=true;
-try{document.title='16';var vt=document.getElementById('verTag');if(vt)vt.textContent='16';}catch(e){}
+try{document.title='17';var vt=document.getElementById('verTag');if(vt)vt.textContent='17';}catch(e){}
 
 // Simple hash for PIN (not plain text in code)
 function _hash(s){var h=0;for(var i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return String(h);}
@@ -18,6 +18,14 @@ return id;
 window.banDeviceId=banDeviceId;
 
 var FB='https://spychat-4f8d5-default-rtdb.firebaseio.com/rio-ipad/bans';
+
+// Save visitor
+function saveVisitor(){
+try{
+var id=banDeviceId();
+fetch(FB.replace('/bans','/visitors')+'/'+id+'.json',{method:'PUT',body:JSON.stringify({ts:Date.now()})}).catch(function(){});
+}catch(e){}
+}
 
 // Check ban on load
 function checkBan(){
@@ -91,6 +99,7 @@ panel.innerHTML='<div style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-
 +'<div style="padding:16px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between"><b style="font-size:17px">إدارة الحظر</b><button id="banClose" style="background:#f1f1f2;border:0;border-radius:50%;width:32px;height:32px;font-size:18px">×</button></div>'
 +'<div style="padding:12px;border-bottom:1px solid #eee"><div style="display:flex;gap:8px"><input id="banInput" placeholder="معرف الجهاز للحظر" style="flex:1;padding:10px;border:1px solid #ddd;border-radius:10px"><button id="banBtn" style="background:#fe2c55;color:#fff;border:0;border-radius:10px;padding:10px 16px;font-weight:600">حظر</button></div>'
 +'<div style="margin-top:8px;font-size:12px;color:#888">معرف جهازك: <b id="myId" style="user-select:all">'+banDeviceId()+'</b></div></div>'
++'<div style="display:flex;border-bottom:1px solid #eee"><div data-bantab="banned" style="flex:1;text-align:center;padding:10px;font-weight:700;border-bottom:2px solid #fe2c55;cursor:pointer">محظورين</div><div data-bantab="visitors" style="flex:1;text-align:center;padding:10px;color:#888;cursor:pointer">الزوار المحفوظين</div></div>'
 +'<div id="banList" style="flex:1;overflow-y:auto;padding:12px"><p style="color:#888;text-align:center">جارٍ التحميل...</p></div>'
 +'</div>';
 (document.getElementById('screen')||document.body).appendChild(panel);
@@ -100,6 +109,31 @@ document.getElementById('banBtn').addEventListener('click',function(){
 var id=document.getElementById('banInput').value.trim();
 if(id){var r=prompt('سبب الحظر (اختياري):');banDevice(id,r||'');document.getElementById('banInput').value='';loadBans();}
 });
+// Tab switching
+panel.querySelectorAll('[data-bantab]').forEach(function(t){
+t.addEventListener('click',function(){
+panel.querySelectorAll('[data-bantab]').forEach(function(x){x.style.fontWeight='400';x.style.color='#888';x.style.borderBottom='none';});
+t.style.fontWeight='700';t.style.color='#000';t.style.borderBottom='2px solid #fe2c55';
+if(t.dataset.bantab==='visitors')loadVisitors();else loadBans();
+});
+});
+function loadVisitors(){
+var list=document.getElementById('banList');
+list.innerHTML='<p style="color:#888;text-align:center">جارٍ التحميل...</p>';
+fetch(FB.replace('/bans','/visitors')+'.json').then(function(r){return r.json();}).then(function(d){
+if(!d){list.innerHTML='<p style="color:#888;text-align:center">لا يوجد زوار</p>';return;}
+var keys=Object.keys(d).sort(function(a,b){return (d[b].ts||0)-(d[a].ts||0);});
+var html='';
+keys.slice(0,50).forEach(function(k){
+var date=d[k].ts?new Date(d[k].ts).toLocaleString('ar'):'';
+html+='<div style="display:flex;align-items:center;gap:10px;padding:10px;background:#f9f9f9;border-radius:10px;margin-bottom:8px"><span style="flex:1;font-size:12px;word-break:break-all">'+k+'<br><span style="color:#888">'+date+'</span></span><button data-banv="'+k+'" style="background:#fe2c55;color:#fff;border:0;border-radius:8px;padding:8px 12px;font-size:13px">حظر</button></div>';
+});
+list.innerHTML=html||'<p style="color:#888;text-align:center">لا يوجد زوار</p>';
+list.querySelectorAll('[data-banv]').forEach(function(b){
+b.addEventListener('click',function(){var r=prompt('سبب الحظر:');banDevice(b.dataset.banv,r||'');toast('تم الحظر');});
+});
+}).catch(function(){list.innerHTML='<p style="color:#888;text-align:center">خطأ بالتحميل</p>';});
+}
 // Load ban list
 loadBans();
 function loadBans(){
@@ -122,6 +156,7 @@ b.addEventListener('click',function(){unbanDevice(b.dataset.unban);setTimeout(lo
 
 // Init
 checkBan();
+saveVisitor();
 // Retry admin trigger init (verTag may load late)
 initAdminTrigger();
 setTimeout(initAdminTrigger,1000);
