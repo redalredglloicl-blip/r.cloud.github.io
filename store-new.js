@@ -1,7 +1,7 @@
 // New App Store apps - Version 12 (runtime patching)
 (function(){
 if(window._storeNewLoaded)return;window._storeNewLoaded=true;
-try{document.title='12';var vt=document.getElementById('verTag');if(vt)vt.textContent='12';}catch(e){}
+try{document.title='13';var vt=document.getElementById('verTag');if(vt)vt.textContent='13';}catch(e){}
 
 // Icons
 Object.assign(ICONS,{
@@ -34,6 +34,28 @@ window.COMING_SOON=[
 {k:'camera',n:'Camera',dev:'Apple',cat:'صور وفيديو',desc:'التقط صور وفيديوهات.',comingSoon:true},
 ];
 
+// Mark original STORE Instagram/Facebook/X as coming soon (not downloadable)
+try{
+if(typeof STORE!=='undefined'){
+STORE.forEach(function(a){
+if(['instagram','facebook','x'].indexOf(a.k)!==-1){a.comingSoon=true;}
+});
+}
+}catch(e){}
+
+// Patch doGet to block coming-soon apps
+try{
+var _doGet=window.doGet;
+window.doGet=function(k,btn,el){
+try{
+var all=(window.COMING_SOON||[]).concat(window.NEW_APPS||[]).concat(typeof STORE!=='undefined'?STORE:[]);
+var app=all.find(function(x){return x.k===k;});
+if(app&&app.comingSoon){toast('قريباً');return;}
+}catch(e){}
+return _doGet(k,btn,el);
+};
+}catch(e){}
+
 // Remove from installed if present
 try{
 if(typeof S!=='undefined'&&S.installed){
@@ -62,6 +84,20 @@ return;
 }
 return _openExtra(k,fromEl);
 };
+
+// Patch storeRow to show قريباً for coming-soon apps
+try{
+var _storeRow=window.storeRow;
+if(_storeRow){
+window.storeRow=function(a){
+var html=_storeRow(a);
+if(a.comingSoon){
+html=html.replace(/<button class="btn[^"]*" data-get="[^"]*"[^>]*>.*?<\/button>/,'<button class="btn gray" disabled style="border-radius:16px;padding:7px 18px">قريباً</button>');
+}
+return html;
+};
+}
+}catch(e){}
 
 // Patch appStore to show COMING_SOON with "قريباً" buttons
 var _appStore=window.appStore;
