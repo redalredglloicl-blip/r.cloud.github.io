@@ -18,8 +18,9 @@ const di=document.createElement('div');
 di.id='dynIsland';
 di.innerHTML='<span class="di-dot" id="diOrange"></span><span class="di-dot" id="diGreen"></span><span class="di-music"><span class="di-wave"><i></i><i></i><i></i></span><span id="diSong"></span></span>';
 document.getElementById('screen').appendChild(di);
-// Reset recording on boot (should not persist)
-try{if(S.set&&S.set.rec){S.set.rec=false;store.set('set',S.set);}}catch(e){}
+// Reset recording on boot (should not persist) - unconditional
+try{S.set.rec=false;store.set('set',S.set);}catch(e){}
+try{S._camActive=false;}catch(e){}
 window.updateDI=function(){
  const rec=S.set&&S.set.rec;
  const music=S.musicPlay;
@@ -29,4 +30,5 @@ window.updateDI=function(){
  di.classList.toggle('expanded',!!(music||rec));
  di.querySelector('#diSong').textContent=music?'Shape of You':'';
 };
+try{window.updateDI();}catch(e){}
 })();
