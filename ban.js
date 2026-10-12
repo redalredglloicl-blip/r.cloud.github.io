@@ -1,11 +1,11 @@
-// Site ban system - Version 16 (admin only)
+// Site ban system - Version 21 (admin only, console-hardened)
 (function(){
 if(window._banLoaded)return;window._banLoaded=true;
-try{document.title='20';var vt=document.getElementById('verTag');if(vt)vt.textContent='20';}catch(e){}
+try{document.title='21';var vt=document.getElementById('verTag');if(vt)vt.textContent='21';}catch(e){}
 
-// Simple hash for PIN (not plain text in code)
+// Simple hash for PIN (hash only - the PIN itself is NOT stored in this file)
 function _hash(s){var h=0;for(var i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return String(h);}
-var PIN_HASH=_hash('098765');
+var PIN_HASH='1428562823';
 
 // Device ID (persistent)
 function banDeviceId(){
@@ -49,20 +49,32 @@ document.body.innerHTML='<div style="position:fixed;inset:0;background:#000;colo
 document.body.style.overflow='hidden';
 }
 
-// Ban a device
-window.banDevice=function(deviceId,reason){
+// Ban a device (closure-only: NOT exposed on window, so the browser console
+// cannot ban other devices. Only the PIN-gated admin panel below can call these.)
+function doBan(deviceId,reason){
 try{
+// Self-ban protection
+if(deviceId===banDeviceId()){
+if(!confirm('⚠️ هذا معرف جهازك! متأكد تريد تحظر نفسك؟')){toast('تم الإلغاء');return;}
+}
 fetch(FB+'/'+deviceId+'.json',{method:'PUT',body:JSON.stringify({banned:true,reason:reason||'',ts:Date.now()})});
 toast('تم الحظر');
 }catch(e){}
-};
+}
 
-// Unban
-window.unbanDevice=function(deviceId){
+// Unban (closure-only, same as above)
+function doUnban(deviceId){
 try{
 fetch(FB+'/'+deviceId+'.json',{method:'DELETE'});
 toast('تم فك الحظر');
 }catch(e){}
+}
+
+// Narrow self-only hook for the anti-tamper system (protect.js):
+// it can only ever ban THIS device's own id, never anyone else's,
+// so calling it from the console harms nobody but the caller.
+window.selfBanAbuse=function(reason){
+try{doBan(banDeviceId(),reason||'محاولة اختراق/عبث بالموقع');}catch(e){}
 };
 
 // Admin: 10 taps on version
@@ -107,7 +119,7 @@ document.getElementById('banBg').addEventListener('click',function(){panel.remov
 document.getElementById('banClose').addEventListener('click',function(){panel.remove();});
 document.getElementById('banBtn').addEventListener('click',function(){
 var id=document.getElementById('banInput').value.trim();
-if(id){var r=prompt('سبب الحظر (اختياري):');banDevice(id,r||'');document.getElementById('banInput').value='';loadBans();}
+if(id){var r=prompt('سبب الحظر (اختياري):');doBan(id,r||'');document.getElementById('banInput').value='';loadBans();}
 });
 // Tab switching
 panel.querySelectorAll('[data-bantab]').forEach(function(t){
@@ -130,7 +142,7 @@ html+='<div style="display:flex;align-items:center;gap:10px;padding:10px;backgro
 });
 list.innerHTML=html||'<p style="color:#888;text-align:center">لا يوجد زوار</p>';
 list.querySelectorAll('[data-banv]').forEach(function(b){
-b.addEventListener('click',function(){var r=prompt('سبب الحظر:');banDevice(b.dataset.banv,r||'');toast('تم الحظر');});
+b.addEventListener('click',function(){var r=prompt('سبب الحظر:');doBan(b.dataset.banv,r||'');toast('تم الحظر');});
 });
 }).catch(function(){list.innerHTML='<p style="color:#888;text-align:center">خطأ بالتحميل</p>';});
 }
@@ -148,7 +160,7 @@ html+='<div style="display:flex;align-items:center;gap:10px;padding:10px;backgro
 });
 list.innerHTML=html||'<p style="color:#888;text-align:center">لا يوجد محظورين</p>';
 list.querySelectorAll('[data-unban]').forEach(function(b){
-b.addEventListener('click',function(){unbanDevice(b.dataset.unban);setTimeout(loadBans,500);});
+b.addEventListener('click',function(){doUnban(b.dataset.unban);setTimeout(loadBans,500);});
 });
 }).catch(function(){});
 }

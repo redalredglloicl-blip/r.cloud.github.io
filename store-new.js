@@ -2,7 +2,7 @@
 (function(){
 if(window._storeNewLoaded)return;window._storeNewLoaded=true;
 try{
-var _setV=function(){try{document.title='20';var vt=document.getElementById('verTag');if(vt)vt.textContent='20';var v2=document.querySelector('.ver');if(v2)v2.textContent='20';}catch(e){}};
+var _setV=function(){try{document.title='21';var vt=document.getElementById('verTag');if(vt)vt.textContent='21';var v2=document.querySelector('.ver');if(v2)v2.textContent='21';}catch(e){}};
 _setV();setTimeout(_setV,500);setTimeout(_setV,1500);setTimeout(_setV,3000);
 }catch(e){}
 
@@ -106,6 +106,64 @@ return html;
 };
 }
 }catch(e){}
+
+// Enhanced Apple-style app detail pages
+function starHtml(rating){
+var full=Math.floor(rating),half=(rating-full)>=0.5;
+var s='';
+for(var i=0;i<5;i++){
+if(i<full)s+='★';
+else if(i===full&&half)s+='⯪';
+else s+='☆';
+}
+return '<span style="color:#ff9500;font-size:14px;letter-spacing:2px">'+s+'</span>';
+}
+var _showAppDetail=window.showAppDetail;
+window.showAppDetail=function(k,el){
+try{
+var all=(window.COMING_SOON||[]).concat(window.NEW_APPS||[]).concat(typeof STORE!=='undefined'?STORE:[]);
+var app=all.find(function(x){return x.k===k;});
+if(app&&app.comingSoon){
+// Enhanced coming-soon detail
+var icon=ICONS[app.k]||'';
+appHeadReset();snapCur();S.app='store_d_'+k;noteRunning('store_d_'+k,app.n,app.k);
+$('#appTitle').textContent=app.n;showAppWin(el);
+var reviews=[
+{n:'أحمد',t:'منتظر التطبيق بفارغ الصبر! 🔥',r:5,d:'قبل يومين'},
+{n:'سارة',t:'متى راح يتوفر؟',r:4,d:'قبل أسبوع'},
+{n:'محمد',t:'شكله راح يكون ممتاز',r:5,d:'قبل أسبوعين'}
+];
+$('#appBody').innerHTML=
+'<div style="padding:16px">'
++'<div style="display:flex;gap:14px;align-items:center;margin-bottom:16px">'
++'<div style="width:110px;height:110px;border-radius:24px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 16px rgba(0,0,0,.15)">'+icImg(icon,'width:110px;height:110px')+'</div>'
++'<div style="flex:1"><div style="font-size:20px;font-weight:700;margin-bottom:2px">'+app.n+'</div>'
++'<div style="color:#666;font-size:13px;margin-bottom:8px">'+app.dev+'</div>'
++'<button class="btn gray" disabled style="border-radius:16px;padding:8px 24px;font-weight:600">قريباً</button></div></div>'
+// Stats row
++'<div style="display:flex;text-align:center;padding:12px 0;border-top:1px solid #eee;border-bottom:1px solid #eee;margin-bottom:16px">'
++'<div style="flex:1"><div style="font-weight:700;font-size:15px">'+(app.rt||'—')+'</div><div style="font-size:11px;color:#888">التقييم</div></div>'
++'<div style="flex:1;border-left:1px solid #eee;border-right:1px solid #eee"><div style="font-weight:700;font-size:15px">'+(app.age||'4+')+'</div><div style="font-size:11px;color:#888">العمر</div></div>'
++'<div style="flex:1"><div style="font-weight:700;font-size:15px">'+(app.size||'—')+'</div><div style="font-size:11px;color:#888">الحجم</div></div></div>'
+// Description
++'<div style="font-size:14px;line-height:1.8;margin-bottom:16px;color:#333">'+(app.desc||'')+'</div>'
+// Reviews
++'<div style="font-size:17px;font-weight:700;margin-bottom:12px">التقييمات والمراجعات</div>'
++reviews.map(function(rv){
+return '<div style="padding:12px 0;border-bottom:1px solid #f0f0f0"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><b style="font-size:14px">'+rv.n+'</b><span style="font-size:12px;color:#888">'+rv.d+'</span></div>'+starHtml(rv.r)+'<p style="font-size:14px;margin:6px 0 0;color:#333">'+rv.t+'</p></div>';
+}).join('')
+// Info
++'<div style="font-size:17px;font-weight:700;margin:16px 0 12px">المعلومات</div>'
++'<div style="font-size:14px;color:#333">'
++'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5"><span style="color:#888">المطور</span><span>'+app.dev+'</span></div>'
++'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5"><span style="color:#888">الفئة</span><span>'+app.cat+'</span></div>'
++'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5"><span style="color:#888">الحالة</span><span style="color:#ff9500;font-weight:600">قريباً</span></div>'
++'</div></div>';
+return;
+}
+}catch(e){}
+return _showAppDetail(k,el);
+};
 
 // Patch appStore to show COMING_SOON with "قريباً" buttons
 var _appStore=window.appStore;

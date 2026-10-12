@@ -1,7 +1,7 @@
-// Site Protection System - Version 19
+// Site Protection System - Version 21
 (function(){
 if(window._protectLoaded)return;window._protectLoaded=true;
-try{document.title='20';var vt=document.getElementById('verTag');if(vt)vt.textContent='20';}catch(e){}
+try{document.title='21';var vt=document.getElementById('verTag');if(vt)vt.textContent='21';}catch(e){}
 
 // ============ 1. Disable right-click / context menu ============
 document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});
@@ -50,9 +50,9 @@ var id=(window.banDeviceId?banDeviceId():'unknown');
 var key='rio_susp_'+id;
 var count=parseInt(localStorage.getItem(key)||'0')+1;
 localStorage.setItem(key,String(count));
-// 3 strikes = auto-ban
-if(count>=3&&window.banDevice){
-banDevice(id,'محاولة اختراق/عبث بالموقع');
+// 3 strikes = auto-ban (self-only: selfBanAbuse can only ban this device's own id)
+if(count>=3&&window.selfBanAbuse){
+selfBanAbuse('محاولة اختراق/عبث بالموقع');
 }
 }catch(e){}
 }
