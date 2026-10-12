@@ -1,8 +1,7 @@
-// New App Store apps - 11 (runtime patching)
+// New App Store apps - Version 12 (runtime patching)
 (function(){
 if(window._storeNewLoaded)return;window._storeNewLoaded=true;
-// Update version to 9.95
-try{document.title='11';var vt=document.getElementById('verTag');if(vt)vt.textContent='11';}catch(e){}
+try{document.title='12';var vt=document.getElementById('verTag');if(vt)vt.textContent='12';}catch(e){}
 
 // Icons
 Object.assign(ICONS,{
@@ -19,18 +18,43 @@ uber:{n:'Uber',ic:'uber'},shahid:{n:'Shahid',ic:'shahid'},
 capcut:{n:'CapCut',ic:'capcut'},picsart:{n:'Picsart',ic:'picsart'}
 });
 window.NEW_APPS=[
-{k:'spotify',n:'Spotify',dev:'Spotify AB',cat:'موسيقى',ver:'9.0.2',size:'92 MB',rt:4.8,rc:'2.1M',age:'12+',desc:'موسيقى وبودكاست بلا حدود. اكتشف ملايين الأغاني والقوائم المخصصة لذوقك.'},
-{k:'netflix',n:'Netflix',dev:'Netflix Inc.',cat:'ترفيه',ver:'16.5.0',size:'78 MB',rt:4.7,rc:'1.8M',age:'12+',desc:'شاهد الأفلام والمسلسلات الأصلية. حمّل وشاهد بدون إنترنت.'},
-{k:'uber',n:'Uber',dev:'Uber Technologies',cat:'سفر',ver:'4.2.1',size:'145 MB',rt:4.6,rc:'950K',age:'4+',desc:'اطلب سيارة بضغطة زر. تتبع مباشر ودفع آمن.'},
-{k:'shahid',n:'Shahid',dev:'MBC Group',cat:'ترفيه',ver:'8.3.0',size:'68 MB',rt:4.5,rc:'420K',age:'12+',desc:'أكبر مكتبة عربية للمسلسلات والأفلام والبرامج.'},
-{k:'capcut',n:'CapCut',dev:'Bytedance',cat:'صور وفيديو',ver:'5.1.0',size:'210 MB',rt:4.9,rc:'3.2M',age:'4+',desc:'محرر فيديو احترافي مجاني. قص، أضف مؤثرات، وانشر.'},
-{k:'picsart',n:'Picsart',dev:'Picsart Inc.',cat:'صور وفيديو',ver:'24.8.1',size:'156 MB',rt:4.7,rc:'1.5M',age:'4+',desc:'حرر صورك بذكاء اصطناعي. فلاتر، ملصقات، وأدوات إبداعية.'},
+{k:'spotify',n:'Spotify',dev:'Spotify AB',cat:'موسيقى',ver:'9.0.2',size:'92 MB',rt:4.8,rc:'2.1M',age:'12+',desc:'موسيقى وبودكاست بلا حدود.',comingSoon:true},
+{k:'netflix',n:'Netflix',dev:'Netflix Inc.',cat:'ترفيه',ver:'16.5.0',size:'78 MB',rt:4.7,rc:'1.8M',age:'12+',desc:'أفلام ومسلسلات أصلية.',comingSoon:true},
+{k:'uber',n:'Uber',dev:'Uber Technologies',cat:'سفر',ver:'4.2.1',size:'145 MB',rt:4.6,rc:'950K',age:'4+',desc:'اطلب سيارة بضغطة زر.',comingSoon:true},
+{k:'shahid',n:'Shahid',dev:'MBC Group',cat:'ترفيه',ver:'8.3.0',size:'68 MB',rt:4.5,rc:'420K',age:'12+',desc:'مكتبة عربية للمسلسلات.',comingSoon:true},
+{k:'capcut',n:'CapCut',dev:'Bytedance',cat:'صور وفيديو',ver:'5.1.0',size:'210 MB',rt:4.9,rc:'3.2M',age:'4+',desc:'محرر فيديو احترافي.',comingSoon:true},
+{k:'picsart',n:'Picsart',dev:'Picsart Inc.',cat:'صور وفيديو',ver:'24.8.1',size:'156 MB',rt:4.7,rc:'1.5M',age:'4+',desc:'حرر صورك بذكاء اصطناعي.',comingSoon:true},
 ];
 
-// Patch openExtra for قيد التطوير
-const _openExtra=window.openExtra;
+// Apps removed from device - Store only as "قريباً"
+window.COMING_SOON=[
+{k:'instagram',n:'Instagram',dev:'Meta Platforms',cat:'صور وفيديو',desc:'شارك صورك وتابع أصدقاءك.',comingSoon:true},
+{k:'facebook',n:'Facebook',dev:'Meta Platforms',cat:'تواصل اجتماعي',desc:'تواصل مع الأصدقاء.',comingSoon:true},
+{k:'x',n:'X',dev:'X Corp.',cat:'أخبار وتواصل',desc:'تابع الترندات.',comingSoon:true},
+{k:'camera',n:'Camera',dev:'Apple',cat:'صور وفيديو',desc:'التقط صور وفيديوهات.',comingSoon:true},
+];
+
+// Remove from installed if present
+try{
+if(typeof S!=='undefined'&&S.installed){
+var rm=['instagram','facebook','x','camera','spotify','netflix','uber','shahid','capcut','picsart'];
+S.installed=S.installed.filter(function(k){return rm.indexOf(k)===-1;});
+if(typeof store!=='undefined')store.set('installed',S.installed);
+}
+}catch(e){}
+
+// Hide Camera from home screen
+try{
+if(typeof APPS!=='undefined'&&!window._camHidden){
+var ci=APPS.findIndex(function(a){return a.id==='camera';});
+if(ci!==-1){window._camHidden=true;APPS.splice(ci,1);}
+}
+}catch(e){}
+
+// Patch openExtra for قيد التطوير (fallback)
+var _openExtra=window.openExtra;
 window.openExtra=function(k,fromEl){
-if(['spotify','netflix','uber','shahid','capcut','picsart'].includes(k)){
+if(['spotify','netflix','uber','shahid','capcut','picsart'].indexOf(k)!==-1){
 appHeadReset();snapCur();S.app='x_'+k;noteRunning('x_'+k,EXTRA[k].n,EXTRA[k].ic);
 $('#appTitle').textContent=EXTRA[k].n;showAppWin(fromEl);
 $('#appBody').innerHTML='<div style="text-align:center;padding:60px 20px"><div style="font-size:17px;font-weight:700;margin-bottom:8px">قيد التطوير</div><p class="mut" style="font-size:13px;line-height:1.9">تطبيق '+EXTRA[k].n+' بعدو قيد التطوير<br>راح يتوفر بتحديث قادم</p></div>';
@@ -39,36 +63,29 @@ return;
 return _openExtra(k,fromEl);
 };
 
-// Patch appStore to include NEW_APPS
-const _appStore=window.appStore;
+// Patch appStore to show COMING_SOON with "قريباً" buttons
+var _appStore=window.appStore;
 window.appStore=function(el){
-const _origDetail=S.storeDetail;
-// Temporarily extend STORE for detail lookup
-if(_origDetail&&window.NEW_APPS.find(x=>x.k===_origDetail)){
-// Let the original handle it by temporarily adding to STORE
-STORE.push(window.NEW_APPS.find(x=>x.k===_origDetail));
-try{_appStore(el);}finally{STORE.pop();}
-return;
+var _origDetail=S.storeDetail;
+if(_origDetail){
+var found=window.NEW_APPS.concat(window.COMING_SOON).find(function(x){return x.k===_origDetail;});
+if(found){STORE.push(found);try{_appStore(el);}finally{STORE.pop();}return;}
 }
 _appStore(el);
-// Inject NEW_APPS into Apps tab and search via DOM
-setTimeout(()=>{
+setTimeout(function(){
 try{
-const newApps=window.NEW_APPS;
-if(S.storeTab==='apps'){
-const secs=[...el.querySelectorAll('.rbx-sec')];
-const target=secs.find(s=>s.textContent.includes('تطبيقات جديدة'));
-if(target&&!el.querySelector('[data-newapps]')){
-const div=document.createElement('div');
-div.setAttribute('data-newapps','1');
-div.innerHTML='<div class="rbx-sec">حمّل وجرّب</div>'+newApps.map(a=>{
-const inst=S.installed.includes(a.k);
-return '<div class="card row" style="align-items:center"><span style="flex:0 0 auto">'+icImg(ICONS[a.k])+'</span><span style="flex:1;cursor:pointer" data-detail="'+a.k+'"><span class="big" style="font-size:15px">'+a.n+'</span><br><span class="mut">'+a.cat+' — '+a.dev+'</span></span><button class="btn '+(inst?'gray':'')+'" data-get="'+a.k+'" style="border-radius:16px;padding:7px 18px">'+(inst?'فتح':'احصل')+'</button></div>';
+if(S.storeTab==='apps'&&!el.querySelector('[data-comingsoon]')){
+var secs=el.querySelectorAll('.rbx-sec');
+var target=null;
+secs.forEach(function(s){if(s.textContent.indexOf('تطبيقات جديدة')!==-1)target=s;});
+if(target){
+var div=document.createElement('div');
+div.setAttribute('data-comingsoon','1');
+var all=window.COMING_SOON.concat(window.NEW_APPS);
+div.innerHTML='<div class="rbx-sec">قريباً</div>'+all.map(function(a){
+return '<div class="card row" style="align-items:center;opacity:.75"><span style="flex:0 0 auto">'+icImg(ICONS[a.k]||'')+'</span><span style="flex:1"><span class="big" style="font-size:15px">'+a.n+'</span><br><span class="mut">'+a.cat+' — '+a.dev+'</span></span><button class="btn gray" disabled style="border-radius:16px;padding:7px 18px">قريباً</button></div>';
 }).join('');
 target.parentNode.insertBefore(div,target.nextSibling);
-// Bind clicks
-div.querySelectorAll('[data-detail]').forEach(d=>d.addEventListener('click',()=>{S.storeDetail=d.dataset.detail;appStore(el);}));
-div.querySelectorAll('[data-get]').forEach(b=>b.addEventListener('click',e=>doGet(b.dataset.get,e.target,el)));
 }
 }
 }catch(e){}
