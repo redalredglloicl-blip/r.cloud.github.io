@@ -25,8 +25,18 @@ if(e.shiftKey&&(k==='i'||k==='j'||k==='c')){e.preventDefault();onSuspicious('dev
 }
 });
 
-// ============ 4. DevTools detection ============
+// One-time reset: clear false suspicious counts from buggy mobile devtools detection
+try{
+var _rid=(window.banDeviceId?banDeviceId():null);
+if(_rid&&!localStorage.getItem('rio_susp_fixed_v23')){
+localStorage.removeItem('rio_susp_'+_rid);
+localStorage.setItem('rio_susp_fixed_v23','1');
+}
+}catch(e){}
+// ============ 4. DevTools detection (desktop only - unreliable on mobile) ============
 var devtoolsOpen=false;
+var _isTouch=('ontouchstart' in window)||navigator.maxTouchPoints>0;
+if(!_isTouch){
 setInterval(function(){
 try{
 var wDiff=window.outerWidth-window.innerWidth;
@@ -42,6 +52,7 @@ devtoolsOpen=false;
 }
 }catch(e){}
 },1000);
+}
 
 function onSuspicious(type){
 // Log suspicious activity
