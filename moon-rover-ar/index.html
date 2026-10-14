@@ -485,16 +485,15 @@ function styleButtons(){
     // Skip menu buttons (already styled)
     if(b.id && b.id.indexOf('btn') === 0) return;
     // Apply modern mobile style directly
-    b.style.borderRadius = '14px';
-    b.style.background = 'linear-gradient(135deg, rgba(35,40,58,0.92), rgba(22,26,42,0.92))';
-    b.style.border = '1px solid rgba(255,255,255,0.12)';
-    b.style.boxShadow = '0 4px 12px rgba(0,0,0,0.35)';
-    b.style.fontWeight = '700';
-    b.style.minWidth = '60px';
-    b.style.minHeight = '48px';
-    b.style.fontSize = '12px';
-    b.style.color = '#fff';
-    b.style.backdropFilter = 'blur(6px)';
+    b.style.setProperty('border-radius', '14px', 'important');
+    b.style.setProperty('background', 'linear-gradient(135deg, rgba(35,40,58,0.92), rgba(22,26,42,0.92))', 'important');
+    b.style.setProperty('border', '1px solid rgba(255,255,255,0.12)', 'important');
+    b.style.setProperty('box-shadow', '0 4px 12px rgba(0,0,0,0.35)', 'important');
+    b.style.setProperty('font-weight', '700', 'important');
+    b.style.setProperty('min-width', '60px', 'important');
+    b.style.setProperty('min-height', '48px', 'important');
+    b.style.setProperty('font-size', '12px', 'important');
+    b.style.setProperty('color', '#fff', 'important');
   });
 }
 new MutationObserver(styleButtons).observe(document.body, {childList:true, subtree:true});
