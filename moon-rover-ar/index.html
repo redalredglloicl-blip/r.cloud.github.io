@@ -432,5 +432,47 @@ new MutationObserver(cleanPC).observe(document.body, {childList:true, subtree:tr
 setTimeout(cleanPC, 2000); setTimeout(cleanPC, 5000);
 })();
 </script>
+<style>
+/* ===== PORTRAIT LAYOUT FIX ===== */
+@media (orientation: portrait) {
+  /* Version badge - move to top center, don't overlap minimap */
+  #arVer {
+    top: 8px !important; left: 50% !important; transform: translateX(-50%) !important;
+  }
+  /* Mission panel - compact */
+  .hud .mission {
+    max-width: 58vw !important;
+    font-size: 11px !important;
+    padding: 8px 12px !important;
+    top: 56px !important;
+  }
+  /* Systems panel - below mission, compact */
+  .hud .panel {
+    max-width: 58vw !important;
+    font-size: 11px !important;
+  }
+  /* Button columns - tighter, no overlap */
+  .hud .tbtns, .hud .tbtns2 {
+    gap: 4px !important;
+  }
+  .hud .tbtns button, .hud .tbtns2 button {
+    min-width: 64px !important;
+    min-height: 44px !important;
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+  }
+  /* Joysticks - smaller in portrait */
+  .hud .stick {
+    width: 100px !important;
+    height: 100px !important;
+  }
+  /* Minimap - smaller */
+  .hud [class*="minimap"], .hud [class*="map"] {
+    max-width: 28vw !important;
+  }
+}
+/* Version badge - default position (landscape) */
+#arVer { transition: all 0.3s ease !important; }
+</style>
 </body>
 </html>
