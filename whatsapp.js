@@ -341,8 +341,38 @@ el.innerHTML='<div style="display:flex;flex-direction:column;height:100%">'
 +'</div>'
 +'</div>';
 
-document.querySelector('#waChatBack').addEventListener('click',()=>{clearInterval(WA.poll);showMain();});
+document.querySelector('#waChatBack').addEventListener('click',()=>{
+clearInterval(WA.poll);clearInterval(WA._typePoll);
+if(WA.chat)fetch(FB+'/chats/'+WA.chat.id+'/typing/'+WA.user.u+'.json',{method:'DELETE'});
+showMain();
+});
 document.querySelector('#waSendBtn').addEventListener('click',sendWaMsg);
+(function(){
+var _mi=document.querySelector('#waMsgIn');
+if(!_mi)return;
+_waTypeT=null;
+_mi.addEventListener('input',()=>{
+if(!WA.chat)return;
+fetch(FB+'/chats/'+WA.chat.id+'/typing/'+WA.user.u+'.json',{method:'PUT',body:JSON.stringify(Date.now())});
+clearTimeout(window._waTypeT);
+window._waTypeT=setTimeout(()=>{
+if(WA.chat)fetch(FB+'/chats/'+WA.chat.id+'/typing/'+WA.user.u+'.json',{method:'DELETE'});
+},3000);
+});
+clearInterval(WA._typePoll);
+WA._typePoll=setInterval(()=>{
+if(!WA.chat||!WA.chat.id)return;
+fetch(FB+'/chats/'+WA.chat.id+'/typing.json').then(r=>r.json()).then(d=>{
+var onEl=document.querySelector('#waOnline');
+if(!onEl)return;
+var typing=false;
+if(d){Object.keys(d).forEach(k=>{if(k!==WA.user.u&&Date.now()-(d[k]||0)<4000)typing=true;});}
+onEl.textContent=typing?'يكتب...':'متصل الآن';
+onEl.style.color=typing?'#25d366':'#8696a0';
+onEl.style.fontWeight=typing?'600':'400';
+}).catch(()=>{});
+},1500);
+})();
 document.querySelector('#waImgPick').addEventListener('change',function(e){
 var f=e.target.files[0];
 if(!f||!WA.chat)return;
@@ -454,6 +484,7 @@ var inp=document.querySelector('#waMsgIn');
 var t=inp.value.trim();
 if(!t||!WA.chat)return;
 inp.value='';
+if(WA.chat)fetch(FB+'/chats/'+WA.chat.id+'/typing/'+WA.user.u+'.json',{method:'DELETE'});
 var msg={by:WA.user.u,t:t,ts:Date.now(),read:false};
 fetch(FB+'/chats/'+WA.chat.id+'/messages.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(msg)});
 fetch(FB+'/chats/'+WA.chat.id+'.json',{method:'PATCH',body:JSON.stringify({lastMsg:{t:t,ts:Date.now()}})});
