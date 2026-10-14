@@ -1,4 +1,4 @@
-/* Rio iPad 7.2 — rich social apps + Apple Store. Overrides pad.js stubs. */
+/* Rio iPad — rich social apps. Overrides pad.js stubs. */
 function chatInputHTML(){return '<div class="row" style="position:sticky;bottom:0;padding-top:8px"><input type="text" id="chatIn" placeholder="اكتب رسالة…" style="flex:1;padding:10px 12px;border:1px solid #d9d9de;border-radius:20px;font-size:14px;font-family:inherit"><button class="btn" id="chatSend">إرسال</button></div>'}
 const SVG_P={
 search:'<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
@@ -192,48 +192,6 @@ chatThread('/rooms/'+roomId,{own:'#fffc00',ownTx:'#111',other:'#ffffff',otherTx:
 const DC_CH=[['discord','# عام'],['dc-news','# إعلانات'],['dc-pics','# صور-اللاعبين']];
 function appDiscord(){emptyChats('Discord','<div style="background:#1e1f22;color:#fff;border-radius:14px;padding:12px"><b style="font-size:16px">Discord</b></div>')}
 
-function appAppleStore(){
-S.apTab=S.apTab||'shop';S.bag=S.bag||[];
-const el=$('#appBody');
-const bagN=S.bag.length;
-let h='<div class="row" style="align-items:center;padding:6px 2px"><img src="https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png" style="width:22px;height:22px" onerror="this.remove()"><b style="font-size:17px;margin-inline-start:6px">Store</b><span style="margin-inline-start:auto;display:flex;gap:14px;font-size:18px;align-items:center"><span data-aptab="search" style="display:inline-flex;cursor:pointer">'+si('search',20)+'</span><span data-aptab="bag" style="position:relative;display:inline-flex;cursor:pointer">'+si('bag',21)+''+(bagN?'<span style="position:absolute;top:-6px;left:-8px;background:#0a84ff;color:#fff;font-size:10px;font-weight:700;min-width:17px;height:17px;border-radius:9px;display:flex;align-items:center;justify-content:center">'+arabNum(bagN)+'</span>':'')+'</span></span></div>';
-if(S.apTab==='shop'){
-h+='<div style="border-radius:18px;overflow:hidden;margin:8px 0;position:relative"><img src="https://picsum.photos/seed/applestore-hero/700/300" style="width:100%;height:150px;object-fit:cover;display:block"><div style="position:absolute;bottom:0;right:0;left:0;padding:12px;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff"><b style="font-size:17px">iPhone 17 Pro</b><br><span style="font-size:12.5px">تايتانيوم. قوي بشكل يفوق الخيال.</span></div></div>';
-h+='<b style="font-size:15px">تسوق حسب المنتج</b><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px">'+AP_PRODUCTS.map(p=>'<div data-ap="'+p.id+'" style="cursor:pointer;border-radius:16px;overflow:hidden;background:#f5f5f7"><div style="height:110px;background:'+p.g+';display:flex;align-items:center;justify-content:center"><span style="color:#fff;font-size:30px;font-weight:800;opacity:.9">'+p.n.split(' ')[0]+'</span></div><div style="padding:10px"><b style="font-size:13.5px">'+p.n+'</b><br><span class="mut" style="font-size:12px">'+p.tag+'</span><br><b style="font-size:13px;color:#0a84ff">من $'+p.price+'</b></div></div>').join('')+'</div>';
-}else if(S.apTab==='bag'){
-if(!S.bag.length){h+='<div style="text-align:center;padding:40px 10px"><div style="display:flex;justify-content:center">'+si('bag',44,'#8e8e93')+'</div><b>حقيبتك فارغة</b><p class="mut" style="margin-top:6px">تصفح المنتجات وأضف ما يعجبك</p><button class="btn" data-aptab="shop" style="margin-top:12px">تسوق الآن</button></div>'}
-else{const total=S.bag.reduce((a,b)=>a+b.price,0);
-h+='<b style="font-size:15px">حقيبة التسوق</b>'+S.bag.map((b,i)=>'<div class="card row" style="align-items:center;margin-top:8px"><span style="width:52px;height:52px;border-radius:12px;background:'+b.g+'"></span><span style="flex:1;margin-inline-start:10px"><b style="font-size:13.5px">'+b.n+'</b><br><span class="mut" style="font-size:12px">'+b.opt+'</span><br><b style="font-size:13px">$'+b.price+'</b></span><button class="btn gray" data-bagrm="'+i+'" style="padding:6px 12px">حذف</button></div>').join('')+
-'<div class="card" style="margin-top:10px"><div class="row"><span style="flex:1">المجموع</span><b>$'+total+'</b></div><button class="btn" id="apCheckout" style="width:100%;margin-top:10px;padding:12px">إتمام الشراء</button></div>'}
-}else{
-h+='<div style="padding:8px 0"><input id="apSearch" type="text" placeholder="ابحث في المتجر" style="width:100%;padding:10px 14px;border:none;border-radius:14px;background:#f0f2f5;font-size:14px;font-family:inherit"></div><div id="apRes" class="mut" style="text-align:center;padding:20px">اكتب للبحث عن المنتجات</div>';
-}
-el.innerHTML=h;
-el.querySelectorAll('[data-aptab]').forEach(t=>t.addEventListener('click',()=>{S.apTab=t.dataset.aptab;appAppleStore()}));
-el.querySelectorAll('[data-ap]').forEach(c=>c.addEventListener('click',()=>apDetail(c.dataset.ap)));
-el.querySelectorAll('[data-bagrm]').forEach(b=>b.addEventListener('click',()=>{S.bag.splice(+b.dataset.bagrm,1);appAppleStore()}));
-const co=$('#apCheckout');if(co)co.addEventListener('click',()=>{S.bag=[];el.innerHTML='<div style="text-align:center;padding:50px 16px"><div style="font-size:52px">✓</div><b style="font-size:17px">تم استلام طلبك!</b><p class="mut" style="margin-top:8px;line-height:1.9">شكراً لتسوقك من Apple Store.<br>سيصلك تأكيد الطلب قريباً.</p><button class="btn" id="apBackShop" style="margin-top:14px">متابعة التسوق</button></div>';$('#apBackShop').addEventListener('click',()=>{S.apTab='shop';appAppleStore()})});
-const si=$('#apSearch');if(si)si.addEventListener('input',()=>{const q=si.value.trim().toLowerCase();const r=$('#apRes');const list=AP_PRODUCTS.filter(p=>p.n.toLowerCase().includes(q)||p.tag.includes(si.value.trim()));r.innerHTML=list.length?list.map(p=>'<div class="card row" data-ap="'+p.id+'" style="align-items:center;margin-top:8px;cursor:pointer"><span style="width:46px;height:46px;border-radius:10px;background:'+p.g+'"></span><span style="flex:1;margin-inline-start:10px"><b>'+p.n+'</b><br><span class="mut">$'+p.price+'</span></span></div>').join(''):'لا نتائج';r.querySelectorAll('[data-ap]').forEach(c=>c.addEventListener('click',()=>apDetail(c.dataset.ap)))});
-}
-function apDetail(id){
-const p=AP_PRODUCTS.find(x=>x.id===id);if(!p)return;
-S.apColor=S.apColor||{};S.apStor=S.apStor||{};
-if(!S.apColor[id])S.apColor[id]=p.colors[0];if(!S.apStor[id])S.apStor[id]=p.stor[0];
-const el=$('#appBody');
-const render=()=>{
-el.innerHTML=sBack()+'<div style="height:190px;border-radius:18px;background:'+p.g+';display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff"><span style="font-size:34px;font-weight:800">'+p.n.split(' ')[0]+'</span><span style="font-size:14px;opacity:.9">'+p.n+'</span></div>'+
-'<b style="font-size:19px;margin-top:12px;display:block">'+p.n+'</b><p class="mut" style="margin:4px 0 10px">'+p.tag+'</p>'+
-'<b style="font-size:13.5px">اللون: '+S.apColor[id]+'</b><div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap">'+p.colors.map(c=>'<span data-apc="'+c+'" style="padding:8px 14px;border-radius:16px;font-size:12.5px;cursor:pointer;border:2px solid '+(S.apColor[id]===c?'#0a84ff':'#e5e5e5')+';background:'+(S.apColor[id]===c?'#eef5ff':'#fff')+'">'+c+'</span>').join('')+'</div>'+
-'<b style="font-size:13.5px">المواصفات: '+S.apStor[id]+'</b><div style="display:flex;gap:8px;margin:8px 0;flex-wrap:wrap">'+p.stor.map(s2=>'<span data-aps="'+s2+'" style="padding:8px 14px;border-radius:16px;font-size:12.5px;cursor:pointer;border:2px solid '+(S.apStor[id]===s2?'#0a84ff':'#e5e5e5')+';background:'+(S.apStor[id]===s2?'#eef5ff':'#fff')+'">'+s2+'</span>').join('')+'</div>'+
-'<div class="row" style="align-items:center;margin-top:10px"><b style="font-size:20px">$'+p.price+'</b><button class="btn" id="apAdd" style="margin-inline-start:auto;padding:11px 26px">أضف إلى الحقيبة</button></div>'+
-'<div class="card" style="margin-top:12px"><b style="font-size:13.5px">لماذا '+p.n+'؟</b><p class="mut" style="font-size:12.5px;line-height:1.9;margin-top:4px">شحن مجاني · إرجاع مجاني خلال ١٤ يوم · تقسيط بدون فوائد · نقش مجاني عند الطلب</p></div>';
-bindBack(appAppleStore);
-el.querySelectorAll('[data-apc]').forEach(x=>x.addEventListener('click',()=>{S.apColor[id]=x.dataset.apc;render()}));
-el.querySelectorAll('[data-aps]').forEach(x=>x.addEventListener('click',()=>{S.apStor[id]=x.dataset.aps;render()}));
-$('#apAdd').addEventListener('click',()=>{S.bag.push({n:p.n,price:p.price,g:p.g,opt:S.apColor[id]+' · '+S.apStor[id]});toast('انضافت إلى الحقيبة 🛍');S.apTab='bag';appAppleStore()});
-};
-render();
-}
 const YT_VIDS=[
 ['aqz-KE-bpKQ','Big Buck Bunny \u2014 \u0641\u064a\u0644\u0645 \u0642\u0635\u064a\u0631','Blender Foundation','3.4M','21M','\u0623\u0641\u0644\u0627\u0645','9:56','\u0642\u0628\u0644 5 \u0633\u0646\u0648\u0627\u062a'],
 ['jfKfPfyJRdk','lofi hip hop radio \u2014 beats to relax/study to','Lofi Girl','14.8M','34K','\u0628\u062b \u0645\u0628\u0627\u0634\u0631','\u0645\u0628\u0627\u0634\u0631','\u0627\u0644\u0622\u0646'],
@@ -383,8 +341,14 @@ else if(st===2){S.ytPos={t:pos,at:Date.now(),playing:false};fbPut('/rooms/youtub
 const chId='ch'+simpHash(v.ch);
 const me=ytUid(),myName=S.apple.name||'Rio';
 let h='<div class="row" style="align-items:center;margin-bottom:8px"><span id="ytBack" style="color:#0a84ff;cursor:pointer;font-size:15px">‹ رجوع</span><span style="flex:1"></span><span id="ytWatchN" class="mut" style="font-size:12px"></span></div>';
-h+='<div style="position:relative;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden"><iframe id="ytFrame" src="https://www.youtube-nocookie.com/embed/'+v.id+'?enablejsapi=1&rel=0&playsinline=1&autoplay=1&origin='+encodeURIComponent(location.origin)+'" style="width:100%;height:100%;border:0" allow="autoplay;encrypted-media;picture-in-picture;fullscreen" allowfullscreen></iframe></div>';
-h+='<div class="row" style="gap:10px;justify-content:center;margin:12px 0 2px"><button class="btn gray" id="ytBack10" style="border-radius:50%;width:46px;height:46px;padding:0;font-size:14px;flex:0 0 auto">-5</button><button class="btn gray" id="ytFwd10" style="border-radius:50%;width:46px;height:46px;padding:0;font-size:14px;flex:0 0 auto">+5</button></div>';
+h+='<div style="position:relative;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden" id="ytVideoWrap"><iframe id="ytFrame" src="https://www.youtube-nocookie.com/embed/'+v.id+'?enablejsapi=1&rel=0&playsinline=1&autoplay=1&origin='+encodeURIComponent(location.origin)+'" style="width:100%;height:100%;border:0" allow="autoplay;encrypted-media;picture-in-picture;fullscreen" allowfullscreen></iframe>'
++'<div id="ytChatOverlay" style="position:absolute;left:8px;right:8px;bottom:8px;pointer-events:none;display:flex;flex-direction:column;gap:4px;justify-content:flex-end;max-height:60%;overflow:hidden"></div>'
++'<div style="position:absolute;top:8px;left:8px;display:flex;gap:6px;pointer-events:auto">'
++'<button id="ytBack10" style="background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:13px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px)">−5</button>'
++'<button id="ytFwd10" style="background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:13px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px)">+5</button>'
++'</div>'
++'<button id="ytChatToggle" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:16px;padding:7px 12px;font-size:12px;cursor:pointer;backdrop-filter:blur(4px);pointer-events:auto">💬 الدردشة</button>'
++'</div>';
 h+='<b style="font-size:15.5px;margin-top:10px;display:block;line-height:1.6">'+v.title+'</b>';
 h+='<div class="row" style="align-items:center;margin-top:10px;gap:10px"><span style="width:40px;height:40px;border-radius:50%;background:linear-gradient(150deg,#ff0033,#7a0018);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:0 0 auto">'+v.ch.slice(0,1)+'</span><span style="flex:1;min-width:0"><b style="font-size:14px">'+v.ch+'</b><br><span class="mut" style="font-size:12px"><span id="ytSubN">…</span> مشترك</span></span><button class="btn" id="ytSubB" style="border-radius:18px;padding:8px 18px;font-size:13px">اشتراك</button></div>';
 h+='<div class="card" style="margin-top:14px;padding:0;overflow:hidden"><div style="text-align:center;padding:9px 0 0"><span style="display:inline-block;width:38px;height:4.5px;border-radius:3px;background:#d9d9de"></span></div><div class="row" style="align-items:center;padding:8px 14px 4px"><b style="font-size:14.5px;flex:1">التعليقات <span class="mut" id="ytCN" style="font-weight:400"></span></b><span id="ytViewers" class="mut" style="font-size:11px"></span></div><div class="row" style="gap:8px;align-items:center;padding:10px 14px;background:#fafafc;border-bottom:1px solid #f0f0f2">'+meAv(34)+'<input id="ytCIn" placeholder="أضف تعليقاً…" style="flex:1;padding:10px 14px;border:1px solid #e4e4e7;border-radius:20px;font-size:13.5px;font-family:inherit;background:#fff;min-width:0"><button class="btn" id="ytCSend" style="border-radius:50%;width:38px;height:38px;padding:0;flex:0 0 auto;font-size:16px">↑</button></div><div class="row" style="gap:6px;padding:8px 14px;justify-content:center" id="ytReactBar">'+['❤️','😂','👏','🔥','👍'].map(e=>'<button data-ytr="'+e+'" style="background:#f0f0f2;border:none;border-radius:16px;padding:6px 12px;font-size:16px;cursor:pointer">'+e+'</button>').join('')+'</div><div id="ytCList" style="display:flex;flex-direction:column;gap:10px;padding:10px 14px;max-height:320px;overflow-y:auto"></div><div id="ytReactFloat" style="position:absolute;pointer-events:none"></div></div>';
@@ -395,7 +359,24 @@ h+='<b style="font-size:15px;display:block;margin:18px 0 2px">فيديوات م�
 el.innerHTML=h;
 const ytLeave=async()=>{const vid=S.ytVid;S.ytVid=null;clearInterval(S.ytCPoll);if(!vid)return;try{const c=await fbGet('/rooms/youtube/'+vid+'/comments');if(c){const me=ytUid();for(const k of Object.keys(c)){if(c[k]&&c[k].uid===me){try{await fetch(FBB+'/rooms/youtube/'+vid+'/comments/'+k+'.json',{method:'DELETE'})}catch(e){}}}}}catch(e){}};
 document.querySelector('#ytBack').addEventListener('click',()=>{ytLeave();S.ytView='home';appYouTubeX()});
-document.querySelector('#ytBack10').addEventListener('click',()=>ytSeek(-5));document.querySelector('#ytFwd10').addEventListener('click',()=>ytSeek(5));
+document.querySelector('#ytBack10').addEventListener('click',()=>ytSeek(-5));
+document.querySelector('#ytFwd10').addEventListener('click',()=>ytSeek(5));
+// Chat overlay toggle
+const _ct=document.querySelector('#ytChatToggle');
+if(_ct)_ct.addEventListener('click',()=>{
+window._ytChatHidden=!window._ytChatHidden;
+const ov=document.querySelector('#ytChatOverlay');
+if(ov)ov.style.display=window._ytChatHidden?'none':'flex';
+_ct.textContent=window._ytChatHidden?'💬 الدردشة':'💬 إخفاء';
+_ct.style.opacity=window._ytChatHidden?'.6':'1';
+});
+// Add fade-in animation
+if(!document.querySelector('#ytChatAnim')){
+const st=document.createElement('style');
+st.id='ytChatAnim';
+st.textContent='@keyframes ytFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}';
+document.head.appendChild(st);
+}
 el.querySelectorAll('[data-ytv]').forEach(c=>c.addEventListener('click',()=>{const vv=YT_VIDS.find(x=>x[0]===c.dataset.ytv);if(!vv)return;S.ytView='watch';S.ytVidV={id:vv[0],title:vv[1],ch:vv[2],subs:vv[3],views:vv[4],cat:vv[5],dur:vv[6],time:vv[7]};appYouTubeX()}));
 const fr=document.querySelector('#ytFrame');
 fr.addEventListener('load',()=>{setTimeout(()=>ytCmd('addEventListener',['onStateChange']),700)});
@@ -415,7 +396,29 @@ let _cSig='';
 const loadC=async()=>{const c=await fbGet(room+'/comments');const l=document.querySelector('#ytCList');if(!l)return;
 const now=Date.now(),me0=ytUid();
 if(c){for(const k in c){const x=c[k];if(now-(x.ts||0)>2*60*1000){if(x.uid&&x.uid===me0){try{await fetch(FBB+room+'/comments/'+k+'.json',{method:'DELETE'})}catch(e){}}delete c[k]}}}
-const a=c?Object.values(c).sort((x,y)=>(y.ts||0)-(x.ts||0)):[];const sig=a.map(x=>(x.ts||0)+':'+String(x.t||'')).join('|');if(sig===_cSig&&l.children.length)return;_cSig=sig;const cn=document.querySelector('#ytCN');if(cn)cn.textContent=a.length?'('+arabNum(a.length)+')':'';const me=ytUid();l.innerHTML=a.length?a.map(x=>'<div class="row" style="gap:9px;align-items:flex-start">'+(x.uid&&x.uid===me&&S.myPic?'<img src="'+S.myPic+'" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex:0 0 auto">':'<span style="width:32px;height:32px;border-radius:50%;background:linear-gradient(150deg,#8e8e93,#5a5a5e);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:0 0 auto">'+escH(String(x.by||'?').slice(0,1))+'</span>')+'<span style="flex:1;min-width:0"><b style="font-size:12.5px">'+escH(String(x.by||'زائر'))+'</b> <span class="mut" style="font-size:11px">'+relTime(x.ts||Date.now())+'</span><br><span style="font-size:13.5px;line-height:1.6;word-break:break-word">'+escH(String(x.t))+'</span></span></div>').join(''):'<div class="mut" style="font-size:13px;text-align:center;padding:10px">كن أول من يعلق</div>'};
+const a=c?Object.values(c).sort((x,y)=>(y.ts||0)-(x.ts||0)):[];const sig=a.map(x=>(x.ts||0)+':'+String(x.t||'')).join('|');
+// Show new messages in overlay for 5 seconds
+if(sig!==_cSig){
+const ov=document.querySelector('#ytChatOverlay');
+if(ov&&!window._ytChatHidden){
+const newMsgs=a.filter(x=>!window._ytSeenMsgs||!window._ytSeenMsgs.has((x.ts||0)+':'+String(x.t||'')));
+newMsgs.slice(0,3).forEach(x=>{
+const d=document.createElement('div');
+d.style.cssText='background:rgba(0,0,0,.65);color:#fff;border-radius:12px;padding:6px 10px;font-size:12px;backdrop-filter:blur(4px);animation:ytFadeIn .3s ease;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
+d.innerHTML='<b style="color:#7dd3fc">'+escH(String(x.by||'زائر'))+':</b> '+escH(String(x.t));
+ov.appendChild(d);
+// Keep max 4 messages
+while(ov.children.length>4)ov.removeChild(ov.firstChild);
+// Remove after 5 seconds
+setTimeout(()=>{d.style.transition='opacity .5s';d.style.opacity='0';setTimeout(()=>d.remove(),500);},5000);
+});
+}
+if(!window._ytSeenMsgs)window._ytSeenMsgs=new Set();
+a.forEach(x=>window._ytSeenMsgs.add((x.ts||0)+':'+String(x.t||'')));
+// Limit set size
+if(window._ytSeenMsgs.size>100){const arr=[...window._ytSeenMsgs];window._ytSeenMsgs=new Set(arr.slice(-50));}
+}
+if(sig===_cSig&&l.children.length)return;_cSig=sig;const cn=document.querySelector('#ytCN');if(cn)cn.textContent=a.length?'('+arabNum(a.length)+')':'';const me=ytUid();l.innerHTML=a.length?a.map(x=>'<div class="row" style="gap:9px;align-items:flex-start">'+(x.uid&&x.uid===me&&S.myPic?'<img src="'+S.myPic+'" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex:0 0 auto">':'<span style="width:32px;height:32px;border-radius:50%;background:linear-gradient(150deg,#8e8e93,#5a5a5e);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:0 0 auto">'+escH(String(x.by||'?').slice(0,1))+'</span>')+'<span style="flex:1;min-width:0"><b style="font-size:12.5px">'+escH(String(x.by||'زائر'))+'</b> <span class="mut" style="font-size:11px">'+relTime(x.ts||Date.now())+'</span><br><span style="font-size:13.5px;line-height:1.6;word-break:break-word">'+escH(String(x.t))+'</span></span></div>').join(''):'<div class="mut" style="font-size:13px;text-align:center;padding:10px">كن أول من يعلق</div>'};
 const sendC=async()=>{const inp=document.querySelector('#ytCIn'),t=inp.value.trim();if(!t)return;inp.value='';_cSig='';let ok=false,ck=null;for(let i=0;i<3&&!ok;i++){try{const r=await fetch(FBB+room+'/comments.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({t:t,by:myName,uid:ytUid(),ts:Date.now()})});ok=r&&r.ok;if(ok){try{const j=await r.json();ck=j&&j.name}catch(e){}}}catch(e){await new Promise(rr=>setTimeout(rr,600))}}if(!ok)toast('ما انرسل التعليق — تحقق من الإنترنت');else if(ck){setTimeout(async()=>{try{await fetch(FBB+room+'/comments/'+ck+'.json',{method:'DELETE'})}catch(e){}loadC()},2*60*1000)}loadC()};
 document.querySelector('#ytCSend').addEventListener('click',sendC);
 document.querySelector('#ytCIn').addEventListener('keydown',e=>{if(e.key==='Enter')sendC()});
