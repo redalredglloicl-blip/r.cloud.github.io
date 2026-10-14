@@ -184,5 +184,37 @@
 <noscript><div class="overlay boot"><div class="boot-inner"><h1 class="title">REGOLITH</h1><p class="subtitle">الجافاسكربت مطلوب.</p></div></div></noscript>
 
 <script type="module" src="https://winchxyz.github.io/moon-rover/src/main.js"></script>
+
+<script>
+// Auto Arabic translator for game buttons
+(function(){
+var T = {
+'DRIVE':'قيادة','REVERSE':'رجوع','DRILL':'حفر','ARM':'ذراع','ARRAY':'الألواح',
+'LAMPS':'المصابيح','BEACON-9':'منارة-9','BEACON':'منارة','GPR':'الرادار',
+'FREE SURVEY':'مسح حر','IDLE':'خامل','EMPTY':'فارغ','RECHARGING':'شحن',
+'SWEEPING':'مسح','AIRBORNE':'محلق','LOCAL':'محلي','STATION LOG':'سجل المحطة',
+'BEGIN DESCENT':'ابدأ الهبوط','RESUME SURVEY':'استئناف المسح','CONTROLS':'التحكم',
+'RESUME':'استئناف','CODEX':'السجل','ABORT TO MENU':'عودة للقائمة',
+'ACKNOWLEDGE':'فهمت','SCORE':'النقاط','PAUSE':'إيقاف','SETTINGS':'الإعدادات',
+'HELP':'مساعدة','QUIT':'خروج','RESTART':'إعادة','MENU':'القائمة',
+'ON':'تشغيل','OFF':'إيقاف','YES':'نعم','NO':'لا','OK':'حسناً',
+'CANCEL':'إلغاء','CLOSE':'إغلاق','BACK':'رجوع','NEXT':'التالي','START':'ابدأ'
+};
+function translate(){
+var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+var nodes = [];
+while(walker.nextNode()) nodes.push(walker.currentNode);
+nodes.forEach(function(n){
+var t = n.textContent.trim();
+if(T[t]) n.textContent = T[t];
+});
+}
+var obs = new MutationObserver(function(){ translate(); });
+obs.observe(document.body, {childList:true, subtree:true, characterData:true});
+setTimeout(translate, 1000);
+setTimeout(translate, 3000);
+setTimeout(translate, 5000);
+})();
+</script>
 </body>
 </html>
