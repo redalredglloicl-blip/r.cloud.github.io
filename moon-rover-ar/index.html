@@ -207,5 +207,81 @@ new MutationObserver(translate).observe(document.body, {childList:true, subtree:
 setTimeout(translate, 1500); setTimeout(translate, 4000);
 })();
 </script>
+<style>
+/* ===== FORCE LANDSCAPE ===== */
+#rotateMsg {
+  display: none; position: fixed; inset: 0; z-index: 999999;
+  background: #0a0e1a; color: #fff;
+  flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 30px;
+}
+#rotateMsg .phone-icon { font-size: 64px; margin-bottom: 20px; animation: rotPhone 2s ease-in-out infinite; }
+@keyframes rotPhone { 0%,100%{transform:rotate(0)} 50%{transform:rotate(90deg)} }
+@media (orientation: portrait) {
+  #rotateMsg { display: flex !important; }
+}
+</style>
+<div id="rotateMsg">
+  <div class="phone-icon">📱</div>
+  <h2 style="margin-bottom:10px">اقلب جهازك</h2>
+  <p style="color:#888">اللعبة تعمل بالوضع العرضي فقط</p>
+</div>
+<script>
+// Try to lock landscape
+if (screen.orientation && screen.orientation.lock) {
+  screen.orientation.lock('landscape').catch(function(){});
+}
+document.addEventListener('click', function(){
+  if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock('landscape').catch(function(){});
+  }
+}, {once:true});
+</script>
+<style>
+/* ===== MOBILE GAME BUTTONS - CLEAR & BEAUTIFUL ===== */
+/* Make HUD buttons clear with icon + label */
+#hud button {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 72px !important;
+  min-height: 64px !important;
+  border-radius: 18px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  gap: 4px !important;
+}
+/* Add icons via pseudo-elements for key buttons */
+#hud button::before {
+  font-size: 22px !important;
+  line-height: 1 !important;
+}
+/* Joystick labels clearer */
+.joystick-label, [class*="stick-label"] {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #ffd700 !important;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
+  margin-top: 8px !important;
+}
+/* How to play hint */
+#howToPlay {
+  position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%);
+  z-index: 99998; background: rgba(0,0,0,0.75); color: #fff;
+  padding: 10px 20px; border-radius: 20px; font-size: 13px;
+  border: 1px solid rgba(255,215,0,0.3);
+  max-width: 90%; text-align: center;
+  animation: fadeHint 1s ease 8s forwards;
+}
+@keyframes fadeHint { to { opacity: 0; visibility: hidden; } }
+</style>
+<div id="howToPlay">🕹️ العصا اليسرى للقيادة • العصا اليمنى للنظر • الأزرار للأدوات</div>
+<script>
+setTimeout(function(){
+  var h = document.getElementById('howToPlay');
+  if(h) setTimeout(function(){ h.remove(); }, 9000);
+}, 100);
+</script>
 </body>
 </html>
