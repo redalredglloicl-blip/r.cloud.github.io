@@ -184,137 +184,28 @@
 <noscript><div class="overlay boot"><div class="boot-inner"><h1 class="title">REGOLITH</h1><p class="subtitle">الجافاسكربت مطلوب.</p></div></div></noscript>
 
 <script type="module" src="https://winchxyz.github.io/moon-rover/src/main.js"></script>
-
+<style>#btnControls{display:none!important}</style>
 <script>
-// Auto Arabic translator for game buttons
 (function(){
 var T = {
 'DRIVE':'قيادة','REVERSE':'رجوع','DRILL':'حفر','ARM':'ذراع','ARRAY':'الألواح',
 'LAMPS':'المصابيح','BEACON-9':'منارة-9','BEACON':'منارة','GPR':'الرادار',
 'FREE SURVEY':'مسح حر','IDLE':'خامل','EMPTY':'فارغ','RECHARGING':'شحن',
 'SWEEPING':'مسح','AIRBORNE':'محلق','LOCAL':'محلي','STATION LOG':'سجل المحطة',
-'BEGIN DESCENT':'ابدأ الهبوط','RESUME SURVEY':'استئناف المسح','CONTROLS':'التحكم',
-'RESUME':'استئناف','CODEX':'السجل','ABORT TO MENU':'عودة للقائمة',
-'ACKNOWLEDGE':'فهمت','SCORE':'النقاط','PAUSE':'إيقاف','SETTINGS':'الإعدادات',
-'HELP':'مساعدة','QUIT':'خروج','RESTART':'إعادة','MENU':'القائمة',
 'CAM':'كاميرا','LAMP':'مصباح','HUD':'واجهة','SHOT':'صورة','BRAKE':'فرامل',
 'SCAN':'مسح','RELAY':'مرحل','LOOK':'نظر','COLD START':'بداية باردة',
 'Deploy the solar array':'انشر الألواح الشمسية',
 'Drive 120 m from the sled':'قد 120 متر من الزلاجة',
-'Run one ground-penetrating radar sweep':'نفذ مسح رادار أرضي واحد',
-'ON':'تشغيل','OFF':'إيقاف','YES':'نعم','NO':'لا','OK':'حسناً',
-'CANCEL':'إلغاء','CLOSE':'إغلاق','BACK':'رجوع','NEXT':'التالي','START':'ابدأ'
+'Run one ground-penetrating radar sweep':'نفذ مسح رادار أرضي واحد'
 };
 function translate(){
-var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-var nodes = [];
-while(walker.nextNode()) nodes.push(walker.currentNode);
-nodes.forEach(function(n){
-var t = n.textContent.trim();
-if(T[t]) n.textContent = T[t];
-});
+var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT), nodes = [], n;
+while(n = w.nextNode()) nodes.push(n);
+nodes.forEach(function(x){ var t = x.textContent.trim(); if(T[t]) x.textContent = T[t]; });
 }
-var obs = new MutationObserver(function(){ translate(); });
-obs.observe(document.body, {childList:true, subtree:true, characterData:true});
-setTimeout(translate, 1000);
-setTimeout(translate, 3000);
-setTimeout(translate, 5000);
+new MutationObserver(translate).observe(document.body, {childList:true, subtree:true, characterData:true});
+setTimeout(translate, 1500); setTimeout(translate, 4000);
 })();
 </script>
-
-<style>
-/* Custom Arabic theme overrides */
-#boot .title { font-family: 'Segoe UI', Tahoma, sans-serif !important; }
-.ar-splash {
-  position: fixed; inset: 0; z-index: 99999;
-  background: linear-gradient(160deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  color: #fff; text-align: center; padding: 30px;
-  transition: opacity 0.8s ease;
-}
-.ar-splash.hide { opacity: 0; pointer-events: none; }
-.ar-splash h1 { font-size: 42px; margin-bottom: 10px; color: #ffd700; }
-.ar-splash p { font-size: 16px; color: #a0a0c0; margin-bottom: 30px; }
-.ar-splash button {
-  background: linear-gradient(135deg, #ffd700, #ffaa00);
-  color: #000; border: none; border-radius: 12px;
-  padding: 16px 50px; font-size: 18px; font-weight: bold; cursor: pointer;
-}
-</style>
-<div class="ar-splash" id="arSplash">
-  <h1>🌙 ريجوليث</h1>
-  <p>الصمت في أناكساغوراس — النسخة العربية</p>
-  <button onclick="document.getElementById('arSplash').classList.add('hide')">ابدأ اللعب</button>
-</div>
-
-<style>
-/* Hide PC-only controls button */
-#btnControls { display: none !important; }
-
-/* ===== MOBILE GAME UI OVERHAUL ===== */
-/* Clearer text everywhere */
-#hud, #hud * {
-  font-family: 'Segoe UI', Tahoma, Arial, sans-serif !important;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8) !important;
-}
-
-/* Transform all HUD buttons to mobile style */
-#hud button, .hud-btn, [class*="btn"] {
-  border-radius: 16px !important;
-  background: linear-gradient(135deg, rgba(30,35,50,0.92), rgba(20,24,38,0.92)) !important;
-  border: 1px solid rgba(255,255,255,0.15) !important;
-  color: #fff !important;
-  font-weight: 600 !important;
-  font-size: 13px !important;
-  padding: 12px 16px !important;
-  margin: 4px !important;
-  min-width: 64px !important;
-  min-height: 48px !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1) !important;
-  backdrop-filter: blur(8px) !important;
-  transition: transform 0.1s ease, box-shadow 0.1s ease !important;
-  letter-spacing: 0.5px !important;
-}
-#hud button:active, .hud-btn:active {
-  transform: scale(0.94) !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4) !important;
-  background: linear-gradient(135deg, rgba(50,60,80,0.95), rgba(35,42,60,0.95)) !important;
-}
-
-/* Primary action buttons (drive, drill) - accent color */
-#hud button.primary, .hud-btn.primary {
-  background: linear-gradient(135deg, #ffd700, #ff9500) !important;
-  color: #000 !important;
-  border: none !important;
-  text-shadow: none !important;
-  box-shadow: 0 4px 16px rgba(255,183,0,0.4) !important;
-}
-
-/* Mission panel - clearer */
-#missionBox, .mission-box, [id*="mission"] {
-  border-radius: 16px !important;
-  background: rgba(15,18,30,0.88) !important;
-  backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255,215,0,0.2) !important;
-  padding: 14px 16px !important;
-}
-#missionBox *, .mission-box * {
-  font-size: 14px !important;
-  line-height: 1.7 !important;
-  color: #e8e8f0 !important;
-}
-
-/* Systems panel - clearer bars */
-.sys-bar, [class*="bar"] {
-  border-radius: 8px !important;
-  height: 10px !important;
-}
-
-/* Joysticks - bigger touch targets */
-.joystick, [class*="joystick"], [class*="stick"] {
-  width: 120px !important;
-  height: 120px !important;
-}
-</style>
 </body>
 </html>
