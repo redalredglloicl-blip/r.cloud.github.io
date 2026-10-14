@@ -312,6 +312,65 @@ setTimeout(function(){
 }
 #arRefresh:active { transform: scale(0.9) rotate(90deg); }
 </style>
-<button id="arRefresh" onclick="location.reload()" title="تحديث">↻</button>
+<div id="arVer" onclick="location.reload()" title="اضغط للتحديث" style="position:fixed;top:12px;left:12px;z-index:99997;display:flex;align-items:center;gap:8px;background:rgba(20,24,38,0.85);border:1px solid rgba(255,215,0,0.25);border-radius:20px;padding:8px 14px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 4px 12px rgba(0,0,0,0.3)">
+<span style="font-size:16px">↻</span>
+<span style="color:#ffd700;font-size:12px;font-weight:700">v1.2 عربي</span>
+</div>
+<style>
+/* ===== MODERN IN-GAME UI (appearance only) ===== */
+/* HUD Buttons - modern look */
+.hud .tbtns button, .hud .tbtns2 button {
+  border-radius: 14px !important;
+  background: linear-gradient(135deg, rgba(35,40,58,0.92), rgba(22,26,42,0.92)) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+  font-weight: 700 !important;
+  backdrop-filter: blur(6px) !important;
+  transition: transform 0.12s ease !important;
+}
+.hud .tbtns button:active, .hud .tbtns2 button:active {
+  transform: scale(0.92) !important;
+  background: linear-gradient(135deg, rgba(55,62,88,0.95), rgba(35,42,62,0.95)) !important;
+}
+/* Joysticks - modern */
+.hud .stick {
+  border: 2px solid rgba(255,215,0,0.25) !important;
+  background: radial-gradient(circle, rgba(20,24,38,0.6) 0%, rgba(10,12,22,0.85) 100%) !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4), inset 0 2px 8px rgba(0,0,0,0.3) !important;
+  backdrop-filter: blur(4px) !important;
+}
+/* Mission panel - modern card */
+.hud .mission {
+  border-radius: 16px !important;
+  background: rgba(15,18,32,0.88) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255,215,0,0.18) !important;
+  border-left: 3px solid #ffd700 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35) !important;
+  padding: 12px 16px !important;
+}
+/* All HUD text - modern */
+.hud {
+  font-family: 'Segoe UI', Tahoma, Arial, sans-serif !important;
+}
+/* Tutorial/toast messages - modern */
+.hud .toast, .hud [class*="toast"], .hud [class*="hint"], .hud [class*="prompt"] {
+  border-radius: 16px !important;
+  background: rgba(15,18,32,0.92) !important;
+  border: 1px solid rgba(255,215,0,0.25) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
+  backdrop-filter: blur(10px) !important;
+  padding: 12px 20px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+/* Panels */
+.hud .panel {
+  border-radius: 16px !important;
+  background: rgba(15,18,32,0.85) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+}
+</style>
 </body>
 </html>
