@@ -1,7 +1,7 @@
-// WhatsApp - Full Real Implementation - Version 25
+// WhatsApp - Full Real Implementation - Version 26
 (function(){
 if(window._waLoaded)return;window._waLoaded=true;
-try{document.title='25';var vt=document.getElementById('verTag');if(vt)vt.textContent='25';}catch(e){}
+try{document.title='26';var vt=document.getElementById('verTag');if(vt)vt.textContent='26';}catch(e){}
 
 var FB='https://spychat-4f8d5-default-rtdb.firebaseio.com/rio-ipad/whatsapp';
 var WA={user:null,chat:null,poll:null};
@@ -20,8 +20,8 @@ attach:'<svg viewBox="0 0 24 24" width="24" height="24" fill="#8696a0"><path d="
 tick:'<svg viewBox="0 0 16 11" width="16" height="11" fill="#8696a0"><path d="M11.1.5L6.2 6.8 4 4.2 2.8 5.5l3.4 4.5 6.1-8.2z"/></svg>',
 ticks:'<svg viewBox="0 0 18 11" width="18" height="11" fill="#8696a0"><path d="M11.1.5L6.2 6.8 4 4.2 2.8 5.5l3.4 4.5 6.1-8.2zm6.5 0L12.7 6.8l-1-1.3 4.9-5z"/></svg>',
 ticksBlue:'<svg viewBox="0 0 18 11" width="18" height="11" fill="#53bdeb"><path d="M11.1.5L6.2 6.8 4 4.2 2.8 5.5l3.4 4.5 6.1-8.2zm6.5 0L12.7 6.8l-1-1.3 4.9-5z"/></svg>',
-phone:'<svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>',
-video:'<svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>',
+phone:'<svg viewBox="0 0 24 24" width="22" height="22" fill="#0a84ff"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>',
+video:'<svg viewBox="0 0 24 24" width="22" height="22" fill="#0a84ff"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>',
 plus:'<svg viewBox="0 0 24 24" width="22" height="22" fill="#0a84ff"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>'
 };
 
@@ -36,6 +36,9 @@ function waSetSession(u){try{localStorage.setItem('wa_session',JSON.stringify(u)
 window.openWhatsApp=function(fromEl){
 appHeadReset();snapCur();S.app='whatsapp';noteRunning('whatsapp','WhatsApp','whatsapp');
 $('#appTitle').textContent='WhatsApp';showAppWin(fromEl);
+// Full-screen flush
+var ab=$('#appBody');
+if(ab){ab.style.padding='0';ab.style.margin='0';}
 WA.user=waSession();
 if(!WA.user)showLogin();
 else showMain();
@@ -92,17 +95,13 @@ showMain();
 function showMain(){
 var el=$('#appBody');
 el.innerHTML='<div style="display:flex;flex-direction:column;height:100%;background:#fff">'
-// Header
-+'<div style="background:#075e54;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between">'
-+'<b style="font-size:18px">WhatsApp</b>'
-+'<div style="display:flex;gap:18px;align-items:center"><span style="cursor:pointer">'+WA_ICONS.camera+'</span><span style="cursor:pointer" id="waSearchTop">'+WA_ICONS.search+'</span></div>'
+// iOS-style header
++'<div style="background:#f6f6f6;padding:12px 16px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e0e0e0">'
++'<span id="waEditBtn" style="color:#0a84ff;font-size:16px;cursor:pointer">تحرير</span>'
++'<b id="waTitleBar" style="font-size:17px">الدردشات</b>'
++'<div style="display:flex;gap:16px;align-items:center"><span style="cursor:pointer" id="waCamBtn">'+WA_ICONS.camera+'</span><span style="cursor:pointer" id="waNewTopBtn" style="color:#0a84ff;font-size:22px">+</span></div>'
 +'</div>'
-// Tabs
-+'<div style="display:flex;background:#075e54;color:rgba(255,255,255,.6);font-size:14px;font-weight:600">'
-+'<div data-watab="chats" style="flex:1;text-align:center;padding:12px;color:#fff;border-bottom:3px solid #fff;cursor:pointer">الدردشات</div>'
-+'<div data-watab="status" style="flex:1;text-align:center;padding:12px;cursor:pointer">الحالة</div>'
-+'<div data-watab="calls" style="flex:1;text-align:center;padding:12px;cursor:pointer">المكالمات</div>'
-+'</div>'
++'<div style="padding:8px 16px;background:#f6f6f6"><div style="display:flex;align-items:center;background:#e8e8e8;border-radius:10px;padding:8px 12px;gap:8px"><span>'+WA_ICONS.search+'</span><input id="waSearchTop" placeholder="بحث" style="flex:1;background:none;border:none;outline:none;font-size:15px;min-width:0"></div></div>'
 +'<div id="waContent" style="flex:1;overflow-y:auto;position:relative"></div>'
 // Bottom nav (iOS style)
 +'<div style="display:flex;border-top:1px solid #eee;background:#f9f9f9;padding:8px 0">'
@@ -116,18 +115,30 @@ el.innerHTML='<div style="display:flex;flex-direction:column;height:100%;backgro
 +'</div>';
 
 // Tab switching
-el.querySelectorAll('[data-watab]').forEach(t=>{
-t.addEventListener('click',()=>{
+var _waCurTab='chats';
+function _waSetTab(t){
+_waCurTab=t;
 el.querySelectorAll('[data-watab]').forEach(x=>{
-if(x.parentElement.style.borderTop){x.style.color='#8696a0';}else{x.style.color='rgba(255,255,255,.6)';x.style.borderBottom='none';}
+var active=x.dataset.watab===t;
+x.style.color=active?'#0a84ff':'#8696a0';
 });
-if(t.parentElement.style.borderTop){t.style.color='#25d366';}else{t.style.color='#fff';t.style.borderBottom='3px solid #fff';}
-showWaTab(t.dataset.watab);
-});
+var titles={chats:'الدردشات',status:'الحالة',calls:'المكالمات'};
+var tb=el.querySelector('#waTitleBar');
+if(tb)tb.textContent=titles[t]||'';
+showWaTab(t);
+}
+el.querySelectorAll('[data-watab]').forEach(t=>{
+t.addEventListener('click',()=>_waSetTab(t.dataset.watab));
 });
 
 document.querySelector('#waNewChat').addEventListener('click',showUserSearch);
-document.querySelector('#waSearchTop').addEventListener('click',showUserSearch);
+var _st=document.querySelector('#waSearchTop');
+if(_st)_st.addEventListener('click',showUserSearch);
+var _nt=document.querySelector('#waNewTopBtn');
+if(_nt)_nt.addEventListener('click',showUserSearch);
+var _eb=document.querySelector('#waEditBtn');
+if(_eb)_eb.addEventListener('click',()=>toast('اسحب لحذف محادثة'));
+document.querySelector('#waCamBtn').addEventListener('click',()=>toast('الكاميرا قريباً'));
 
 showWaTab('chats');
 }
@@ -257,13 +268,13 @@ fetch(FB+'/users/'+other+'.json').then(r=>r.json()).then(u=>{
 var name=u&&u.n?u.n:other;
 var pic=u&&u.pic?u.pic:'';
 el.innerHTML='<div style="display:flex;flex-direction:column;height:100%">'
-// Header
-+'<div style="background:#075e54;color:#fff;padding:8px 12px;display:flex;align-items:center;gap:10px">'
-+'<span id="waChatBack" style="cursor:pointer">'+WA_ICONS.back+'</span>'
+// iOS-style chat header
++'<div style="background:#f6f6f6;padding:8px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #e0e0e0">'
++'<span id="waChatBack" style="cursor:pointer;color:#0a84ff;font-size:18px">‹</span>'
 +'<div style="width:40px;height:40px;border-radius:50%;background:#dfe5e7;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center">'
 +(pic?'<img src="'+pic+'" style="width:100%;height:100%;object-fit:cover">':'<span style="color:#fff;font-weight:600">'+name.slice(0,1).toUpperCase()+'</span>')+'</div>'
-+'<div style="flex:1;min-width:0"><b style="font-size:16px">'+name+'</b><br><span id="waOnline" style="font-size:12px;opacity:.8">متصل الآن</span></div>'
-+'<span style="cursor:pointer">'+WA_ICONS.video+'</span><span style="cursor:pointer">'+WA_ICONS.phone+'</span>'
++'<div style="flex:1;min-width:0"><b style="font-size:16px;color:#000">'+name+'</b><br><span id="waOnline" style="font-size:12px;color:#8696a0">متصل الآن</span></div>'
++'<span style="cursor:pointer;color:#0a84ff">'+WA_ICONS.video+'</span><span style="cursor:pointer;color:#0a84ff">'+WA_ICONS.phone+'</span>'
 +'</div>'
 // Messages
 +'<div id="waMsgs" style="flex:1;overflow-y:auto;padding:12px 8px;background:#ece5dd;background-image:radial-gradient(#d4c9b8 1px,transparent 1px);background-size:20px 20px"></div>'
@@ -339,15 +350,43 @@ c.innerHTML='<div style="padding:16px">'
 +'<div style="margin-top:20px;padding:16px;background:#f8f8f8;border-radius:12px">'
 +'<b style="font-size:14px">صورتك الشخصية</b>'
 +'<div style="display:flex;gap:10px;margin-top:10px;align-items:center">'
-+'<input id="waPicUrl" placeholder="رابط الصورة" style="flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;direction:ltr">'
-+'<button id="waPicSave" style="background:#25d366;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px">حفظ</button>'
-+'</div></div></div>';
-document.querySelector('#waPicSave').addEventListener('click',()=>{
-var url=document.querySelector('#waPicUrl').value.trim();
-if(!url)return;
-fetch(FB+'/users/'+WA.user.u+'.json',{method:'PATCH',body:JSON.stringify({pic:url})}).then(()=>{
-WA.user.pic=url;waSetSession(WA.user);toast('تم حفظ الصورة');showStatusTab();
++'<div id="waPicPrev" style="width:60px;height:60px;border-radius:50%;background:#dfe5e7;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center">'
++(WA.user.pic?'<img src="'+WA.user.pic+'" style="width:100%;height:100%;object-fit:cover">':'<span style="color:#fff;font-size:22px;font-weight:600">'+WA.user.n.slice(0,1).toUpperCase()+'</span>')+'</div>'
++'<label style="flex:1;background:#25d366;color:#fff;border-radius:8px;padding:12px;text-align:center;font-size:14px;font-weight:600;cursor:pointer">اختر صورة<input id="waPicFile" type="file" accept="image/*" style="display:none"></label>'
++'</div><p id="waPicMsg" style="font-size:12px;color:#8696a0;margin-top:8px"></p>'
++'</div>'
++'<button id="waLogout" style="width:100%;margin-top:16px;background:#fee;color:#e11d48;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600">تسجيل الخروج</button>'
++'</div>';
+document.querySelector('#waPicFile').addEventListener('change',function(e){
+var f=e.target.files[0];
+if(!f)return;
+document.querySelector('#waPicMsg').textContent='جارٍ الرفع...';
+var reader=new FileReader();
+reader.onload=function(ev){
+var img=new Image();
+img.onload=function(){
+// Compress to 200x200
+var cv=document.createElement('canvas');cv.width=200;cv.height=200;
+var cx=cv.getContext('2d');
+var s=Math.min(img.width,img.height);
+cx.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,200,200);
+var b64=cv.toDataURL('image/jpeg',0.7);
+fetch(FB+'/users/'+WA.user.u+'.json',{method:'PATCH',body:JSON.stringify({pic:b64})}).then(()=>{
+WA.user.pic=b64;waSetSession(WA.user);
+document.querySelector('#waPicMsg').textContent='تم حفظ الصورة ✓';
+document.querySelector('#waPicPrev').innerHTML='<img src="'+b64+'" style="width:100%;height:100%;object-fit:cover">';
+toast('تم تحديث صورتك');
 });
+};
+img.src=ev.target.result;
+};
+reader.readAsDataURL(f);
+});
+document.querySelector('#waLogout').addEventListener('click',()=>{
+if(confirm('تسجيل الخروج؟')){
+try{localStorage.removeItem('wa_session');}catch(e){}
+clearInterval(WA.poll);WA.user=null;showLogin();
+}
 });
 document.querySelector('#waAddStatus').addEventListener('click',()=>toast('قريباً: مشاركة الحالة'));
 }
