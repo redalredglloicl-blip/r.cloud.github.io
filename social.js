@@ -330,7 +330,15 @@ S.ytView='watch';S.ytVidV={id:id,title:'فيديو من الرابط',ch:'YouTub
 }
 function ytWatch(el,v){
 ytAddHistory(v);
-S.ytVid=v.id;S.ytPos={t:0,at:Date.now(),playing:false};S.ytLastSync=0;S.ytApplying=false;
+S.ytVid=v.id;
+// Resume: check saved position
+var savedPos=0;
+try{
+var sp=localStorage.getItem('rio_ytpos_'+v.id);
+if(sp){var pd=JSON.parse(sp);if(Date.now()-pd.at<7*24*60*60*1000) savedPos=pd.t||0;}
+}catch(e){}
+S.ytPos={t:savedPos,at:Date.now(),playing:false};S.ytLastSync=0;S.ytApplying=false;S.ytResumePos=savedPos;
+if(savedPos>5)setTimeout(()=>toast('تم الاستئناف من '+Math.floor(savedPos/60)+':'+String(Math.floor(savedPos%60)).padStart(2,'0')),1500);
 if(!S._ytMsg){S._ytMsg=1;window.addEventListener('message',e=>{try{
 const d=typeof e.data==='string'?JSON.parse(e.data):e.data;
 if(!d||d.event!=='onStateChange'||S.ytApplying||!S.ytVid||S.app!=='x_youtube')return;
@@ -341,13 +349,15 @@ else if(st===2){S.ytPos={t:pos,at:Date.now(),playing:false};fbPut('/rooms/youtub
 const chId='ch'+simpHash(v.ch);
 const me=ytUid(),myName=S.apple.name||'Rio';
 let h='<div class="row" style="align-items:center;margin-bottom:8px"><span id="ytBack" style="color:#0a84ff;cursor:pointer;font-size:15px">‹ رجوع</span><span style="flex:1"></span><span id="ytWatchN" class="mut" style="font-size:12px"></span></div>';
-h+='<div style="position:relative;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden" id="ytVideoWrap"><iframe id="ytFrame" src="https://www.youtube-nocookie.com/embed/'+v.id+'?enablejsapi=1&rel=0&playsinline=1&autoplay=1&origin='+encodeURIComponent(location.origin)+'" style="width:100%;height:100%;border:0" allow="autoplay;encrypted-media;picture-in-picture;fullscreen" allowfullscreen></iframe>'
+var _startParam=S.ytResumePos>5?('&start='+Math.floor(S.ytResumePos)):'';
+h+='<div style="position:relative;aspect-ratio:16/9;background:#000;border-radius:0;overflow:hidden;margin:0 -16px" id="ytVideoWrap"><iframe id="ytFrame" src="https://www.youtube-nocookie.com/embed/'+v.id+'?enablejsapi=1&rel=0&playsinline=1&autoplay=1'+_startParam+'&origin='+encodeURIComponent(location.origin)+'" style="width:100%;height:100%;border:0" allow="autoplay;encrypted-media;picture-in-picture;fullscreen" allowfullscreen></iframe>'
 +'<div id="ytChatOverlay" style="position:absolute;left:8px;right:8px;bottom:8px;pointer-events:none;display:flex;flex-direction:column;gap:4px;justify-content:flex-end;max-height:60%;overflow:hidden"></div>'
 +'<div style="position:absolute;top:8px;left:8px;display:flex;gap:6px;pointer-events:auto">'
 +'<button id="ytBack10" style="background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:13px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px)">−5</button>'
 +'<button id="ytFwd10" style="background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:13px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px)">+5</button>'
 +'</div>'
 +'<button id="ytChatToggle" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:16px;padding:7px 12px;font-size:12px;cursor:pointer;backdrop-filter:blur(4px);pointer-events:auto">💬 الدردشة</button>'
++'<button id="ytSpeedBtn" style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:12px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px);pointer-events:auto">1x</button>'
 +'</div>';
 h+='<b style="font-size:15.5px;margin-top:10px;display:block;line-height:1.6">'+v.title+'</b>';
 h+='<div class="row" style="align-items:center;margin-top:10px;gap:10px"><span style="width:40px;height:40px;border-radius:50%;background:linear-gradient(150deg,#ff0033,#7a0018);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:0 0 auto">'+v.ch.slice(0,1)+'</span><span style="flex:1;min-width:0"><b style="font-size:14px">'+v.ch+'</b><br><span class="mut" style="font-size:12px"><span id="ytSubN">…</span> مشترك</span></span><button class="btn" id="ytSubB" style="border-radius:18px;padding:8px 18px;font-size:13px">اشتراك</button></div>';
@@ -357,10 +367,29 @@ h+='<div class="card" style="margin-top:12px;background:#f2f2f2"><b style="font-
 h+='<div class="card" id="ytParty" style="margin-top:12px;background:#f6f6fa"><div class="row" style="align-items:center"><b style="font-size:13.5px;flex:1">مشاهدة مشتركة — نفس اللحظة</b><span style="width:9px;height:9px;border-radius:50%;background:#34c759;display:inline-block"></span></div><p class="mut" style="font-size:12px;margin:4px 0 0;line-height:1.8">أي واحد يشغّل أو يوقف أو يقدّم — يصير عند الكل بنفس اللحظة. افتح نفس المقطع بجهاز صديقك.</p><div id="ytWatchers" class="mut" style="font-size:12px;margin-top:6px"></div></div>';
 h+='<b style="font-size:15px;display:block;margin:18px 0 2px">فيديوات مقترحة</b>'+YT_VIDS.filter(x=>x[0]!==v.id).slice(0,6).map(ytMini).join('');
 el.innerHTML=h;
-const ytLeave=async()=>{const vid=S.ytVid;S.ytVid=null;clearInterval(S.ytCPoll);if(!vid)return;try{const c=await fbGet('/rooms/youtube/'+vid+'/comments');if(c){const me=ytUid();for(const k of Object.keys(c)){if(c[k]&&c[k].uid===me){try{await fetch(FBB+'/rooms/youtube/'+vid+'/comments/'+k+'.json',{method:'DELETE'})}catch(e){}}}}}catch(e){}};
+// Save playback position
+function ytSavePos(){
+try{
+if(S.ytVid&&S.ytPos){
+var pos=S.ytPos.playing?(S.ytPos.t+(Date.now()-S.ytPos.at)/1000):(S.ytPos.t||0);
+if(pos>5)localStorage.setItem('rio_ytpos_'+S.ytVid,JSON.stringify({t:Math.floor(pos),at:Date.now()}));
+}
+}catch(e){}
+}
+const ytLeave=async()=>{ytSavePos();const vid=S.ytVid;S.ytVid=null;clearInterval(S.ytCPoll);clearInterval(S.ytPosSaver);if(!vid)return;try{const c=await fbGet('/rooms/youtube/'+vid+'/comments');if(c){const me=ytUid();for(const k of Object.keys(c)){if(c[k]&&c[k].uid===me){try{await fetch(FBB+'/rooms/youtube/'+vid+'/comments/'+k+'.json',{method:'DELETE'})}catch(e){}}}}}catch(e){}};
 document.querySelector('#ytBack').addEventListener('click',()=>{ytLeave();S.ytView='home';appYouTubeX()});
 document.querySelector('#ytBack10').addEventListener('click',()=>ytSeek(-5));
 document.querySelector('#ytFwd10').addEventListener('click',()=>ytSeek(5));
+// Playback speed control
+var _speeds=[1,1.25,1.5,2,0.5],_spIdx=0;
+const _sb=document.querySelector('#ytSpeedBtn');
+if(_sb)_sb.addEventListener('click',()=>{
+_spIdx=(_spIdx+1)%_speeds.length;
+var sp=_speeds[_spIdx];
+_sb.textContent=sp+'x';
+ytCmd('setPlaybackRate',[sp]);
+toast('سرعة التشغيل: '+sp+'x');
+});
 // Chat overlay toggle
 const _ct=document.querySelector('#ytChatToggle');
 if(_ct)_ct.addEventListener('click',()=>{
@@ -466,6 +495,9 @@ setTimeout(()=>{S.ytApplying=false},1500);
 loadC();
 };
 refreshSubs();refreshLike();loadC();poll();clearInterval(S.poll);S.poll=setInterval(poll,2500);clearInterval(S.ytCPoll);S.ytCPoll=setInterval(()=>{if(S.app==='x_youtube'&&document.querySelector('#ytCList'))loadC()},1500);
+// Auto-save position every 10 seconds
+clearInterval(S.ytPosSaver);
+S.ytPosSaver=setInterval(()=>{if(S.app==='x_youtube'&&S.ytVid)ytSavePos();},10000);
 }
 
 function gptLogo(sz){sz=sz||30;let p='';for(let k=0;k<6;k++)p+='<path d="M50 14 C56 24 56 34 50 42 C44 34 44 24 50 14 Z" fill="#000" transform="rotate('+(k*60)+' 50 50)"/>';return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 100 100">'+p+'</svg>'}
