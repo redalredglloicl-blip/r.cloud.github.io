@@ -372,5 +372,65 @@ setTimeout(function(){
   border: 1px solid rgba(255,255,255,0.08) !important;
 }
 </style>
+<style>
+/* ===== PC TO MOBILE - touch everything ===== */
+.hud button, .hud .tbtns button, .hud .tbtns2 button, .hud .btn {
+  min-width: 52px !important;
+  min-height: 52px !important;
+  font-size: 13px !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+/* System panel buttons - make tappable */
+.hud .sysChips button, .hud [class*="chip"] button, .hud [class*="sys"] button {
+  min-width: 60px !important;
+  min-height: 48px !important;
+  border-radius: 12px !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+/* Remove hover-only effects (useless on mobile) */
+.hud *:hover { /* keep simple */ }
+/* Bigger touch areas for small controls */
+.hud [class*="toggle"], .hud [class*="switch"] {
+  min-width: 56px !important;
+  min-height: 40px !important;
+}
+</style>
+<script>
+// Remove PC keyboard/mouse hints from UI
+(function(){
+var pcTerms = {
+  'KeyW':'','KeyA':'','KeyS':'','KeyD':'','KeyQ':'','KeyE':'',
+  'KeyR':'','KeyF':'','KeyG':'','KeyH':'','KeyC':'','KeyV':'',
+  'KeyB':'','KeyZ':'','KeyX':'','KeyP':'','KeyT':'','KeyK':'',
+  'Space':'مسافة','Shift':'','Ctrl':'','Alt':'','Tab':'','Esc':'',
+  'LMB':'لمس','RMB':'','MMB':'','Mouse':'لمس','Keyboard':'',
+  'WASD':'العصا','Arrow keys':'الأسهم'
+};
+function cleanPC(){
+  var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT), nodes = [], n;
+  while(n = w.nextNode()) nodes.push(n);
+  nodes.forEach(function(x){
+    var t = x.textContent;
+    var orig = t;
+    Object.keys(pcTerms).forEach(function(k){
+      if(k && t.indexOf(k) !== -1) t = t.split(k).join(pcTerms[k]);
+    });
+    // Clean up double spaces and empty parens
+    t = t.replace(/\s+/g, ' ').replace(/\(\s*\)/g, '').replace(/\[\s*\]/g, '').trim();
+    if(t !== orig) x.textContent = t;
+  });
+  // Hide elements that are PC-only
+  document.querySelectorAll('[class*="kb-hint"], [class*="mouse-hint"], [class*="pc-only"]').forEach(function(el){
+    el.style.display = 'none';
+  });
+}
+new MutationObserver(cleanPC).observe(document.body, {childList:true, subtree:true, characterData:true});
+setTimeout(cleanPC, 2000); setTimeout(cleanPC, 5000);
+})();
+</script>
 </body>
 </html>
