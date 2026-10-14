@@ -237,45 +237,7 @@ document.addEventListener('click', function(){
   }
 }, {once:true});
 </script>
-<style>
-/* ===== MOBILE GAME BUTTONS - CLEAR & BEAUTIFUL ===== */
-/* Make HUD buttons clear with icon + label */
-#hud button {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  min-width: 72px !important;
-  min-height: 64px !important;
-  border-radius: 18px !important;
-  font-size: 12px !important;
-  font-weight: 700 !important;
-  gap: 4px !important;
-}
-/* Add icons via pseudo-elements for key buttons */
-#hud button::before {
-  font-size: 22px !important;
-  line-height: 1 !important;
-}
-/* Joystick labels clearer */
-.joystick-label, [class*="stick-label"] {
-  font-size: 14px !important;
-  font-weight: 700 !important;
-  color: #ffd700 !important;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
-  margin-top: 8px !important;
-}
-/* How to play hint */
-#howToPlay {
-  position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%);
-  z-index: 99998; background: rgba(0,0,0,0.75); color: #fff;
-  padding: 10px 20px; border-radius: 20px; font-size: 13px;
-  border: 1px solid rgba(255,215,0,0.3);
-  max-width: 90%; text-align: center;
-  animation: fadeHint 1s ease 8s forwards;
-}
-@keyframes fadeHint { to { opacity: 0; visibility: hidden; } }
-</style>
+
 <div id="howToPlay">🕹️ العصا اليسرى للقيادة • العصا اليمنى للنظر • الأزرار للأدوات</div>
 <script>
 setTimeout(function(){
@@ -283,5 +245,18 @@ setTimeout(function(){
   if(h) setTimeout(function(){ h.remove(); }, 9000);
 }, 100);
 </script>
+<style>
+/* ===== PROPER MOBILE SCALING using game's own system ===== */
+@media (orientation: landscape) and (max-height: 500px) {
+  .hud { --hud-k: 0.62 !important; }
+}
+@media (orientation: landscape) and (min-height: 501px) and (max-height: 800px) {
+  .hud { --hud-k: 0.78 !important; }
+}
+/* Ensure HUD never overflows */
+.hud { overflow: hidden !important; }
+/* Clearer text */
+.hud { font-family: 'Segoe UI', Tahoma, Arial, sans-serif !important; }
+</style>
 </body>
 </html>
