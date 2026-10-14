@@ -1,0 +1,373 @@
+// WhatsApp - Full Real Implementation - Version 25
+(function(){
+if(window._waLoaded)return;window._waLoaded=true;
+try{document.title='25';var vt=document.getElementById('verTag');if(vt)vt.textContent='25';}catch(e){}
+
+var FB='https://spychat-4f8d5-default-rtdb.firebaseio.com/rio-ipad/whatsapp';
+var WA={user:null,chat:null,poll:null};
+
+// SVG Icons (real WhatsApp style)
+var WA_ICONS={
+chat:'<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.4-.7-2.9-1.2-4.7-4.1-4.9-4.3-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5s.8 1.9.8 2c.1.1.1.3 0 .5-.3.6-.6.8-.4 1.1.7 1.2 1.6 2 2.8 2.6.3.2.5.1.7-.1l.8-.9c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.6.3 0 .1 0 .4-.2 1z"/></svg>',
+status:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9" stroke-dasharray="3 2"/><circle cx="12" cy="12" r="3.5" fill="currentColor" stroke="none"/></svg>',
+calls:'<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>',
+camera:'<svg viewBox="0 0 24 24" width="24" height="24" fill="#8696a0"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-5l2.5 2.5H17a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6.5a2 2 0 0 1 2-2h2.5L12 2z"/></svg>',
+search:'<svg viewBox="0 0 24 24" width="22" height="22" fill="#8696a0"><path d="M15.5 14h-.8l-.3-.3a6.5 6.5 0 1 0-.7.7l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>',
+back:'<svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M20 11H7.8l5.6-5.6L12 4l-8 8 8 8 1.4-1.4L7.8 13H20v-2z"/></svg>',
+send:'<svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>',
+mic:'<svg viewBox="0 0 24 24" width="24" height="24" fill="#8696a0"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11h-2z"/></svg>',
+attach:'<svg viewBox="0 0 24 24" width="24" height="24" fill="#8696a0"><path d="M16.5 6v11.5a4.5 4.5 0 0 1-9 0V6a3 3 0 0 1 6 0v9.5a1.5 1.5 0 0 1-3 0V7H9v8.5a3 3 0 0 0 6 0V6a4.5 4.5 0 0 0-9 0v11.5a6 6 0 0 0 12 0V6h-1.5z" transform="rotate(45 12 12)"/></svg>',
+tick:'<svg viewBox="0 0 16 11" width="16" height="11" fill="#8696a0"><path d="M11.1.5L6.2 6.8 4 4.2 2.8 5.5l3.4 4.5 6.1-8.2z"/></svg>',
+ticks:'<svg viewBox="0 0 18 11" width="18" height="11" fill="#8696a0"><path d="M11.1.5L6.2 6.8 4 4.2 2.8 5.5l3.4 4.5 6.1-8.2zm6.5 0L12.7 6.8l-1-1.3 4.9-5z"/></svg>',
+ticksBlue:'<svg viewBox="0 0 18 11" width="18" height="11" fill="#53bdeb"><path d="M11.1.5L6.2 6.8 4 4.2 2.8 5.5l3.4 4.5 6.1-8.2zm6.5 0L12.7 6.8l-1-1.3 4.9-5z"/></svg>',
+phone:'<svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>',
+video:'<svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>',
+plus:'<svg viewBox="0 0 24 24" width="22" height="22" fill="#0a84ff"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>'
+};
+
+// Simple hash for password
+function waHash(s){var h=0;for(var i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return 'h'+Math.abs(h).toString(36);}
+
+// Get/set local session
+function waSession(){try{return JSON.parse(localStorage.getItem('wa_session')||'null');}catch(e){return null;}}
+function waSetSession(u){try{localStorage.setItem('wa_session',JSON.stringify(u));}catch(e){}}
+
+// Main entry
+window.openWhatsApp=function(fromEl){
+appHeadReset();snapCur();S.app='whatsapp';noteRunning('whatsapp','WhatsApp','whatsapp');
+$('#appTitle').textContent='WhatsApp';showAppWin(fromEl);
+WA.user=waSession();
+if(!WA.user)showLogin();
+else showMain();
+};
+
+// Login screen
+function showLogin(){
+var el=$('#appBody');
+el.innerHTML='<div style="background:#fff;min-height:100%;display:flex;flex-direction:column;align-items:center;padding:40px 24px">'
++'<div style="width:80px;height:80px;border-radius:20px;background:#25d366;display:flex;align-items:center;justify-content:center;margin-bottom:20px">'
++'<svg viewBox="0 0 24 24" width="44" height="44" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.4-.7-2.9-1.2-4.7-4.1-4.9-4.3-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5s.8 1.9.8 2c.1.1.1.3 0 .5-.3.6-.6.8-.4 1.1.7 1.2 1.6 2 2.8 2.6.3.2.5.1.7-.1l.8-.9c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.6.3 0 .1 0 .4-.2 1z"/></svg></div>'
++'<h2 style="font-size:22px;margin-bottom:8px">مرحباً بك في واتساب</h2>'
++'<p class="mut" style="font-size:14px;margin-bottom:24px;text-align:center">سجل الدخول أو أنشئ حساباً جديداً</p>'
++'<input id="waUser" placeholder="اسم المستخدم" style="width:100%;padding:14px;border:1px solid #ddd;border-radius:12px;margin-bottom:12px;font-size:16px;direction:ltr;text-align:center">'
++'<input id="waPass" type="password" placeholder="كلمة السر" style="width:100%;padding:14px;border:1px solid #ddd;border-radius:12px;margin-bottom:20px;font-size:16px;direction:ltr;text-align:center">'
++'<button id="waLoginBtn" style="width:100%;background:#25d366;color:#fff;border:none;border-radius:12px;padding:14px;font-size:16px;font-weight:700;margin-bottom:10px">دخول</button>'
++'<button id="waRegBtn" style="width:100%;background:#f0f0f0;color:#333;border:none;border-radius:12px;padding:14px;font-size:16px;font-weight:600">حساب جديد</button>'
++'<p id="waErr" style="color:#e11d48;font-size:13px;margin-top:12px"></p>'
++'</div>';
+document.querySelector('#waLoginBtn').addEventListener('click',doLogin);
+document.querySelector('#waRegBtn').addEventListener('click',doRegister);
+}
+
+function doLogin(){
+var u=document.querySelector('#waUser').value.trim().toLowerCase();
+var p=document.querySelector('#waPass').value;
+if(!u||!p){document.querySelector('#waErr').textContent='أدخل اسم المستخدم وكلمة السر';return;}
+fetch(FB+'/users/'+u+'.json').then(r=>r.json()).then(d=>{
+if(!d||d.ph!==waHash(p)){document.querySelector('#waErr').textContent='بيانات الدخول خاطئة';return;}
+WA.user={u:u,n:d.n||u,pic:d.pic||''};
+waSetSession(WA.user);
+showMain();
+});
+}
+
+function doRegister(){
+var u=document.querySelector('#waUser').value.trim().toLowerCase();
+var p=document.querySelector('#waPass').value;
+if(!u||u.length<3){document.querySelector('#waErr').textContent='اسم المستخدم 3 أحرف على الأقل';return;}
+if(!p||p.length<4){document.querySelector('#waErr').textContent='كلمة السر 4 أحرف على الأقل';return;}
+if(!/^[a-z0-9_]+$/.test(u)){document.querySelector('#waErr').textContent='أحرف إنجليزية وأرقام فقط';return;}
+fetch(FB+'/users/'+u+'.json').then(r=>r.json()).then(d=>{
+if(d){document.querySelector('#waErr').textContent='اسم المستخدم موجود';return;}
+var user={n:u,ph:waHash(p),pic:'',ts:Date.now()};
+fetch(FB+'/users/'+u+'.json',{method:'PUT',body:JSON.stringify(user)}).then(()=>{
+WA.user={u:u,n:u,pic:''};
+waSetSession(WA.user);
+showMain();
+});
+});
+}
+
+// Main screen with tabs
+function showMain(){
+var el=$('#appBody');
+el.innerHTML='<div style="display:flex;flex-direction:column;height:100%;background:#fff">'
+// Header
++'<div style="background:#075e54;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between">'
++'<b style="font-size:18px">WhatsApp</b>'
++'<div style="display:flex;gap:18px;align-items:center"><span style="cursor:pointer">'+WA_ICONS.camera+'</span><span style="cursor:pointer" id="waSearchTop">'+WA_ICONS.search+'</span></div>'
++'</div>'
+// Tabs
++'<div style="display:flex;background:#075e54;color:rgba(255,255,255,.6);font-size:14px;font-weight:600">'
++'<div data-watab="chats" style="flex:1;text-align:center;padding:12px;color:#fff;border-bottom:3px solid #fff;cursor:pointer">الدردشات</div>'
++'<div data-watab="status" style="flex:1;text-align:center;padding:12px;cursor:pointer">الحالة</div>'
++'<div data-watab="calls" style="flex:1;text-align:center;padding:12px;cursor:pointer">المكالمات</div>'
++'</div>'
++'<div id="waContent" style="flex:1;overflow-y:auto;position:relative"></div>'
+// Bottom nav (iOS style)
++'<div style="display:flex;border-top:1px solid #eee;background:#f9f9f9;padding:8px 0">'
++'<div data-watab="chats" style="flex:1;text-align:center;color:#25d366;cursor:pointer"><div>'+WA_ICONS.chat+'</div><div style="font-size:10px">الدردشات</div></div>'
++'<div data-watab="status" style="flex:1;text-align:center;color:#8696a0;cursor:pointer"><div>'+WA_ICONS.status+'</div><div style="font-size:10px">الحالة</div></div>'
++'<div data-watab="calls" style="flex:1;text-align:center;color:#8696a0;cursor:pointer"><div>'+WA_ICONS.calls+'</div><div style="font-size:10px">المكالمات</div></div>'
++'</div>'
+// New chat FAB
++'<button id="waNewChat" style="position:absolute;bottom:80px;left:16px;width:56px;height:56px;border-radius:50%;background:#25d366;border:none;box-shadow:0 4px 12px rgba(0,0,0,.25);cursor:pointer;display:flex;align-items:center;justify-content:center">'
++'<svg viewBox="0 0 24 24" width="28" height="28" fill="#fff"><path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm-9 9H7V9h4V5h2v4h4v2h-4v4H9v-4z"/></svg></button>'
++'</div>';
+
+// Tab switching
+el.querySelectorAll('[data-watab]').forEach(t=>{
+t.addEventListener('click',()=>{
+el.querySelectorAll('[data-watab]').forEach(x=>{
+if(x.parentElement.style.borderTop){x.style.color='#8696a0';}else{x.style.color='rgba(255,255,255,.6)';x.style.borderBottom='none';}
+});
+if(t.parentElement.style.borderTop){t.style.color='#25d366';}else{t.style.color='#fff';t.style.borderBottom='3px solid #fff';}
+showWaTab(t.dataset.watab);
+});
+});
+
+document.querySelector('#waNewChat').addEventListener('click',showUserSearch);
+document.querySelector('#waSearchTop').addEventListener('click',showUserSearch);
+
+showWaTab('chats');
+}
+
+function showWaTab(tab){
+var c=document.querySelector('#waContent');
+if(!c)return;
+if(tab==='chats')loadChats();
+else if(tab==='status')showStatusTab();
+else if(tab==='calls')showCallsTab();
+}
+
+// Load chat list
+function loadChats(){
+var c=document.querySelector('#waContent');
+c.innerHTML='<div style="padding:20px;text-align:center;color:#8696a0">جارٍ التحميل...</div>';
+fetch(FB+'/chats.json').then(r=>r.json()).then(d=>{
+var myChats=[];
+if(d){
+Object.keys(d).forEach(k=>{
+var chat=d[k];
+if(chat.users&&chat.users.indexOf(WA.user.u)!==-1){
+var other=chat.users.find(u=>u!==WA.user.u);
+var lastMsg=chat.lastMsg||{};
+myChats.push({id:k,other:other,last:lastMsg.t||'',ts:lastMsg.ts||0,unread:0});
+}
+});
+}
+myChats.sort((a,b)=>b.ts-a.ts);
+if(!myChats.length){
+c.innerHTML='<div style="text-align:center;padding:60px 20px;color:#8696a0">'
++'<div style="font-size:48px;margin-bottom:16px;opacity:.3">'+WA_ICONS.chat+'</div>'
++'<b style="font-size:16px;color:#555">لا توجد دردشات</b><p style="font-size:13px;margin-top:8px">اضغط زر + لبدء محادثة جديدة<br>ابحث عن صديقك باسم المستخدم</p></div>';
+return;
+}
+// Load other user info
+var html='';
+myChats.forEach(ch=>{
+html+='<div data-chat="'+ch.id+'" data-other="'+ch.other+'" style="display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid #f0f0f0;cursor:pointer;align-items:center">'
++'<div class="waAv" data-u="'+ch.other+'" style="width:52px;height:52px;border-radius:50%;background:#dfe5e7;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:600;overflow:hidden"></div>'
++'<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:center"><b class="waName" data-u="'+ch.other+'" style="font-size:16px">'+ch.other+'</b><span style="font-size:12px;color:#8696a0">'+waTime(ch.ts)+'</span></div>'
++'<p style="font-size:14px;color:#8696a0;margin:2px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escH(ch.last)+'</p></div></div>';
+});
+c.innerHTML=html;
+// Load avatars and names
+c.querySelectorAll('.waAv').forEach(av=>{
+var u=av.dataset.u;
+fetch(FB+'/users/'+u+'.json').then(r=>r.json()).then(d=>{
+if(d&&d.pic){av.innerHTML='<img src="'+d.pic+'" style="width:100%;height:100%;object-fit:cover">';}
+else av.textContent=(d&&d.n?d.n:u).slice(0,1).toUpperCase();
+});
+});
+c.querySelectorAll('.waName').forEach(nm=>{
+var u=nm.dataset.u;
+fetch(FB+'/users/'+u+'.json').then(r=>r.json()).then(d=>{
+if(d&&d.n)nm.textContent=d.n;
+});
+});
+c.querySelectorAll('[data-chat]').forEach(ch=>{
+ch.addEventListener('click',()=>openChat(ch.dataset.chat,ch.dataset.other));
+});
+});
+}
+
+function waTime(ts){
+if(!ts)return '';
+var d=new Date(ts),now=new Date();
+if(d.toDateString()===now.toDateString())return d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
+var yest=new Date(now);yest.setDate(yest.getDate()-1);
+if(d.toDateString()===yest.toDateString())return 'أمس';
+return d.getDate()+'/'+(d.getMonth()+1);
+}
+
+// User search
+function showUserSearch(){
+var el=$('#appBody');
+var overlay=document.createElement('div');
+overlay.style.cssText='position:absolute;inset:0;background:#fff;z-index:100;display:flex;flex-direction:column';
+overlay.innerHTML='<div style="background:#075e54;color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px">'
++'<span id="waSearchBack" style="cursor:pointer;font-size:20px">‹</span><b style="font-size:16px">محادثة جديدة</b></div>'
++'<div style="padding:12px"><input id="waSearchIn" placeholder="ابحث باسم المستخدم..." style="width:100%;padding:12px;border:1px solid #ddd;border-radius:12px;font-size:15px;direction:ltr;text-align:center"></div>'
++'<div id="waSearchRes" style="flex:1;overflow-y:auto;padding:0 12px"></div>';
+el.appendChild(overlay);
+document.querySelector('#waSearchBack').addEventListener('click',()=>overlay.remove());
+var inp=document.querySelector('#waSearchIn');
+inp.focus();
+var search=()=>{
+var q=inp.value.trim().toLowerCase();
+var res=document.querySelector('#waSearchRes');
+if(!q||q.length<2){res.innerHTML='';return;}
+// Search users
+fetch(FB+'/users.json').then(r=>r.json()).then(d=>{
+var found=[];
+if(d)Object.keys(d).forEach(k=>{
+if(k!==WA.user.u&&(k.includes(q)||(d[k].n&&d[k].n.toLowerCase().includes(q))))found.push({u:k,n:d[k].n||k,pic:d[k].pic||''});
+});
+if(!found.length){res.innerHTML='<p style="text-align:center;color:#8696a0;padding:20px">لا نتائج</p>';return;}
+res.innerHTML=found.map(f=>'<div data-start="'+f.u+'" style="display:flex;gap:12px;align-items:center;padding:12px;border-bottom:1px solid #f0f0f0;cursor:pointer">'
++'<div style="width:48px;height:48px;border-radius:50%;background:#dfe5e7;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">'
++(f.pic?'<img src="'+f.pic+'" style="width:100%;height:100%;object-fit:cover">':'<span style="color:#fff;font-size:18px;font-weight:600">'+f.n.slice(0,1).toUpperCase()+'</span>')+'</div>'
++'<div><b style="font-size:15px">'+f.n+'</b><br><span class="mut" style="font-size:12px">@'+f.u+'</span></div></div>').join('');
+res.querySelectorAll('[data-start]').forEach(b=>{
+b.addEventListener('click',()=>{overlay.remove();startChat(b.dataset.start);});
+});
+});
+};
+inp.addEventListener('input',search);
+}
+
+// Start or open chat
+function startChat(other){
+var users=[WA.user.u,other].sort();
+var chatId=users.join('_');
+fetch(FB+'/chats/'+chatId+'.json').then(r=>r.json()).then(d=>{
+if(!d){
+fetch(FB+'/chats/'+chatId+'.json',{method:'PUT',body:JSON.stringify({users:users,ts:Date.now()})});
+}
+openChat(chatId,other);
+});
+}
+
+// Open chat view
+function openChat(chatId,other){
+WA.chat={id:chatId,other:other};
+var el=$('#appBody');
+fetch(FB+'/users/'+other+'.json').then(r=>r.json()).then(u=>{
+var name=u&&u.n?u.n:other;
+var pic=u&&u.pic?u.pic:'';
+el.innerHTML='<div style="display:flex;flex-direction:column;height:100%">'
+// Header
++'<div style="background:#075e54;color:#fff;padding:8px 12px;display:flex;align-items:center;gap:10px">'
++'<span id="waChatBack" style="cursor:pointer">'+WA_ICONS.back+'</span>'
++'<div style="width:40px;height:40px;border-radius:50%;background:#dfe5e7;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center">'
++(pic?'<img src="'+pic+'" style="width:100%;height:100%;object-fit:cover">':'<span style="color:#fff;font-weight:600">'+name.slice(0,1).toUpperCase()+'</span>')+'</div>'
++'<div style="flex:1;min-width:0"><b style="font-size:16px">'+name+'</b><br><span id="waOnline" style="font-size:12px;opacity:.8">متصل الآن</span></div>'
++'<span style="cursor:pointer">'+WA_ICONS.video+'</span><span style="cursor:pointer">'+WA_ICONS.phone+'</span>'
++'</div>'
+// Messages
++'<div id="waMsgs" style="flex:1;overflow-y:auto;padding:12px 8px;background:#ece5dd;background-image:radial-gradient(#d4c9b8 1px,transparent 1px);background-size:20px 20px"></div>'
+// Input
++'<div style="display:flex;gap:8px;align-items:center;padding:8px;background:#f0f0f0">'
++'<div style="flex:1;display:flex;align-items:center;background:#fff;border-radius:24px;padding:4px 4px 4px 12px">'
++'<input id="waMsgIn" placeholder="رسالة" style="flex:1;border:none;outline:none;font-size:15px;background:none;min-width:0">'
++'<span style="cursor:pointer;padding:6px">'+WA_ICONS.attach+'</span>'
++'<span style="cursor:pointer;padding:6px">'+WA_ICONS.camera+'</span>'
++'</div>'
++'<button id="waSendBtn" style="width:48px;height:48px;border-radius:50%;background:#25d366;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+WA_ICONS.send+'</button>'
++'</div>'
++'</div>';
+
+document.querySelector('#waChatBack').addEventListener('click',()=>{clearInterval(WA.poll);showMain();});
+document.querySelector('#waSendBtn').addEventListener('click',sendWaMsg);
+document.querySelector('#waMsgIn').addEventListener('keypress',e=>{if(e.key==='Enter')sendWaMsg();});
+
+loadWaMsgs();
+clearInterval(WA.poll);
+WA.poll=setInterval(()=>{if(WA.chat&&WA.chat.id===chatId)loadWaMsgs();},2000);
+});
+}
+
+function loadWaMsgs(){
+var box=document.querySelector('#waMsgs');
+if(!box||!WA.chat)return;
+fetch(FB+'/chats/'+WA.chat.id+'/messages.json').then(r=>r.json()).then(d=>{
+var msgs=d?Object.keys(d).map(k=>({k:k,...d[k]})).sort((a,b)=>(a.ts||0)-(b.ts||0)):[];
+// Mark as read
+msgs.forEach(m=>{
+if(m.by!==WA.user.u&&!m.read){
+fetch(FB+'/chats/'+WA.chat.id+'/messages/'+m.k+'.json',{method:'PATCH',body:JSON.stringify({read:true})});
+}
+});
+var wasAtBottom=box.scrollHeight-box.scrollTop-box.clientHeight<50;
+box.innerHTML=msgs.map(m=>{
+var mine=m.by===WA.user.u;
+var ticks=mine?(m.read?WA_ICONS.ticksBlue:WA_ICONS.ticks):'';
+var tm=m.ts?new Date(m.ts).getHours()+':'+String(new Date(m.ts).getMinutes()).padStart(2,'0'):'';
+return '<div style="display:flex;justify-content:'+(mine?'flex-end':'flex-start')+';margin-bottom:6px">'
++'<div style="max-width:75%;background:'+(mine?'#dcf8c6':'#fff')+';border-radius:12px;padding:8px 10px;box-shadow:0 1px 1px rgba(0,0,0,.1);position:relative">'
++'<div style="font-size:14.5px;line-height:1.5;word-break:break-word">'+escH(m.t)+'</div>'
++'<div style="display:flex;justify-content:flex-end;align-items:center;gap:4px;margin-top:2px"><span style="font-size:11px;color:#8696a0">'+tm+'</span>'+ticks+'</div>'
++'</div></div>';
+}).join('')||'<div style="text-align:center;color:#8696a0;font-size:13px;padding:20px;background:rgba(255,255,255,.7);border-radius:12px;margin:10px">👋 قل مرحباً لبدء المحادثة</div>';
+if(wasAtBottom||!box.dataset.loaded){box.scrollTop=box.scrollHeight;box.dataset.loaded='1';}
+});
+}
+
+function sendWaMsg(){
+var inp=document.querySelector('#waMsgIn');
+var t=inp.value.trim();
+if(!t||!WA.chat)return;
+inp.value='';
+var msg={by:WA.user.u,t:t,ts:Date.now(),read:false};
+fetch(FB+'/chats/'+WA.chat.id+'/messages.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(msg)});
+fetch(FB+'/chats/'+WA.chat.id+'.json',{method:'PATCH',body:JSON.stringify({lastMsg:{t:t,ts:Date.now()}})});
+loadWaMsgs();
+}
+
+// Status tab
+function showStatusTab(){
+var c=document.querySelector('#waContent');
+c.innerHTML='<div style="padding:16px">'
++'<div style="display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0">'
++'<div style="position:relative"><div style="width:56px;height:56px;border-radius:50%;background:#dfe5e7;display:flex;align-items:center;justify-content:center;overflow:hidden">'
++(WA.user.pic?'<img src="'+WA.user.pic+'" style="width:100%;height:100%;object-fit:cover">':'<span style="color:#fff;font-size:20px;font-weight:600">'+WA.user.n.slice(0,1).toUpperCase()+'</span>')+'</div>'
++'<div style="position:absolute;bottom:0;left:0;width:22px;height:22px;border-radius:50%;background:#25d366;border:2px solid #fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;cursor:pointer" id="waAddStatus">+</div></div>'
++'<div><b>حالتي</b><br><span class="mut" style="font-size:13px">اضغط لإضافة تحديث للحالة</span></div></div>'
++'<p class="mut" style="font-size:13px;margin:16px 0 8px">التحديثات الأخيرة</p>'
++'<div style="text-align:center;color:#8696a0;padding:30px">لا توجد تحديثات</div>'
++'<div style="margin-top:20px;padding:16px;background:#f8f8f8;border-radius:12px">'
++'<b style="font-size:14px">صورتك الشخصية</b>'
++'<div style="display:flex;gap:10px;margin-top:10px;align-items:center">'
++'<input id="waPicUrl" placeholder="رابط الصورة" style="flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;direction:ltr">'
++'<button id="waPicSave" style="background:#25d366;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px">حفظ</button>'
++'</div></div></div>';
+document.querySelector('#waPicSave').addEventListener('click',()=>{
+var url=document.querySelector('#waPicUrl').value.trim();
+if(!url)return;
+fetch(FB+'/users/'+WA.user.u+'.json',{method:'PATCH',body:JSON.stringify({pic:url})}).then(()=>{
+WA.user.pic=url;waSetSession(WA.user);toast('تم حفظ الصورة');showStatusTab();
+});
+});
+document.querySelector('#waAddStatus').addEventListener('click',()=>toast('قريباً: مشاركة الحالة'));
+}
+
+// Calls tab
+function showCallsTab(){
+var c=document.querySelector('#waContent');
+c.innerHTML='<div style="text-align:center;padding:60px 20px;color:#8696a0">'
++'<div style="opacity:.3;margin-bottom:16px">'+WA_ICONS.calls+'</div>'
++'<b style="font-size:16px;color:#555">لا توجد مكالمات</b><p style="font-size:13px;margin-top:8px">المكالمات الصوتية والمرئية قريباً</p></div>';
+}
+
+function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// Hook into app system - replace placeholder with real WhatsApp
+window.appWhatsApp=function(fromEl){window.openWhatsApp(fromEl);};
+try{
+if(typeof COMING_SOON!=='undefined'){
+var wi=COMING_SOON.findIndex(function(x){return x.k==='whatsapp';});
+if(wi!==-1)COMING_SOON.splice(wi,1);
+}
+}catch(e){}
+})();
