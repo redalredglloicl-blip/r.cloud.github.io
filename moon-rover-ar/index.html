@@ -474,5 +474,34 @@ setTimeout(cleanPC, 2000); setTimeout(cleanPC, 5000);
 /* Version badge - default position (landscape) */
 #arVer { transition: all 0.3s ease !important; }
 </style>
+<script>
+// Direct button styler - targets all HUD buttons by tag
+(function(){
+function styleButtons(){
+  // Find the HUD container
+  var hud = document.querySelector('.hud') || document.body;
+  var btns = hud.querySelectorAll('button');
+  btns.forEach(function(b){
+    // Skip menu buttons (already styled)
+    if(b.id && b.id.indexOf('btn') === 0) return;
+    // Apply modern mobile style directly
+    b.style.borderRadius = '14px';
+    b.style.background = 'linear-gradient(135deg, rgba(35,40,58,0.92), rgba(22,26,42,0.92))';
+    b.style.border = '1px solid rgba(255,255,255,0.12)';
+    b.style.boxShadow = '0 4px 12px rgba(0,0,0,0.35)';
+    b.style.fontWeight = '700';
+    b.style.minWidth = '60px';
+    b.style.minHeight = '48px';
+    b.style.fontSize = '12px';
+    b.style.color = '#fff';
+    b.style.backdropFilter = 'blur(6px)';
+  });
+}
+new MutationObserver(styleButtons).observe(document.body, {childList:true, subtree:true});
+setTimeout(styleButtons, 2000);
+setTimeout(styleButtons, 5000);
+setInterval(styleButtons, 10000);
+})();
+</script>
 </body>
 </html>
