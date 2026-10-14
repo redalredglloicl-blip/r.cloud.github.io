@@ -1,7 +1,7 @@
-// WhatsApp - Full Real Implementation - Version 28
+// WhatsApp - Full Real Implementation - Version 29
 (function(){
 if(window._waLoaded)return;window._waLoaded=true;
-try{document.title='28';var vt=document.getElementById('verTag');if(vt)vt.textContent='28';}catch(e){}
+try{document.title='29';var vt=document.getElementById('verTag');if(vt)vt.textContent='29';}catch(e){}
 
 var FB='https://spychat-4f8d5-default-rtdb.firebaseio.com/rio-ipad/whatsapp';
 var WA={user:null,chat:null,poll:null};
@@ -39,6 +39,28 @@ function waHash(s){var h=0;for(var i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt
 // Get/set local session
 function waSession(){try{return JSON.parse(localStorage.getItem('wa_session')||'null');}catch(e){return null;}}
 function waSetSession(u){try{localStorage.setItem('wa_session',JSON.stringify(u));}catch(e){}}
+
+// Online heartbeat - real online status
+function waStartHeartbeat(){
+if(WA._hbOn)return;WA._hbOn=true;
+var beat=()=>{
+if(!WA.user)return;
+fetch(FB+'/users/'+WA.user.u+'/online.json',{method:'PUT',body:JSON.stringify(Date.now())}).catch(()=>{});
+};
+beat();
+setInterval(beat,10000);
+// Set offline when leaving
+window.addEventListener('beforeunload',()=>{
+if(WA.user)fetch(FB+'/users/'+WA.user.u+'/online.json',{method:'PUT',body:JSON.stringify(0)});
+});
+}
+function waCheckOnline(userId,cb){
+fetch(FB+'/users/'+userId+'/online.json').then(r=>r.json()).then(ts=>{
+var online=ts&&Date.now()-ts<30000;
+var lastSeen=ts?new Date(ts):null;
+cb(online,lastSeen);
+}).catch(()=>cb(false,null));
+}
 
 // Background notification checker
 function waStartNotifier(){
@@ -130,6 +152,7 @@ if(!d||d.ph!==waHash(p)){document.querySelector('#waErr').textContent='بيان�
 WA.user={u:u,n:d.n||u,pic:d.pic||''};
 waSetSession(WA.user);
 waStartNotifier();
+waStartHeartbeat();
 showMain();
 });
 }
@@ -320,9 +343,39 @@ openChat(chatId,other);
 });
 }
 
+// Screenshot protection: blur chat when tab loses visibility
+function waScreenProtect(){
+if(WA._protOn)return;WA._protOn=true;
+var overlay=null;
+document.addEventListener('visibilitychange',()=>{
+if(S.app!=='whatsapp'||!WA.chat)return;
+if(document.hidden){
+// Blur the chat
+overlay=document.createElement('div');
+overlay.id='waProtect';
+overlay.style.cssText='position:fixed;inset:0;background:#0b141a;z-index:999998;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#8696a0';
+overlay.innerHTML='<div style="font-size:48px;margin-bottom:16px;opacity:.5">'
++'<svg viewBox="0 0 24 24" width="48" height="48" fill="#8696a0"><path d="M18 8h-1V6a5 5 0 0 0-10 0v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2z"/></svg></div>'
++'<b style="font-size:16px">محادثة محمية</b><p style="font-size:13px;margin-top:8px">تم إخفاء المحتوى لحماية خصوصيتك</p>';
+document.body.appendChild(overlay);
+}else{
+var o=document.querySelector('#waProtect');
+if(o)o.remove();
+}
+});
+// Prevent context menu (long-press save) in chat
+document.addEventListener('contextmenu',e=>{
+if(S.app==='whatsapp'&&WA.chat){
+var box=document.querySelector('#waMsgs');
+if(box&&box.contains(e.target))e.preventDefault();
+}
+});
+}
+
 // Open chat view
 function openChat(chatId,other){
 WA.chat={id:chatId,other:other};
+waScreenProtect();
 var el=$('#appBody');
 fetch(FB+'/users/'+other+'.json').then(r=>r.json()).then(u=>{
 var name=u&&u.n?u.n:other;
@@ -350,7 +403,7 @@ el.innerHTML='<div style="display:flex;flex-direction:column;height:100%">'
 +'</div>';
 
 document.querySelector('#waChatBack').addEventListener('click',()=>{
-clearInterval(WA.poll);clearInterval(WA._typePoll);
+clearInterval(WA.poll);clearInterval(WA._typePoll);clearInterval(WA._onlinePoll);
 if(WA.chat)fetch(FB+'/chats/'+WA.chat.id+'/typing/'+WA.user.u+'.json',{method:'DELETE'});
 showMain();
 });
@@ -367,7 +420,28 @@ window._waTypeT=setTimeout(()=>{
 if(WA.chat)fetch(FB+'/chats/'+WA.chat.id+'/typing/'+WA.user.u+'.json',{method:'DELETE'});
 },3000);
 });
-clearInterval(WA._typePoll);
+// Real online status in header
+clearInterval(WA._onlinePoll);
+var _updOnline=function(){
+if(!WA.chat)return;
+waCheckOnline(WA.chat.other,function(online,lastSeen){
+var onEl=document.querySelector('#waOnline');
+if(!onEl||onEl.dataset.typing==='1')return;
+if(online){onEl.textContent='متصل الآن';onEl.style.color='#25d366';onEl.style.fontWeight='600';}
+else if(lastSeen&&lastSeen.getTime()>0){
+var diff=Date.now()-lastSeen.getTime();
+var lbl='آخر ظهور ';
+if(diff<60000)lbl+='قبل قليل';
+else if(diff<3600000)lbl+='قبل '+Math.floor(diff/60000)+' دقيقة';
+else if(diff<86400000)lbl+='قبل '+Math.floor(diff/3600000)+' ساعة';
+else lbl+=lastSeen.getDate()+'/'+(lastSeen.getMonth()+1);
+onEl.textContent=lbl;onEl.style.color='#8696a0';onEl.style.fontWeight='400';
+}
+else{onEl.textContent='غير متصل';onEl.style.color='#8696a0';onEl.style.fontWeight='400';}
+});
+};
+_updOnline();
+WA._onlinePoll=setInterval(_updOnline,15000);
 WA._typePoll=setInterval(()=>{
 if(!WA.chat||!WA.chat.id)return;
 fetch(FB+'/chats/'+WA.chat.id+'/typing.json').then(r=>r.json()).then(d=>{
@@ -375,9 +449,8 @@ var onEl=document.querySelector('#waOnline');
 if(!onEl)return;
 var typing=false;
 if(d){Object.keys(d).forEach(k=>{if(k!==WA.user.u&&Date.now()-(d[k]||0)<4000)typing=true;});}
-onEl.textContent=typing?'يكتب...':'متصل الآن';
-onEl.style.color=typing?'#25d366':'#8696a0';
-onEl.style.fontWeight=typing?'600':'400';
+if(typing){onEl.dataset.typing='1';onEl.textContent='يكتب...';onEl.style.color='#25d366';onEl.style.fontWeight='600';}
+else{delete onEl.dataset.typing;}
 }).catch(()=>{});
 },1500);
 })();
@@ -427,21 +500,49 @@ fetch(FB+'/chats/'+WA.chat.id+'/messages/'+m.k+'.json',{method:'PATCH',body:JSON
 }
 });
 var wasAtBottom=box.scrollHeight-box.scrollTop-box.clientHeight<50;
-box.innerHTML=msgs.map(m=>{
+var lastDate='';
+var msgHtml=msgs.map(m=>{
 var mine=m.by===WA.user.u;
 var ticks=mine?(m.read?WA_ICONS.ticksBlue:WA_ICONS.ticks):'';
 var tm=m.ts?new Date(m.ts).getHours()+':'+String(new Date(m.ts).getMinutes()).padStart(2,'0'):'';
+// Date divider
+var md=m.ts?new Date(m.ts):new Date();
+var dateStr=md.toDateString();
+var divider='';
+if(dateStr!==lastDate){
+lastDate=dateStr;
+var today=new Date().toDateString();
+var yest=new Date();yest.setDate(yest.getDate()-1);
+var dLabel=dateStr===today?'اليوم':(dateStr===yest.toDateString()?'أمس':md.getDate()+'/'+(md.getMonth()+1)+'/'+md.getFullYear());
+divider='<div style="text-align:center;margin:12px 0"><span style="background:#fff;color:#8696a0;font-size:12px;padding:6px 12px;border-radius:8px;box-shadow:0 1px 1px rgba(0,0,0,.1)">'+dLabel+'</span></div>';
+}
 var react=m.react?'<div style="position:absolute;bottom:-8px;'+(mine?'left':'right')+':8px;background:#fff;border-radius:12px;padding:2px 6px;font-size:14px;box-shadow:0 1px 3px rgba(0,0,0,.2)">'+m.react+'</div>':'';
+// Message tail (arrow)
+var tail=mine
+?'<div style="position:absolute;top:0;right:-8px;width:0;height:0;border-style:solid;border-width:0 0 12px 8px;border-color:transparent transparent transparent #dcf8c6"></div>'
+:'<div style="position:absolute;top:0;left:-8px;width:0;height:0;border-style:solid;border-width:0 8px 12px 0;border-color:transparent #fff transparent transparent"></div>';
 var content=m.img
-?'<img src="'+m.img+'" style="max-width:100%;border-radius:8px;display:block">'
-:'<div style="font-size:14.5px;line-height:1.5;word-break:break-word">'+escH(m.t)+'</div>';
-return '<div style="display:flex;justify-content:'+(mine?'flex-end':'flex-start')+';margin-bottom:8px">'
-+'<div class="waMsg" data-k="'+m.k+'" data-t="'+escH(m.t||'')+'" style="max-width:75%;background:'+(mine?'#dcf8c6':'#fff')+';border-radius:12px;padding:8px 10px;box-shadow:0 1px 1px rgba(0,0,0,.1);position:relative;cursor:pointer">'
-+content
+?'<img class="waImgMsg" data-src="'+m.img+'" src="'+m.img+'" style="max-width:220px;border-radius:8px;display:block;cursor:pointer">'
+:'<div style="font-size:15px;line-height:1.5;word-break:break-word">'+escH(m.t)+'</div>';
+return divider+'<div style="display:flex;justify-content:'+(mine?'flex-end':'flex-start')+';margin-bottom:6px;padding:0 8px">'
++'<div class="waMsg" data-k="'+m.k+'" data-t="'+escH(m.t||'')+'" style="max-width:75%;background:'+(mine?'#dcf8c6':'#fff')+';border-radius:8px;padding:8px 10px;box-shadow:0 1px 1px rgba(0,0,0,.15);position:relative;cursor:pointer">'
++tail+content
 +'<div style="display:flex;justify-content:flex-end;align-items:center;gap:4px;margin-top:2px"><span style="font-size:11px;color:#8696a0">'+tm+'</span>'+ticks+'</div>'
 +react
 +'</div></div>';
-}).join('')||'<div style="text-align:center;color:#8696a0;font-size:13px;padding:20px;background:rgba(255,255,255,.7);border-radius:12px;margin:10px">قل مرحباً لبدء المحادثة</div>';
+}).join('');
+box.innerHTML=msgHtml||'<div style="text-align:center;color:#8696a0;font-size:13px;padding:20px;background:rgba(255,255,255,.7);border-radius:12px;margin:10px">قل مرحباً لبدء المحادثة</div>';
+// Image viewer
+box.querySelectorAll('.waImgMsg').forEach(img=>{
+img.addEventListener('click',e=>{
+e.stopPropagation();
+var ov=document.createElement('div');
+ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:99999;display:flex;align-items:center;justify-content:center;cursor:pointer';
+ov.innerHTML='<img src="'+img.dataset.src+'" style="max-width:95%;max-height:90%;border-radius:8px">';
+ov.addEventListener('click',()=>ov.remove());
+document.body.appendChild(ov);
+});
+});
 // Long-press for copy/reactions
 box.querySelectorAll('.waMsg').forEach(msgEl=>{
 var lpTimer=null;
@@ -522,7 +623,7 @@ el.innerHTML='<div style="background:#f6f6f6;min-height:100%">'
 ].map(r=>'<div class="waSetRow" data-set="'+r[1]+'" style="background:#fff;margin:0 16px;padding:14px 16px;display:flex;gap:12px;align-items:center;cursor:pointer;border-bottom:1px solid #f0f0f0">'
 +'<span style="display:flex">'+r[0]+'</span><div style="flex:1"><b style="font-size:15px">'+r[1]+'</b><br><span class="mut" style="font-size:12px">'+r[2]+'</span></div><span style="color:#c0c0c0">‹</span></div>').join('')
 +'<button id="waLogout2" style="width:calc(100% - 32px);margin:16px;background:#fee;color:#e11d48;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600">تسجيل الخروج</button>'
-+'<p style="text-align:center;color:#8696a0;font-size:12px;padding:10px">WhatsApp v28<br>صُنع بحب</p>'
++'<p style="text-align:center;color:#8696a0;font-size:12px;padding:10px">WhatsApp v29<br>صُنع بحب</p>'
 +'</div>';
 document.querySelector('#waSetBack').addEventListener('click',showMain);
 document.querySelector('#waProfileCard').addEventListener('click',()=>{showMain();});
