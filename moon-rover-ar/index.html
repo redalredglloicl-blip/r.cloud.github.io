@@ -207,36 +207,7 @@ new MutationObserver(translate).observe(document.body, {childList:true, subtree:
 setTimeout(translate, 1500); setTimeout(translate, 4000);
 })();
 </script>
-<style>
-/* ===== FORCE LANDSCAPE ===== */
-#rotateMsg {
-  display: none; position: fixed; inset: 0; z-index: 999999;
-  background: #0a0e1a; color: #fff;
-  flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; padding: 30px;
-}
-#rotateMsg .phone-icon { font-size: 64px; margin-bottom: 20px; animation: rotPhone 2s ease-in-out infinite; }
-@keyframes rotPhone { 0%,100%{transform:rotate(0)} 50%{transform:rotate(90deg)} }
-@media (orientation: portrait) {
-  #rotateMsg { display: flex !important; }
-}
-</style>
-<div id="rotateMsg">
-  <div class="phone-icon">📱</div>
-  <h2 style="margin-bottom:10px">اقلب جهازك</h2>
-  <p style="color:#888">اللعبة تعمل بالوضع العرضي فقط</p>
-</div>
-<script>
-// Try to lock landscape
-if (screen.orientation && screen.orientation.lock) {
-  screen.orientation.lock('landscape').catch(function(){});
-}
-document.addEventListener('click', function(){
-  if (screen.orientation && screen.orientation.lock) {
-    screen.orientation.lock('landscape').catch(function(){});
-  }
-}, {once:true});
-</script>
+
 
 <div id="howToPlay">🕹️ العصا اليسرى للقيادة • العصا اليمنى للنظر • الأزرار للأدوات</div>
 <script>
@@ -258,5 +229,89 @@ setTimeout(function(){
 /* Clearer text */
 .hud { font-family: 'Segoe UI', Tahoma, Arial, sans-serif !important; }
 </style>
+
+<style>
+/* ===== MODERN ARABIC LOBBY & LOADING ===== */
+/* Loading screen */
+#boot {
+  background: linear-gradient(160deg, #0b0e1a 0%, #1a1a2e 50%, #0f0f23 100%) !important;
+}
+#boot .boot-inner { text-align: center !important; padding: 30px !important; }
+#boot .title {
+  font-size: 48px !important; font-weight: 900 !important;
+  background: linear-gradient(135deg, #ffd700, #ff8c00) !important;
+  -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important;
+  background-clip: text !important; margin-bottom: 8px !important;
+  letter-spacing: 2px !important;
+}
+#boot .subtitle { color: #8a8aa0 !important; font-size: 16px !important; margin-bottom: 30px !important; }
+#boot .loadbar {
+  width: 240px !important; height: 6px !important; border-radius: 10px !important;
+  background: rgba(255,255,255,0.1) !important; margin: 0 auto 16px !important;
+  overflow: hidden !important;
+}
+#boot .loadbar i, #boot #loadfill {
+  background: linear-gradient(90deg, #ffd700, #ff8c00) !important;
+  border-radius: 10px !important; height: 100% !important;
+  display: block !important; transition: width 0.3s ease !important;
+}
+#boot .loadtext { color: #6a6a80 !important; font-size: 13px !important; }
+#boot .legal { display: none !important; }
+#boot .crest { display: none !important; }
+
+/* Lobby / Menu screen */
+#menu {
+  background: linear-gradient(160deg, #0b0e1a 0%, #151528 40%, #0f0f23 100%) !important;
+}
+#menu .menu-grid {
+  display: flex !important; flex-direction: column !important;
+  align-items: center !important; justify-content: center !important;
+  min-height: 100vh !important; padding: 30px 20px !important; gap: 0 !important;
+}
+#menu .menu-left { text-align: center !important; max-width: 400px !important; }
+#menu .title.big {
+  font-size: 52px !important; font-weight: 900 !important;
+  background: linear-gradient(135deg, #ffd700, #ff8c00) !important;
+  -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important;
+  background-clip: text !important; margin-bottom: 8px !important;
+}
+#menu .subtitle { color: #8a8aa0 !important; font-size: 15px !important; margin-bottom: 24px !important; }
+#menu .menu-actions {
+  display: flex !important; flex-direction: column !important;
+  gap: 12px !important; width: 100% !important; max-width: 320px !important;
+  margin: 0 auto !important;
+}
+#menu .btn {
+  border-radius: 16px !important; padding: 16px 24px !important;
+  font-size: 16px !important; font-weight: 700 !important;
+  border: none !important; letter-spacing: 0 !important;
+  text-align: center !important; cursor: pointer !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+#menu .btn.primary {
+  background: linear-gradient(135deg, #ffd700, #ff9500) !important;
+  color: #1a1a1a !important;
+  box-shadow: 0 8px 24px rgba(255,183,0,0.35) !important;
+}
+#menu .btn.ghost {
+  background: rgba(255,255,255,0.06) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+}
+#menu .btn:active { transform: scale(0.96) !important; }
+#menu .brief, #menu .menu-right { display: none !important; }
+
+/* Refresh button */
+#arRefresh {
+  position: fixed; top: 12px; left: 12px; z-index: 99997;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(20,24,38,0.85); border: 1px solid rgba(255,255,255,0.15);
+  color: #fff; font-size: 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(8px); box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+#arRefresh:active { transform: scale(0.9) rotate(90deg); }
+</style>
+<button id="arRefresh" onclick="location.reload()" title="تحديث">↻</button>
 </body>
 </html>
