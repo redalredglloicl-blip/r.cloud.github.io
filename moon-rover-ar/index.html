@@ -10,12 +10,12 @@
 <!-- ?v= is a cache buster: GitHub Pages serves assets with max-age=600, so a
      returning player keeps the old layout for ten minutes after a deploy.
      Bump this whenever styles.css changes in a way players must see. -->
-<link rel="stylesheet" href="https://winchxyz.github.io/moon-rover/src/ui/styles.css?v=4" />
+<link rel="stylesheet" href="src/ui/styles.css?v=4" />
 <script type="importmap">
 {
   "imports": {
-    "three": "https://winchxyz.github.io/moon-rover/vendor/three/three.module.js",
-    "three/addons/": "https://winchxyz.github.io/moon-rover/vendor/three/examples/jsm/"
+    "three": "https://unpkg.com/three@0.168.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.168.0/examples/jsm/"
   }
 }
 </script>
@@ -42,7 +42,7 @@
     <p class="subtitle">الصمت في أناكساغوراس</p>
     <div class="loadbar"><i id="loadfill"></i></div>
     <p class="loadtext" id="loadtext">جارٍ الاتصال…</p>
-    <p class="legal">مديرية سيلين · قسم مسح الجانب البعيد · MU-7 "كاسيوبيا"</p>
+    <p class="legal">SELENE DIRECTORATE · FAR-SIDE SURVEY DIVISION · MU-7 “CASSIOPEIA”</p>
   </div>
 </div>
 
@@ -60,17 +60,17 @@
         <button class="btn ghost" id="btnControls">التحكم</button>
         <button class="btn ghost" id="btnSettings">الأنظمة</button>
       </div>
-      <p class="hint">WebGL2 · تسريع GPU · يُنصح بسماعات</p>
+      <p class="hint">WebGL2 · GPU accelerated · headphones recommended</p>
     </div>
     <div class="menu-right">
       <div class="dossier">
-        <div class="dossier-row"><span>العملية</span><b>أناكساغوراس</b></div>
-        <div class="dossier-row"><span>الجرم</span><b>القمر · الجانب البعيد</b></div>
-        <div class="dossier-row"><span>الجاذبية</span><b>1.62 m/s²</b></div>
-        <div class="dossier-row"><span>الغلاف الجوي</span><b>لا يوجد</b></div>
-        <div class="dossier-row"><span>حرارة السطح</span><b>−173 … +117 °C</b></div>
-        <div class="dossier-row"><span>آخر اتصال</span><b>D+214</b></div>
-        <div class="dossier-row alert"><span>الحالة</span><b>صامت</b></div>
+        <div class="dossier-row"><span>OPERATION</span><b>ANAXAGORAS</b></div>
+        <div class="dossier-row"><span>BODY</span><b>LUNA · FAR SIDE</b></div>
+        <div class="dossier-row"><span>GRAVITY</span><b>1.62 m/s²</b></div>
+        <div class="dossier-row"><span>ATMOSPHERE</span><b>NONE</b></div>
+        <div class="dossier-row"><span>SURFACE TEMP</span><b>−173 … +117 °C</b></div>
+        <div class="dossier-row"><span>LAST CONTACT</span><b>D+214</b></div>
+        <div class="dossier-row alert"><span>STATUS</span><b>SILENT</b></div>
       </div>
     </div>
   </div>
@@ -81,8 +81,8 @@
   <!-- ── row 1 ─────────────────────────────────────────────── -->
   <div class="z-mission">
     <section class="panel mission" id="missionBox">
-      <header><span id="missionTag">المهمة 01</span></header>
-      <h3 id="missionName">بداية باردة</h3>
+      <header><span id="missionTag">MISSION 01</span></header>
+      <h3 id="missionName">COLD START</h3>
       <div class="mission-obj" id="missionObj">—</div>
     </section>
   </div>
@@ -91,8 +91,8 @@
 
   <div class="z-clock">
     <section class="panel clock">
-      <div class="row"><span>طور الشمس</span><b id="sunPhase">—</b></div>
-      <div class="row"><span>الوقت</span><b id="met">00:00:00</b></div>
+      <div class="row"><span>SOL PHASE</span><b id="sunPhase">—</b></div>
+      <div class="row"><span>MET</span><b id="met">00:00:00</b></div>
       <div class="row"><span>RANGE · SLED</span><b id="rangeHome">—</b></div>
     </section>
   </div>
@@ -102,11 +102,11 @@
 
   <div class="z-rail">
     <section class="panel map">
-      <header><span>أناكساغوراس BASIN</span><b id="mapScale">400 m</b></header>
+      <header><span>ANAXAGORAS BASIN</span><b id="mapScale">400 m</b></header>
       <canvas id="minimap" width="300" height="300"></canvas>
     </section>
     <section class="panel bay">
-      <header><span>حجرة العينات</span><b id="bayCount">0/6</b></header>
+      <header><span>SAMPLE BAY</span><b id="bayCount">0/6</b></header>
       <div class="baygrid" id="baygrid"></div>
     </section>
   </div>
@@ -115,21 +115,21 @@
   <div class="z-bottom">
     <section class="panel sys">
       <header><span>الأنظمة</span></header>
-      <div class="gauge" id="gBatt"><label>الطاقة</label><b>100%</b><div class="bar"><i></i></div></div>
-      <div class="gauge" id="gHeat"><label>الحرارة</label><b>+18°</b><div class="bar"><i></i></div></div>
-      <div class="gauge" id="gHull"><label>السلامة</label><b>100%</b><div class="bar"><i></i></div></div>
+      <div class="gauge" id="gBatt"><label>POWER</label><b>100%</b><div class="bar"><i></i></div></div>
+      <div class="gauge" id="gHeat"><label>THERMAL</label><b>+18°</b><div class="bar"><i></i></div></div>
+      <div class="gauge" id="gHull"><label>INTEGRITY</label><b>100%</b><div class="bar"><i></i></div></div>
       <div class="chips" id="sysChips"></div>
     </section>
 
     <section class="panel inst drive"><canvas id="speedo" width="150" height="150"></canvas></section>
 
     <section class="panel inst wheels">
-      <header><span>حمولة العجلات / الانزلاق</span></header>
+      <header><span>WHEEL LOAD / SLIP</span></header>
       <canvas id="wheelmon" width="236" height="112"></canvas>
     </section>
 
     <section class="panel inst gpr">
-      <header><span>رادار اختراق الأرض</span><b id="gprState">خامل</b></header>
+      <header><span>GROUND PENETRATING RADAR</span><b id="gprState">IDLE</b></header>
       <canvas id="gprscope" width="290" height="112"></canvas>
     </section>
   </div>
@@ -140,15 +140,15 @@
 
   <!-- damage / discovery flashes -->
   <div class="vig" id="vig"></div>
-  <div class="discovery hidden" id="discovery"><div class="d-kicker">إشارة باطنية</div><div class="d-name"></div><div class="d-sub"></div></div>
+  <div class="discovery hidden" id="discovery"><div class="d-kicker">SUBSURFACE RETURN</div><div class="d-name"></div><div class="d-sub"></div></div>
 </div>
 
 <!-- ============ السجل ============ -->
 <div id="codex" class="overlay sheet hidden">
-  <div class="panel-head"><h2>سجل الميدان</h2><button class="x" data-close="codex">ESC</button></div>
+  <div class="panel-head"><h2>FIELD السجل</h2><button class="x" data-close="codex">ESC</button></div>
   <div class="codex-body">
     <ul class="codex-list" id="codexList"></ul>
-    <article class="codex-read" id="codexRead"><h3>اختر عنصراً</h3><p>تظهر هنا الشظايا المستردة وتحليلات العينات وبيانات المديرية أثناء مسح الحوض.</p></article>
+    <article class="codex-read" id="codexRead"><h3>SELECT AN ENTRY</h3><p>Recovered fragments, sample analyses and Directorate telemetry appear here as you survey the basin.</p></article>
   </div>
 </div>
 
@@ -166,14 +166,14 @@
 
 <!-- ============ التحكم ============ -->
 <div id="help" class="overlay sheet hidden">
-  <div class="panel-head"><h2>نظام تحكم المركبة</h2><button class="x" data-close="help">ESC</button></div>
+  <div class="panel-head"><h2>ROVER CONTROL SCHEME</h2><button class="x" data-close="help">ESC</button></div>
   <div class="keys" id="keysBody"></div>
 </div>
 
 <!-- ============ MISSION CARD ============ -->
 <div id="cardOverlay" class="overlay card hidden">
   <div class="card-inner">
-    <div class="card-kicker" id="cardKicker">المهمة 01</div>
+    <div class="card-kicker" id="cardKicker">MISSION 01</div>
     <h2 class="card-title" id="cardTitle"></h2>
     <p class="card-text" id="cardText"></p>
     <div class="card-obj" id="cardObj"></div>
@@ -181,326 +181,8 @@
   </div>
 </div>
 
-<noscript><div class="overlay boot"><div class="boot-inner"><h1 class="title">REGOLITH</h1><p class="subtitle">الجافاسكربت مطلوب.</p></div></div></noscript>
+<noscript><div class="overlay boot"><div class="boot-inner"><h1 class="title">REGOLITH</h1><p class="subtitle">JavaScript is required.</p></div></div></noscript>
 
-<script type="module" src="https://winchxyz.github.io/moon-rover/src/main.js"></script>
-<style>#btnControls{display:none!important}</style>
-<script>
-(function(){
-var T = {
-'DRIVE':'قيادة','REVERSE':'رجوع','DRILL':'حفر','ARM':'ذراع','ARRAY':'الألواح',
-'LAMPS':'المصابيح','BEACON-9':'منارة-9','BEACON':'منارة','GPR':'الرادار',
-'FREE SURVEY':'مسح حر','IDLE':'خامل','EMPTY':'فارغ','RECHARGING':'شحن',
-'SWEEPING':'مسح','AIRBORNE':'محلق','LOCAL':'محلي','STATION LOG':'سجل المحطة',
-'CAM':'كاميرا','LAMP':'مصباح','HUD':'واجهة','SHOT':'صورة','BRAKE':'فرامل',
-'SCAN':'مسح','RELAY':'مرحل','LOOK':'نظر','COLD START':'بداية باردة',
-'Deploy the solar array':'انشر الألواح الشمسية',
-'Drive 120 m from the sled':'قد 120 متر من الزلاجة',
-'Run one ground-penetrating radar sweep':'نفذ مسح رادار أرضي واحد'
-};
-function translate(){
-var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT), nodes = [], n;
-while(n = w.nextNode()) nodes.push(n);
-nodes.forEach(function(x){ var t = x.textContent.trim(); if(T[t]) x.textContent = T[t]; });
-}
-new MutationObserver(translate).observe(document.body, {childList:true, subtree:true, characterData:true});
-setTimeout(translate, 1500); setTimeout(translate, 4000);
-})();
-</script>
-
-
-<div id="howToPlay">🕹️ العصا اليسرى للقيادة • العصا اليمنى للنظر • الأزرار للأدوات</div>
-<script>
-setTimeout(function(){
-  var h = document.getElementById('howToPlay');
-  if(h) setTimeout(function(){ h.remove(); }, 9000);
-}, 100);
-</script>
-<style>
-/* ===== PROPER MOBILE SCALING using game's own system ===== */
-@media (orientation: landscape) and (max-height: 500px) {
-  .hud { --hud-k: 0.62 !important; }
-}
-@media (orientation: landscape) and (min-height: 501px) and (max-height: 800px) {
-  .hud { --hud-k: 0.78 !important; }
-}
-/* Ensure HUD never overflows */
-.hud { overflow: hidden !important; }
-/* Clearer text */
-.hud { font-family: 'Segoe UI', Tahoma, Arial, sans-serif !important; }
-</style>
-
-<style>
-/* ===== MODERN ARABIC LOBBY & LOADING ===== */
-/* Loading screen */
-#boot {
-  background: linear-gradient(160deg, #0b0e1a 0%, #1a1a2e 50%, #0f0f23 100%) !important;
-}
-#boot .boot-inner { text-align: center !important; padding: 30px !important; }
-#boot .title {
-  font-size: 48px !important; font-weight: 900 !important;
-  background: linear-gradient(135deg, #ffd700, #ff8c00) !important;
-  -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important;
-  background-clip: text !important; margin-bottom: 8px !important;
-  letter-spacing: 2px !important;
-}
-#boot .subtitle { color: #8a8aa0 !important; font-size: 16px !important; margin-bottom: 30px !important; }
-#boot .loadbar {
-  width: 240px !important; height: 6px !important; border-radius: 10px !important;
-  background: rgba(255,255,255,0.1) !important; margin: 0 auto 16px !important;
-  overflow: hidden !important;
-}
-#boot .loadbar i, #boot #loadfill {
-  background: linear-gradient(90deg, #ffd700, #ff8c00) !important;
-  border-radius: 10px !important; height: 100% !important;
-  display: block !important; transition: width 0.3s ease !important;
-}
-#boot .loadtext { color: #6a6a80 !important; font-size: 13px !important; }
-#boot .legal { display: none !important; }
-#boot .crest { display: none !important; }
-
-/* Lobby / Menu screen */
-#menu {
-  background: linear-gradient(160deg, #0b0e1a 0%, #151528 40%, #0f0f23 100%) !important;
-}
-#menu .menu-grid {
-  display: flex !important; flex-direction: column !important;
-  align-items: center !important; justify-content: center !important;
-  min-height: 100vh !important; padding: 30px 20px !important; gap: 0 !important;
-}
-#menu .menu-left { text-align: center !important; max-width: 400px !important; }
-#menu .title.big {
-  font-size: 52px !important; font-weight: 900 !important;
-  background: linear-gradient(135deg, #ffd700, #ff8c00) !important;
-  -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important;
-  background-clip: text !important; margin-bottom: 8px !important;
-}
-#menu .subtitle { color: #8a8aa0 !important; font-size: 15px !important; margin-bottom: 24px !important; }
-#menu .menu-actions {
-  display: flex !important; flex-direction: column !important;
-  gap: 12px !important; width: 100% !important; max-width: 320px !important;
-  margin: 0 auto !important;
-}
-#menu .btn {
-  border-radius: 16px !important; padding: 16px 24px !important;
-  font-size: 16px !important; font-weight: 700 !important;
-  border: none !important; letter-spacing: 0 !important;
-  text-align: center !important; cursor: pointer !important;
-  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
-}
-#menu .btn.primary {
-  background: linear-gradient(135deg, #ffd700, #ff9500) !important;
-  color: #1a1a1a !important;
-  box-shadow: 0 8px 24px rgba(255,183,0,0.35) !important;
-}
-#menu .btn.ghost {
-  background: rgba(255,255,255,0.06) !important;
-  color: #fff !important;
-  border: 1px solid rgba(255,255,255,0.12) !important;
-}
-#menu .btn:active { transform: scale(0.96) !important; }
-#menu .brief, #menu .menu-right { display: none !important; }
-
-/* Refresh button */
-#arRefresh {
-  position: fixed; top: 12px; left: 12px; z-index: 99997;
-  width: 44px; height: 44px; border-radius: 50%;
-  background: rgba(20,24,38,0.85); border: 1px solid rgba(255,255,255,0.15);
-  color: #fff; font-size: 20px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  backdrop-filter: blur(8px); box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-#arRefresh:active { transform: scale(0.9) rotate(90deg); }
-</style>
-<div id="arVer" onclick="location.reload()" title="اضغط للتحديث" style="position:fixed;top:12px;left:12px;z-index:99997;display:flex;align-items:center;gap:8px;background:rgba(20,24,38,0.85);border:1px solid rgba(255,215,0,0.25);border-radius:20px;padding:8px 14px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 4px 12px rgba(0,0,0,0.3)">
-<span style="font-size:16px">↻</span>
-<span style="color:#ffd700;font-size:12px;font-weight:700">v1.2 عربي</span>
-</div>
-<style>
-/* ===== MODERN IN-GAME UI (appearance only) ===== */
-/* HUD Buttons - modern look */
-.hud .tbtns button, .hud .tbtns2 button {
-  border-radius: 14px !important;
-  background: linear-gradient(135deg, rgba(35,40,58,0.92), rgba(22,26,42,0.92)) !important;
-  border: 1px solid rgba(255,255,255,0.12) !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08) !important;
-  font-weight: 700 !important;
-  backdrop-filter: blur(6px) !important;
-  transition: transform 0.12s ease !important;
-}
-.hud .tbtns button:active, .hud .tbtns2 button:active {
-  transform: scale(0.92) !important;
-  background: linear-gradient(135deg, rgba(55,62,88,0.95), rgba(35,42,62,0.95)) !important;
-}
-/* Joysticks - modern */
-.hud .stick {
-  border: 2px solid rgba(255,215,0,0.25) !important;
-  background: radial-gradient(circle, rgba(20,24,38,0.6) 0%, rgba(10,12,22,0.85) 100%) !important;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.4), inset 0 2px 8px rgba(0,0,0,0.3) !important;
-  backdrop-filter: blur(4px) !important;
-}
-/* Mission panel - modern card */
-.hud .mission {
-  border-radius: 16px !important;
-  background: rgba(15,18,32,0.88) !important;
-  backdrop-filter: blur(10px) !important;
-  border: 1px solid rgba(255,215,0,0.18) !important;
-  border-left: 3px solid #ffd700 !important;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.35) !important;
-  padding: 12px 16px !important;
-}
-/* All HUD text - modern */
-.hud {
-  font-family: 'Segoe UI', Tahoma, Arial, sans-serif !important;
-}
-/* Tutorial/toast messages - modern */
-.hud .toast, .hud [class*="toast"], .hud [class*="hint"], .hud [class*="prompt"] {
-  border-radius: 16px !important;
-  background: rgba(15,18,32,0.92) !important;
-  border: 1px solid rgba(255,215,0,0.25) !important;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
-  backdrop-filter: blur(10px) !important;
-  padding: 12px 20px !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-}
-/* Panels */
-.hud .panel {
-  border-radius: 16px !important;
-  background: rgba(15,18,32,0.85) !important;
-  backdrop-filter: blur(10px) !important;
-  border: 1px solid rgba(255,255,255,0.08) !important;
-}
-</style>
-<style>
-/* ===== PC TO MOBILE - touch everything ===== */
-.hud button, .hud .tbtns button, .hud .tbtns2 button, .hud .btn {
-  min-width: 52px !important;
-  min-height: 52px !important;
-  font-size: 13px !important;
-  touch-action: manipulation !important;
-  -webkit-tap-highlight-color: transparent !important;
-  user-select: none !important;
-  -webkit-user-select: none !important;
-}
-/* System panel buttons - make tappable */
-.hud .sysChips button, .hud [class*="chip"] button, .hud [class*="sys"] button {
-  min-width: 60px !important;
-  min-height: 48px !important;
-  border-radius: 12px !important;
-  pointer-events: auto !important;
-  cursor: pointer !important;
-}
-/* Remove hover-only effects (useless on mobile) */
-.hud *:hover { /* keep simple */ }
-/* Bigger touch areas for small controls */
-.hud [class*="toggle"], .hud [class*="switch"] {
-  min-width: 56px !important;
-  min-height: 40px !important;
-}
-</style>
-<script>
-// Remove PC keyboard/mouse hints from UI
-(function(){
-var pcTerms = {
-  'KeyW':'','KeyA':'','KeyS':'','KeyD':'','KeyQ':'','KeyE':'',
-  'KeyR':'','KeyF':'','KeyG':'','KeyH':'','KeyC':'','KeyV':'',
-  'KeyB':'','KeyZ':'','KeyX':'','KeyP':'','KeyT':'','KeyK':'',
-  'Space':'مسافة','Shift':'','Ctrl':'','Alt':'','Tab':'','Esc':'',
-  'LMB':'لمس','RMB':'','MMB':'','Mouse':'لمس','Keyboard':'',
-  'WASD':'العصا','Arrow keys':'الأسهم'
-};
-function cleanPC(){
-  var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT), nodes = [], n;
-  while(n = w.nextNode()) nodes.push(n);
-  nodes.forEach(function(x){
-    var t = x.textContent;
-    var orig = t;
-    Object.keys(pcTerms).forEach(function(k){
-      if(k && t.indexOf(k) !== -1) t = t.split(k).join(pcTerms[k]);
-    });
-    // Clean up double spaces and empty parens
-    t = t.replace(/\s+/g, ' ').replace(/\(\s*\)/g, '').replace(/\[\s*\]/g, '').trim();
-    if(t !== orig) x.textContent = t;
-  });
-  // Hide elements that are PC-only
-  document.querySelectorAll('[class*="kb-hint"], [class*="mouse-hint"], [class*="pc-only"]').forEach(function(el){
-    el.style.display = 'none';
-  });
-}
-new MutationObserver(cleanPC).observe(document.body, {childList:true, subtree:true, characterData:true});
-setTimeout(cleanPC, 2000); setTimeout(cleanPC, 5000);
-})();
-</script>
-<style>
-/* ===== PORTRAIT LAYOUT FIX ===== */
-@media (orientation: portrait) {
-  /* Version badge - move to top center, don't overlap minimap */
-  #arVer {
-    top: 8px !important; left: 50% !important; transform: translateX(-50%) !important;
-  }
-  /* Mission panel - compact */
-  .hud .mission {
-    max-width: 58vw !important;
-    font-size: 11px !important;
-    padding: 8px 12px !important;
-    top: 56px !important;
-  }
-  /* Systems panel - below mission, compact */
-  .hud .panel {
-    max-width: 58vw !important;
-    font-size: 11px !important;
-  }
-  /* Button columns - tighter, no overlap */
-  .hud .tbtns, .hud .tbtns2 {
-    gap: 4px !important;
-  }
-  .hud .tbtns button, .hud .tbtns2 button {
-    min-width: 64px !important;
-    min-height: 44px !important;
-    font-size: 11px !important;
-    padding: 6px 8px !important;
-  }
-  /* Joysticks - smaller in portrait */
-  .hud .stick {
-    width: 100px !important;
-    height: 100px !important;
-  }
-  /* Minimap - smaller */
-  .hud [class*="minimap"], .hud [class*="map"] {
-    max-width: 28vw !important;
-  }
-}
-/* Version badge - default position (landscape) */
-#arVer { transition: all 0.3s ease !important; }
-</style>
-<script>
-// Direct button styler - targets all HUD buttons by tag
-(function(){
-function styleButtons(){
-  // Find the HUD container
-  var hud = document.querySelector('.hud') || document.body;
-  var btns = hud.querySelectorAll('button');
-  btns.forEach(function(b){
-    // Skip menu buttons (already styled)
-    if(b.id && b.id.indexOf('btn') === 0) return;
-    // Apply modern mobile style directly
-    b.style.setProperty('border-radius', '14px', 'important');
-    b.style.setProperty('background', 'linear-gradient(135deg, rgba(35,40,58,0.92), rgba(22,26,42,0.92))', 'important');
-    b.style.setProperty('border', '1px solid rgba(255,255,255,0.12)', 'important');
-    b.style.setProperty('box-shadow', '0 4px 12px rgba(0,0,0,0.35)', 'important');
-    b.style.setProperty('font-weight', '700', 'important');
-    b.style.setProperty('min-width', '60px', 'important');
-    b.style.setProperty('min-height', '48px', 'important');
-    b.style.setProperty('font-size', '12px', 'important');
-    b.style.setProperty('color', '#fff', 'important');
-  });
-}
-new MutationObserver(styleButtons).observe(document.body, {childList:true, subtree:true});
-setTimeout(styleButtons, 2000);
-setTimeout(styleButtons, 5000);
-setInterval(styleButtons, 10000);
-})();
-</script>
+<script type="module" src="src/main.js"></script>
 </body>
 </html>
