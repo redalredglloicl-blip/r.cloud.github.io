@@ -2,7 +2,7 @@
 (function(){
 if(window._storeNewLoaded)return;window._storeNewLoaded=true;
 try{
-var _setV=function(){try{document.title='24';var vt=document.getElementById('verTag');if(vt)vt.textContent='24';var v2=document.querySelector('.ver');if(v2)v2.textContent='24';}catch(e){}};
+var _setV=function(){try{document.title='25';var vt=document.getElementById('verTag');if(vt)vt.textContent='25';var v2=document.querySelector('.ver');if(v2)v2.textContent='25';}catch(e){}};
 _setV();setTimeout(_setV,500);setTimeout(_setV,1500);setTimeout(_setV,3000);
 }catch(e){}
 
@@ -36,14 +36,14 @@ window.COMING_SOON=[
 {k:'x',n:'X',dev:'X Corp.',cat:'أخبار وتواصل',desc:'تابع الترندات.',comingSoon:true},
 {k:'camera',n:'Camera',dev:'Apple',cat:'صور وفيديو',desc:'التقط صور وفيديوهات.',comingSoon:true},
 {k:'tiktok',n:'TikTok',dev:'TikTok Ltd.',cat:'صور وفيديو',desc:'فيديوهات قصيرة.',comingSoon:true},
-{k:'whatsapp',n:'WhatsApp Messenger',dev:'Meta Platforms',cat:'تواصل اجتماعي',desc:'مراسلة ومكالمات.',comingSoon:true},
 ];
+
 
 // Mark original STORE Instagram/Facebook/X as coming soon (not downloadable)
 try{
 if(typeof STORE!=='undefined'){
 STORE.forEach(function(a){
-if(['instagram','facebook','x','telegram','messenger','snapchat','discord','whatsapp'].indexOf(a.k)!==-1){a.comingSoon=true;}
+if(['instagram','facebook','x','telegram','messenger','snapchat','discord'].indexOf(a.k)!==-1){a.comingSoon=true;}
 });
 }
 }catch(e){}
@@ -64,7 +64,7 @@ return _doGet(k,btn,el);
 // Remove from installed if present
 try{
 if(typeof S!=='undefined'&&S.installed){
-var rm=['instagram','facebook','x','camera','spotify','netflix','uber','shahid','capcut','picsart','tiktok','telegram','messenger','snapchat','discord','whatsapp'];
+var rm=['instagram','facebook','x','camera','spotify','netflix','uber','shahid','capcut','picsart','tiktok','telegram','messenger','snapchat','discord'];
 S.installed=S.installed.filter(function(k){return rm.indexOf(k)===-1;});
 if(typeof store!=='undefined')store.set('installed',S.installed);
 }
