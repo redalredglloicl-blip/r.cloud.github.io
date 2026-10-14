@@ -4,7 +4,7 @@
 if(window._animLoaded)return;window._animLoaded=true;
 
 // Version bump
-try{document.title='22';var vt=document.getElementById('verTag');if(vt)vt.textContent='22';}catch(e){}
+try{document.title='23';var vt=document.getElementById('verTag');if(vt)vt.textContent='23';}catch(e){}
 
 window.showAppWin=function(fromEl){
 const win=$('#appWin');if(S._from&&S._from!==fromEl&&S._from.style){S._from.style.opacity='';S._from.style.transform=''}S._from=fromEl||null;const tok=(S._anim=(S._anim||0)+1);
