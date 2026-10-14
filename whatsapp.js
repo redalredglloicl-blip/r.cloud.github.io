@@ -1,7 +1,7 @@
-// WhatsApp - Full Real Implementation - Version 29
+// WhatsApp - Full Real Implementation - Version 30
 (function(){
 if(window._waLoaded)return;window._waLoaded=true;
-try{document.title='29';var vt=document.getElementById('verTag');if(vt)vt.textContent='29';}catch(e){}
+try{document.title='30';var vt=document.getElementById('verTag');if(vt)vt.textContent='30';}catch(e){}
 
 var FB='https://spychat-4f8d5-default-rtdb.firebaseio.com/rio-ipad/whatsapp';
 var WA={user:null,chat:null,poll:null};
@@ -346,30 +346,36 @@ openChat(chatId,other);
 // Screenshot protection: blur chat when tab loses visibility
 function waScreenProtect(){
 if(WA._protOn)return;WA._protOn=true;
-var overlay=null;
-document.addEventListener('visibilitychange',()=>{
+var showProt=function(){
 if(S.app!=='whatsapp'||!WA.chat)return;
-if(document.hidden){
-// Blur the chat
-overlay=document.createElement('div');
+if(document.querySelector('#waProtect'))return;
+var overlay=document.createElement('div');
 overlay.id='waProtect';
 overlay.style.cssText='position:fixed;inset:0;background:#0b141a;z-index:999998;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#8696a0';
-overlay.innerHTML='<div style="font-size:48px;margin-bottom:16px;opacity:.5">'
-+'<svg viewBox="0 0 24 24" width="48" height="48" fill="#8696a0"><path d="M18 8h-1V6a5 5 0 0 0-10 0v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2z"/></svg></div>'
+overlay.innerHTML='<div style="margin-bottom:16px;opacity:.5">'
++'<svg viewBox="0 0 24 24" width="48" height="48" fill="#8696a0"><path d="M18 8h-1V6a5 5 0 0 0-10 0v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2zM9 6a3 3 0 0 1 6 0v2H9V6z"/></svg></div>'
 +'<b style="font-size:16px">محادثة محمية</b><p style="font-size:13px;margin-top:8px">تم إخفاء المحتوى لحماية خصوصيتك</p>';
 document.body.appendChild(overlay);
-}else{
+};
+var hideProt=function(){
 var o=document.querySelector('#waProtect');
 if(o)o.remove();
-}
-});
-// Prevent context menu (long-press save) in chat
+};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)showProt();else hideProt();});
+window.addEventListener('blur',()=>{showProt();});
+window.addEventListener('focus',()=>{hideProt();});
+window.addEventListener('pagehide',()=>{showProt();});
 document.addEventListener('contextmenu',e=>{
 if(S.app==='whatsapp'&&WA.chat){
 var box=document.querySelector('#waMsgs');
 if(box&&box.contains(e.target))e.preventDefault();
 }
 });
+if(!document.querySelector('#waWmStyle')){
+var st=document.createElement('style');st.id='waWmStyle';
+st.textContent='.waMsg{position:relative}.waMsg::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(0,0,0,.015) 40px,rgba(0,0,0,.015) 80px)}';
+document.head.appendChild(st);
+}
 }
 
 // Open chat view
@@ -623,7 +629,7 @@ el.innerHTML='<div style="background:#f6f6f6;min-height:100%">'
 ].map(r=>'<div class="waSetRow" data-set="'+r[1]+'" style="background:#fff;margin:0 16px;padding:14px 16px;display:flex;gap:12px;align-items:center;cursor:pointer;border-bottom:1px solid #f0f0f0">'
 +'<span style="display:flex">'+r[0]+'</span><div style="flex:1"><b style="font-size:15px">'+r[1]+'</b><br><span class="mut" style="font-size:12px">'+r[2]+'</span></div><span style="color:#c0c0c0">‹</span></div>').join('')
 +'<button id="waLogout2" style="width:calc(100% - 32px);margin:16px;background:#fee;color:#e11d48;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600">تسجيل الخروج</button>'
-+'<p style="text-align:center;color:#8696a0;font-size:12px;padding:10px">WhatsApp v29<br>صُنع بحب</p>'
++'<p style="text-align:center;color:#8696a0;font-size:12px;padding:10px">WhatsApp v30<br>صُنع بحب</p>'
 +'</div>';
 document.querySelector('#waSetBack').addEventListener('click',showMain);
 document.querySelector('#waProfileCard').addEventListener('click',()=>{showMain();});
