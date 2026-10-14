@@ -1,7 +1,7 @@
 // Site ban system - Version 21 (admin only, console-hardened)
 (function(){
 if(window._banLoaded)return;window._banLoaded=true;
-try{document.title='24';var vt=document.getElementById('verTag');if(vt)vt.textContent='24';}catch(e){}
+try{document.title='25';var vt=document.getElementById('verTag');if(vt)vt.textContent='25';}catch(e){}
 
 // Simple hash for PIN (hash only - the PIN itself is NOT stored in this file)
 function _hash(s){var h=0;for(var i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return String(h);}
