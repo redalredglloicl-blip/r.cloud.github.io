@@ -185,6 +185,64 @@
 <noscript><div class="overlay boot"><div class="boot-inner"><h1 class="title">REGOLITH</h1><p class="subtitle">JavaScript is required.</p></div></div></noscript>
 
 <script type="module" src="src/main.js"></script>
-<div id="arVersion">v2.5</div>
+<div id="arVersion">v2.6</div>
+
+<script type="module">
+import { createTravelMode } from './src/game/travel.js';
+(function() {
+  let travelMode = null;
+  function attach() {
+    const btn = document.getElementById('btnTravel');
+    if (!btn) { setTimeout(attach, 500); return; }
+    btn.addEventListener('click', async () => {
+      try {
+        // Get scene/camera from the game
+        const App = window.REGOLITH;
+        if (!App || !App.scene || !App.camera) {
+          alert('انتظر اكتمال التحميل');
+          return;
+        }
+        document.getElementById('menu').classList.add('hidden');
+        if (!travelMode) travelMode = createTravelMode(App.scene, App.camera);
+        // Show intro
+        const div = document.createElement('div');
+        div.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(5,8,18,0.92)';
+        div.innerHTML = '<div style="text-align:center;padding:40px"><div style="font-size:56px">🚀</div><h2 style="color:#ffd700;font-size:28px">رحلة إلى الأرض</h2><p style="color:#999">مهمة تجريبية للقمر إلى الأرض</p><br><button id="goBtn" style="background:#ffd700;color:#000;border:none;border-radius:16px;padding:16px 48px;font-size:18px;font-weight:800">انطلق 🚀</button></div>';
+        document.body.appendChild(div);
+        div.querySelector('#goBtn').onclick = () => {
+          div.remove();
+          travelMode.start(() => {
+            const t = document.createElement('div');
+            t.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:99999;background:#1a1a2a;border:1px solid #ffd700;border-radius:16px;padding:14px 28px;color:#ffd700;font-size:16px';
+            t.textContent = '🌍 وصلت إلى الأرض!';
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 4000);
+          });
+          // Hook into game loop
+          const origTick = App.tick;
+          App.tick = (dt) => {
+            if (travelMode.state.active) {
+              travelMode.update(dt);
+              App.renderer.render(App.scene, App.camera);
+            } else {
+              origTick(dt);
+            }
+          };
+        };
+      } catch(e) {
+        alert('خطأ: ' + e.message);
+        console.error(e);
+      }
+    });
+    console.log('Travel button attached!');
+  }
+  // Wait for DOM then attach
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(attach, 2000));
+  } else {
+    setTimeout(attach, 2000);
+  }
+})();
+</script>
 </body>
 </html>
