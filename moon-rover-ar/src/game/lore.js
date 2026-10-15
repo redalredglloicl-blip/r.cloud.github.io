@@ -145,12 +145,12 @@ export const SAMPLES = {
 /* ---------------- missions ---------------- */
 export const MISSIONS = [
   {
-    id: 'coldstart', tag: 'MISSION 01', name: 'COLD START',
-    brief: `The sled is down and you are on the surface. Deploy the array, wake the drive train, and get a feel for one sixth of a gravity before you need it. Everything about this machine is tuned for a world that pulls harder than this one.`,
+    id: 'coldstart', tag: 'MISSION 01', name: 'بداية باردة',
+    brief: `الزلاجة هبطت وأنت على السطح. انشر الألواح الشمسية، وشغّل نظام القيادة، وتعود على سدس الجاذبية قبل ما تحتاجها. كل شي بهالمركبة مصمم لعالم جاذبيته أقوى من هنانا.`,
     objectives: [
-      { id: 'deploy', text: 'Deploy the solar array', hint: 'press T' },
-      { id: 'drive', text: 'Drive 120 m from the sled' },
-      { id: 'scan', text: 'Run one ground-penetrating radar sweep', hint: 'press G' }
+      { id: 'deploy', text: 'انشر الألواح الشمسية', hint: 'press T' },
+      { id: 'drive', text: 'اقُد 120 متر بعيد عن الزلاجة' },
+      { id: 'scan', text: 'سوِّ مسح واحد بالرادار الأرضي', hint: 'press G' }
     ]
   },
   {
