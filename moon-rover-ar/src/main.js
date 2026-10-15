@@ -305,6 +305,11 @@ function wireUI() {
         showToast('🌍 وصلت إلى الأرض!');
       });
     });
+    } catch(e) {
+      console.error('Travel error:', e);
+      showToast('⚠️ خطأ: ' + e.message);
+      $('menu').classList.remove('hidden');
+    }
   };
   // Store for game loop
   App.travelMode = () => travelMode;
