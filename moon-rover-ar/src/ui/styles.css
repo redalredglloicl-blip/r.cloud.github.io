@@ -847,3 +847,109 @@ kbd{display:inline-block;min-width:20px;text-align:center;padding:2px 6px;border
 /* Fix: allow boot screen to hide */
 #boot.hidden { display: none !important; }
 #menu.hidden { display: none !important; }
+
+/* ============================================================
+   COMPLETE REDESIGN v3.0 - Gold & Dark theme, new layout
+   ============================================================ */
+
+/* --- BUTTONS: completely new look --- */
+.hud .tbtns, .hud .tbtns2 {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+.hud .tbtns button, .hud .tbtns2 button {
+  /* New gold-dark style */
+  background: linear-gradient(145deg, #1e2238 0%, #141828 100%) !important;
+  border: 1.5px solid rgba(255,215,0,0.35) !important;
+  border-radius: 18px !important;
+  color: #ffd700 !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  letter-spacing: 1px !important;
+  min-width: 76px !important;
+  min-height: 52px !important;
+  padding: 10px 14px !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45), 0 0 12px rgba(255,215,0,0.08), inset 0 1px 0 rgba(255,255,255,0.1) !important;
+  text-transform: uppercase !important;
+  transition: all 0.15s ease !important;
+}
+.hud .tbtns button:active, .hud .tbtns2 button:active {
+  transform: scale(0.92) !important;
+  background: linear-gradient(145deg, #ffd700 0%, #ff9500 100%) !important;
+  color: #1a1a1a !important;
+  box-shadow: 0 4px 20px rgba(255,183,0,0.5) !important;
+}
+
+/* --- BUTTON POSITIONS: moved inward for thumbs --- */
+.hud .tbtns {
+  right: 12px !important;
+  bottom: 190px !important;
+}
+.hud .tbtns2 {
+  left: 12px !important;
+  bottom: 190px !important;
+}
+
+/* --- MISSION PANEL: new style --- */
+.hud .mission {
+  background: linear-gradient(145deg, rgba(20,24,40,0.95), rgba(14,17,30,0.95)) !important;
+  border: 1px solid rgba(255,215,0,0.25) !important;
+  border-radius: 20px !important;
+  border-top: 3px solid #ffd700 !important;
+  border-left: none !important;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.5) !important;
+  padding: 16px 18px !important;
+}
+.hud .mission .mission-title, .hud .mission h3 {
+  color: #ffd700 !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+/* --- SYSTEM PANELS: new style --- */
+.hud .panel {
+  background: linear-gradient(145deg, rgba(20,24,40,0.92), rgba(14,17,30,0.92)) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.45) !important;
+}
+
+/* --- MESSAGES / DIALOGS / TOASTS: new style --- */
+.hud .toast, .hud .dialog, .hud .modal-card, .hud [class*="toast"], .hud [class*="dialog"] {
+  background: linear-gradient(145deg, #1e2238, #141828) !important;
+  border: 1.5px solid rgba(255,215,0,0.4) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 24px rgba(255,215,0,0.1) !important;
+  color: #fff !important;
+  padding: 18px 22px !important;
+}
+.hud .toast button, .hud .dialog button {
+  background: linear-gradient(135deg, #ffd700, #ff9500) !important;
+  color: #1a1a1a !important;
+  border: none !important;
+  border-radius: 14px !important;
+  font-weight: 800 !important;
+  padding: 12px 28px !important;
+  font-size: 15px !important;
+  box-shadow: 0 6px 20px rgba(255,183,0,0.4) !important;
+}
+
+/* --- JOYSTICKS: gold rings --- */
+.hud .stick {
+  border: 2.5px solid rgba(255,215,0,0.45) !important;
+  background: radial-gradient(circle, rgba(30,34,56,0.6) 0%, rgba(14,17,30,0.9) 100%) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(255,215,0,0.1), inset 0 2px 12px rgba(0,0,0,0.4) !important;
+}
+.hud .stick .nub, .hud .stick [class*="nub"], .hud .stick [class*="knob"] {
+  background: radial-gradient(circle, #ffd700 0%, #cc8800 100%) !important;
+  box-shadow: 0 4px 16px rgba(255,215,0,0.5) !important;
+}
+
+/* --- MINIMAP: gold border --- */
+.hud [class*="minimap"], .hud .minimap {
+  border: 2px solid rgba(255,215,0,0.3) !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
+}

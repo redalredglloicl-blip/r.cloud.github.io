@@ -66,21 +66,21 @@ export class Input {
     if (!matchMedia('(pointer: coarse)').matches && !('ontouchstart' in window)) return;
     const wrap = document.createElement('div'); wrap.id = 'touch'; wrap.className = 'hidden';
     wrap.innerHTML = `
-      <div class="stick left"><div class="nub"></div><span>DRIVE</span></div>
-      <div class="stick right"><div class="nub"></div><span>LOOK</span></div>
+      <div class="stick left"><div class="nub"></div><span>قيادة</span></div>
+      <div class="stick right"><div class="nub"></div><span>نظر</span></div>
       <div class="tbtns">
-        <button class="tb" data-k="KeyG">SCAN</button>
-        <button class="tb" data-k="KeyR">ARM</button>
-        <button class="tb" data-lmb="1">DRILL</button>
-        <button class="tb" data-k="KeyB">RELAY</button>
+        <button class="tb" data-k="KeyG">مسح</button>
+        <button class="tb" data-k="KeyR">ذراع</button>
+        <button class="tb" data-lmb="1">حفر</button>
+        <button class="tb" data-k="KeyB">مرحل</button>
       </div>
       <div class="tbtns2">
-        <button class="tb" data-k="KeyC">CAM</button>
-        <button class="tb" data-k="KeyF">LAMP</button>
-        <button class="tb" data-k="KeyT">ARRAY</button>
-        <button class="tb" data-k="KeyH">HUD</button>
-        <button class="tb" data-k="KeyK">SHOT</button>
-        <button class="tb wide" data-k="Space" data-hold="1">BRAKE</button>
+        <button class="tb" data-k="KeyC">كاميرا</button>
+        <button class="tb" data-k="KeyF">مصباح</button>
+        <button class="tb" data-k="KeyT">الألواح</button>
+        <button class="tb" data-k="KeyH">واجهة</button>
+        <button class="tb" data-k="KeyK">صورة</button>
+        <button class="tb wide" data-k="Space" data-hold="1">فرامل</button>
       </div>`;
     document.body.appendChild(wrap);
     // the stylesheet keeps the HUD clear of the thumb zone off this class, so
