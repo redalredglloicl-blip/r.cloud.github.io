@@ -631,9 +631,17 @@ function stepWorld(dt, raw, input) {
   }
   if (input.hit('KeyB')) game.deployRelay();
   if (input.hit('KeyT')) game.togglePanel();
-  if (input.hit('KeyC')) { rig.cycle(rover); if (rig.mode === CAM.PHOTO) rig.enterPhoto(rover); audio.ui('tick'); }
+  if (input.hit('KeyC')) {
+    if (App.onFoot) {
+      // on foot: only CHASE and ORBIT work (MAST/PHOTO need the rover's mast)
+      rig.setMode(rig.mode === CAM.CHASE ? CAM.ORBIT : CAM.CHASE, App.astro);
+    } else {
+      rig.cycle(rover); if (rig.mode === CAM.PHOTO) rig.enterPhoto(rover);
+    }
+    audio.ui('tick');
+  }
   if (input.hit('KeyK')) App.wantShot = true;
-  if (input.hit('KeyP')) {
+  if (input.hit('KeyP') && !App.onFoot) {
     rig.setMode(rig.mode === CAM.PHOTO ? CAM.CHASE : CAM.PHOTO, rover);
     if (rig.mode === CAM.PHOTO) rig.enterPhoto(rover);
     audio.ui('tick');
