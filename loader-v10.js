@@ -51,10 +51,20 @@ _st.textContent='@keyframes waFadeIn{from{opacity:0;transform:scale(.96)}to{opac
 document.head.appendChild(_st);
 document.body.appendChild(ov);
 document.querySelector('#forceUpdBtn').addEventListener('click',function(){
-try{if('caches' in window){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k);});});}}catch(e){}
-// Simplified: single-version reload with cache-buster (no more rioXX.html files)
+// Aggressive cache bust: clear everything, use explicit index.html path
+try{if('caches' in window){caches.keys().then(function(ks){ks.forEach(function(k){try{caches.delete(k);}catch(e){}});});}}catch(e){}
+try{
+  // Unregister any service workers
+  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister();});});}
+}catch(e){}
 var base=location.href.split('?')[0].split('#')[0];
-location.href=base+'?v='+_latestVer+'&t='+Date.now();
+if(base.charAt(base.length-1)!=='/')base+='/';
+// Explicit index.html (different cache key than directory root) + strong buster
+var fresh=base+'index.html?forceUpd='+_latestVer+'&nocache='+Date.now()+'&r='+Math.random().toString(36).slice(2);
+// replace (not href) to avoid back-button loop to stale page
+window.location.replace(fresh);
+// Fallback: if replace fails, hard reload
+setTimeout(function(){try{window.location.reload();}catch(e){}},1500);
 });
 // ANTI-BYPASS: re-show if removed via devtools
 var _obs=new MutationObserver(function(){
