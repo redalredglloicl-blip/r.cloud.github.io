@@ -16,7 +16,6 @@ import { makeEarthTextures, makeMoonAlbedo } from './world/textures.js';
 import { Rover, DRIVE, EARTH_RTT } from './game/rover.js';
 import { CameraRig, CAM } from './game/camera.js';
 import { Game, STATION, MASSIF, OPS } from './game/gameplay.js';
-import { createTravelMode } from './game/travel.js';
 import { HUD } from './ui/hud.js';
 import { MISSIONS } from './game/lore.js';
 
