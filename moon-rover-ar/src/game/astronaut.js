@@ -36,6 +36,15 @@ export class Astronaut {
     this.visible = false;
 
     this.build();
+    this.group.scale.setScalar(1.5);
+    // floating beacon marker so he's easy to spot
+    const beacon = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.22),
+      new THREE.MeshStandardMaterial({ color: 0xFF1493, emissive: 0xFF1493, emissiveIntensity: 2.5 })
+    );
+    beacon.position.y = 2.9;
+    this.group.add(beacon);
+    this.beacon = beacon;
     this.group.visible = false;
     scene.add(this.group);
   }
@@ -247,5 +256,10 @@ export class Astronaut {
 
     // antenna blink
     this.antTip.material.emissiveIntensity = 0.8 + Math.sin(t * 5) * 0.6;
+    // beacon bob + spin
+    if (this.beacon) {
+      this.beacon.position.y = 2.9 + Math.sin(t * 3) * 0.15;
+      this.beacon.rotation.y = t * 2;
+    }
   }
 }

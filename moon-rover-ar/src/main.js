@@ -211,12 +211,14 @@ function toggleOnFoot() {
     const yaw = Math.atan2(App.rover.forward.x, App.rover.forward.z);
     App.astro.exitFrom(App.rover.pos, yaw);
     App.rig.setMode(CAM.CHASE, App.astro);
+    App.rig.dist = 5.0;
     App.hud.log('على الأقدام — جاذبية منخفضة', 'good');
   } else {
     // re-enter: place rover where astronaut stands
     App.astro.hide();
     App.rover.placeAt(App.astro.pos.x, App.astro.pos.z, App.astro.yaw);
     App.rig.setMode(CAM.CHASE, App.rover);
+    App.rig.dist = 8.2;
     App.hud.log('عدت للمركبة', 'good');
   }
   App.audio.ui('tick');
