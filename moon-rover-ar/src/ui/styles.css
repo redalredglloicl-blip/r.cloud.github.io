@@ -953,3 +953,127 @@ kbd{display:inline-block;min-width:20px;text-align:center;padding:2px 6px;border
   overflow: hidden !important;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
 }
+
+/* ============================================================
+   LOBBY REDESIGN v3.1 - Modern mobile game menu
+   ============================================================ */
+#menu {
+  background: 
+    radial-gradient(ellipse at 50% 0%, rgba(255,215,0,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(68,136,255,0.08) 0%, transparent 50%),
+    linear-gradient(180deg, #0a0d18 0%, #12162a 50%, #0a0d18 100%) !important;
+}
+#menu .menu-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  min-height: 100vh !important;
+  padding: 60px 20px 40px !important;
+  gap: 0 !important;
+}
+#menu .menu-left {
+  text-align: center !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+/* Title - bold and striking */
+#menu .title.big, #menu h1 {
+  font-size: 56px !important;
+  font-weight: 900 !important;
+  letter-spacing: 8px !important;
+  margin-bottom: 4px !important;
+  background: linear-gradient(180deg, #ffe87a 0%, #ffd700 40%, #ff9500 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  text-shadow: none !important;
+  filter: drop-shadow(0 4px 20px rgba(255,183,0,0.3)) !important;
+}
+#menu .subtitle {
+  color: #8a93b0 !important;
+  font-size: 13px !important;
+  letter-spacing: 3px !important;
+  text-transform: uppercase !important;
+  margin-bottom: 12px !important;
+}
+/* Story text - card style */
+#menu .story, #menu .brief, #menu p:not(.subtitle) {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  border-radius: 16px !important;
+  padding: 16px 20px !important;
+  color: #a0a8c0 !important;
+  font-size: 13px !important;
+  line-height: 1.7 !important;
+  max-width: 340px !important;
+  margin: 0 auto 24px !important;
+  text-align: center !important;
+}
+/* Buttons - modern stacked cards */
+#menu .menu-actions {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  width: 100% !important;
+  max-width: 300px !important;
+  margin: 0 auto !important;
+}
+#menu .btn {
+  border-radius: 18px !important;
+  padding: 18px 24px !important;
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  border: none !important;
+  letter-spacing: 0.5px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+/* Primary - gold gradient */
+#menu .btn.primary {
+  background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%) !important;
+  color: #1a1200 !important;
+  box-shadow: 0 10px 32px rgba(255,183,0,0.35), inset 0 1px 0 rgba(255,255,255,0.4) !important;
+  font-size: 19px !important;
+}
+#menu .btn.primary:active {
+  transform: scale(0.96) !important;
+  box-shadow: 0 6px 20px rgba(255,183,0,0.3) !important;
+}
+/* Ghost - dark cards */
+#menu .btn.ghost {
+  background: rgba(255,255,255,0.05) !important;
+  color: #e0e4f0 !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  backdrop-filter: blur(10px) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2) !important;
+}
+#menu .btn.ghost:active {
+  transform: scale(0.96) !important;
+  background: rgba(255,255,255,0.09) !important;
+}
+/* Travel button - special */
+#menu #btnTravel {
+  background: linear-gradient(135deg, rgba(30,34,56,0.9), rgba(20,24,40,0.9)) !important;
+  border: 1.5px solid rgba(255,215,0,0.5) !important;
+  color: #ffd700 !important;
+  box-shadow: 0 6px 24px rgba(255,183,0,0.15), inset 0 1px 0 rgba(255,215,0,0.1) !important;
+}
+#menu #btnTravel:active {
+  transform: scale(0.96) !important;
+  background: linear-gradient(135deg, #ffd700, #ff9500) !important;
+  color: #1a1a1a !important;
+}
+/* Hide legal/footer clutter */
+#menu .legal, #menu .footer {
+  display: none !important;
+}

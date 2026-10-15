@@ -291,8 +291,10 @@ function wireUI() {
   $('btnTravel').onclick = () => {
     try {
       const eng = App.engine;
+      // Use engine if ready, otherwise wait a bit and retry
       if (!eng || !eng.scene || !eng.camera) {
-        showToast('⚠️ انتظر اكتمال التحميل');
+        showToast('⏳ جارٍ التجهيز...');
+        setTimeout(() => $('btnTravel').click(), 1000);
         return;
       }
       $('menu').classList.add('hidden');
