@@ -289,11 +289,15 @@ function wireUI() {
   // Travel mode
   let travelMode = null;
   $('btnTravel').onclick = () => {
-    $('menu').classList.add('hidden');
-    if (!travelMode) {
-      const scene = App.scene, camera = App.camera;
-      travelMode = createTravelMode(scene, camera);
-    }
+    try {
+      if (!App.scene || !App.camera) {
+        showToast('⚠️ انتظر اكتمال التحميل');
+        return;
+      }
+      $('menu').classList.add('hidden');
+      if (!travelMode) {
+        travelMode = createTravelMode(App.scene, App.camera);
+      }
     // Show travel intro
     showTravelIntro(() => {
       travelMode.start(() => {
