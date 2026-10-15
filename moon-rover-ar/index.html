@@ -511,7 +511,7 @@ svg.ic.big-ic{width:100%;height:100%}
 <h1>BLACK WIDOW</h1>
 <p class="lobby-tag">لعبة رعب نفسي تفاعلية</p>
 <button id="start-btn">بدء اللعبة</button>
-<p class="lobby-ver">v3.6</p>
+<p class="lobby-ver">v3.7</p>
 </div>
 <div id="loading-screen">
 <div id="loading-title">BLACK WIDOW</div>
@@ -628,15 +628,10 @@ svg.ic.big-ic{width:100%;height:100%}
 <div class="toolbar-separator"></div>
 <div class="tool-btn" data-tool="eye" title="مراقبة"><span di='eye'></span></div>
 <div class="tool-btn" data-tool="mute" title="عزل"><span di='mute'></span></div>
-<div class="toolbar-separator"></div>
-<div class="clothes-toggle-btn active" id="btn-dressed" title="مع ملابس"><span di='shirt'></span></div>
-<div class="clothes-toggle-btn" id="btn-undressed" title="بدون ملابس"><span di='undies'></span></div>
-<div class="toolbar-separator"></div>
-<button class="outfit-btn active" id="outfit-cycle" title="تغيير الطقم"><span di='hanger'></span></button>
 </div>
 </div>
 <div id="bottom-bar">
-<span>[BW ver 3.6]</span>
+<span>[BW ver 3.7]</span>
 <span>AI + Backgrounds + Voice</span>
 </div>
 </div>
@@ -647,66 +642,34 @@ svg.ic.big-ic{width:100%;height:100%}
 </div>
 <div id="expressions-panel">
 <button id="close-expressions"><span di='x'></span></button>
-<h2><span di='mask' class='sm'></span> إدارة التعابير</h2>
-<p>ارفع صورة لكل تعبير - أي لون خلفية</p>
+<h2><span di='mask' class='sm'></span> التعابير</h2>
+<p>التعابير مدمجة وجاهزة — تتغير تلقائياً حسب حالة الشخصية</p>
 <div class="expr-item">
 <label><span di='f-neutral'></span> طبيعية</label>
-<span class="expr-status" id="status-neutral">فارغة</span>
-<input type="file" id="upload-neutral" style="display:none" accept="image/*">
-<button class="upload-expr-btn" onclick="document.getElementById('upload-neutral').click()">رفع</button>
+<span class="expr-status" style="color:#4caf50">جاهزة ✓</span>
 </div>
 <div class="expr-item">
 <label><span di='f-scared'></span> خائفة</label>
-<span class="expr-status" id="status-scared">فارغة</span>
-<input type="file" id="upload-scared" style="display:none" accept="image/*">
-<button class="upload-expr-btn" onclick="document.getElementById('upload-scared').click()">رفع</button>
+<span class="expr-status" style="color:#4caf50">جاهزة ✓</span>
 </div>
 <div class="expr-item">
 <label><span di='f-cry'></span> باكية</label>
-<span class="expr-status" id="status-crying">فارغة</span>
-<input type="file" id="upload-crying" style="display:none" accept="image/*">
-<button class="upload-expr-btn" onclick="document.getElementById('upload-crying').click()">رفع</button>
+<span class="expr-status" style="color:#4caf50">جاهزة ✓</span>
 </div>
 <div class="expr-item">
 <label><span di='skull'></span> ميتة</label>
-<span class="expr-status" id="status-dead">فارغة</span>
-<input type="file" id="upload-dead" style="display:none" accept="image/*">
-<button class="upload-expr-btn" onclick="document.getElementById('upload-dead').click()">رفع</button>
+<span class="expr-status" style="color:#4caf50">جاهزة ✓</span>
 </div>
 <div id="status-msg"></div>
 </div>
 <div id="clothes-panel">
 <button id="close-clothes"><span di='x'></span></button>
-<h2><span di='dress' class='sm'></span> إدارة الملابس</h2>
-<p>اختر الطقم ثم ارفع الصور</p>
-<div class="outfit-selector">
-<button class="outfit-tab active" data-outfit="1"><span di='hanger'></span> الطقم 1</button>
-<button class="outfit-tab" data-outfit="2"><span di='dress' class='sm'></span> الطقم 2</button>
-</div>
-<div class="panel-section-title">الطقم <span id="current-outfit-name">1</span></div>
-<div class="expr-item">
-<label><span di='f-neutral'></span> طبيعية - بدون ملابس</label>
-<span class="expr-status" id="status-neutral-und">فارغة</span>
-<input type="file" id="upload-neutral-und" style="display:none" accept="image/*">
-<button class="upload-expr-btn" onclick="document.getElementById('upload-neutral-und').click()">رفع</button>
-</div>
-<div class="expr-item">
-<label><span di='f-scared'></span> خائفة - بدون ملابس</label>
-<span class="expr-status" id="status-scared-und">فارغة</span>
-<input type="file" id="upload-scared-und" style="display:none" accept="image/*">
-<button class="upload-expr-btn" onclick="document.getElementById('upload-scared-und').click()">رفع</button>
-</div>
-<div class="expr-item">
-<label><span di='f-cry'></span> باكية - بدون ملابس</label>
-<span class="expr-status" id="status-crying-und">فارغة</span>
-<input type="file" id="upload-crying-und" style="display:none" accept="image/*">
-<button class="upload-expr-btn" onclick="document.getElementById('upload-crying-und').click()">رفع</button>
-</div>
-<div class="expr-item">
-<label><span di='skull'></span> ميتة - بدون ملابس</label>
-<span class="expr-status" id="status-dead-und">فارغة</span>
-<input type="file" id="upload-dead-und" style="display:none" accept="image/*">
-<button class="upload-expr-btn" onclick="document.getElementById('upload-dead-und').click()">رفع</button>
+<h2><span di='dress' class='sm'></span> الملابس</h2>
+<p>اختر ملابس الشخصية</p>
+<div class="outfit-selector" style="display:flex;flex-direction:column;gap:10px">
+<button class="outfit-tab active" data-outfit="blue" style="padding:14px;font-size:16px"><span di='dress' class='sm'></span> فستان أزرق</button>
+<button class="outfit-tab" data-outfit="white" style="padding:14px;font-size:16px"><span di='dress' class='sm'></span> فستان أبيض</button>
+<button class="outfit-tab" data-outfit="nude" style="padding:14px;font-size:16px"><span di='f-neutral' class='sm'></span> بدون ملابس</button>
 </div>
 <div id="clothes-status-msg"></div>
 </div>
@@ -1073,7 +1036,9 @@ if (typeof cache.scale === 'number') window.currentScale = cache.scale;
 if (typeof cache.x === 'number') window.currentX = cache.x;
 if (typeof cache.y === 'number') window.currentY = cache.y;
 if (typeof cache.clothesState === 'string') window.currentClothesState = cache.clothesState;
-if (typeof cache.outfit === 'number') window.currentOutfit = cache.outfit;
+if (typeof cache.outfit === 'string' && window.CHAR_OUTFITS[cache.outfit]) window.currentOutfit = cache.outfit;
+else if (cache.outfit === 2) window.currentOutfit = 'white';
+else window.currentOutfit = 'blue';
 if (window.updateCharacterTransform) window.updateCharacterTransform();
 if (window.updateValueDisplay) window.updateValueDisplay();
 if (window.updateClothesButtons) window.updateClothesButtons();
@@ -1209,11 +1174,9 @@ resolve();
 }
 setLoadingProgress(95);
 if (!mainSrc && !window.expressionsData.neutral.dressed) {
-setTimeout(function() {
-expressionsPanel.style.display = 'flex';
-statusMsg.textContent = '⚠️ ارفع صورة "طبيعية" أول شي';
-statusMsg.style.color = '#ff0';
-}, 500);
+var defaultSrc = (window.CHAR_OUTFITS && window.CHAR_OUTFITS.blue) ? window.CHAR_OUTFITS.blue.images.neutral : 'chars/blue-neutral.webp';
+await loadCharacterImage(defaultSrc);
+finalImageSrc = defaultSrc;
 }
 try {
 localStorage.setItem('bw_cached_data', JSON.stringify({
@@ -1322,33 +1285,51 @@ if (window.currentOutfit === outfit && window.currentClothesState === 'undressed
 reader.readAsDataURL(file);
 });
 }
+const CHAR_OUTFITS = {
+blue: {
+name: 'فستان أزرق',
+images: {
+neutral: 'chars/blue-neutral.webp',
+scared: 'chars/blue-scared.webp',
+crying: 'chars/blue-crying.webp',
+dead: 'chars/blue-dead.webp'
+}
+},
+white: {
+name: 'فستان أبيض',
+images: {
+neutral: 'chars/white-neutral.webp',
+scared: 'chars/white-neutral.webp',
+crying: 'chars/white-neutral.webp',
+dead: 'chars/white-neutral.webp'
+}
+},
+nude: {
+name: 'بدون ملابس',
+images: {
+neutral: 'chars/nude-neutral.webp',
+scared: 'chars/nude-neutral.webp',
+crying: 'chars/nude-neutral.webp',
+dead: 'chars/nude-neutral.webp'
+}
+}
+};
+window.currentOutfit = 'blue';
+window.CHAR_OUTFITS = CHAR_OUTFITS;
 document.querySelectorAll('.outfit-tab').forEach(tab => {
 tab.addEventListener('click', (e) => {
 document.querySelectorAll('.outfit-tab').forEach(t => t.classList.remove('active'));
 e.currentTarget.classList.add('active');
-window.editingOutfit = parseInt(e.currentTarget.getAttribute('data-outfit'));
-document.getElementById('current-outfit-name').textContent = window.editingOutfit;
-const outfit = window.editingOutfit === 2 ? window.altOutfitsData : window.expressionsData;
-for (const key of expressions) {
-const st = document.getElementById('status-' + key + '-und');
-if (outfit[key].undressed) { st.textContent = '✅'; st.classList.add('loaded'); }
-else { st.textContent = 'فارغة'; st.classList.remove('loaded'); }
-}
+window.currentOutfit = e.currentTarget.getAttribute('data-outfit');
+if (window.refreshCharacterImage) window.refreshCharacterImage(true);
 });
 });
 window.refreshCharacterImage = function(withEffect = false) {
 if (window.gameState && window.gameState.gameOver) return;
 const expr = window.getCurrentExpression ? window.getCurrentExpression() : 'neutral';
-const outfit = window.currentOutfit === 2 ? window.altOutfitsData : window.expressionsData;
-const exprData = outfit[expr];
-if (!exprData) return;
-const clothesState = window.currentClothesState;
-let src = exprData[clothesState];
-if (!src && window.currentOutfit === 2) {
-const backup = window.expressionsData[expr];
-src = backup[clothesState] || backup['dressed'];
-}
-if (!src) src = exprData['dressed'];
+const outfitKey = window.currentOutfit || 'blue';
+const outfit = (window.CHAR_OUTFITS && window.CHAR_OUTFITS[outfitKey]) || window.CHAR_OUTFITS.blue;
+const src = outfit.images[expr] || outfit.images.neutral;
 if (src) {
 if (withEffect) {
 characterImg.classList.add('changing');
@@ -1363,26 +1344,10 @@ characterImg.onload = () => { if (window.captureCharacterPixels) window.captureC
 }
 };
 window.updateClothesButtons = function() {
-const btnDressed = document.getElementById('btn-dressed');
-const btnUndressed = document.getElementById('btn-undressed');
-const outfitBtn = document.getElementById('outfit-cycle');
-if (window.currentClothesState === 'dressed') { btnDressed.classList.add('active'); btnUndressed.classList.remove('active'); }
-else { btnUndressed.classList.add('active'); btnDressed.classList.remove('active'); }
-outfitBtn.innerHTML = window.bwIcon(window.currentOutfit === 1 ? 'hanger' : 'dress','ic');
-outfitBtn.classList.toggle('active', window.currentOutfit === 2);
+document.querySelectorAll('.outfit-tab').forEach(tab => {
+tab.classList.toggle('active', tab.getAttribute('data-outfit') === window.currentOutfit);
+});
 };
-document.getElementById('btn-dressed').addEventListener('click', async () => {
-window.currentClothesState = 'dressed'; window.updateClothesButtons(); window.refreshCharacterImage(true);
-try { if (window.db) await update(ref(window.db, 'characterSettings'), { clothesState: 'dressed' }); } catch(e) {}
-});
-document.getElementById('btn-undressed').addEventListener('click', async () => {
-window.currentClothesState = 'undressed'; window.updateClothesButtons(); window.refreshCharacterImage(true);
-try { if (window.db) await update(ref(window.db, 'characterSettings'), { clothesState: 'undressed' }); } catch(e) {}
-});
-document.getElementById('outfit-cycle').addEventListener('click', async () => {
-window.currentOutfit = window.currentOutfit === 1 ? 2 : 1; window.updateClothesButtons(); window.refreshCharacterImage(true);
-try { if (window.db) await update(ref(window.db, 'characterSettings'), { outfit: window.currentOutfit }); } catch(e) {}
-});
 document.addEventListener('gesturestart', (e) => e.preventDefault());
 document.addEventListener('touchmove', (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 </script>
@@ -2738,9 +2703,10 @@ if (state.expressionTimeout) clearTimeout(state.expressionTimeout);
 if (realVoices.death) {
 try { realVoices.death.currentTime = 0; realVoices.death.play(); } catch(e) { playGirlScream(); }
 } else { playGirlScream(); }
-if (window.expressionsData && window.expressionsData.dead) {
-const outfit = window.currentOutfit === 2 ? window.altOutfitsData : window.expressionsData;
-const deadImg = outfit.dead[window.currentClothesState] || outfit.dead.dressed || window.expressionsData.dead.dressed;
+if (window.CHAR_OUTFITS) {
+const outfitKey = window.currentOutfit || 'blue';
+const outfit = window.CHAR_OUTFITS[outfitKey] || window.CHAR_OUTFITS.blue;
+const deadImg = outfit.images.dead || outfit.images.neutral;
 if (deadImg) {
 characterImg.classList.add('changing');
 setTimeout(() => {
