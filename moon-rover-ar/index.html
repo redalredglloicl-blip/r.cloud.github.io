@@ -306,9 +306,9 @@ border-radius: 3px; transform-origin: top center; transform: translateX(-50%) ro
 box-shadow: inset 0 0 3px rgba(0,0,0,0.5), 0 0 4px rgba(255, 0, 0, 0.4); z-index: 5;
 }
 #character-container {
-position: absolute; width: 200px; height: 550px; z-index: 10;
+position: absolute; width: min(68vw, 320px); height: min(80vh, 720px); z-index: 10;
 display: flex; justify-content: center; align-items: flex-end;
-top: calc(50% - 275px); left: 50%; margin-left: -100px;
+top: 50%; left: 50%; translate: -50% -50%;
 transform-origin: bottom center; transition: transform 0.15s ease-out;
 }
 #character { height: 100%; width: 100%; object-fit: contain;
