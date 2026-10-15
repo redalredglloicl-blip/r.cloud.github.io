@@ -13,15 +13,24 @@ height: 100%; width: 100%; overflow: hidden; position: fixed; top: 0; left: 0;
 color: #000; user-select: none; -webkit-user-select: none; touch-action: none;
 }
 #lobby {
-position: absolute; width: 100%; height: 100%; background-color: #ffffff;
+position: absolute; width: 100%; height: 100%;
+background: radial-gradient(circle at 50% 28%, #2b0000 0%, #0d0000 45%, #000 100%);
 display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000;
+overflow: hidden;
 }
-#lobby h1 { font-size: 50px; color: #000; margin-bottom: 20px; letter-spacing: 5px; text-shadow: 2px 2px 0px #ccc; }
+#lobby-blood { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+#lobby-blood .loading-blood { position: absolute; width: 4px; background: linear-gradient(to bottom, transparent, #8b0000); animation: bloodFall linear infinite; top: -100px; }
+@keyframes skullFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+#lobby h1 { font-size: 52px; color: #fff; margin-bottom: 8px; letter-spacing: 7px; position: relative; z-index: 2;
+text-shadow: 0 0 18px #8b0000, 0 0 55px #ff0000; animation: titlePulse 2.4s infinite; font-weight: bold; }
+.lobby-tag { color: #999; font-size: 13px; letter-spacing: 4px; margin-bottom: 34px; position: relative; z-index: 2; }
 #start-btn {
-padding: 15px 60px; font-size: 20px; background-color: #fff; color: #000;
-border: 3px solid #000; cursor: pointer; font-weight: bold; transition: 0.2s; font-family: inherit;
+padding: 16px 64px; font-size: 20px; background: rgba(139,0,0,.12); color: #fff;
+border: 2px solid #8b0000; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.25s; font-family: inherit;
+letter-spacing: 2px; position: relative; z-index: 2; box-shadow: 0 0 18px rgba(139,0,0,.35);
 }
-#start-btn:hover, #start-btn:active { background-color: #000; color: #fff; }
+#start-btn:hover, #start-btn:active { background: #8b0000; box-shadow: 0 0 34px rgba(255,0,0,.65); transform: scale(1.04); }
+.lobby-ver { color: #5a5a5a; font-size: 11px; letter-spacing: 3px; margin-top: 26px; position: relative; z-index: 2; }
 #loading-screen {
 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
 background: radial-gradient(circle at center, #1a0000 0%, #000 100%);
@@ -481,12 +490,28 @@ transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
 opacity 0.35s ease;
 }
 #floating-tool-canvas { display: block; }
+[di]{display:inline-flex;vertical-align:middle;flex-shrink:0}
+svg.ic{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;flex-shrink:0}
+svg.ic.sm{width:15px;height:15px}
+svg.ic.big-ic{width:100%;height:100%}
+.tool-btn svg.ic{width:26px;height:26px}
+.clothes-toggle-btn svg.ic,.outfit-btn svg.ic{width:22px;height:22px}
+.tri-down{transform:rotate(180deg)}.tri-left{transform:rotate(-90deg)}.tri-right{transform:rotate(90deg)}
+.dpad-btn svg.ic{width:16px;height:16px}
+.size-btn svg.ic{width:16px;height:16px}
+.action-btn svg.ic{width:14px;height:14px}
+.lobby-skull{width:92px;height:92px;color:#8b0000;margin-bottom:14px;position:relative;z-index:2;display:inline-flex;filter:drop-shadow(0 0 22px rgba(255,0,0,.55));animation:skullFloat 3.2s ease-in-out infinite}
+.lobby-skull svg.ic{width:100%;height:100%;stroke-width:1.6}
 </style>
 </head>
 <body>
 <div id="lobby">
+<div id="lobby-blood"></div>
+<span di='skull' class='lobby-skull'></span>
 <h1>BLACK WIDOW</h1>
+<p class="lobby-tag">لعبة رعب نفسي تفاعلية</p>
 <button id="start-btn">بدء اللعبة</button>
+<p class="lobby-ver">v3.6</p>
 </div>
 <div id="loading-screen">
 <div id="loading-title">BLACK WIDOW</div>
@@ -501,7 +526,7 @@ opacity 0.35s ease;
 <span>devastate</span>
 </div>
 <div class="right-group">
-<button id="music-toggle" title="موسيقى">🎵</button>
+<button id="music-toggle" title="موسيقى"><span di='music'></span></button>
 <div id="ai-status" title="حالة الذكاء الاصطناعي">
 <span class="dot"></span>
 <span id="ai-status-text">AI</span>
@@ -510,7 +535,7 @@ opacity 0.35s ease;
 </div>
 <div id="status-bar">
 <div class="status-item">
-<span class="blood-icon">🩸</span>
+<span class="blood-icon"><span di='drop'></span></span>
 <span class="status-label">الدم</span>
 <div class="bar-bg"><div class="bar-fill" id="blood-bar"></div></div>
 <span id="blood-percent" style="font-weight:bold; color:#8b0000; min-width:42px;">100%</span>
@@ -525,11 +550,11 @@ opacity 0.35s ease;
 <div id="stage">
 <div id="custom-background"></div>
 <div id="action-buttons-bar">
-<button class="action-bar-btn" id="clear-btn">🧹 مسح</button>
-<button class="action-bar-btn" id="open-upload-btn">🎭 تعابير</button>
-<button class="action-bar-btn" id="open-clothes-btn">👗 ملابس</button>
-<button class="action-bar-btn" id="open-backgrounds-btn">🖼️ خلفيات</button>
-<button class="action-bar-btn" id="open-voice-btn">🎙️ أصوات</button>
+<button class="action-bar-btn" id="clear-btn"><span di='broom' class='sm'></span> مسح</button>
+<button class="action-bar-btn" id="open-upload-btn"><span di='mask' class='sm'></span> تعابير</button>
+<button class="action-bar-btn" id="open-clothes-btn"><span di='dress' class='sm'></span> ملابس</button>
+<button class="action-bar-btn" id="open-backgrounds-btn"><span di='image' class='sm'></span> خلفيات</button>
+<button class="action-bar-btn" id="open-voice-btn"><span di='mic' class='sm'></span> أصوات</button>
 </div>
 <div class="floor-shadow"></div>
 <div id="blood-bag-area">
@@ -553,7 +578,7 @@ opacity 0.35s ease;
 <div id="character-container">
 <img id="character" src="" alt="الشخصية" draggable="false" crossorigin="anonymous">
 </div>
-<button id="control-toggle" title="لوحة التحكم">⚙️</button>
+<button id="control-toggle" title="لوحة التحكم"><span di='gear'></span></button>
 <div id="control-panel">
 <div class="value-display"><span>الحجم:</span><span class="val" id="scale-value">100%</span></div>
 <div class="value-display">
@@ -563,19 +588,19 @@ opacity 0.35s ease;
 <div class="scale-bar-container"><div class="scale-bar-fill" id="scale-bar-fill"></div></div>
 <div class="control-label">تحريك</div>
 <div class="dpad">
-<div></div><button class="dpad-btn" id="move-up">▲</button><div></div>
-<button class="dpad-btn" id="move-left">◀</button>
+<div></div><button class="dpad-btn" id="move-up"><span di='tri' class='tri-up'></span></button><div></div>
+<button class="dpad-btn" id="move-left"><span di='tri' class='tri-left'></span></button>
 <div class="dpad-center">✥</div>
-<button class="dpad-btn" id="move-right">▶</button>
-<div></div><button class="dpad-btn" id="move-down">▼</button><div></div>
+<button class="dpad-btn" id="move-right"><span di='tri' class='tri-right'></span></button>
+<div></div><button class="dpad-btn" id="move-down"><span di='tri' class='tri-down'></span></button><div></div>
 </div>
 <div class="control-label">حجم</div>
 <div class="size-row">
-<button class="size-btn" id="size-down">➖</button>
-<button class="size-btn" id="size-up">➕</button>
+<button class="size-btn" id="size-down"><span di='minus'></span></button>
+<button class="size-btn" id="size-up"><span di='plus'></span></button>
 </div>
 <div class="action-row">
-<button class="action-btn save-btn" id="save-btn">💾 حفظ</button>
+<button class="action-btn save-btn" id="save-btn"><span di='save'></span> حفظ</button>
 <button class="action-btn reset-btn" id="reset-btn">↺ إعادة</button>
 </div>
 </div>
@@ -585,33 +610,33 @@ opacity 0.35s ease;
 <div id="dialogue-box"></div>
 </div>
 <div id="toolbar">
-<div class="tool-btn active" data-tool="knife" title="سكين">🔪</div>
-<div class="tool-btn" data-tool="scissors" title="مقص">✂️</div>
-<div class="tool-btn" data-tool="blade" title="شفرة">🗡️</div>
-<div class="tool-btn pink" data-tool="pink" title="بلاستيك وردي">🩷</div>
-<div class="tool-btn" data-tool="syringe" title="حقنة">💉</div>
+<div class="tool-btn active" data-tool="knife" title="سكين"><span di='knife'></span></div>
+<div class="tool-btn" data-tool="scissors" title="مقص"><span di='scissors'></span></div>
+<div class="tool-btn" data-tool="blade" title="شفرة"><span di='blade'></span></div>
+<div class="tool-btn pink" data-tool="pink" title="بلاستيك وردي"><span di='pink'></span></div>
+<div class="tool-btn" data-tool="syringe" title="حقنة"><span di='syringe'></span></div>
 <div class="toolbar-separator"></div>
-<div class="tool-btn danger" data-tool="shock" title="صاعق">⚡</div>
-<div class="tool-btn danger" data-tool="lighter" title="ولاعة">🔥</div>
-<div class="tool-btn danger" data-tool="hammer" title="مطرقة">🔨</div>
-<div class="tool-btn danger" data-tool="saw" title="منشار">🪚</div>
+<div class="tool-btn danger" data-tool="shock" title="صاعق"><span di='shock'></span></div>
+<div class="tool-btn danger" data-tool="lighter" title="ولاعة"><span di='lighter'></span></div>
+<div class="tool-btn danger" data-tool="hammer" title="مطرقة"><span di='hammer'></span></div>
+<div class="tool-btn danger" data-tool="saw" title="منشار"><span di='saw'></span></div>
 <div class="toolbar-separator"></div>
-<div class="tool-btn danger" data-tool="acid" title="حمض">🧪</div>
-<div class="tool-btn danger" data-tool="hook" title="خطاف">🪝</div>
-<div class="tool-btn danger" data-tool="pliers" title="كماشة">🔩</div>
-<div class="tool-btn danger" data-tool="frost" title="ثلج">❄️</div>
+<div class="tool-btn danger" data-tool="acid" title="حمض"><span di='acid'></span></div>
+<div class="tool-btn danger" data-tool="hook" title="خطاف"><span di='hook'></span></div>
+<div class="tool-btn danger" data-tool="pliers" title="كماشة"><span di='pliers'></span></div>
+<div class="tool-btn danger" data-tool="frost" title="ثلج"><span di='frost'></span></div>
 <div class="toolbar-separator"></div>
-<div class="tool-btn" data-tool="eye" title="مراقبة">👁️</div>
-<div class="tool-btn" data-tool="mute" title="عزل">🔇</div>
+<div class="tool-btn" data-tool="eye" title="مراقبة"><span di='eye'></span></div>
+<div class="tool-btn" data-tool="mute" title="عزل"><span di='mute'></span></div>
 <div class="toolbar-separator"></div>
-<div class="clothes-toggle-btn active" id="btn-dressed" title="مع ملابس">👕</div>
-<div class="clothes-toggle-btn" id="btn-undressed" title="بدون ملابس">👙</div>
+<div class="clothes-toggle-btn active" id="btn-dressed" title="مع ملابس"><span di='shirt'></span></div>
+<div class="clothes-toggle-btn" id="btn-undressed" title="بدون ملابس"><span di='undies'></span></div>
 <div class="toolbar-separator"></div>
-<button class="outfit-btn active" id="outfit-cycle" title="تغيير الطقم">👔</button>
+<button class="outfit-btn active" id="outfit-cycle" title="تغيير الطقم"><span di='hanger'></span></button>
 </div>
 </div>
 <div id="bottom-bar">
-<span>[BW ver 3.5]</span>
+<span>[BW ver 3.6]</span>
 <span>AI + Backgrounds + Voice</span>
 </div>
 </div>
@@ -621,29 +646,29 @@ opacity 0.35s ease;
 <button id="restart-btn">إعادة اللعب</button>
 </div>
 <div id="expressions-panel">
-<button id="close-expressions">✕</button>
-<h2>🎭 إدارة التعابير</h2>
+<button id="close-expressions"><span di='x'></span></button>
+<h2><span di='mask' class='sm'></span> إدارة التعابير</h2>
 <p>ارفع صورة لكل تعبير - أي لون خلفية</p>
 <div class="expr-item">
-<label>😐 طبيعية</label>
+<label><span di='f-neutral'></span> طبيعية</label>
 <span class="expr-status" id="status-neutral">فارغة</span>
 <input type="file" id="upload-neutral" style="display:none" accept="image/*">
 <button class="upload-expr-btn" onclick="document.getElementById('upload-neutral').click()">رفع</button>
 </div>
 <div class="expr-item">
-<label>😨 خائفة</label>
+<label><span di='f-scared'></span> خائفة</label>
 <span class="expr-status" id="status-scared">فارغة</span>
 <input type="file" id="upload-scared" style="display:none" accept="image/*">
 <button class="upload-expr-btn" onclick="document.getElementById('upload-scared').click()">رفع</button>
 </div>
 <div class="expr-item">
-<label>😢 باكية</label>
+<label><span di='f-cry'></span> باكية</label>
 <span class="expr-status" id="status-crying">فارغة</span>
 <input type="file" id="upload-crying" style="display:none" accept="image/*">
 <button class="upload-expr-btn" onclick="document.getElementById('upload-crying').click()">رفع</button>
 </div>
 <div class="expr-item">
-<label>💀 ميتة</label>
+<label><span di='skull'></span> ميتة</label>
 <span class="expr-status" id="status-dead">فارغة</span>
 <input type="file" id="upload-dead" style="display:none" accept="image/*">
 <button class="upload-expr-btn" onclick="document.getElementById('upload-dead').click()">رفع</button>
@@ -651,34 +676,34 @@ opacity 0.35s ease;
 <div id="status-msg"></div>
 </div>
 <div id="clothes-panel">
-<button id="close-clothes">✕</button>
-<h2>👗 إدارة الملابس</h2>
+<button id="close-clothes"><span di='x'></span></button>
+<h2><span di='dress' class='sm'></span> إدارة الملابس</h2>
 <p>اختر الطقم ثم ارفع الصور</p>
 <div class="outfit-selector">
-<button class="outfit-tab active" data-outfit="1">👔 الطقم 1</button>
-<button class="outfit-tab" data-outfit="2">👗 الطقم 2</button>
+<button class="outfit-tab active" data-outfit="1"><span di='hanger'></span> الطقم 1</button>
+<button class="outfit-tab" data-outfit="2"><span di='dress' class='sm'></span> الطقم 2</button>
 </div>
 <div class="panel-section-title">الطقم <span id="current-outfit-name">1</span></div>
 <div class="expr-item">
-<label>😐 طبيعية - بدون ملابس</label>
+<label><span di='f-neutral'></span> طبيعية - بدون ملابس</label>
 <span class="expr-status" id="status-neutral-und">فارغة</span>
 <input type="file" id="upload-neutral-und" style="display:none" accept="image/*">
 <button class="upload-expr-btn" onclick="document.getElementById('upload-neutral-und').click()">رفع</button>
 </div>
 <div class="expr-item">
-<label>😨 خائفة - بدون ملابس</label>
+<label><span di='f-scared'></span> خائفة - بدون ملابس</label>
 <span class="expr-status" id="status-scared-und">فارغة</span>
 <input type="file" id="upload-scared-und" style="display:none" accept="image/*">
 <button class="upload-expr-btn" onclick="document.getElementById('upload-scared-und').click()">رفع</button>
 </div>
 <div class="expr-item">
-<label>😢 باكية - بدون ملابس</label>
+<label><span di='f-cry'></span> باكية - بدون ملابس</label>
 <span class="expr-status" id="status-crying-und">فارغة</span>
 <input type="file" id="upload-crying-und" style="display:none" accept="image/*">
 <button class="upload-expr-btn" onclick="document.getElementById('upload-crying-und').click()">رفع</button>
 </div>
 <div class="expr-item">
-<label>💀 ميتة - بدون ملابس</label>
+<label><span di='skull'></span> ميتة - بدون ملابس</label>
 <span class="expr-status" id="status-dead-und">فارغة</span>
 <input type="file" id="upload-dead-und" style="display:none" accept="image/*">
 <button class="upload-expr-btn" onclick="document.getElementById('upload-dead-und').click()">رفع</button>
@@ -686,8 +711,8 @@ opacity 0.35s ease;
 <div id="clothes-status-msg"></div>
 </div>
 <div id="backgrounds-panel">
-<button id="close-backgrounds">✕</button>
-<h2>🖼️ إدارة الخلفيات</h2>
+<button id="close-backgrounds"><span di='x'></span></button>
+<h2><span di='image' class='sm'></span> إدارة الخلفيات</h2>
 <p>ارفع صورة على CATBOX والصق الرابط</p>
 <div class="bg-item" data-bg="0">
 <label>خلفية 1</label>
@@ -719,39 +744,39 @@ opacity 0.35s ease;
 <input type="text" id="bg-url-5" placeholder="https://files.catbox.moe/xxx.jpg">
 <button class="apply-bg-btn" onclick="applyBackground(5)">تطبيق</button>
 </div>
-<button class="upload-expr-btn" onclick="removeBackground()" style="width:100%; margin-top:5px;">❌ إزالة الخلفية</button>
+<button class="upload-expr-btn" onclick="removeBackground()" style="width:100%; margin-top:5px;"><span di='x' class='sm'></span> إزالة الخلفية</button>
 <div id="backgrounds-status-msg"></div>
 </div>
 <div id="voice-panel">
-<button id="close-voice">✕</button>
-<h2>🎙️ إدارة الأصوات</h2>
+<button id="close-voice"><span di='x'></span></button>
+<h2><span di='mic' class='sm'></span> إدارة الأصوات</h2>
 <p>ارفع ملفات MP3/WAV على CATBOX والصق الروابط</p>
 <div class="voice-item">
-<label>🫁 تنفس</label>
+<label>تنفس</label>
 <input type="text" id="voice-breath" placeholder="رابط MP3">
 </div>
 <div class="voice-item">
-<label>😢 أنين</label>
+<label><span di='f-cry'></span> أنين</label>
 <input type="text" id="voice-whimper" placeholder="رابط MP3">
 </div>
 <div class="voice-item">
-<label>😱 صرخة</label>
+<label>صرخة</label>
 <input type="text" id="voice-scream" placeholder="رابط MP3">
 </div>
 <div class="voice-item">
-<label>😧 شهقة</label>
+<label>شهقة</label>
 <input type="text" id="voice-gasp" placeholder="رابط MP3">
 </div>
 <div class="voice-item">
-<label>💀 موت</label>
+<label><span di='skull'></span> موت</label>
 <input type="text" id="voice-death" placeholder="رابط MP3">
 </div>
 <div class="panel-section-title">موسيقى</div>
 <div class="voice-item">
-<label>🎵 موسيقى خلفية</label>
+<label><span di='music'></span> موسيقى خلفية</label>
 <input type="text" id="music-url" placeholder="رابط MP3">
 </div>
-<button class="upload-expr-btn" onclick="saveVoiceSettings()" style="width:100%; margin-top:5px;">💾 حفظ</button>
+<button class="upload-expr-btn" onclick="saveVoiceSettings()" style="width:100%; margin-top:5px;"><span di='save'></span> حفظ</button>
 <div id="voice-status-msg"></div>
 </div>
 <div id="floating-tool">
@@ -935,6 +960,25 @@ try { const s1 = await get(ref(window.db, 'characterData')); if (s1.exists() && 
 try { const s2 = await get(ref(window.db, 'characterImage')); if (s2.exists() && s2.val()) return s2.val(); } catch(e) {}
 return null;
 }
+function _pf(p) { return p.then(function(s){ return s; }, function(){ return null; }); }
+try {
+window._prefetch = {
+expr: _pf(get(ref(window.db, 'expressions'))),
+outfit: _pf(get(ref(window.db, 'outfit2'))),
+settings: _pf(get(ref(window.db, 'characterSettings'))),
+bg: _pf(get(ref(window.db, 'backgrounds'))),
+voice: _pf(get(ref(window.db, 'voiceSettings'))),
+main: _pf(findCharacterImage())
+};
+} catch(e) { window._prefetch = null; }
+async function _resnap(p, path) {
+var s = null;
+try { s = await p; } catch(e) {}
+if (s) return s;
+try { s = await get(ref(window.db, path)); } catch(e) {}
+return s || { exists: function(){ return false; } };
+}
+function setStage(t) { var el = document.getElementById('loading-subtitle'); if (el) el.textContent = t; }
 window.applyBackground = function(index) {
 const urlInput = document.getElementById('bg-url-' + index);
 const url = urlInput ? urlInput.value.trim() : '';
@@ -1006,6 +1050,7 @@ lobby.style.display = 'none';
 game.style.display = 'flex';
 loadingScreen.style.display = 'flex';
 createLoadingBlood();
+setStage('جاري التحميل...');
 loadingProgress = 0;
 loadingBarFill.style.width = '0%';
 loadingCounter.textContent = '0%';
@@ -1062,16 +1107,19 @@ if (window.initAI) setTimeout(() => window.initAI(), 300);
 return;
 }
 console.log('📥 أول تحميل');
+setStage('جاري الاتصال بالخادم...');
 setLoadingProgress(20);
-var exprPromise = get(ref(window.db, 'expressions'));
-var outfitPromise = get(ref(window.db, 'outfit2'));
-var settingsPromise = get(ref(window.db, 'characterSettings'));
-var bgPromise = get(ref(window.db, 'backgrounds'));
-var voicePromise = get(ref(window.db, 'voiceSettings'));
-var mainImagePromise = findCharacterImage();
+var PF = window._prefetch || {};
+var exprPromise = _resnap(PF.expr || get(ref(window.db, 'expressions')), 'expressions');
+var outfitPromise = _resnap(PF.outfit || get(ref(window.db, 'outfit2')), 'outfit2');
+var settingsPromise = _resnap(PF.settings || get(ref(window.db, 'characterSettings')), 'characterSettings');
+var bgPromise = _resnap(PF.bg || get(ref(window.db, 'backgrounds')), 'backgrounds');
+var voicePromise = _resnap(PF.voice || get(ref(window.db, 'voiceSettings')), 'voiceSettings');
+var mainImagePromise = (async function(){ try { var m = await (PF.main || findCharacterImage()); return m; } catch(e){ return null; } })();
 setLoadingProgress(30);
 var exprSnapshot = await exprPromise;
 setLoadingProgress(40);
+setStage('جاري تحميل التعابير...');
 if (exprSnapshot.exists()) {
 var data = exprSnapshot.val();
 for (var i = 0; i < expressions.length; i++) {
@@ -1095,6 +1143,7 @@ var settingsSnapshot = results[1];
 var bgSnapshot = results[2];
 var voiceSnapshot = results[3];
 setLoadingProgress(60);
+setStage('جاري تحميل الخلفيات والأصوات...');
 if (outfitSnapshot.exists()) {
 var oData = outfitSnapshot.val();
 for (var j = 0; j < expressions.length; j++) {
@@ -1140,6 +1189,7 @@ if (window.updateClothesButtons) window.updateClothesButtons();
 setLoadingProgress(75);
 var mainSrc = await mainImagePromise;
 setLoadingProgress(85);
+setStage('جاري تجهيز الشخصية...');
 var finalImageSrc = null;
 if (mainSrc) {
 if (mainSrc.startsWith('data:image/png')) {
@@ -1175,6 +1225,7 @@ voiceSettings: window.voiceSettings, timestamp: Date.now()
 }));
 } catch(e) {}
 setLoadingProgress(100);
+setStage('اكتمل! جاري الدخول...');
 await new Promise(function(r) { setTimeout(r, 300); });
 loadingScreen.style.display = 'none';
 loadingScreen.querySelectorAll('.loading-blood').forEach(function(b) { b.remove(); });
@@ -1317,7 +1368,7 @@ const btnUndressed = document.getElementById('btn-undressed');
 const outfitBtn = document.getElementById('outfit-cycle');
 if (window.currentClothesState === 'dressed') { btnDressed.classList.add('active'); btnUndressed.classList.remove('active'); }
 else { btnUndressed.classList.add('active'); btnDressed.classList.remove('active'); }
-outfitBtn.textContent = window.currentOutfit === 1 ? '👔' : '👗';
+outfitBtn.innerHTML = window.bwIcon(window.currentOutfit === 1 ? 'hanger' : 'dress','ic');
 outfitBtn.classList.toggle('active', window.currentOutfit === 2);
 };
 document.getElementById('btn-dressed').addEventListener('click', async () => {
@@ -1969,7 +2020,7 @@ const canvasDrip = document.getElementById('blood-canvas-drip');
 const ctxDrip = canvasDrip.getContext('2d');
 controlToggle.addEventListener('click', () => {
 controlPanel.classList.toggle('open');
-controlToggle.textContent = controlPanel.classList.contains('open') ? '✕' : '⚙️';
+controlToggle.innerHTML = window.bwIcon(controlPanel.classList.contains('open') ? 'x' : 'gear','ic');
 });
 function updateBars() {
 bloodBar.style.width = Math.max(0, state.blood) + '%';
@@ -2012,8 +2063,8 @@ existingCache.outfit = window.currentOutfit;
 localStorage.setItem('bw_cached_data', JSON.stringify(existingCache));
 } catch(e) {}
 if (showFeedback) {
-saveBtn.textContent = '✅ تم!'; saveBtn.classList.add('saved');
-setTimeout(() => { saveBtn.textContent = '💾 حفظ'; saveBtn.classList.remove('saved'); }, 1500);
+saveBtn.innerHTML = window.bwIcon('save','ic sm') + ' تم!'; saveBtn.classList.add('saved');
+setTimeout(() => { saveBtn.innerHTML = window.bwIcon('save','ic sm') + ' حفظ'; saveBtn.classList.remove('saved'); }, 1500);
 }
 }
 } catch (e) { console.error('فشل الحفظ:', e); }
@@ -2090,7 +2141,7 @@ musicPlaying = true;
 } catch(e) {}
 }
 document.getElementById('music-toggle').classList.add('playing');
-document.getElementById('music-toggle').textContent = '🔊';
+document.getElementById('music-toggle').innerHTML = window.bwIcon('music','ic sm');
 }
 function stopMusic() {
 if (musicAudioEl) { musicAudioEl.pause(); musicAudioEl.currentTime = 0; }
@@ -2100,7 +2151,7 @@ droneNodes = null;
 }
 musicPlaying = false;
 document.getElementById('music-toggle').classList.remove('playing');
-document.getElementById('music-toggle').textContent = '🎵';
+document.getElementById('music-toggle').innerHTML = window.bwIcon('music','ic sm');
 }
 document.getElementById('music-toggle').addEventListener('click', () => {
 if (musicPlaying) stopMusic(); else startMusic();
@@ -2700,10 +2751,10 @@ characterImg.onload = () => { if (window.captureCharacterPixels) window.captureC
 }
 document.querySelectorAll('.tool-btn').forEach(b => b.disabled = true);
 if (type === '💀') {
-gameOverTitle.textContent = '💀 ماتت';
+gameOverTitle.innerHTML = '<span style="display:inline-flex;width:44px;height:44px;vertical-align:middle">' + window.bwIcon('skull','ic big-ic') + '</span> ماتت';
 gameOverText.textContent = 'ماتت للاسف!!!';
 } else {
-gameOverTitle.textContent = '🧠 ماتت';
+gameOverTitle.innerHTML = '<span style="display:inline-flex;width:44px;height:44px;vertical-align:middle">' + window.bwIcon('brain','ic big-ic') + '</span> ماتت';
 gameOverText.textContent = 'عقلها انكسر بالكامل...';
 }
 vignette.style.opacity = '1';
@@ -2880,8 +2931,23 @@ const r = Math.random();
 if (r > 0.7) playGirlBreath();
 else if (r > 0.4 && state.blood < 80) playGirlWhimper();
 }, 5000);
+if (window.initBWIcons) window.initBWIcons();
 animateDrips();
 setTimeout(() => { if (window.resizeCanvases) window.resizeCanvases(); window.updateValueDisplay(); }, 500);
+(function(){
+var lb = document.getElementById('lobby-blood');
+if (!lb) return;
+for (var i = 0; i < 10; i++) {
+var b = document.createElement('div');
+b.className = 'loading-blood';
+b.style.left = (Math.random() * 100) + '%';
+b.style.height = (Math.random() * 80 + 40) + 'px';
+b.style.animationDuration = (Math.random() * 3 + 3) + 's';
+b.style.animationDelay = (Math.random() * 3) + 's';
+lb.appendChild(b);
+}
+})();
 </script>
+<script src="icons.js"></script>
 </body>
 </html>
