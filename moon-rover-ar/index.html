@@ -511,7 +511,7 @@ svg.ic.big-ic{width:100%;height:100%}
 <h1>BLACK WIDOW</h1>
 <p class="lobby-tag">لعبة رعب نفسي تفاعلية</p>
 <button id="start-btn">بدء اللعبة</button>
-<p class="lobby-ver">v3.8</p>
+<p class="lobby-ver">v3.9</p>
 </div>
 <div id="loading-screen">
 <div id="loading-title">BLACK WIDOW</div>
@@ -631,7 +631,7 @@ svg.ic.big-ic{width:100%;height:100%}
 </div>
 </div>
 <div id="bottom-bar">
-<span>[BW ver 3.8]</span>
+<span>[BW ver 3.9]</span>
 <span>AI + Backgrounds + Voice</span>
 </div>
 </div>
@@ -1055,7 +1055,7 @@ setLoadingProgress(10);
 var cachedData = localStorage.getItem('bw_cached_data');
 var cache = null;
 if (cachedData) { try { cache = JSON.parse(cachedData); } catch(e) {} }
-if (cache && cache.characterImage) {
+if (cache && cache.characterImage && cache.characterImage.startsWith('chars/')) {
 console.log('⚡ تحميل سريع من الكاش');
 setLoadingProgress(60);
 await loadCharacterImage(cache.characterImage);
@@ -1095,6 +1095,10 @@ if (window.loadRealVoices) window.loadRealVoices();
 }
 setLoadingProgress(100);
 await new Promise(r => setTimeout(r, 200));
+if (!characterImg.src || characterImg.src === '' || characterImg.src === window.location.href) {
+var defaultSrc = (window.CHAR_OUTFITS && window.CHAR_OUTFITS.blue) ? window.CHAR_OUTFITS[window.currentOutfit || 'blue'].images.neutral : 'chars/blue-neutral.webp';
+await loadCharacterImage(defaultSrc);
+}
 loadingScreen.style.display = 'none';
 loadingScreen.querySelectorAll('.loading-blood').forEach(b => b.remove());
 if (characterImg.src && characterImg.src !== '' && characterImg.src !== window.location.href) characterImg.style.display = 'block';
@@ -1318,30 +1322,47 @@ reader.readAsDataURL(file);
 }
 document.querySelectorAll('.outfit-tab').forEach(tab => {
 tab.addEventListener('click', (e) => {
+try {
+e.preventDefault();
 document.querySelectorAll('.outfit-tab').forEach(t => t.classList.remove('active'));
 e.currentTarget.classList.add('active');
 window.currentOutfit = e.currentTarget.getAttribute('data-outfit');
 if (window.refreshCharacterImage) window.refreshCharacterImage(true);
+else {
+var outfitKey = window.currentOutfit || 'blue';
+var imgMap = { blue: 'chars/blue-neutral.webp', white: 'chars/white-neutral.webp', nude: 'chars/nude-neutral.webp' };
+var cImg = document.getElementById('character-img');
+if (cImg && imgMap[outfitKey]) { cImg.src = imgMap[outfitKey]; cImg.style.display = 'block'; }
+}
+} catch(err) { console.error('outfit click error:', err); }
 });
 });
 window.refreshCharacterImage = function(withEffect = false) {
 if (window.gameState && window.gameState.gameOver) return;
+try {
 const expr = window.getCurrentExpression ? window.getCurrentExpression() : 'neutral';
 const outfitKey = window.currentOutfit || 'blue';
-const outfit = (window.CHAR_OUTFITS && window.CHAR_OUTFITS[outfitKey]) || window.CHAR_OUTFITS.blue;
-const src = outfit.images[expr] || outfit.images.neutral;
+const outfits = window.CHAR_OUTFITS || {
+blue: { images: { neutral: 'chars/blue-neutral.webp', scared: 'chars/blue-scared.webp', crying: 'chars/blue-crying.webp', dead: 'chars/blue-dead.webp' } },
+white: { images: { neutral: 'chars/white-neutral.webp' } },
+nude: { images: { neutral: 'chars/nude-neutral.webp' } }
+};
+const outfit = outfits[outfitKey] || outfits.blue;
+const src = (outfit.images[expr] || outfit.images.neutral);
 if (src) {
 if (withEffect) {
 characterImg.classList.add('changing');
 setTimeout(() => {
 characterImg.src = src;
 characterImg.onload = () => { if (window.captureCharacterPixels) window.captureCharacterPixels(); characterImg.classList.remove('changing'); };
+characterImg.onerror = () => { characterImg.classList.remove('changing'); };
 }, 300);
 } else {
 characterImg.src = src;
 characterImg.onload = () => { if (window.captureCharacterPixels) window.captureCharacterPixels(); };
 }
 }
+} catch(e) { console.error('refreshCharacterImage error:', e); }
 };
 window.updateClothesButtons = function() {
 document.querySelectorAll('.outfit-tab').forEach(tab => {
