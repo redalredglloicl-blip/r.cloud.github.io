@@ -52,10 +52,9 @@ document.head.appendChild(_st);
 document.body.appendChild(ov);
 document.querySelector('#forceUpdBtn').addEventListener('click',function(){
 try{if('caches' in window){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k);});});}}catch(e){}
-try{localStorage.clear();}catch(e){}
-try{sessionStorage.clear();}catch(e){}
-var base=location.href.split('?')[0].replace(/rio\d+\.html$/,'');
-location.href=base+'rio'+_latestVer+'.html?t='+Date.now();
+// Simplified: single-version reload with cache-buster (no more rioXX.html files)
+var base=location.href.split('?')[0].split('#')[0];
+location.href=base+'?v='+_latestVer+'&t='+Date.now();
 });
 // ANTI-BYPASS: re-show if removed via devtools
 var _obs=new MutationObserver(function(){

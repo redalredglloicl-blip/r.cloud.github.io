@@ -12,8 +12,37 @@ win.style.opacity='';win.style.borderRadius='';
 win.classList.add('open');document.body.classList.add('appopen');syncPill();
 $('#screen').classList.add('appzoom');
 const scr=$('#screen').getBoundingClientRect();
+// Dock detection: real iOS animation only for dock apps
+const isDockIcon=fromEl&&fromEl.closest&&fromEl.closest('#dock');
+let dockNudge=null;
+if(isDockIcon){
+  // Phase 1: tapped icon pops big, siblings nudge away (real iOS)
+  const dockEl=fromEl.closest('#dock');
+  const allDock=Array.from(dockEl.querySelectorAll('[data-app]'));
+  const tappedWrap=fromEl.closest('[data-app]');
+  const tappedIdx=allDock.indexOf(tappedWrap);
+  fromEl.style.transition='transform .22s '+IOS_SPRING;
+  fromEl.style.transform='scale(1.65)';
+  fromEl.style.zIndex='30';
+  allDock.forEach((d,i)=>{
+    if(i===tappedIdx)return;
+    const dir=i<tappedIdx?-1:1,push=Math.max(5,15-Math.abs(i-tappedIdx)*4);
+    d.style.transition='transform .22s '+IOS_SPRING;
+    d.style.transform='translateX('+(dir*push)+'px) scale(.93)';
+  });
+  dockNudge={allDock,tappedIdx};
+  // Siblings spring back after the pop
+  setTimeout(()=>{if(S._anim!==tok)return;allDock.forEach((d,i)=>{if(i===tappedIdx)return;d.style.transition='transform .45s '+IOS_SPRING;d.style.transform='';});},320);
+}
 const r=_iconRect(fromEl);
-if(fromEl&&fromEl.style){fromEl.style.transition='opacity .22s ease,transform .22s ease';fromEl.style.opacity='0';fromEl.style.transform='scale(1.12)'}
+if(fromEl&&fromEl.style){
+  if(isDockIcon){
+    // Dock: keep icon visible big briefly, then fade as window takes over
+    setTimeout(()=>{if(S._anim!==tok||!fromEl.style)return;fromEl.style.transition='opacity .16s ease';fromEl.style.opacity='0';},200);
+  }else{
+    fromEl.style.transition='opacity .22s ease,transform .22s ease';fromEl.style.opacity='0';fromEl.style.transform='scale(1.12)';
+  }
+}
 const hasIcon=r&&r.width>=8&&r.right>scr.left&&r.left<scr.right&&r.top<scr.bottom&&r.bottom>scr.top;
 win.style.transformOrigin='0 0';win.style.overflow='hidden';win.style.borderRadius='';win.style.boxShadow='';
 if(hasIcon){
@@ -57,8 +86,27 @@ win.style.clipPath='inset(0 round '+((19*scr.width/Math.max(1,r.width)).toFixed(
 win.style.transform='translate('+((r.left-scr.left)).toFixed(1)+'px,'+((r.top-scr.top)).toFixed(1)+'px) scale('+((r.width/scr.width)).toFixed(3)+','+((r.height/scr.height)).toFixed(3)+')';
 win.style.opacity='0';
 setTimeout(()=>{if(S._anim!==tok)return;
-win.classList.remove('open');document.body.classList.remove('appopen');$('#screen').classList.remove('appzoom');syncPill();if(S._from&&S._from.style){S._from.style.opacity='';S._from.style.transform=''};win.style.transition='';win.style.clipPath='';win.style.transform='';win.style.opacity='';win.style.borderRadius='';win.style.boxShadow='';win.style.transformOrigin='';S._from=null;
-const land=back&&(back.closest?back.closest('.app'):null);if(land&&land.animate)land.animate([{transform:'scale(1)'},{transform:'scale(1.09)'},{transform:'scale(1)'}],{duration:200,easing:'ease-out'})},400);
+win.classList.remove('open');document.body.classList.remove('appopen');$('#screen').classList.remove('appzoom');syncPill();if(S._from&&S._from.style){S._from.style.opacity='';S._from.style.transform='';S._from.style.zIndex=''};win.style.transition='';win.style.clipPath='';win.style.transform='';win.style.opacity='';win.style.borderRadius='';win.style.boxShadow='';win.style.transformOrigin='';S._from=null;
+const land=back&&(back.closest?back.closest('.app, [data-app]'):null);
+const isDockLand=back&&back.closest&&back.closest('#dock');
+if(land&&land.animate){
+  if(isDockLand){
+    // Dock landing: bigger bounce + sibling settle (real iOS)
+    land.animate([{transform:'scale(1)'},{transform:'scale(1.28)'},{transform:'scale(1)'}],{duration:320,easing:'cubic-bezier(.30,1.4,.36,1)'});
+    const dockEl=back.closest('#dock');
+    if(dockEl){
+      const allDock=Array.from(dockEl.querySelectorAll('[data-app]'));
+      const tappedIdx=allDock.indexOf(back.closest('[data-app]'));
+      allDock.forEach((d,i)=>{
+        if(i===tappedIdx||!d.animate)return;
+        const dir=i<tappedIdx?-1:1;
+        d.animate([{transform:'translateX(0)'},{transform:'translateX('+(dir*7)+'px)'},{transform:'translateX(0)'}],{duration:320,easing:'ease-out'});
+      });
+    }
+  }else{
+    land.animate([{transform:'scale(1)'},{transform:'scale(1.09)'},{transform:'scale(1)'}],{duration:200,easing:'ease-out'});
+  }
+}},400);;;
 }
 function renderSwitcher(){
 const track=$('#swTrack');const list=S.running||[];
@@ -160,6 +208,7 @@ if(k==='instagram')return appInsta();
 if(k==='youtube'){S.ytView='home';return appYouTubeX()}
 if(k==='chatgpt')return appChatGPT();
 
+
 $('#appBody').innerHTML='<div class="card" style="text-align:center;padding:28px 14px"><div style="display:flex;justify-content:center;margin-bottom:10px">'+IC[EXTRA[k].ic]()+'</div><div class="big">'+EXTRA[k].n+'</div><p class="mut" style="margin-top:6px">انثبت على الآيفون ويشتغل من الشاشة الرئيسية.</p><button class="btn" style="margin-top:12px" onclick="closeApp()">تمام</button></div>';
 }
 const FRIENDS=[['Eno','#e74c3c'],['Ahmad','#3498db'],['Sara','#e84393'],['Omar','#2ecc71'],['Lina','#f39c12'],['Yusuf','#9b59b6'],['Nora','#1abc9c'],['Khalid','#e67e22']];
@@ -233,7 +282,7 @@ if(S.setPage==='about'){
 el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button><div class="setgroup">'+
 row('الاسم','', 'iPhone')+row('طراز الجهاز','', 'iPhone 16 Pro')+row('نظام التشغيل','', 'iOS 17')+
 row('السعة','', '128 GB')+row('المساحة المتوفرة','', '115.6 GB')+
-row('الرقم التسلسلي','', 'DMPX42LKDNQH')+row('المشغل','', 'Zain')+'</div>';
+row('الرقم التسلسلي','', 'DMPX42LKDNQH')+row('المشغل','', 'Zain')+row('إصدار الموقع','', '24')+'</div>'
 $('#setBack').addEventListener('click',()=>{S.setPage='main';appSettings(el)});return;
 }
 if(S.setPage==='batteryhealth'){
@@ -265,7 +314,7 @@ $('#swLpm').addEventListener('change',e=>{S.set.lpm=e.target.checked;store.set('
 $('#swChg').addEventListener('change',e=>{S.batt.charging=e.target.checked;store.set('batt',S.batt);renderStatus();appSettings(el)});return;
 }
 if(S.setPage==='wifi'){
-const nets=[['Zain Home 5G',true],['Reda_Home',false],['Baghdad WiFi',false],['Neighbor_4G',false]];
+const nets=[['Zain Home 5G',true],['Home WiFi',false],['Baghdad WiFi',false],['Neighbor_4G',false]];
 el.innerHTML='<button class="back" id="setBack" style="margin-bottom:10px">‹ الإعدادات</button><div class="setgroup">'+
 row('Wi-Fi',sq('#0a84ff','wifi',15),'<label class="switch"><input type="checkbox" id="swWifi2" '+(s.wifi?'checked':'')+'><i></i></label>')+'</div>'+
 '<div class="rbx-sec">الشبكات</div><div class="setgroup">'+nets.map(n=>'<div class="setrow" data-net="'+n[0]+'" style="cursor:pointer"><span style="flex:1">'+n[0]+'</span>'+((s.ssid||'Zain Home 5G')===n[0]&&s.wifi?'<span style="color:#0a84ff;font-weight:700">✓</span>':'<span class="mut">'+g('wifi','#8e8e93',14)+'</span>')+'</div>').join('')+'</div>';
@@ -350,6 +399,14 @@ const GAMES=[
 {k:'bunny',n:'Bunny Runner',rt:4.9,rc:'21.7K',age:'4+',dev:'Games',cat:'ألعاب',ver:'1.0',size:'1.1 GB',price:9,url:'https://bunny.omsingh.me/',desc:'اقفز وانزلق مع الأرنب عبر 3 مسارات — لعبة ركض لطيفة بجرافيك ثلاثي الأبعاد.'},
 {k:'orbit',n:'ORBIT',rt:4.5,rc:'3.9K',age:'4+',dev:'Games',cat:'ألعاب',ver:'1.0',size:'2.6 GB',price:7,url:'https://jaydemks.github.io/orbit_game/',desc:'اثنِ الجاذبية ودحرج عبر 24 مرحلة ألغاز ثلاثية الأبعاد مصممة يدوياً.'},
 ];
+Object.assign(ICONS,{
+spotify:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/b2/af/e8/b2afe87d-2d6a-8e4b-01bf-73b5752996dc/AppIcon-0-0-1x_U007epad-0-1-0-0-85-220.png/512x512bb.jpg',
+netflix:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/b6/51/63/b65163f4-46c5-facf-54b3-c03fd55fd1f3/AppIcon-0-0-1x_U007epad-0-1-0-sRGB-0-85-220.png/512x512bb.jpg',
+uber:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/ea/16/5e/ea165e23-d682-bdf5-3852-8ccf523c259b/AppIcon-0-0-1x_U007emarketing-0-8-0-0-85-220.png/512x512bb.jpg',
+shahid:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/d2/42/fa/d242faad-9002-fc5e-e5e9-16a57e9d4330/AppIcon-0-0-1x_U007emarketing-0-0-0-11-0-0-85-220.png/512x512bb.jpg',
+capcut:'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/5e/3f/96/5e3f9662-e690-3e55-e0b0-77da51f98fd2/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/512x512bb.jpg',
+picsart:'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/29/70/0f/29700f73-1932-2d9a-d03d-971142f9ea57/AppIcon-0-0-1x_U007emarketing-0-8-0-sRGB-85-220.png/512x512bb.jpg',
+});
 function storeRow(a){
 const inst=S.installed.includes(a.k),hiddenB=false;
 return '<div class="card row" style="align-items:center"><span style="flex:0 0 auto">'+icImg(ICONS[a.k])+'</span><span style="flex:1;cursor:pointer" data-detail="'+a.k+'"><span class="big" style="font-size:15px">'+a.n+'</span><br><span class="mut">'+a.cat+' — '+a.dev+'</span></span><button class="btn '+(inst?'gray':'')+'" data-get="'+a.k+'" style="border-radius:16px;padding:7px 18px">'+(inst?'فتح':'احصل')+'</button></div>';
@@ -784,7 +841,7 @@ em=ce;S._appleName=nm;S._applePw=$('#cPass').value;mode='2fa';code=String(Math.f
 }
 };
 const finishSignIn=()=>{
-const nm=S._appleName||em.split('@')[0]||'Reda';
+const nm=S._appleName||em.split('@')[0]||'iPhone User';
 S.apple={id:em,name:nm,created:Date.now()};store.set('apple',S.apple);
 S._applePw=null;S._appleName=null;
 toast('أهلاً '+nm+' — تم تسجيل الدخول ✓');
