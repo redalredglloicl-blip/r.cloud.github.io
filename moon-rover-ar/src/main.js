@@ -198,12 +198,6 @@ function showMenu() {
   App.input.showTouch(false);
   const saved = Save.read();
   $('btnContinue').hidden = !saved;
-  $('menuBrief').innerHTML =
-    `Two hundred and fourteen days ago the far-side outpost <b>BEACON-9</b> sent four seconds of
-     empty carrier and stopped. You are the operator of <b>MU-7 CASSIOPEIA</b>, put down by descent
-     sled on the floor of <b>Anaxagoras</b> at seventy-three degrees north.<br><br>
-     Survey the basin. Restore the relay chain. Find out what is under the floor —
-     and why the dossier does not say what the station was <em>for</em>.`;
 }
 
 function startGame(freeRoam, loadSaved) {
@@ -266,7 +260,6 @@ function wireUI() {
   $('btnContinue').onclick = () => startGame(false, true);
   $('btnFreeRoam').onclick = () => startGame(true, false);
   // Store for game loop
-  $('btnControls').onclick = () => openPanel('help', ST.HELP);
   $('btnSettings').onclick = () => openPanel('pause', ST.PAUSE);
   $('btnResume').onclick = closePanels;
   $('btnHelp').onclick = () => { $('pause').classList.add('hidden'); openPanel('help', ST.HELP); };

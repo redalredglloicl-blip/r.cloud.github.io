@@ -10,7 +10,7 @@
 <!-- ?v= is a cache buster: GitHub Pages serves assets with max-age=600, so a
      returning player keeps the old layout for ten minutes after a deploy.
      Bump this whenever styles.css changes in a way players must see. -->
-<link rel="stylesheet" href="src/ui/styles.css?v=11" />
+<link rel="stylesheet" href="src/ui/styles.css?v=12" />
 <script type="importmap">
 {
   "imports": {
@@ -52,25 +52,11 @@
     <div class="menu-left">
       <h1 class="title big">REGOLITH</h1>
       <p class="subtitle">الصمت في أناكساغوراس</p>
-      <div class="brief" id="menuBrief"></div>
       <div class="menu-actions">
         <button class="btn primary" id="btnPlay">ابدأ الهبوط</button>
         <button class="btn" id="btnContinue" hidden>استئناف المسح</button>
         <button class="btn ghost" id="btnFreeRoam">مسح حر</button>
-        <button class="btn ghost" id="btnControls">التحكم</button>
         <button class="btn ghost" id="btnSettings">الأنظمة</button>
-      </div>
-      <p class="hint">WebGL2 · GPU accelerated · headphones recommended</p>
-    </div>
-    <div class="menu-right">
-      <div class="dossier">
-        <div class="dossier-row"><span>OPERATION</span><b>ANAXAGORAS</b></div>
-        <div class="dossier-row"><span>BODY</span><b>LUNA · FAR SIDE</b></div>
-        <div class="dossier-row"><span>GRAVITY</span><b>1.62 m/s²</b></div>
-        <div class="dossier-row"><span>ATMOSPHERE</span><b>NONE</b></div>
-        <div class="dossier-row"><span>SURFACE TEMP</span><b>−173 … +117 °C</b></div>
-        <div class="dossier-row"><span>LAST CONTACT</span><b>D+214</b></div>
-        <div class="dossier-row alert"><span>STATUS</span><b>SILENT</b></div>
       </div>
     </div>
   </div>
@@ -183,8 +169,8 @@
 
 <noscript><div class="overlay boot"><div class="boot-inner"><h1 class="title">REGOLITH</h1><p class="subtitle">JavaScript is required.</p></div></div></noscript>
 
-<script type="module" src="src/main.js?v=42"></script>
-<div id="arVersion">v4.3</div>
+<script type="module" src="src/main.js?v=43"></script>
+<div id="arVersion">v4.4</div>
 
 
 </body>
