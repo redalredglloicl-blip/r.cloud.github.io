@@ -286,34 +286,6 @@ function wireUI() {
   $('btnPlay').onclick = () => { Save.clear(); startGame(false, false); };
   $('btnContinue').onclick = () => startGame(false, true);
   $('btnFreeRoam').onclick = () => startGame(true, false);
-  // Travel mode
-  let travelMode = null;
-  $('btnTravel').onclick = () => {
-    try {
-      const eng = App.engine;
-      // Use engine if ready, otherwise wait a bit and retry
-      if (!eng || !eng.scene || !eng.camera) {
-        showToast('⏳ جارٍ التجهيز...');
-        setTimeout(() => $('btnTravel').click(), 1000);
-        return;
-      }
-      $('menu').classList.add('hidden');
-      if (!travelMode) {
-        travelMode = createTravelMode(eng.scene, eng.camera);
-      }
-    // Show travel intro
-    showTravelIntro(() => {
-      travelMode.start(() => {
-        // Travel complete - show message
-        showToast('🌍 وصلت إلى الأرض!');
-      });
-    });
-    } catch(e) {
-      console.error('Travel error:', e);
-      showToast('⚠️ خطأ: ' + e.message);
-      $('menu').classList.remove('hidden');
-    }
-  };
   // Store for game loop
   App.travelMode = () => travelMode;
   $('btnControls').onclick = () => openPanel('help', ST.HELP);
@@ -531,13 +503,6 @@ function frame(now) {
 /** One simulated + rendered frame. Exposed on the debug handle so a headless
     driver can advance the game without relying on rAF. */
 function tick(dt) {
-  // Travel mode update
-  const tm = App.travelMode ? App.travelMode() : null;
-  if (tm && tm.state.active) {
-    tm.update(dt);
-    App.engine.renderer.render(App.engine.scene, App.engine.camera);
-    return;
-  }
   const playing = App.state === ST.PLAY;
 
   const input = App.input;
