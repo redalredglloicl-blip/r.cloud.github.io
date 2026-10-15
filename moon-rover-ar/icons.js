@@ -39,4 +39,6 @@ window.BW_ICONS={
 'f-dead':'<circle cx="12" cy="12" r="9"/><path d="M8.5 9l2.5 2.5M11 9L8.5 11.5M13 9l2.5 2.5M15.5 9L13 11.5M9 15.5h6"/>',
 };
 window.bwIcon=function(id,cls){return '<svg class="'+(cls||'ic')+'" viewBox="0 0 24 24">'+(window.BW_ICONS[id]||'')+'</svg>';};
-window.initBWIcons=function(){document.querySelectorAll('[di]').forEach(function(el){var id=el.getAttribute('di');var cls='ic'+(el.className?' '+el.className:'');el.innerHTML=window.bwIcon(id,cls);el.removeAttribute('data-ic');});};
+window.initBWIcons=function(){document.querySelectorAll('[di]').forEach(function(el){var id=el.getAttribute('di');var cls='ic'+(el.className?' '+el.className:'');el.innerHTML=window.bwIcon(id,cls);el.removeAttribute('di');});};
+
+(function(){function go(){try{if(window.initBWIcons)window.initBWIcons();}catch(e){}}if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',go);}else{go();}})();
