@@ -628,3 +628,199 @@ kbd{display:inline-block;min-width:20px;text-align:center;padding:2px 6px;border
 .hud { font-family: 'Segoe UI', Tahoma, Arial, sans-serif !important; }
 /* Hide PC controls */
 #btnControls { display: none !important; }
+
+/* ============================================================
+   UNIFIED DESIGN SYSTEM - ريجوليث موبايل
+   One consistent style across: loading, lobby, HUD, menus
+   ============================================================ */
+:root {
+  --gold: #ffd700;
+  --gold2: #ff9500;
+  --bg0: #0b0e1a;
+  --bg1: #151528;
+  --bg2: #1a1a2e;
+  --card: rgba(18,22,38,0.92);
+  --border: rgba(255,255,255,0.1);
+  --gold-border: rgba(255,215,0,0.25);
+  --radius: 16px;
+  --radius-lg: 20px;
+  --font: 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+
+/* ===== GLOBAL ===== */
+#boot, #menu, .hud, .overlay, .modal {
+  font-family: var(--font) !important;
+}
+
+/* ===== LOADING SCREEN ===== */
+#boot {
+  background: linear-gradient(160deg, var(--bg0) 0%, var(--bg1) 50%, var(--bg0) 100%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+#boot .boot-inner, #boot > div {
+  text-align: center !important;
+  padding: 40px 30px !important;
+  max-width: 400px !important;
+}
+#boot .title, #boot h1 {
+  font-size: 44px !important;
+  font-weight: 900 !important;
+  background: linear-gradient(135deg, var(--gold), var(--gold2)) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  margin-bottom: 10px !important;
+  letter-spacing: 1px !important;
+}
+#boot .subtitle, #boot p {
+  color: #9a9ab0 !important;
+  font-size: 15px !important;
+  margin-bottom: 28px !important;
+}
+#boot .loadbar {
+  width: 260px !important;
+  height: 8px !important;
+  border-radius: 10px !important;
+  background: rgba(255,255,255,0.08) !important;
+  margin: 0 auto 14px !important;
+  overflow: hidden !important;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3) !important;
+}
+#boot .loadbar i, #boot .loadbar > div, #boot #loadfill {
+  background: linear-gradient(90deg, var(--gold), var(--gold2)) !important;
+  border-radius: 10px !important;
+  height: 100% !important;
+  display: block !important;
+  transition: width 0.3s ease !important;
+  box-shadow: 0 0 12px rgba(255,215,0,0.5) !important;
+}
+#boot .loadtext {
+  color: #7a7a90 !important;
+  font-size: 13px !important;
+}
+
+/* ===== LOBBY / MAIN MENU ===== */
+#menu {
+  background: linear-gradient(160deg, var(--bg0) 0%, var(--bg1) 45%, var(--bg0) 100%) !important;
+}
+#menu .menu-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 100vh !important;
+  padding: 40px 24px !important;
+  gap: 0 !important;
+}
+#menu .menu-left {
+  text-align: center !important;
+  max-width: 420px !important;
+  width: 100% !important;
+}
+#menu .title.big, #menu h1 {
+  font-size: 52px !important;
+  font-weight: 900 !important;
+  background: linear-gradient(135deg, var(--gold), var(--gold2)) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  margin-bottom: 10px !important;
+  letter-spacing: 2px !important;
+}
+#menu .subtitle {
+  color: #9a9ab0 !important;
+  font-size: 16px !important;
+  margin-bottom: 32px !important;
+  line-height: 1.6 !important;
+}
+#menu .menu-actions {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  width: 100% !important;
+  max-width: 320px !important;
+  margin: 0 auto !important;
+}
+#menu .btn {
+  border-radius: var(--radius) !important;
+  padding: 17px 24px !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  border: none !important;
+  letter-spacing: 0 !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  transition: transform 0.15s ease, box-shadow 0.2s ease !important;
+  font-family: var(--font) !important;
+}
+#menu .btn.primary {
+  background: linear-gradient(135deg, var(--gold), var(--gold2)) !important;
+  color: #1a1a1a !important;
+  box-shadow: 0 8px 28px rgba(255,183,0,0.4) !important;
+}
+#menu .btn.primary:active {
+  transform: scale(0.96) !important;
+}
+#menu .btn.ghost {
+  background: rgba(255,255,255,0.06) !important;
+  color: #fff !important;
+  border: 1px solid var(--border) !important;
+  backdrop-filter: blur(8px) !important;
+}
+#menu .btn.ghost:active {
+  transform: scale(0.96) !important;
+  background: rgba(255,255,255,0.1) !important;
+}
+
+/* ===== HUD BUTTONS (unified) ===== */
+.hud .tbtns button, .hud .tbtns2 button {
+  border-radius: var(--radius) !important;
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+  font-weight: 700 !important;
+  min-width: 62px !important;
+  min-height: 50px !important;
+  font-size: 13px !important;
+  color: #fff !important;
+  backdrop-filter: blur(8px) !important;
+  font-family: var(--font) !important;
+}
+.hud .tbtns button:active, .hud .tbtns2 button:active {
+  transform: scale(0.93) !important;
+  border-color: var(--gold-border) !important;
+}
+
+/* ===== PANELS (unified cards) ===== */
+.hud .mission, .hud .panel {
+  border-radius: var(--radius-lg) !important;
+  background: var(--card) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.4) !important;
+}
+.hud .mission {
+  border-left: 3px solid var(--gold) !important;
+}
+
+/* ===== JOYSTICKS (unified) ===== */
+.hud .stick {
+  border: 2px solid var(--gold-border) !important;
+  background: radial-gradient(circle, rgba(25,30,48,0.55) 0%, rgba(12,15,28,0.88) 100%) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.45), inset 0 2px 10px rgba(0,0,0,0.35) !important;
+}
+
+/* ===== OVERLAYS & MODALS (unified) ===== */
+.overlay, .modal, .dialog {
+  background: rgba(8,10,20,0.85) !important;
+  backdrop-filter: blur(12px) !important;
+}
+.overlay .card, .modal .card, .dialog .card {
+  border-radius: var(--radius-lg) !important;
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5) !important;
+  padding: 24px !important;
+}
