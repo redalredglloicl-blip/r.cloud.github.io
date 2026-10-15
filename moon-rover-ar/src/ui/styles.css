@@ -1426,3 +1426,8 @@ kbd{display:inline-block;min-width:20px;text-align:center;padding:2px 6px;border
   margin: 0 !important;
   padding: 12px 8px !important;
 }
+
+/* ===== Remove blue corner decorations (v4.6) ===== */
+.card-inner::before, .card-inner::after { display: none !important; }
+.panel::before, .panel::after { display: none !important; }
+.mission::before, .mission::after { display: none !important; }
