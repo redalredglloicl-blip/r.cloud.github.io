@@ -17,6 +17,7 @@ import { Rover, DRIVE, EARTH_RTT } from './game/rover.js';
 import { CameraRig, CAM } from './game/camera.js';
 import { Game, STATION, MASSIF, OPS } from './game/gameplay.js';
 import { HUD } from './ui/hud.js';
+import { Astronaut } from './game/astronaut.js';
 import { MISSIONS } from './game/lore.js';
 
 const $ = (id) => document.getElementById(id);
@@ -157,6 +158,7 @@ async function boot() {
   const dust = new Dust(engine.scene, terrain, terrain.uniforms.uSunDir, engine.quality.dust);
   const rover = new Rover(terrain, engine.scene);
   rover.panelTarget = 0;
+  const astro = new Astronaut(engine.scene);
   const rig = new CameraRig(engine.camera, terrain);
   const audio = new Audio();
   const hud = new HUD(audio);
@@ -168,7 +170,8 @@ async function boot() {
   });
   game.tc = App.settings.tc;
 
-  Object.assign(App, { terrain, sky, props, dust, rover, rig, audio, hud, input, game, tex });
+  Object.assign(App, { terrain, sky, props, dust, rover, rig, audio, hud, input, game, tex, astro });
+  App.onFoot = false;
 
   applySettings();
   buildSettingsUI();
@@ -200,6 +203,27 @@ function showMenu() {
   $('btnContinue').hidden = !saved;
 }
 
+
+function toggleOnFoot() {
+  if (App.state !== ST.PLAY) return;
+  App.onFoot = !App.onFoot;
+  if (App.onFoot) {
+    const yaw = Math.atan2(App.rover.forward.x, App.rover.forward.z);
+    App.astro.exitFrom(App.rover.pos, yaw);
+    App.rig.setMode(CAM.CHASE, App.astro);
+    App.hud.log('على الأقدام — جاذبية منخفضة', 'good');
+  } else {
+    // re-enter: place rover where astronaut stands
+    App.astro.hide();
+    App.rover.placeAt(App.astro.pos.x, App.astro.pos.z, App.astro.yaw);
+    App.rig.setMode(CAM.CHASE, App.rover);
+    App.hud.log('عدت للمركبة', 'good');
+  }
+  App.audio.ui('tick');
+  const b = document.querySelector('[data-k="KeyE"]');
+  if (b) b.textContent = App.onFoot ? 'دخول' : 'خروج';
+}
+
 function startGame(freeRoam, loadSaved) {
   App.audio.init(); App.audio.resume();
   App.audio.setVolumes(App.settings.volSfx, App.settings.volMusic);
@@ -219,6 +243,10 @@ function startGame(freeRoam, loadSaved) {
   let resumed = false;
   if (loadSaved) resumed = App.game.load(Save.read());
 
+  App.onFoot = false;
+  App.astro.hide();
+  const eb = document.querySelector('[data-k="KeyE"]');
+  if (eb) eb.textContent = 'خروج';
   App.state = ST.PLAY;
   App.input.lock();
   App.input.showTouch(true);
@@ -271,7 +299,11 @@ function wireUI() {
   };
   $('cardGo').onclick = () => {
     App.hud.hideCard();
-    App.state = ST.PLAY; App.input.lock(); App.input.showTouch(true);
+    App.onFoot = false;
+  App.astro.hide();
+  const eb = document.querySelector('[data-k="KeyE"]');
+  if (eb) eb.textContent = 'خروج';
+  App.state = ST.PLAY; App.input.lock(); App.input.showTouch(true);
     App.audio.ui('ok');
   };
   // one close path, so the ESC button and the Escape key cannot diverge
@@ -579,6 +611,7 @@ function stepWorld(dt, raw, input) {
   if (photo) { ctl.throttle = 0; ctl.steer = 0; ctl.brake = 1; }
   App.cmdInFlight = cmdQueue.length;
 
+  if (input.hit('KeyE')) toggleOnFoot();
   if (input.hit('KeyF')) { rover.headlights = !rover.headlights; audio.ui('tick'); hud.log(rover.headlights ? 'LAMPS ON' : 'LAMPS OFF'); }
   if (input.hit('KeyG')) game.doScan();
 
@@ -613,7 +646,13 @@ function stepWorld(dt, raw, input) {
   /* ---- physics ---- */
   if (!photo) {
     rover.hardHit = 0;
-    rover.step(dt, ctl, terrain);
+    if (App.onFoot) {
+      ctl.jump = input.down('Space') || input.hit('Space');
+      ctl.boost = input.down('ShiftLeft', 'ShiftRight');
+      astro.step(dt, ctl, terrain);
+    } else {
+      rover.step(dt, ctl, terrain);
+    }
     const impact = props.resolve(rover);
     if (impact > 1.6) { game.damage(impact * 1.8, 'BOULDER'); rig.addShake(clamp(impact * 0.16, 0, 1)); }
     if (rover.hardHit > 3.2) {
@@ -627,6 +666,7 @@ function stepWorld(dt, raw, input) {
     rover.sync();
   }
   rover.updateVisuals(dt, ctl);
+  astro.updateVisuals(dt, App.elapsed);
 
   /* ---- tracks + dust from the wheels ---- */
   let slipSum = 0, spinMax = 0, roughSum = 0, contacts = 0;
@@ -716,12 +756,12 @@ function stepWorld(dt, raw, input) {
   sky.update(dt, engine.camera, App.elapsed);
   props.update(dt, App.elapsed, engine.camera);
   game.update(dt, ctl, input);
-  rig.update(dt, rover, {
+  rig.update(dt, App.onFoot ? astro : rover, {
     lookX: raw.lookX, lookY: raw.lookY, zoom: raw.zoom, looking: raw.looking,
     boost: input.down('ShiftLeft', 'ShiftRight'),
     up: input.down('KeyQ'), down: input.down('KeyZ')
   }, photo ? { throttle: raw.throttle, steer: raw.steer } : { throttle: 0, steer: 0 });
-  engine.aimShadow(rover.pos, sky.sunDir);
+  engine.aimShadow(App.onFoot ? astro.pos : rover.pos, sky.sunDir);
 
   /* ---- audio mix ---- */
   audio.update(dt, {

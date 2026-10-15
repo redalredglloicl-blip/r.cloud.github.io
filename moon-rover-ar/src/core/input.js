@@ -75,6 +75,7 @@ export class Input {
         <button class="tb" data-k="KeyB">مرحل</button>
       </div>
       <div class="tbtns2">
+        <button class="tb wide" data-k="KeyE">خروج</button>
         <button class="tb" data-k="KeyC">كاميرا</button>
         <button class="tb" data-k="KeyF">مصباح</button>
         <button class="tb" data-k="KeyT">الألواح</button>
