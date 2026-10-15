@@ -205,18 +205,32 @@ function showMenu() {
 
 
 /* ---- astronaut on-foot mode ---- */
+let _lastToggle = 0;
 function toggleOnFoot() {
   if (App.state !== ST.PLAY) return;
-  App.onFoot = !App.onFoot;
+  const now = performance.now();
+  if (now - _lastToggle < 800) return;   // debounce: no double-toggle
+  _lastToggle = now;
   const b = document.querySelector('[data-k="KeyE"]');
-  if (App.onFoot) {
+  if (!App.onFoot) {
     const yaw = Math.atan2(App.rover.forward.x, App.rover.forward.z);
     App.astro.spawnAt(App.rover.pos.x, App.rover.pos.y, App.rover.pos.z, yaw);
+    App.onFoot = true;
     App.hud.log('على الأقدام — جاذبية منخفضة', 'good');
     if (b) b.textContent = 'دخول';
   } else {
+    // must be near the rover to re-enter (no teleport!)
+    const d = Math.hypot(
+      App.astro.pos.x - App.rover.pos.x,
+      App.astro.pos.z - App.rover.pos.z
+    );
+    if (d > 6) {
+      App.hud.log('اقترب من المركبة للدخول', 'warn');
+      _lastToggle = 0;   // allow retry immediately
+      return;
+    }
     App.astro.despawn();
-    App.rover.placeAt(App.astro.pos.x, App.astro.pos.z, App.astro.yaw);
+    App.onFoot = false;
     App.rig.setMode(CAM.CHASE, App.rover);
     App.hud.log('عدت للمركبة', 'good');
     if (b) b.textContent = 'خروج';
