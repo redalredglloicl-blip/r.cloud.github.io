@@ -1431,12 +1431,3 @@ kbd{display:inline-block;min-width:20px;text-align:center;padding:2px 6px;border
 .card-inner::before, .card-inner::after { display: none !important; }
 .panel::before, .panel::after { display: none !important; }
 .mission::before, .mission::after { display: none !important; }
-
-/* ===== Exit vehicle button (v4.7) ===== */
-#touch .tb[data-k="KeyE"] {
-  background: linear-gradient(135deg, #FF1493, #FF69B4) !important;
-  color: white !important;
-  border: 2px solid #FF1493 !important;
-  font-weight: 800 !important;
-  box-shadow: 0 4px 16px rgba(255,20,147,0.4) !important;
-}
