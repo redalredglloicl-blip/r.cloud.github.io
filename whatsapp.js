@@ -1,7 +1,7 @@
 // WhatsApp - Full Real Implementation - Version 30
 (function(){
 if(window._waLoaded)return;window._waLoaded=true;
-try{document.title='30';var vt=document.getElementById('verTag');if(vt)vt.textContent='30';}catch(e){}
+try{document.title='32';var vt=document.getElementById('verTag');if(vt)vt.textContent='32';}catch(e){}
 
 var FB='https://spychat-4f8d5-default-rtdb.firebaseio.com/rio-ipad/whatsapp';
 var WA={user:null,chat:null,poll:null};
@@ -393,7 +393,16 @@ el.innerHTML='<div style="display:flex;flex-direction:column;height:100%">'
 +'<div style="width:40px;height:40px;border-radius:50%;background:#dfe5e7;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center">'
 +(pic?'<img src="'+pic+'" style="width:100%;height:100%;object-fit:cover">':'<span style="color:#fff;font-weight:600">'+name.slice(0,1).toUpperCase()+'</span>')+'</div>'
 +'<div style="flex:1;min-width:0"><b style="font-size:16px;color:#000">'+name+'</b><br><span id="waOnline" style="font-size:12px;color:#8696a0">متصل الآن</span></div>'
++'<span id="waSearchBtn" style="cursor:pointer;color:#0a84ff;padding:4px">'+WA_ICONS.search+'</span>'
 +'<span style="cursor:pointer;color:#0a84ff">'+WA_ICONS.video+'</span><span style="cursor:pointer;color:#0a84ff">'+WA_ICONS.phone+'</span>'
++'</div>'
+// In-chat message search bar (hidden by default)
++'<div id="waMsgSearch" style="display:none;background:#f6f6f6;padding:8px 12px;border-bottom:1px solid #e0e0e0;align-items:center;gap:8px">'
++'<input id="waMsgSearchIn" placeholder="بحث في المحادثة..." style="flex:1;border:1px solid #ddd;border-radius:10px;padding:8px 12px;font-size:14px;outline:none;min-width:0">'
++'<span id="waSearchCount" style="font-size:12px;color:#8696a0;white-space:nowrap"></span>'
++'<span id="waSearchUp" style="cursor:pointer;color:#0a84ff;font-size:18px;padding:4px">↑</span>'
++'<span id="waSearchDown" style="cursor:pointer;color:#0a84ff;font-size:18px;padding:4px">↓</span>'
++'<span id="waSearchClose" style="cursor:pointer;color:#ff3b30;font-size:16px;padding:4px">✕</span>'
 +'</div>'
 // Messages
 +'<div id="waMsgs" style="flex:1;overflow-y:auto;padding:12px 8px;background:#ece5dd;background-image:radial-gradient(#d4c9b8 1px,transparent 1px);background-size:20px 20px"></div>'
@@ -414,6 +423,49 @@ if(WA.chat)fetch(FB+'/chats/'+WA.chat.id+'/typing/'+WA.user.u+'.json',{method:'D
 showMain();
 });
 document.querySelector('#waSendBtn').addEventListener('click',sendWaMsg);
+// In-chat message search
+(function(){
+var sBtn=document.querySelector('#waSearchBtn'),sBar=document.querySelector('#waMsgSearch'),
+sIn=document.querySelector('#waMsgSearchIn'),sCount=document.querySelector('#waSearchCount'),
+sUp=document.querySelector('#waSearchUp'),sDown=document.querySelector('#waSearchDown'),sClose=document.querySelector('#waSearchClose');
+if(!sBtn||!sBar)return;
+var matches=[],curIdx=-1;
+function clearHl(){document.querySelectorAll('#waMsgs .waHl').forEach(function(e){var p=e.parentNode;if(p){p.replaceChild(document.createTextNode(e.textContent),e);p.normalize();}});matches=[];curIdx=-1;sCount.textContent='';}
+function doSearch(){
+clearHl();
+var q=sIn.value.trim();if(!q)return;
+var box=document.querySelector('#waMsgs');if(!box)return;
+var walker=document.createTreeWalker(box,NodeFilter.SHOW_TEXT,{acceptNode:function(n){return n.parentNode.closest('.waMsg')?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;}});
+var nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+nodes.forEach(function(tn){
+var txt=tn.textContent,idx=txt.indexOf(q);
+if(idx>=0&&tn.parentNode){
+var frag=document.createDocumentFragment(),last=0;
+while(idx>=0){
+if(idx>last)frag.appendChild(document.createTextNode(txt.slice(last,idx)));
+var hl=document.createElement('span');hl.className='waHl';hl.style.cssText='background:#ffeb3b;color:#000;border-radius:3px;padding:0 2px';
+hl.textContent=txt.slice(idx,idx+q.length);frag.appendChild(hl);matches.push(hl);
+last=idx+q.length;idx=txt.indexOf(q,last);
+}
+if(last<txt.length)frag.appendChild(document.createTextNode(txt.slice(last)));
+tn.parentNode.replaceChild(frag,tn);
+}
+});
+if(matches.length){curIdx=0;goTo(0);}else{sCount.textContent='لا نتائج';}
+}
+function goTo(i){
+if(!matches.length)return;
+curIdx=(i+matches.length)%matches.length;
+matches.forEach(function(m,j){m.style.background=j===curIdx?'#ff9800':'#ffeb3b';m.style.color='#000';});
+matches[curIdx].scrollIntoView({block:'center',behavior:'smooth'});
+sCount.textContent=(curIdx+1)+' / '+matches.length;
+}
+sBtn.addEventListener('click',function(){sBar.style.display=sBar.style.display==='none'?'flex':'none';if(sBar.style.display==='flex')sIn.focus();else clearHl();});
+sClose.addEventListener('click',function(){sBar.style.display='none';sIn.value='';clearHl();});
+sIn.addEventListener('input',doSearch);
+sUp.addEventListener('click',function(){goTo(curIdx-1);});
+sDown.addEventListener('click',function(){goTo(curIdx+1);});
+})();
 (function(){
 var _mi=document.querySelector('#waMsgIn');
 if(!_mi)return;
