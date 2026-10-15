@@ -16,6 +16,7 @@ import { makeEarthTextures, makeMoonAlbedo } from './world/textures.js';
 import { Rover, DRIVE, EARTH_RTT } from './game/rover.js';
 import { CameraRig, CAM } from './game/camera.js';
 import { Game, STATION, MASSIF, OPS } from './game/gameplay.js';
+import { createTravelMode } from './game/travel.js';
 import { HUD } from './ui/hud.js';
 import { MISSIONS } from './game/lore.js';
 
@@ -185,6 +186,28 @@ async function boot() {
   requestAnimationFrame(frame);
 }
 
+
+/* Travel mode helpers */
+function showTravelIntro(cb) {
+  const div = document.createElement('div');
+  div.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(5,8,18,0.92);backdrop-filter:blur(10px)';
+  div.innerHTML = `<div style="text-align:center;padding:40px;max-width:400px">
+    <div style="font-size:56px;margin-bottom:16px">🚀</div>
+    <h2 style="color:#ffd700;font-size:28px;font-weight:900;margin-bottom:12px">رحلة إلى الأرض</h2>
+    <p style="color:#9a9ab0;font-size:15px;line-height:1.8;margin-bottom:28px">مهمة تجريبية: الإقلاع من القمر<br>والسفر عبر الفضاء إلى كوكب الأرض</p>
+    <button id="btnTravelGo" style="background:linear-gradient(135deg,#ffd700,#ff9500);color:#1a1a1a;border:none;border-radius:16px;padding:16px 48px;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 8px 28px rgba(255,183,0,0.4)">انطلق 🚀</button>
+  </div>`;
+  document.body.appendChild(div);
+  div.querySelector('#btnTravelGo').onclick = () => { div.remove(); cb(); };
+}
+function showToast(msg) {
+  const div = document.createElement('div');
+  div.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:99999;background:rgba(15,18,32,0.95);border:1px solid rgba(255,215,0,0.4);border-radius:16px;padding:14px 28px;color:#ffd700;font-size:16px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,0.5)';
+  div.textContent = msg;
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 4000);
+}
+
 /* ============================================================
    MENUS
    ============================================================ */
@@ -263,6 +286,24 @@ function wireUI() {
   $('btnPlay').onclick = () => { Save.clear(); startGame(false, false); };
   $('btnContinue').onclick = () => startGame(false, true);
   $('btnFreeRoam').onclick = () => startGame(true, false);
+  // Travel mode
+  let travelMode = null;
+  $('btnTravel').onclick = () => {
+    $('menu').classList.add('hidden');
+    if (!travelMode) {
+      const scene = App.scene, camera = App.camera;
+      travelMode = createTravelMode(scene, camera);
+    }
+    // Show travel intro
+    showTravelIntro(() => {
+      travelMode.start(() => {
+        // Travel complete - show message
+        showToast('🌍 وصلت إلى الأرض!');
+      });
+    });
+  };
+  // Store for game loop
+  App.travelMode = () => travelMode;
   $('btnControls').onclick = () => openPanel('help', ST.HELP);
   $('btnSettings').onclick = () => openPanel('pause', ST.PAUSE);
   $('btnResume').onclick = closePanels;
@@ -478,6 +519,13 @@ function frame(now) {
 /** One simulated + rendered frame. Exposed on the debug handle so a headless
     driver can advance the game without relying on rAF. */
 function tick(dt) {
+  // Travel mode update
+  const tm = App.travelMode ? App.travelMode() : null;
+  if (tm && tm.state.active) {
+    tm.update(dt);
+    App.renderer.render(App.scene, App.camera);
+    return;
+  }
   const playing = App.state === ST.PLAY;
 
   const input = App.input;
