@@ -290,13 +290,14 @@ function wireUI() {
   let travelMode = null;
   $('btnTravel').onclick = () => {
     try {
-      if (!App.scene || !App.camera) {
+      const eng = App.engine;
+      if (!eng || !eng.scene || !eng.camera) {
         showToast('⚠️ انتظر اكتمال التحميل');
         return;
       }
       $('menu').classList.add('hidden');
       if (!travelMode) {
-        travelMode = createTravelMode(App.scene, App.camera);
+        travelMode = createTravelMode(eng.scene, eng.camera);
       }
     // Show travel intro
     showTravelIntro(() => {
@@ -532,7 +533,7 @@ function tick(dt) {
   const tm = App.travelMode ? App.travelMode() : null;
   if (tm && tm.state.active) {
     tm.update(dt);
-    App.renderer.render(App.scene, App.camera);
+    App.engine.renderer.render(App.engine.scene, App.engine.camera);
     return;
   }
   const playing = App.state === ST.PLAY;
