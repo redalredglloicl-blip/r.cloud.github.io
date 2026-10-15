@@ -289,8 +289,8 @@ function buildSettingsUI() {
   const rng = (label, note, min, max, step, get, set) => rows.push(
     { type: 'rng', label, note, min, max, step, get, set });
 
-  seg('RENDER QUALITY', 'clipmap, shadows, excavation grid, boulders, particles',
-    ['LOW', 'MEDIUM', 'HIGH', 'ULTRA'],
+  seg('جودة العرض', 'الظلال، الصخور، الجسيمات',
+    ['منخفضة', 'متوسطة', 'عالية', 'فائقة'],
     () => ['low', 'medium', 'high', 'ultra'].indexOf(S.quality),
     // setQuality rebuilds the composer, so the final-pass uniforms are new
     // objects — re-apply the user's settings or grain/aberration silently reset.
@@ -301,40 +301,40 @@ function buildSettingsUI() {
       applySettings();
       persist();
     });
-  seg('BLOOM', 'veiling glare around bright sources', ['OFF', 'ON'],
+  seg('التوهج', 'توهج حول مصادر الضوء', ['إيقاف', 'تشغيل'],
     () => S.bloom ? 1 : 0, (i) => { S.bloom = !!i; App.engine.bloom.enabled = !!i; persist(); });
-  seg('SENSOR NOISE', 'grain that rises in shadow', ['OFF', 'LOW', 'FULL'],
+  seg('تشويش الحساس', 'حبّات تظهر في الظل', ['إيقاف', 'خفيف', 'كامل'],
     () => S.grain === 0 ? 0 : S.grain < 0.7 ? 1 : 2,
     (i) => { S.grain = [0, 0.5, 1][i]; applySettings(); persist(); });
-  seg('CHROMATIC ABERRATION', 'lens fringing at the frame edge', ['OFF', 'ON'],
+  seg('الانحراف اللوني', 'أطراف ملونة عند حافة الشاشة', ['إيقاف', 'تشغيل'],
     () => S.aberr ? 1 : 0, (i) => { S.aberr = i ? 1 : 0; applySettings(); persist(); });
-  seg('STARFIELD', 'cinematic keeps stars visible in sunlight', ['REALISTIC', 'CINEMATIC'],
+  seg('النجوم', 'السينمائي يُبقي النجوم ظاهرة', ['واقعي', 'سينمائي'],
     () => S.stars > 0.5 ? 1 : 0, (i) => { S.stars = i ? 1 : 0.22; applySettings(); persist(); });
-  seg('DRIVE ENVELOPE', 'LRV: 13 km/h, a 45 s drill, and a pack that lasts half an hour',
-    ['ARCADE', 'LRV'],
+  seg('نمط القيادة', 'واقعي أو أركيد',
+    ['أركيد', 'واقعي'],
     () => S.realistic ? 1 : 0,
     (i) => { S.realistic = !!i; applySettings(); persist();
       App.hud.log(i ? 'PROFILE — LRV · 3.6 m/s · 45 s CORE · EXTENDED PACK' : 'PROFILE — ARCADE'); });
-  seg('SIGNAL DELAY', 'drive commands cross to the Moon and back before the rover acts',
-    ['OFF', 'EARTH 2.6 s'],
+  seg('تأخير الإشارة', 'تأخير أوامر القيادة',
+    ['إيقاف', '2.6 ثانية'],
     () => S.comms ? 1 : 0,
     (i) => { S.comms = !!i; applySettings(); persist();
       App.hud.log(i ? 'UPLINK — 1.28 s EACH WAY, ROUND TRIP 2.56 s' : 'UPLINK — LOCAL CONTROL'); });
-  seg('HUD SIZE', 'scales every instrument panel together', ['SMALL', 'NORMAL', 'LARGE'],
+  seg('حجم الواجهة', 'يكبّر كل اللوحات معاً', ['صغير', 'عادي', 'كبير'],
     () => S.hudScale < 0.92 ? 0 : S.hudScale > 1.08 ? 2 : 1,
     (i) => { S.hudScale = [0.82, 1, 1.18][i]; applySettings(); persist(); });
-  seg('CAMERA AUTO-CENTRE', 'chase view drifts back behind the rover', ['OFF', 'SLOW', 'FAST'],
+  seg('توسيط الكاميرا', 'الكاميرا ترجع خلف المركبة', ['إيقاف', 'بطيء', 'سريع'],
     () => S.autoCentre, (i) => { S.autoCentre = i; App.rig.autoCentre = i; persist(); });
-  seg('INVERT LOOK', '', ['OFF', 'ON'],
+  seg('عكس النظر', '', ['إيقاف', 'تشغيل'],
     () => S.invertY ? 1 : 0, (i) => { S.invertY = !!i; applySettings(); persist(); });
-  seg('TRACTION CONTROL', 'limits hub torque before the wheels dig in', ['OFF', 'ON'],
+  seg('تماسك العجلات', 'يمنع انغراس العجلات', ['إيقاف', 'تشغيل'],
     () => S.tc ? 1 : 0, (i) => { S.tc = !!i; App.game.tc = !!i; persist(); });
-  seg('SCORE', 'generative, D minor, patient', ['OFF', 'ON'],
+  seg('الموسيقى', 'موسيقى هادئة', ['إيقاف', 'تشغيل'],
     () => S.music ? 1 : 0, (i) => { S.music = !!i; App.audio.setMusic(!!i); persist(); });
-  rng('FIELD OF VIEW', 'degrees', 42, 82, 1, () => S.fov, (v) => { S.fov = v; App.rig.fovScale = v / 58; persist(); });
-  rng('LOOK SENSITIVITY', '', 0.25, 3, 0.05, () => S.sens, (v) => { S.sens = v; applySettings(); persist(); });
-  rng('EFFECTS VOLUME', '', 0, 1, 0.05, () => S.volSfx, (v) => { S.volSfx = v; App.audio.setVolumes(v, S.volMusic); persist(); });
-  rng('MUSIC VOLUME', '', 0, 1, 0.05, () => S.volMusic, (v) => { S.volMusic = v; App.audio.setVolumes(S.volSfx, v); persist(); });
+  rng('مجال الرؤية', 'درجة', 42, 82, 1, () => S.fov, (v) => { S.fov = v; App.rig.fovScale = v / 58; persist(); });
+  rng('حساسية النظر', '', 0.25, 3, 0.05, () => S.sens, (v) => { S.sens = v; applySettings(); persist(); });
+  rng('صوت المؤثرات', '', 0, 1, 0.05, () => S.volSfx, (v) => { S.volSfx = v; App.audio.setVolumes(v, S.volMusic); persist(); });
+  rng('صوت الموسيقى', '', 0, 1, 0.05, () => S.volMusic, (v) => { S.volMusic = v; App.audio.setVolumes(S.volSfx, v); persist(); });
 
   body.innerHTML = '';
   for (const r of rows) {

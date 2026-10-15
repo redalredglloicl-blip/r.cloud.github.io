@@ -1330,3 +1330,99 @@ kbd{display:inline-block;min-width:20px;text-align:center;padding:2px 6px;border
   box-shadow: 0 8px 24px rgba(255,20,147,0.4) !important;
   margin-top: 16px !important;
 }
+
+/* ===== SETTINGS PANEL - pink (v4.6) ===== */
+#pause {
+  background: linear-gradient(180deg, #FFE4EC 0%, #FFC9DA 100%) !important;
+}
+#pause .panel-head {
+  background: transparent !important;
+  border-bottom: 2px solid #FFB6C1 !important;
+}
+#pause .panel-head h2 {
+  color: #FF1493 !important;
+}
+#pause .panel-head .x {
+  background: #fff !important;
+  color: #FF1493 !important;
+  border: 2px solid #FFB6C1 !important;
+  border-radius: 12px !important;
+}
+#pause .settings {
+  background: transparent !important;
+}
+#pause .set-row {
+  background: rgba(255,255,255,0.85) !important;
+  border: 2px solid #FFB6C1 !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 14px rgba(255,105,180,0.15) !important;
+  margin-bottom: 10px !important;
+  padding: 14px 16px !important;
+}
+#pause .set-row label {
+  color: #C71585 !important;
+  font-weight: 800 !important;
+}
+#pause .set-row label small {
+  color: #E08BB0 !important;
+}
+#pause .seg {
+  border: 2px solid #FFB6C1 !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  background: #FFF5F8 !important;
+}
+#pause .seg button {
+  background: transparent !important;
+  color: #C71585 !important;
+  border: none !important;
+  font-weight: 700 !important;
+}
+#pause .seg button.on {
+  background: linear-gradient(135deg, #FF1493, #FF69B4) !important;
+  color: white !important;
+}
+#pause input[type="range"] {
+  accent-color: #FF1493 !important;
+}
+#pause .panel-foot {
+  background: transparent !important;
+  border-top: 2px solid #FFB6C1 !important;
+}
+#pause .panel-foot .btn {
+  border-radius: 16px !important;
+  font-weight: 800 !important;
+}
+#pause #btnResume {
+  background: linear-gradient(135deg, #FF1493, #FF69B4) !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 6px 20px rgba(255,20,147,0.35) !important;
+}
+#pause .btn.ghost {
+  background: rgba(255,255,255,0.85) !important;
+  color: #C71585 !important;
+  border: 2px solid #FFB6C1 !important;
+}
+#pause .btn.danger {
+  background: rgba(255,255,255,0.85) !important;
+  color: #FF1493 !important;
+  border: 2px solid #FF69B4 !important;
+}
+
+/* ===== Pause footer buttons - uniform ===== */
+#pause .panel-foot {
+  display: flex !important;
+  gap: 10px !important;
+  padding: 14px 16px !important;
+}
+#pause .panel-foot .btn {
+  flex: 1 1 0 !important;
+  min-height: 52px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 14px !important;
+  margin: 0 !important;
+  padding: 12px 8px !important;
+}
