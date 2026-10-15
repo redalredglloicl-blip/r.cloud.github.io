@@ -843,3 +843,7 @@ kbd{display:inline-block;min-width:20px;text-align:center;padding:2px 6px;border
   pointer-events: none;
   direction: ltr;
 }
+
+/* Fix: allow boot screen to hide */
+#boot.hidden { display: none !important; }
+#menu.hidden { display: none !important; }
