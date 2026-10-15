@@ -511,7 +511,7 @@ svg.ic.big-ic{width:100%;height:100%}
 <h1>BLACK WIDOW</h1>
 <p class="lobby-tag">لعبة رعب نفسي تفاعلية</p>
 <button id="start-btn">بدء اللعبة</button>
-<p class="lobby-ver">v3.7</p>
+<p class="lobby-ver">v3.8</p>
 </div>
 <div id="loading-screen">
 <div id="loading-title">BLACK WIDOW</div>
@@ -631,7 +631,7 @@ svg.ic.big-ic{width:100%;height:100%}
 </div>
 </div>
 <div id="bottom-bar">
-<span>[BW ver 3.7]</span>
+<span>[BW ver 3.8]</span>
 <span>AI + Backgrounds + Voice</span>
 </div>
 </div>
@@ -794,6 +794,37 @@ loadingScreen.appendChild(blood);
 }
 }
 const expressions = ['neutral', 'scared', 'crying', 'dead'];
+const CHAR_OUTFITS = {
+blue: {
+name: 'فستان أزرق',
+images: {
+neutral: 'chars/blue-neutral.webp',
+scared: 'chars/blue-scared.webp',
+crying: 'chars/blue-crying.webp',
+dead: 'chars/blue-dead.webp'
+}
+},
+white: {
+name: 'فستان أبيض',
+images: {
+neutral: 'chars/white-neutral.webp',
+scared: 'chars/white-neutral.webp',
+crying: 'chars/white-neutral.webp',
+dead: 'chars/white-neutral.webp'
+}
+},
+nude: {
+name: 'بدون ملابس',
+images: {
+neutral: 'chars/nude-neutral.webp',
+scared: 'chars/nude-neutral.webp',
+crying: 'chars/nude-neutral.webp',
+dead: 'chars/nude-neutral.webp'
+}
+}
+};
+window.CHAR_OUTFITS = CHAR_OUTFITS;
+window.currentOutfit = 'blue';
 window.expressionsData = { neutral: { dressed: null, undressed: null }, scared: { dressed: null, undressed: null }, crying: { dressed: null, undressed: null }, dead: { dressed: null, undressed: null } };
 window.altOutfitsData = { neutral: { dressed: null, undressed: null }, scared: { dressed: null, undressed: null }, crying: { dressed: null, undressed: null }, dead: { dressed: null, undressed: null } };
 window.currentClothesState = 'dressed';
@@ -1036,7 +1067,7 @@ if (typeof cache.scale === 'number') window.currentScale = cache.scale;
 if (typeof cache.x === 'number') window.currentX = cache.x;
 if (typeof cache.y === 'number') window.currentY = cache.y;
 if (typeof cache.clothesState === 'string') window.currentClothesState = cache.clothesState;
-if (typeof cache.outfit === 'string' && window.CHAR_OUTFITS[cache.outfit]) window.currentOutfit = cache.outfit;
+if (typeof cache.outfit === 'string' && window.CHAR_OUTFITS && window.CHAR_OUTFITS[cache.outfit]) window.currentOutfit = cache.outfit;
 else if (cache.outfit === 2) window.currentOutfit = 'white';
 else window.currentOutfit = 'blue';
 if (window.updateCharacterTransform) window.updateCharacterTransform();
@@ -1285,37 +1316,6 @@ if (window.currentOutfit === outfit && window.currentClothesState === 'undressed
 reader.readAsDataURL(file);
 });
 }
-const CHAR_OUTFITS = {
-blue: {
-name: 'فستان أزرق',
-images: {
-neutral: 'chars/blue-neutral.webp',
-scared: 'chars/blue-scared.webp',
-crying: 'chars/blue-crying.webp',
-dead: 'chars/blue-dead.webp'
-}
-},
-white: {
-name: 'فستان أبيض',
-images: {
-neutral: 'chars/white-neutral.webp',
-scared: 'chars/white-neutral.webp',
-crying: 'chars/white-neutral.webp',
-dead: 'chars/white-neutral.webp'
-}
-},
-nude: {
-name: 'بدون ملابس',
-images: {
-neutral: 'chars/nude-neutral.webp',
-scared: 'chars/nude-neutral.webp',
-crying: 'chars/nude-neutral.webp',
-dead: 'chars/nude-neutral.webp'
-}
-}
-};
-window.currentOutfit = 'blue';
-window.CHAR_OUTFITS = CHAR_OUTFITS;
 document.querySelectorAll('.outfit-tab').forEach(tab => {
 tab.addEventListener('click', (e) => {
 document.querySelectorAll('.outfit-tab').forEach(t => t.classList.remove('active'));
