@@ -185,7 +185,7 @@
 <noscript><div class="overlay boot"><div class="boot-inner"><h1 class="title">REGOLITH</h1><p class="subtitle">JavaScript is required.</p></div></div></noscript>
 
 <script type="module" src="src/main.js"></script>
-<div id="arVersion">v2.8</div>
+<div id="arVersion">v2.9</div>
 
 <script type="module">
 import { createTravelMode } from './src/game/travel.js';
@@ -218,16 +218,18 @@ import { createTravelMode } from './src/game/travel.js';
             document.body.appendChild(t);
             setTimeout(() => t.remove(), 4000);
           });
-          // Hook into game loop
-          const origTick = App.tick;
-          App.tick = (dt) => {
-            if (travelMode.state.active) {
-              travelMode.update(dt);
-              App.engine.renderer.render(App.engine.scene, App.engine.camera);
-            } else {
-              origTick(dt);
-            }
-          };
+          // Run travel mode with its own loop
+          let lastT = performance.now();
+          function travelLoop(now) {
+            if (!travelMode.state.active) return;
+            let dt = (now - lastT) / 1000;
+            lastT = now;
+            if (dt > 0.1) dt = 0.1;
+            travelMode.update(dt);
+            App.engine.renderer.render(App.engine.scene, App.engine.camera);
+            requestAnimationFrame(travelLoop);
+          }
+          requestAnimationFrame(travelLoop);
         };
       } catch(e) {
         alert('خطأ: ' + e.message);
