@@ -35,7 +35,22 @@ body{font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif;touch-action:n
 #sndbtn svg{width:20px;height:20px}
 #glfb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:700;text-align:center;padding:30px;z-index:40;background:#0e4a7a}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.149.0/three.min.js"></script>
+<script>
+window.__cdnFail=0;
+function __loadThree(srcs,i){
+ if(i>=srcs.length){window.__threeFailed=true;return;}
+ var s=document.createElement('script');
+ s.src=srcs[i];
+ s.onload=function(){};
+ s.onerror=function(){__loadThree(srcs,i+1);};
+ document.head.appendChild(s);
+}
+__loadThree([
+ "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.149.0/three.min.js",
+ "https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js",
+ "https://unpkg.com/three@0.149.0/build/three.min.js"
+],0);
+</script>
 </head>
 <body>
 <div id="game">
@@ -63,7 +78,7 @@ body{font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif;touch-action:n
     <p id="endtext"></p>
     <button class="bigbtn" id="againb">العب مرة ثانية</button>
   </div>
-  <div class="vtag">v1.0 3D</div>
+  <div class="vtag">v1.1 3D</div>
   <div id="glfb" hidden>تعذّر تشغيل الـ3D — تحقق من الإنترنت وأعد الفتح</div>
 </div>
 <script>
@@ -459,15 +474,28 @@ document.getElementById('againb').addEventListener('click',function(){
 });
 /* ================= Init ================= */
 drawSnd();
-if(typeof THREE==='undefined'){
- document.getElementById('glfb').hidden=false;
-}else{
+function showGLFail(msg){
+ var f=document.getElementById('glfb');
+ f.hidden=false;
+ f.innerHTML='تعذّر تشغيل الـ3D'+(msg?'<br><span style="font-size:12px;opacity:.75">السبب: '+msg+'</span>':'')+'<br>تحقق من الإنترنت وأعد الفتح';
+}
+function webglOK(){
+ try{var c=document.createElement('canvas');return !!(window.WebGLRenderingContext&&(c.getContext('webgl')||c.getContext('experimental-webgl')));}catch(e){return false;}
+}
+function waitThree(n,cb){
+ if(typeof THREE!=='undefined')return cb(true);
+ if(window.__threeFailed||n<=0)return cb(false);
+ setTimeout(function(){waitThree(n-1,cb);},300);
+}
+waitThree(40,function(ok){
+ if(!ok){showGLFail('فشل تحميل مكتبة الرسوم (3 محاولات)');return;}
+ if(!webglOK()){showGLFail('المتصفح لا يدعم WebGL');return;}
  try{
   initGL();reset();state='splash';
   camera.position.set(0,6.8,11);
   requestAnimationFrame(loop);
- }catch(err){document.getElementById('glfb').hidden=false;}
-}
+ }catch(err){showGLFail(String((err&&err.message)||err));}
+});
 </script>
 </body>
 </html>
