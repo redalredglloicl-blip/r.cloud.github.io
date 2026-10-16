@@ -79,17 +79,20 @@ body{font-family:-apple-system,'Segoe UI',Tahoma,Arial,sans-serif;touch-action:n
 </div>
 <script>
 'use strict';
+/* If WebGL is blocked on this device (e.g. iOS Lockdown Mode), fall back to the 2D version automatically */
+function glFail(msg){
+ try{location.replace('fart2d.html');}catch(e){}
+ var f=document.getElementById('glfb');
+ if(f){f.hidden=false;
+ f.innerHTML='تعذّر تشغيل الـ3D'+(msg?'<br><span style="font-size:13px;opacity:.75">'+msg+'</span>':'');}
+}
+window.addEventListener('error',function(){glFail('js');});
 /* =====================================================================
    MiniGL — tiny WebGL engine (no external dependencies)
    ===================================================================== */
 var canvas=document.getElementById('gl');
 var gl=canvas.getContext('webgl',{alpha:true,antialias:true})||canvas.getContext('experimental-webgl',{alpha:true});
-function glFail(msg){
- var f=document.getElementById('glfb');
- f.hidden=false;
- f.innerHTML='تعذّر تشغيل الـ3D'+(msg?'<br><span style="font-size:13px;opacity:.75">'+msg+'</span>':'');
-}
-if(!gl){ glFail('المتصفح لا يدعم WebGL'); }
+if(!gl){ glFail('no-webgl'); }
 else{
 /* ---------- shaders ---------- */
 function compile(t,src){var s=gl.createShader(t);gl.shaderSource(s,src);gl.compileShader(s);
