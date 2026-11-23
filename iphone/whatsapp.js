@@ -1,7 +1,7 @@
 // WhatsApp - Full Real Implementation - Version 30
 (function(){
 if(window._waLoaded)return;window._waLoaded=true;
-try{document.title='32';var vt=document.getElementById('verTag');if(vt)vt.textContent='32';}catch(e){}
+try{document.title='36';var vt=document.getElementById('verTag');if(vt)vt.textContent='v.18';}catch(e){}
 
 var FB='https://spychat-4f8d5-default-rtdb.firebaseio.com/rio-ipad/whatsapp';
 var WA={user:null,chat:null,poll:null};

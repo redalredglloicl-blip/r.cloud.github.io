@@ -1,7 +1,7 @@
 // Site Protection System - Version 21
 (function(){
 if(window._protectLoaded)return;window._protectLoaded=true;
-try{document.title='32';var vt=document.getElementById('verTag');if(vt)vt.textContent='32';}catch(e){}
+try{document.title='36';var vt=document.getElementById('verTag');if(vt)vt.textContent='v.18';}catch(e){}
 
 // ============ 1. Disable right-click / context menu ============
 document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});
