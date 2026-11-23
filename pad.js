@@ -741,7 +741,13 @@ el.innerHTML='<div class="card"><div class="big" style="font-size:18px;color:#ff
 $('#lockGlyph').innerHTML=g('lock-closed','#fff',30);
 $('#lockTorch').innerHTML=g('flashlight','#fff',21);
 $('#lockCam').innerHTML=g('camera','#fff',21);
-function unlock(){if(!S.locked)return;S.locked=false;sfx('unlock');const L=$('#lock');L.classList.add('bye');setTimeout(()=>{L.classList.remove('show','bye');syncPill()},400)}
+function unlock(){if(!S.locked)return;S.locked=false;sfx('unlock');
+/* iOS unlock: stage the home small/faded (icons staggered), then release it as the lock lifts */
+var sc=$('#screen');
+if(sc){try{var tr=$('#pagesTrack'),pg=null;if(tr&&tr.children.length){var ci=Math.round((tr.scrollLeft||0)/Math.max(1,tr.clientWidth||1));pg=tr.children[Math.min(ci,tr.children.length-1)];}var ics=pg?pg.querySelectorAll('.app .ic'):[];for(var i=0;i<ics.length;i++){ics[i].style.transitionDelay=(i*11)+'ms';}var dics=document.querySelectorAll('#dock .ic');for(var j=0;j<dics.length;j++){dics[j].style.transitionDelay=(130+j*14)+'ms';}}catch(e){}
+sc.classList.add('unlocking');void sc.offsetWidth;requestAnimationFrame(function(){sc.classList.remove('unlocking')});
+setTimeout(function(){var all=document.querySelectorAll('#homeApps .app .ic,#dock .ic');for(var k=0;k<all.length;k++){all[k].style.transitionDelay='';}},950);}
+const L=$('#lock');L.classList.add('bye');setTimeout(()=>{L.classList.remove('show','bye');syncPill()},400)}
 $('#lock').addEventListener('click',()=>unlock());
 $('#lockTorch').addEventListener('click',e=>{e.stopPropagation();unlock();S.set.flash=!S.set.flash;store.set('set',S.set);toast(S.set.flash?'المصباح يعمل':'المصباح انطفأ')});
 $('#lockCam').addEventListener('click',e=>{e.stopPropagation();unlock();setTimeout(()=>openApp('camera'),480)});
