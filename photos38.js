@@ -56,81 +56,7 @@ window.showShare=function(o){
   }
 };
 
-// ---- Face ID / passcode gate ----
-if(!window._phWatch){window._phWatch=setInterval(function(){try{if(S.app!=='photos'){S._phOpen=false;}}catch(e){}},1000);}
-
-function phUnlock(el){
-  S._phOpen=true;
-  phAppNew(el);
-}
-
-function phShowPin(el){
-  var pass=S.fx&&S.fx.pass?String(S.fx.pass):'';
-  if(!pass){phShowSetup(el);return;}
-  var entered='';
-  var dots=function(){return Array.from({length:pass.length},function(_,i){return '<span style="width:12px;height:12px;border-radius:50%;background:'+(i<entered.length?'#0a84ff':'#d1d1d6')+';display:inline-block"></span>'}).join('')};
-  el.innerHTML='<div style="text-align:center;padding:52px 20px 20px">'
-  +'<div style="font-size:17px;font-weight:700">ادخل رمز الدخول</div>'
-  +'<p class="mut" style="font-size:13px;margin-top:8px">الاستوديو مقفل — الرمز يفتحه</p>'
-  +'<div id="phDots" style="display:flex;gap:10px;justify-content:center;margin:26px 0">'+dots()+'</div>'
-  +'<div style="display:grid;grid-template-columns:repeat(3,72px);gap:12px;justify-content:center">'
-  +[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(function(d){
-    if(d==='')return '<span></span>';
-    return '<button data-pin="'+d+'" style="width:72px;height:72px;border-radius:50%;border:none;background:#f1f1f4;font-size:24px;color:#111">'+d+'</button>';
-  }).join('')+'</div>'
-  +'<button id="phPinCancel" style="margin-top:22px;background:none;border:none;color:#0a84ff;font-size:15px">إلغاء</button></div>';
-  var upd=function(){var dd=document.querySelector('#phDots');if(dd)dd.innerHTML=dots();};
-  el.querySelectorAll('[data-pin]').forEach(function(b){
-    b.addEventListener('click',function(){
-      var v=b.dataset.pin;
-      if(v==='⌫'){entered=entered.slice(0,-1);upd();return;}
-      if(entered.length>=pass.length)return;
-      entered+=v;upd();
-      if(entered.length===pass.length){
-        if(entered===pass){phUnlock(el);}
-        else{
-          try{if(navigator.vibrate)navigator.vibrate(40);}catch(e){}
-          toast('رمز غلط');
-          setTimeout(function(){entered='';upd();},250);
-        }
-      }
-    });
-  });
-  var c=document.querySelector('#phPinCancel');
-  if(c)c.addEventListener('click',function(){phShowLock(el);});
-}
-
-function phShowSetup(el){
-  el.innerHTML='<div style="text-align:center;padding:52px 20px 20px">'
-  +'<svg viewBox="0 0 24 24" width="52" height="52" style="margin-bottom:14px"><rect x="5" y="10" width="14" height="10" rx="2.5" fill="none" stroke="#0a84ff" stroke-width="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="#0a84ff" stroke-width="2" stroke-linecap="round"/></svg>'
-  +'<div style="font-size:17px;font-weight:700">الاستوديو مقفل</div>'
-  +'<p class="mut" style="font-size:13px;line-height:1.9;margin-top:8px">فعّل Face ID أو رمز الدخول من الإعدادات<br>حتى ما يشوف صورك أحد غيرك</p>'
-  +'<button id="phGoSet" class="btn" style="margin-top:18px;padding:12px 26px">فتح الإعدادات</button></div>';
-  var b=document.querySelector('#phGoSet');
-  if(b)b.addEventListener('click',function(){
-    try{openApp('settings');}catch(e){}
-    setTimeout(function(){try{S.setPage='faceid';appSettings(document.querySelector('#appBody'));}catch(e){}},200);
-  });
-}
-
-function phShowLock(el){
-  var hasFace=S.fx&&S.fx.faceid,hasPass=S.fx&&S.fx.pass;
-  if(!hasFace&&!hasPass){phShowSetup(el);return;}
-  el.innerHTML='<div style="text-align:center;padding:52px 20px 20px">'
-  +'<svg viewBox="0 0 24 24" width="52" height="52" style="margin-bottom:14px"><rect x="5" y="10" width="14" height="10" rx="2.5" fill="none" stroke="#0a84ff" stroke-width="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="#0a84ff" stroke-width="2" stroke-linecap="round"/></svg>'
-  +'<div style="font-size:17px;font-weight:700">الصور مقفلة</div>'
-  +'<p class="mut" style="font-size:13px;margin-top:8px">استخدم Face ID لفتح الاستوديو</p>'
-  +(hasFace?'<button id="phFaceBtn" class="btn" style="margin-top:22px;padding:13px 30px;font-size:16px">'+g('scan','#fff',20)+' Face ID</button>':'')
-  +(hasPass?'<div><button id="phPinBtn" style="margin-top:16px;background:none;border:none;color:#0a84ff;font-size:15px">ادخل رمز الدخول بدلاً من ذلك</button></div>':'')
-  +'</div>';
-  var fb=document.querySelector('#phFaceBtn');
-  if(fb)fb.addEventListener('click',function(){
-    fb.textContent='جاي يتعرف على وجهك…';
-    setTimeout(function(){phUnlock(el);},750);
-  });
-  var pb=document.querySelector('#phPinBtn');
-  if(pb)pb.addEventListener('click',function(){phShowPin(el);});
-}
+// No lock on Photos (Reda 2026-11-23): open, privacy is offline-only.
 
 function phAppNew(el){
 S.phTab=S.phTab||'lib';S.phSeg=S.phSeg||'all';
@@ -241,12 +167,9 @@ document.querySelector('#phInfo').addEventListener('click',()=>toast(phDate(p.ts
 document.querySelector('#phDel').addEventListener('click',()=>{window.phDelete(p.key);toast('انحذفت — تلقاها في "المحذوفة مؤخراً"');phAppNew(el)});
 }
 
-// Gate: Photos opens only after Face ID / passcode (or setup). The
-// perms.photos check from sys3's wrapper is preserved here.
+// No lock on Photos (Reda 2026-11-23): open, privacy is offline-only.
 window.appPhotos=function(el){
   if(!S.fx.perms.photos){el.innerHTML=permDenied('الصور');return}
-  if(S._phOpen&&S.app==='photos'){phAppNew(el);return}
-  S._phOpen=false;
-  phShowLock(el);
+  phAppNew(el);
 };
 })();
